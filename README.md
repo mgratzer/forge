@@ -40,47 +40,22 @@ forge-setup-project → forge-create-issue → forge-implement-issue → forge-r
 
 ## Install
 
-Copy or symlink the skill directories into your agent's skills folder.
-
-### Claude Code
+Forge skills follow the [Agent Skills](https://agentskills.io) open standard. Copy or symlink the skill directories into your agent's skills folder:
 
 ```bash
-# All skills (symlink for easy updates)
-ln -s /path/to/forge/skills/forge-* ~/.claude/skills/
+# Symlink all skills (easy updates)
+ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 
 # Or a single skill
-ln -s /path/to/forge/skills/forge-setup-project ~/.claude/skills/forge-setup-project
+ln -s /path/to/forge/skills/forge-setup-project <your-agent-skills-dir>/forge-setup-project
 ```
 
-Skills land in `~/.claude/skills/` (personal) or `.claude/skills/` (project-scoped). See [Claude Code docs](https://code.claude.com/docs/en/skills).
+Check your agent's documentation for the skills directory location. Common paths:
 
-### Codex
-
-```bash
-ln -s /path/to/forge/skills/forge-* ~/.agents/skills/
-```
-
-Skills land in `~/.agents/skills/` (personal) or `.agents/skills/` (project-scoped). See [Codex docs](https://developers.openai.com/codex/skills/).
-
-### Amp
-
-```bash
-ln -s /path/to/forge/skills/forge-* ~/.config/agents/skills/
-```
-
-Amp also reads from `.agents/skills/` and `.claude/skills/`. See [Amp docs](https://ampcode.com/news/agent-skills).
-
-### pi
-
-```bash
-ln -s /path/to/forge/skills/forge-* ~/.pi/agent/skills/
-```
-
-Or install as a pi package. See [pi docs](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent#skills).
-
-### Other agents
-
-Any agent that supports the [Agent Skills](https://agentskills.io) standard can use these skills. Copy the `skills/forge-*` directories into your agent's skills folder.
+| Scope | Path |
+|-------|------|
+| Personal (all projects) | `~/.claude/skills/`, `~/.agents/skills/`, or equivalent |
+| Project-scoped | `.claude/skills/`, `.agents/skills/`, or equivalent |
 
 ## Documentation
 
