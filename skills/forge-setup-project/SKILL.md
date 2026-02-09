@@ -101,11 +101,11 @@ Use AskUserQuestion to collect what can't be determined from code:
 3. **Project story** — Suggest a short metaphor or narrative that connects the project name to its purpose (2-3 sentences). This goes in the README header to give the project personality. Look for a metaphor grounded in what the name evokes — a physical object, a place, an action — and connect it to what the software actually does. Propose a suggestion and let the user refine it.
 
 **Ask only if ambiguous from code:**
-3. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
-4. Confirm project structure if unclear (monorepo vs single app)
-5. **External dependencies** — "Does this project depend on external services or APIs? List them with how to verify they're working (e.g., health-check endpoints, test commands)."
-6. **Debugging patterns** — "When something breaks, what should be checked first?" (e.g., env/config files, specific log locations, common failure modes)
-7. **Preferred libraries** — "Are there preferred libraries or patterns for common tasks that new code should follow?"
+4. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
+5. Confirm project structure if unclear (monorepo vs single app)
+6. **External dependencies** — "Does this project depend on external services or APIs? List them with how to verify they're working (e.g., health-check endpoints, test commands)."
+7. **Debugging patterns** — "When something breaks, what should be checked first?" (e.g., env/config files, specific log locations, common failure modes)
+8. **Preferred libraries** — "Are there preferred libraries or patterns for common tasks that new code should follow?"
 
 **Never ask what's discoverable from code:**
 - Language, framework, test runner, linter — detect these automatically
