@@ -88,7 +88,32 @@ Using TodoWrite, create a task list:
 3. Plan test coverage
 4. Identify documentation updates needed
 
-### Step 5: Create Feature Branch
+### Step 5: Validate Approach
+
+Before writing code, confirm the implementation approach with the user:
+
+1. **Present the planned approach** — Summarize in 3-5 bullet points:
+   - Which files will be created or modified
+   - Which libraries, APIs, or services will be used
+   - Where configuration changes will live
+   - Key design decisions (data flow, component boundaries)
+
+2. **State scope boundaries** — Explicitly list what will NOT change to prevent scope creep
+
+3. **Check the issue for implementation constraints** — If the issue includes an Implementation Constraints section (from `forge-create-issue`), follow those guardrails
+
+4. **Get user confirmation** — Use AskUserQuestion:
+   ```
+   Here's my implementation approach:
+   - <approach summary>
+
+   Scope boundaries — I will NOT change:
+   - <out-of-scope items>
+
+   Does this look right, or should I adjust?
+   ```
+
+### Step 6: Create Feature Branch
 
 ```bash
 # Detect the default branch (main, master, develop, etc.)
@@ -110,9 +135,16 @@ Branch naming examples:
 - `fix/456-resolve-memory-leak`
 - `docs/789-update-api-reference`
 
-### Step 6: Implement the Solution
+### Step 7: Implement the Solution
 
 Follow CLAUDE.md guidelines strictly:
+
+**Pre-flight Validation:**
+Before writing feature code, verify your assumptions:
+- If the project uses code generation (GraphQL codegen, OpenAPI generators, protobuf, etc.) — run it first and confirm the fields or types you plan to use actually exist
+- If modifying configuration — grep the codebase for where the config is consumed to confirm you're placing values in the correct location
+- If the implementation depends on external services or APIs — verify they're accessible and responding before building features on top of them
+- If adding new environment variables — confirm they're set and accessible in the current environment
 
 **Code Quality:**
 - Follow the project's CLAUDE.md for architecture and layering conventions
@@ -157,7 +189,12 @@ Commit types: feat, fix, docs, style, refactor, test, chore
 
 Never add Co-Authored-By or any other attribution.
 
-### Step 7: Review for Modularity
+**Continuous Quality Checks:**
+After each commit, run the project's test suite (or at minimum, tests for changed modules). Do not defer all testing to the Quality Gates step — catch failures early while context is fresh.
+
+When writing tests, run each test immediately after writing it. Verify assertions match the actual output format exactly — do not assume output structure without checking.
+
+### Step 8: Review for Modularity
 
 Before moving on, review your implementation:
 
@@ -166,10 +203,14 @@ Before moving on, review your implementation:
 3. **Utility candidates**: Are there pure functions that could live in `lib/` for reuse?
 4. **Type definitions**: Are complex inline types repeated? Extract to named types
 5. **Test coverage**: Can the core logic be unit tested independently?
+6. **Pattern consistency**: If you changed a pattern in one file (e.g., error handling, component behavior, API call style), search for ALL files that use the same pattern and update them too. Do not fix one instance and leave others stale.
+   ```bash
+   grep -rn "<pattern-keyword>" src/
+   ```
 
 If refactoring is needed, do it now before tests lock in the structure.
 
-### Step 8: Update Tests
+### Step 9: Update Tests
 
 - Co-locate `*.test.ts(x)` files next to implementations
 - Mock external services at module boundaries
@@ -177,7 +218,7 @@ If refactoring is needed, do it now before tests lock in the structure.
 - Run coverage checks for substantial work (if available)
 - **Test utilities separately**: If you extracted shared functions, add unit tests for them
 
-### Step 9: Update Documentation
+### Step 10: Update Documentation
 
 If behavior changed, update relevant docs:
 - `/docs/*.md` files (architecture, API, etc.)
@@ -193,7 +234,7 @@ If behavior changed, update relevant docs:
 - Group by category (e.g., Features, Fixes, Performance)
 - Bold the feature name: **Feature name** - brief description
 
-### Step 10: Quality Gates
+### Step 11: Quality Gates
 
 Before creating PR, run all project quality checks. Discover available scripts from CLAUDE.md or `package.json` and run them. Typical checks include:
 - Lint/format
@@ -203,7 +244,7 @@ Before creating PR, run all project quality checks. Discover available scripts f
 
 Fix any issues and commit the fixes.
 
-### Step 10.5: Identify Manual Deployment Requirements
+### Step 11.5: Identify Manual Deployment Requirements
 
 Review your changes and identify if ANY manual deployment steps are needed:
 
@@ -215,15 +256,15 @@ Review your changes and identify if ANY manual deployment steps are needed:
 - Database schema changes that can't auto-migrate → **Manual migration steps required**
 - New dependencies on external services → **Infrastructure provisioning may be required**
 
-**Document all manual steps** - you'll need these for the PR warning block in Step 12.
+**Document all manual steps** - you'll need these for the PR warning block in Step 13.
 
-### Step 11: Push Changes
+### Step 12: Push Changes
 
 ```bash
 git push -u origin <branch-name>
 ```
 
-### Step 12: Create Pull Request
+### Step 13: Create Pull Request
 
 **PR titles MUST use conventional commit format:**
 ```
@@ -302,7 +343,7 @@ EOF
 
 Only include sections that are relevant. The warning ensures reviewers and deployers are aware of required manual steps before merging.
 
-### Step 13: Summary
+### Step 14: Summary
 
 Provide implementation summary:
 - Branch name and PR link

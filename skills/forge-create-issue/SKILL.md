@@ -53,6 +53,8 @@ Before proposing solutions, explore the relevant parts of the codebase:
 - Identify potential integration points
 - Look for similar past implementations
 
+- **Verify external dependencies**: If the issue involves external services, APIs, or third-party tools, run a quick smoke test to confirm they're accessible and working. Flag any issues to the user before proceeding to solution design — building on broken dependencies wastes entire sessions.
+
 Use this research to inform realistic implementation options.
 
 ### Step 4: Generate Alternative Approaches
@@ -149,6 +151,13 @@ Create a well-structured issue with these sections:
 
 ### Alternatives Considered
 [Brief mention of other approaches and why they weren't chosen]
+
+### Implementation Constraints
+[Include when the issue involves choices between libraries, APIs, configuration approaches, or non-obvious patterns]
+- Preferred libraries or tools: <what to use and what to avoid>
+- Configuration location: <where settings should live>
+- Patterns to follow: <reference existing patterns in the codebase>
+- External dependencies: <services or APIs required, and how to verify they work>
 
 ## Acceptance Criteria
 - [ ] [Specific, testable criterion]

@@ -50,6 +50,11 @@ Several conventions are shared across all skills and must be identical everywher
 | Commit types | feat, fix, docs, refactor, test, chore, perf | All skills |
 | No attribution | Never add Co-Authored-By lines | implement-issue, address-pr-feedback |
 | No time estimates | Never include time estimates | create-issue |
+| Validate approach | Present plan and get user confirmation before implementing | implement-issue |
+| Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement-issue |
+| Continuous quality checks | Run tests after each commit, not just at the end | implement-issue |
+| Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
+| Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Pipeline order | setup → create → implement → reflect → address → changelog | All skills |
 
 When modifying any of these conventions, update **every skill** that references them.
