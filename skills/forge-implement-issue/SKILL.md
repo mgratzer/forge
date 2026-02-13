@@ -170,6 +170,8 @@ git checkout -b <type>/<issue-number>-<brief-description>
 # git checkout -b fix/456-resolve-memory-leak
 ```
 
+After branch creation, inform the user of the branch name and confirm they are on the new branch and ready to begin work.
+
 ### Step 7: Implement the Solution
 
 Follow CLAUDE.md guidelines strictly:
