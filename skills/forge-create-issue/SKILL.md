@@ -254,9 +254,9 @@ gh issue create \
 - Progress tracking visible on parent issue
 - No need to manually update issue bodies with links
 
-### Step 9: Set Up Git Worktree for Implementation
+### Step 9: Set Up Branch for Implementation
 
-After creating the issue, set up a dedicated git worktree for implementation:
+After creating the issue, set up a branch for implementation. Check the project's CLAUDE.md for a `git_workflow` preference (`worktree` or `branch`). If not specified, default to **worktree**.
 
 **Prerequisites Check:**
 1. Ensure the current working tree is clean (no uncommitted changes)
@@ -264,24 +264,6 @@ After creating the issue, set up a dedicated git worktree for implementation:
    - Stash them
    - Commit them
    - Abort and let user handle manually
-
-**Worktree Setup:**
-```bash
-# 1. Detect the default branch and pull latest
-DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git checkout $DEFAULT_BRANCH
-git pull origin $DEFAULT_BRANCH
-
-# 2. Create a new worktree with a branch for the issue
-# Branch naming: <type>/<issue-number>-<short-description>
-# Worktree location: ../<project>-<issue-number>
-# Derive <project> from the repository name (e.g., basename of the git remote URL or directory name)
-git worktree add -b <branch-name> ../<project>-<issue-number> $DEFAULT_BRANCH
-
-# Examples:
-# git worktree add -b feat/42-dark-mode ../myapp-42 main
-# git worktree add -b fix/123-svg-timeout ../myapp-123 main
-```
 
 **Branch Naming Convention:**
 - Format: `<type>/<issue-number>-<short-kebab-description>`
@@ -291,17 +273,59 @@ git worktree add -b <branch-name> ../<project>-<issue-number> $DEFAULT_BRANCH
   - `refactor/87-migrate-router`
   - `docs/55-update-api-reference`
 
-**After Worktree Creation:**
+#### Option A: Worktree (default)
+
+Use when the project prefers worktrees or CLAUDE.md does not specify a preference.
+
+```bash
+# 1. Detect the default branch and pull latest
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git checkout $DEFAULT_BRANCH
+git pull origin $DEFAULT_BRANCH
+
+# 2. Create a new worktree with a branch for the issue
+# Worktree location: ../<project>-<issue-number>
+# Derive <project> from the repository name (e.g., basename of the git remote URL or directory name)
+git worktree add -b <branch-name> ../<project>-<issue-number> $DEFAULT_BRANCH
+
+# Examples:
+# git worktree add -b feat/42-dark-mode ../myapp-42 main
+# git worktree add -b fix/123-svg-timeout ../myapp-123 main
+```
+
+**After worktree creation:**
 - Inform the user of the worktree location
 - Suggest they `cd` into the new worktree to begin work
 - Remind them to install dependencies in the new worktree (e.g., `npm install`, `bun install`, etc.)
+
+#### Option B: Branch
+
+Use when the project's CLAUDE.md sets `git_workflow: branch`.
+
+```bash
+# 1. Detect the default branch and pull latest
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git checkout $DEFAULT_BRANCH
+git pull origin $DEFAULT_BRANCH
+
+# 2. Create a new branch for the issue
+git checkout -b <branch-name>
+
+# Examples:
+# git checkout -b feat/42-dark-mode
+# git checkout -b fix/123-svg-timeout
+```
+
+**After branch creation:**
+- Inform the user of the branch name
+- Confirm they are on the new branch and ready to begin work
 
 ### Step 10: Confirm and Share
 
 After creation:
 - Share the issue URL with the user
-- Share the worktree location and branch name
-- If multiple issues were created, list all of them with their worktree locations
+- Share the branch name (and worktree location, if using worktrees)
+- If multiple issues were created, list all of them
 - Offer to assign the issue or add it to a project/milestone
 
 ## Guidelines

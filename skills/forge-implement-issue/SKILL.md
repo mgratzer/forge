@@ -115,25 +115,62 @@ Before writing code, confirm the implementation approach with the user:
 
 ### Step 6: Create Feature Branch
 
+Check the project's CLAUDE.md for a `git_workflow` preference (`worktree` or `branch`). If not specified, default to **worktree**. If the branch was already created by `forge-create-issue`, skip this step.
+
+**Branch Naming Convention:**
+- Format: `<type>/<issue-number>-<short-kebab-description>`
+- Examples:
+  - `feat/123-add-user-authentication`
+  - `fix/456-resolve-memory-leak`
+  - `docs/789-update-api-reference`
+
+#### Option A: Worktree (default)
+
+Use when the project prefers worktrees or CLAUDE.md does not specify a preference.
+
 ```bash
 # Detect the default branch (main, master, develop, etc.)
-git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 
 # Ensure we're on the latest default branch
 git fetch origin
-git checkout <default-branch>
-git pull origin <default-branch>
+git checkout $DEFAULT_BRANCH
+git pull origin $DEFAULT_BRANCH
 
-# Create feature branch with conventional naming
-# Format: <type>/<issue-number>-<brief-description>
-# Types: feat, fix, docs, refactor, test, chore
-git checkout -b <type>/<issue-number>-<brief-description>
+# Create a new worktree with a branch for the issue
+# Worktree location: ../<project>-<issue-number>
+# Derive <project> from the repository name (e.g., basename of the git remote URL or directory name)
+git worktree add -b <type>/<issue-number>-<brief-description> ../<project>-<issue-number> $DEFAULT_BRANCH
+
+# Examples:
+# git worktree add -b feat/123-add-user-authentication ../myapp-123 main
+# git worktree add -b fix/456-resolve-memory-leak ../myapp-456 main
 ```
 
-Branch naming examples:
-- `feat/123-add-user-authentication`
-- `fix/456-resolve-memory-leak`
-- `docs/789-update-api-reference`
+After worktree creation, inform the user of the worktree location and suggest they `cd` into it. Remind them to install dependencies if needed.
+
+#### Option B: Branch
+
+Use when the project's CLAUDE.md sets `git_workflow: branch`.
+
+```bash
+# Detect the default branch (main, master, develop, etc.)
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+
+# Ensure we're on the latest default branch
+git fetch origin
+git checkout $DEFAULT_BRANCH
+git pull origin $DEFAULT_BRANCH
+
+# Create feature branch with conventional naming
+git checkout -b <type>/<issue-number>-<brief-description>
+
+# Examples:
+# git checkout -b feat/123-add-user-authentication
+# git checkout -b fix/456-resolve-memory-leak
+```
+
+After branch creation, inform the user of the branch name and confirm they are on the new branch and ready to begin work.
 
 ### Step 7: Implement the Solution
 

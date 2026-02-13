@@ -76,6 +76,6 @@ Skills follow a consistent section order:
 | Prompt files, not code | SKILL.md | Skills are prompt templates — no runtime needed |
 | Conventional commits | Enforced in every skill | Consistent naming across issues, branches, commits, PRs |
 | GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
-| Git worktrees | Used in implement-issue | Isolates work per issue without branch switching |
+| Git workflow | Worktree (default) or branch — configurable via project's CLAUDE.md | Used in create-issue, implement-issue to isolate work per issue |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
