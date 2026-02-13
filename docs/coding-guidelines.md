@@ -45,6 +45,7 @@ Several conventions are shared across all skills and must be identical everywher
 |------------|--------|---------------|
 | Commit messages | `<type>(<scope>): <description>` | create-issue, implement-issue, reflect-pr, address-pr-feedback |
 | Branch names | `<type>/<issue-number>-<description>` | create-issue, implement-issue |
+| Git workflow | Worktree (default) or branch — check project's CLAUDE.md for `git_workflow` | create-issue, implement-issue |
 | Issue titles | `<type>(<scope>): <description>` | create-issue |
 | PR titles | `<type>(<scope>): <description>` | implement-issue |
 | Commit types | feat, fix, docs, refactor, test, chore, perf | All skills |
