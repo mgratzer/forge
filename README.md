@@ -66,6 +66,10 @@ Check your agent's docs for the skills directory path (e.g. `~/.claude/skills/`,
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
 
+## Contributors
+
+- [@denrase](https://github.com/denrase) — configurable git workflow idea ([#7](https://github.com/mgratzer/forge/pull/7))
+
 ## Contributing
 
 1. Read [CLAUDE.md](CLAUDE.md) for project principles and conventions
