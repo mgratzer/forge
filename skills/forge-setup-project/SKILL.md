@@ -147,16 +147,17 @@ Use AskUserQuestion to collect what cannot be determined from code.
 
 **Always ask:**
 
-1. **Core principles** — "What 3-5 rules should always guide development in this project?" Offer examples based on what you've seen in the codebase.
-2. **Failure modes** — "When something breaks, what do you check first? Give me symptom → cause → fix patterns." This becomes the highest-signal section of CLAUDE.md.
-3. **Domain invariants** — "What rules must never be violated? What causes silent bugs when broken?" Examples: "All prices stored in cents", "Every API route checks auth", "Config values never committed."
+1. **One-line description** — "What does this project do in one sentence?" (For existing codebases, propose one derived from exploration and let the user refine.)
+2. **Core principles** — "What 3-5 rules should always guide development in this project?" Offer examples based on what you've seen in the codebase.
+3. **Failure modes** — "When something breaks, what do you check first? Give me symptom → cause → fix patterns." This becomes the highest-signal section of CLAUDE.md.
+4. **Domain invariants** — "What rules must never be violated? What causes silent bugs when broken?" Examples: "All prices stored in cents", "Every API route checks auth", "Config values never committed."
 
 **Ask only if ambiguous from code:**
 
-4. **Conventions with enforcement** — "What rules does your team follow? For each, how is it enforced?" Look for linter configs, CI checks, custom scripts, and connect rules to their enforcement mechanism.
-5. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
-6. **Existing meta files** — If Step 1 found meta files without CLAUDE.md, ask which to keep, replace, or merge now that you have exploration context.
-7. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
+5. **Conventions with enforcement** — "What rules does your team follow? For each, how is it enforced?" Look for linter configs, CI checks, custom scripts, and connect rules to their enforcement mechanism.
+6. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
+7. **Existing meta files** — If Step 1 found meta files without CLAUDE.md, ask which to keep, replace, or merge now that you have exploration context.
+8. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
 
 **For Audit & Update mode — ask about gaps found in Step 3:**
 

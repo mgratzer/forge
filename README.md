@@ -23,7 +23,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Setup Project | `/forge-setup-project` | Create CLAUDE.md, docs/, README, and other meta-structure |
+| Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
 | Create Issue | `/forge-create-issue` | Collaboratively plan and create GitHub issues |
 | Implement Issue | `/forge-implement-issue <number>` | Implement a feature or fix from a GitHub issue |
 | Reflect on PR | `/forge-reflect-pr` | Self-review before requesting peer review |
