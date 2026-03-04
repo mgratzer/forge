@@ -31,7 +31,7 @@ forge-setup-project → forge-create-issue → forge-implement-issue → forge-r
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: CLAUDE.md as lean hot memory, docs/ as earned warm memory, with signal-to-noise scoring for existing guidance
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
-- **forge-reflect-pr** self-reviews the PR diff for missed opportunities — prefers spawning a fresh-context sub-agent (via the Task tool) for unbiased analysis, falls back to inline execution for agents without sub-agent support
+- **forge-reflect-pr** self-reviews the PR diff for missed opportunities
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 - **forge-update-changelog** transforms commit messages into user-friendly changelog entries
 
@@ -78,6 +78,6 @@ Skills follow a consistent section order:
 | GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
-| Conditional sub-agent | Task tool preferred, inline fallback in reflect-pr | Fresh context for unbiased review when available; portable across agents |
+| Conditional sub-agent | Planned enhancement for reflect-pr | Fresh context for unbiased review when supported by the active agent/tooling |
 | Three-tier context model | Hot (CLAUDE.md) / Warm (docs/) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
