@@ -294,8 +294,8 @@ Format: `<type>/<issue-number>-<short-kebab-description>`
 
 ## PR Checklist
 
-- [ ] Code follows project conventions (see [Coding Guidelines](coding-guidelines.md))
-- [ ] Tests added/updated (see [Testing](testing.md))
+- [ ] Code follows project conventions <if coding-guidelines.md was created, add: (see [Coding Guidelines](coding-guidelines.md))>
+- [ ] Tests added/updated <if testing.md was created, add: (see [Testing](testing.md))>
 - [ ] Documentation updated if applicable
 - [ ] CHANGELOG.md updated for user-facing changes
 - [ ] All checks pass
@@ -455,7 +455,7 @@ Add other standard entries based on the detected tech stack:
 
 <essential dev commands — install, dev, test, lint>
 
-See [Development Guide](docs/development.md) for full setup instructions.
+<if docs/development.md was created, add: See [Development Guide](docs/development.md) for full setup instructions.>
 
 ## Documentation
 
