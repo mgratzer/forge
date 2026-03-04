@@ -153,7 +153,7 @@ Use AskUserQuestion to collect what cannot be determined from code.
 
 **Ask only if ambiguous from code:**
 
-4. Conventions not enforced by linting (naming patterns, import ordering, preferred libraries)
+4. **Conventions with enforcement** — "What rules does your team follow? For each, how is it enforced?" Look for linter configs, CI checks, custom scripts, and connect rules to their enforcement mechanism.
 5. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
 6. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
 
@@ -189,13 +189,20 @@ Create or update `CLAUDE.md` following this template. **Target ~150-200 lines ma
 |----------|---------|
 <only rows for docs that actually exist — this is the progressive disclosure index>
 
+## Context Discovery
+
+| Working on... | Read first |
+|---------------|------------|
+<map project domains/features to the docs an agent should read before making changes>
+
 ## Core Principles
 
 <3-5 numbered rules from Step 4 — these guide agent decision-making>
 
 ## Conventions
 
-<project-specific naming, imports, preferred libraries, patterns — only what linters don't enforce>
+<project-specific naming, imports, preferred libraries, patterns>
+<for each rule, note how it's enforced — e.g., "Import boundaries (enforced by [tool/script]): [rule]">
 
 ## Commits
 
@@ -219,8 +226,9 @@ Types: feat, fix, docs, refactor, test, chore, perf
 **Section rules:**
 - **Commands**: Must be verified against package.json scripts, Makefile targets, or equivalent. Use `<!-- TODO: verify -->` if uncertain.
 - **Documentation table**: Only list docs that exist. This table is the agent's entry point to Tier 2.
+- **Context Discovery**: Maps project domains to relevant docs — "working on auth → read docs/specs/auth.md first." This is a decision tree for context, not a doc index. Omit if the project only has 1-2 docs. For projects with many docs or distinct domains, this is the highest-leverage navigation aid.
 - **Core principles**: Must come from user input, never invented.
-- **Conventions**: Only project-specific rules. "Use camelCase" is generic — "Use camelCase for services, PascalCase for React components, SCREAMING_SNAKE for env vars" is specific.
+- **Conventions**: Include enforcement mechanisms. Don't just state rules — document what enforces them and what failure looks like. E.g., "Module boundaries (enforced by [linter/script]): [specific rule]" is far more useful than stating the rule alone.
 - **Failure Modes**: Omit this section entirely if the user has none to share yet. Do not create an empty table. Add it later as patterns emerge.
 - **Domain Invariants**: Same — omit if none provided. Do not invent invariants.
 
