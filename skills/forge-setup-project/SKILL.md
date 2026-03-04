@@ -47,7 +47,7 @@ ls -la
 | **Setup** | No CLAUDE.md exists | Generate tiered context from scratch |
 | **Audit & Update** | CLAUDE.md exists | Score existing guidance, identify improvements, apply changes |
 
-**If some meta files exist but no CLAUDE.md:** treat as Setup but ask which existing files to keep, replace, or merge.
+**If some meta files exist but no CLAUDE.md:** treat as Setup. Note which files exist — you will ask the user how to handle them after exploration (Step 4).
 
 ### Step 2: Explore the Codebase
 
@@ -155,7 +155,8 @@ Use AskUserQuestion to collect what cannot be determined from code.
 
 4. **Conventions with enforcement** — "What rules does your team follow? For each, how is it enforced?" Look for linter configs, CI checks, custom scripts, and connect rules to their enforcement mechanism.
 5. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
-6. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
+6. **Existing meta files** — If Step 1 found meta files without CLAUDE.md, ask which to keep, replace, or merge now that you have exploration context.
+7. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
 
 **For Audit & Update mode — ask about gaps found in Step 3:**
 
