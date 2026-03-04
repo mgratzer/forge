@@ -173,7 +173,7 @@ Use AskUserQuestion to collect what cannot be determined from code.
 
 Create or update `CLAUDE.md` following this template. **Target ~150-200 lines maximum.** Every line must pass the undiscoverability test — if an agent can find it by exploring, it doesn't belong here.
 
-```markdown
+````markdown
 # <Project Name>
 
 <one-line description from Step 4>
@@ -222,7 +222,7 @@ Types: feat, fix, docs, refactor, test, chore, perf
 ## Domain Invariants
 
 <numbered list of must-always-hold rules from Step 4>
-```
+````
 
 **Section rules:**
 - **Commands**: Must be verified against package.json scripts, Makefile targets, or equivalent. Use `<!-- TODO: verify -->` if uncertain.
