@@ -94,7 +94,7 @@ Only the second category belongs in context files.
 
 #### Agent Readiness
 
-After exploration, assess three dimensions:
+After exploration, assess these dimensions:
 
 **Feedback loops** — can an agent validate its own work?
 
