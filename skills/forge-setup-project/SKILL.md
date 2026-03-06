@@ -1,13 +1,21 @@
 ---
 name: forge-setup-project
-description: Set up a project's meta-structure for agentic engineering — CLAUDE.md, AGENTS.md, docs/, README, and CHANGELOG. Use when starting a new project or retrofitting an existing codebase for the forge workflow.
+description: Set up or update a project's context infrastructure for agentic engineering — CLAUDE.md as lean hot memory, docs/ as earned warm memory, with signal-to-noise scoring for existing guidance. Use when starting a new project, retrofitting an existing codebase, or auditing current guidance quality.
 disable-model-invocation: true
-allowed-tools: Read, Write, Bash, Grep, Glob
+allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 ---
 
-# Set Up Project Meta-Structure
+# Set Up or Update Project Context Infrastructure
 
-Set up a project's meta-structure for agentic engineering — the foundational files that make a codebase navigable and maintainable by both humans and AI agents.
+Set up or update a project's context infrastructure for agentic engineering. Context is organized in three tiers:
+
+| Tier | File(s) | Role |
+|------|---------|------|
+| **1 — Hot memory** | CLAUDE.md | Always loaded. Lean, convention-dense. Only what agents need constantly. |
+| **2 — Warm memory** | docs/*.md | Loaded when agent navigates to a topic. Created only when content earns its token cost. |
+| **3 — Cold memory** | Specs, schemas, runbooks | On-demand references for complex projects. Not created by this skill — recommended in summary. |
+
+**Central principle: context must earn its token cost.** Generic overviews hurt agent performance. Only include knowledge that agents cannot discover by exploring the codebase with Grep, Glob, and Read.
 
 ## Input
 
@@ -17,12 +25,12 @@ If no argument is provided, use the current working directory.
 
 ## Process
 
-### Step 1: Determine Project State
+### Step 1: Determine Mode
 
 Scan the project root to classify what exists:
 
 ```bash
-# Check for existing meta files
+# Check for existing guidance files
 ls -la CLAUDE.md AGENTS.md README.md CHANGELOG.md .claude/settings.local.json 2>/dev/null
 
 # Check for docs directory
@@ -32,22 +40,18 @@ ls docs/ 2>/dev/null
 ls -la
 ```
 
-**Classify the project into one of four states:**
+**Classify into one of two modes:**
 
-| State | Description | Behavior |
-|-------|-------------|----------|
-| **Greenfield** | No code, no meta files | Generate everything from user input |
-| **Existing, no meta** | Has code but no CLAUDE.md/docs/ | Explore codebase first, then generate |
-| **Partial meta** | Has some meta files (e.g., README exists) | Ask user how to handle each existing file |
-| **Full meta** | All meta files already present | Offer to audit and update |
+| Mode | Trigger | Behavior |
+|------|---------|----------|
+| **Setup** | No CLAUDE.md exists | Generate tiered context from scratch |
+| **Audit & Update** | CLAUDE.md exists | Score existing guidance, identify improvements, apply changes |
 
-**If existing meta files are found**, use AskUserQuestion to ask:
-- Which files to overwrite vs. keep
-- Whether to merge content (for README.md especially)
+**If some meta files exist but no CLAUDE.md:** treat as Setup. Note which files exist — you will ask the user how to handle them after exploration (Step 4).
 
 ### Step 2: Explore the Codebase
 
-**Skip this step for greenfield projects.**
+**Skip this step for greenfield projects (no code exists).**
 
 For existing projects, perform a thorough exploration:
 
@@ -82,63 +86,161 @@ ls Dockerfile docker-compose*.yml 2>/dev/null
 ls docs/*.md *.md 2>/dev/null
 ```
 
-**Record what you discover:**
-- Language(s) and runtime
-- Package manager
-- Available scripts/make targets (build, test, lint, format, dev, etc.)
-- Project structure pattern (monorepo, single app, CLI tool, library, etc.)
-- Test framework
-- CI/CD setup
-- Entry points and architecture style
+**As you explore, mentally classify each finding:**
+- **Discoverable** — an agent can find this by exploring (directory structure, package.json scripts, file patterns)
+- **Requires documentation** — an agent cannot infer this from code (design decisions, conventions, failure modes, invariants)
 
-### Step 3: Gather Project Information
+Only the second category belongs in context files.
 
-Use AskUserQuestion to collect what can't be determined from code:
+#### Agent Readiness
+
+After exploration, assess these dimensions:
+
+**Feedback loops** — can an agent validate its own work?
+
+| Check | Finding |
+|-------|---------|
+| Tests exist and pass | <yes/no — run the test command if detected> |
+| Linter runs cleanly | <yes/no> |
+| Build succeeds | <yes/no> |
+| Feedback cycle time | <fast (<30s) / slow (>2min) / broken> |
+| Verification tools | <project-specific scripts agents can call to check their work — e.g., screenshot comparison, seed data reset, schema validation> |
+
+**Module structure** — can an agent navigate by exploration?
+
+| Check | Finding |
+|-------|---------|
+| Clear entry points | <are src/, app/, cmd/, lib/ obvious?> |
+| Module boundaries | <do directories correspond to logical modules, or is it a flat web of imports?> |
+| Interface clarity | <are public APIs explicit (index files, exports), or does everything import everything?> |
+
+**Application legibility** — can an agent inspect the running app?
+
+| Check | Finding |
+|-------|---------|
+| App bootable locally | <can an agent start the app to verify changes?> |
+| UI inspectable | <are screenshots, DOM snapshots, or browser automation available?> |
+| Logs/metrics queryable | <can an agent access logs or metrics programmatically?> |
+
+**Known risks** — what will trip an agent up?
+
+<list specific risks discovered during exploration — e.g., "dual architecture (legacy Redux + modern CentralHub)", "3 databases with cross-DB join prohibition", "implicit Person vs User mapping">
+
+Record these findings — they feed into Step 4 questions and the summary.
+
+### Step 3: Audit Existing Guidance (Audit & Update Mode Only)
+
+**Skip this step for Setup mode.**
+
+Read all existing guidance files: CLAUDE.md, docs/*.md, and any other project documentation.
+
+**Score each section** against four criteria:
+
+| Criterion | Test |
+|-----------|------|
+| **Specificity** | Does this describe THIS project, or could it apply to any project? |
+| **Undiscoverability** | Would an agent exploring with Grep/Glob/Read find this? If yes, it's wasted context. |
+| **Currency** | Does this match the current state of the codebase? Verify commands, file paths, patterns. |
+| **Signal density** | What's the ratio of actionable information to total words? |
+
+**Present an audit report** using this format:
+
+```markdown
+## Context Audit Report
+
+### Tier 1 — CLAUDE.md (<line count> lines)
+
+| Section | Signal | Issue | Recommended Action |
+|---------|--------|-------|--------------------|
+| Commands | High | All commands verified | Keep |
+| Description | Low | Generic — discoverable from README | Trim to one line |
+| Architecture | Low | Directory listing — agent can `ls` | Move decisions to docs/architecture.md, cut the rest |
+| Conventions | Medium | Some entries are generic | Keep project-specific entries, cut generic ones |
+| Failure Modes | — | Missing | Add — high-value section |
+
+### Tier 2 — docs/
+
+| Document | Signal | Issue | Recommended Action |
+|----------|--------|-------|--------------------|
+| architecture.md | Medium | Contains directory tree (discoverable) | Keep decisions, remove tree |
+| coding-guidelines.md | Low | Entirely generic advice | Delete or rewrite with project-specific patterns |
+
+### Missing High-Value Content
+
+- No failure modes documented
+- No domain invariants
+- Conventions lack project-specific patterns
+```
+
+Use AskUserQuestion to present the report and confirm which recommendations to apply. Group recommendations into:
+1. **Quick wins** — cut generic content, fix stale references
+2. **High-value additions** — failure modes, domain invariants, specific conventions
+3. **Structural changes** — reorganize tiers, delete low-value docs
+
+### Step 4: Gather Project Information
+
+Use AskUserQuestion to collect what cannot be determined from code.
 
 **Always ask:**
-1. **One-line project description** — "What does this project do in one sentence?"
-2. **Core principles** — "What are 3-5 rules that should always guide development in this project?" (Offer examples based on what you've seen in the codebase)
-3. **Project story** — Suggest a short metaphor or narrative that connects the project name to its purpose (2-3 sentences). This goes in the README header to give the project personality. Look for a metaphor grounded in what the name evokes — a physical object, a place, an action — and connect it to what the software actually does. Propose a suggestion and let the user refine it.
+
+1. **Core principles** — "What 3-5 rules should always guide development in this project?" Offer examples based on what you've seen in the codebase.
+2. **Failure modes** — "What mistakes do agents (or new developers) repeatedly make in this codebase? What breaks, and what's the fix?" Focus on agent-specific patterns — each entry should trace to an observed mistake, not a hypothetical. This becomes the highest-signal section of CLAUDE.md.
+3. **Domain invariants** — "What rules must never be violated? What causes silent bugs when broken?" Examples: "All prices stored in cents", "Every API route checks auth", "Config values never committed."
 
 **Ask only if ambiguous from code:**
-4. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
-5. Confirm project structure if unclear (monorepo vs single app)
-6. **External dependencies** — "Does this project depend on external services or APIs? List them with how to verify they're working (e.g., health-check endpoints, test commands)."
-7. **Debugging patterns** — "When something breaks, what should be checked first?" (e.g., env/config files, specific log locations, common failure modes)
-8. **Preferred libraries** — "Are there preferred libraries or patterns for common tasks that new code should follow?"
+
+4. **Conventions with enforcement** — "What rules does your team follow? For each, how is it enforced?" Look for linter configs, CI checks, custom scripts, and connect rules to their enforcement mechanism.
+5. Confirm detected commands if multiple options exist (e.g., `npm` vs `bun`)
+6. **Existing meta files** — If Step 1 found meta files without CLAUDE.md, ask which to keep, replace, or merge now that you have exploration context.
+7. **Project story** — Suggest a short metaphor connecting the project name to its purpose (2-3 sentences for the README header). Propose a suggestion and let the user refine.
+
+**For Audit & Update mode — ask about gaps found in Step 3:**
+
+- "What has an agent gotten wrong since the last audit? Each answer becomes a Failure Modes entry or a Conventions rule."
+- "Your CLAUDE.md has no failure modes. What mistakes do agents repeat?"
+- "The conventions section is generic. What specific patterns should agents follow?"
+- "Architecture doc lists directories but not design decisions. What were the key architectural choices?"
 
 **Never ask what's discoverable from code:**
-- Language, framework, test runner, linter — detect these automatically
+- Language, framework, test runner, linter — detect automatically
 - Available scripts — read package.json/Makefile
 - Directory structure — explore it
 
-### Step 4: Generate CLAUDE.md
+### Step 5: Generate or Update Tier 1 — CLAUDE.md
 
-Create `CLAUDE.md` following this exact structure:
+Create or update `CLAUDE.md` following this template. **Target ~150-200 lines maximum.** Every line must pass the undiscoverability test — if an agent can find it by exploring, it doesn't belong here.
 
-```markdown
+````markdown
 # <Project Name>
 
-<one-line description from Step 3>
+<one-line description — derive from exploration, confirm with user for greenfield projects>
 
 ## Commands
 
-<all discovered commands in a code block — install, dev, build, check, lint, format, typecheck, test, etc.>
+```bash
+<all verified commands — install, dev, build, test, lint, format, typecheck>
+```
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [Architecture](docs/architecture.md) | System design, data flow, package responsibilities |
-| [Development](docs/development.md) | Prerequisites, setup, daily workflow |
-| [Coding Guidelines](docs/coding-guidelines.md) | Code style, error handling, naming conventions |
-| [Testing](docs/testing.md) | Test commands, conventions, patterns |
-| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
-<additional project-specific docs rows if applicable>
+<only rows for docs that actually exist — this is the progressive disclosure index>
+
+## Context Discovery
+
+| Working on... | Read first |
+|---------------|------------|
+<map project domains/features to the docs an agent should read before making changes>
 
 ## Core Principles
 
-<3-5 principles from Step 3, as a numbered list>
+<3-5 numbered rules from Step 4 — these guide agent decision-making>
+
+## Conventions
+
+<project-specific naming, imports, preferred libraries, patterns>
+<for each rule, note how it's enforced — e.g., "Import boundaries (enforced by [tool/script]): [rule]">
 
 ## Commits
 
@@ -146,30 +248,177 @@ Format: `<type>(<scope>): <description>`
 
 Types: feat, fix, docs, refactor, test, chore, perf
 
-<2-3 example commit messages using actual project scopes>
+<2-3 examples using actual project scopes>
 
-## External Dependencies
+## Failure Modes
 
-<services, APIs, and tools the project depends on — with verification commands>
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+<project-specific breakage patterns from Step 4>
 
-## Debugging
+## Domain Invariants
 
-<what to check first when things break — project-specific troubleshooting patterns>
+<numbered list of must-always-hold rules from Step 4>
+````
+
+**Section rules:**
+- **Commands**: Must be verified against package.json scripts, Makefile targets, or equivalent. Use `<!-- TODO: verify -->` if uncertain.
+- **Documentation table**: Only list docs that exist. This table is the agent's entry point to Tier 2.
+- **Context Discovery**: Maps project domains to relevant docs — "working on auth → read docs/specs/auth.md first." This is a decision tree for context, not a doc index. Omit if the project only has 1-2 docs. For projects with many docs or distinct domains, this is the highest-leverage navigation aid.
+- **Core principles**: Must come from user input, never invented.
+- **Conventions**: Enforce invariants, not implementations — specify *what* must hold, not *how* to achieve it. Organize rules by constraint level:
+  - **MUST / MUST NOT** — invariants that cause bugs or security issues when violated (e.g., "parse data at boundaries" not "use Zod")
+  - **PREFER / AVOID** — team preferences where multiple valid approaches exist
+  For each rule, note how it's enforced. Agent-invocable verification (scripts, linters, type checkers) is the strongest form — it lets agents check their own work. Custom lint rules with remediation instructions in the error message are especially powerful: the lint failure itself becomes in-context guidance. E.g., "Module boundaries (enforced by [linter/script]): [specific rule]" is far more useful than stating the rule alone.
+- **Failure Modes**: Each entry should trace to an observed agent mistake — not a hypothetical. Omit this section entirely if the user has none to share yet. Do not create an empty table. Add entries reactively as agents fail, building the harness over time.
+- **Domain Invariants**: Same — omit if none provided. Do not invent invariants.
+
+**For Audit & Update mode:** Apply the approved changes from Step 3. This may involve cutting generic content, adding missing high-value sections, updating stale commands, and restructuring to match this template.
+
+### Step 6: Generate or Update Tier 2 — docs/
+
+```bash
+mkdir -p docs
+```
+
+**Only create docs with actual content.** An empty doc with TODO markers wastes context. Better to have no doc than a generic one.
+
+**Always created:**
+
+#### docs/architecture.md
+
+```markdown
+# Architecture
+
+## Design Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+<key architectural decisions — framework choice, data layer, auth approach, etc.>
+
+## Data Flow
+
+<how data moves through the system — request lifecycle, processing pipeline>
+
+## Module Responsibilities
+
+| Module/Package | Owns | Depends On |
+|----------------|------|------------|
+<what each key module does and its dependencies>
+```
+
+Focus: **decisions and rationale**, data flow, module boundaries. NOT directory listings — agents can `ls`. Use `<!-- TODO -->` for decisions that need research.
+
+#### docs/pr-workflow.md
+
+```markdown
+# PR Workflow
+
+## Commit Conventions
+
+See ## Commits in CLAUDE.md for format and examples.
+
+## Branch Naming
+
+Format: `<type>/<issue-number>-<short-kebab-description>`
+
+### Examples
+
+<2-3 examples relevant to the project>
+
+## PR Checklist
+
+- [ ] Code follows project conventions <if coding-guidelines.md was created, add: (see [Coding Guidelines](coding-guidelines.md))>
+- [ ] Tests added/updated <if testing.md was created, add: (see [Testing](testing.md))>
+- [ ] Documentation updated if applicable
+- [ ] CHANGELOG.md updated for user-facing changes
+- [ ] All checks pass
+
+## Review Process
+
+<project-specific review norms, or standard forge workflow>
+```
+
+**Created only when warranted — use AskUserQuestion to offer these based on detection:**
+
+#### docs/development.md — when setup has gotchas, multiple steps, or environment requirements
+
+```markdown
+# Development
+
+## Prerequisites
+
+<specific versions, tools, external services>
+
+## Setup
+
+<step-by-step from clone to running — highlight gotchas>
+
+## Environment
+
+<required env vars, configuration files, secrets management>
+```
+
+Skip this doc if setup is trivial (clone → install → run).
+
+#### docs/coding-guidelines.md — when project has specific patterns worth codifying
+
+```markdown
+# Coding Guidelines
+
+## Patterns
+
+<project-specific patterns with actual file path examples>
+
+## Anti-Patterns
+
+| Don't | Do Instead | Why |
+|-------|-----------|-----|
+<specific to this project, not generic advice>
+```
+
+Skip this doc if there are no project-specific patterns beyond what linters enforce.
+
+#### docs/testing.md — when test patterns are non-obvious
+
+```markdown
+# Testing
+
+## Commands
+
+<exact test commands — unit, integration, e2e>
 
 ## Conventions
 
-<naming patterns, preferred libraries, and project-specific rules beyond commit format>
+<test file location, naming, setup/teardown patterns — with file path examples>
+
+## Common Pitfalls
+
+| Pitfall | Symptom | Solution |
+|---------|---------|----------|
+<testing-specific gotchas for this project>
 ```
 
-**Optional sections:** Include `## External Dependencies`, `## Debugging`, and `## Conventions` only when the user provides relevant information in Step 3. Do not generate empty sections or invent content.
+Skip this doc if tests are straightforward and self-explanatory.
 
-**Critical rules:**
-- Commands block must contain ONLY commands that actually exist in the project
-- Every command must be verified against package.json scripts, Makefile targets, or equivalent
-- Use `<!-- TODO: verify this command -->` if uncertain about a command
-- Core principles must come from user input, not be invented
+**Additional project-specific docs — offer based on detection:**
 
-### Step 5: Create AGENTS.md, .claude/settings.local.json, and .gitignore
+| Detected Signal | Suggested Doc |
+|-----------------|---------------|
+| REST/GraphQL routes, OpenAPI spec | `docs/api-reference.md` |
+| Dockerfile, docker-compose | `docs/deployment.md` |
+| CI workflow files | `docs/ci.md` |
+| Database migrations, ORM config | `docs/database.md` |
+| Multiple packages/workspaces | `docs/monorepo.md` |
+
+**Content rules for all Tier 2 docs:**
+- Every section must pass the undiscoverability test
+- Use tables for structured reference data (symptom→cause→fix, decision→choice→rationale)
+- Include actual file paths when referencing code patterns
+- No generic advice ("Follow best practices", "Keep code clean", "Write clean tests")
+- No discoverable information (directory trees, command lists already in CLAUDE.md)
+
+### Step 7: Create AGENTS.md, .claude/settings.local.json, and .gitignore
 
 ```bash
 # Create AGENTS.md as a symlink to CLAUDE.md
@@ -190,19 +439,14 @@ If `.claude/settings.local.json` already exists, merge the attribution keys into
 }
 ```
 
-The empty attribution fields suppress Claude Code's default Co-Authored-By lines. This file is user-local and not committed — the "no attribution" rule is also documented in CLAUDE.md for enforcement.
+The empty attribution fields suppress Claude Code's default Co-Authored-By lines. This file is user-local and not committed.
 
 **Create `.gitignore` if it doesn't exist.** If it already exists, ensure `.claude/` is listed.
 
-The `.claude/` directory contains only user-specific settings (`settings.local.json` with tool permissions and attribution) and should not be committed.
-
 ```bash
-# Check if .gitignore exists
 if [ ! -f .gitignore ]; then
-  # Create with .claude/ entry
   echo ".claude/" > .gitignore
 else
-  # Add .claude/ if not already present
   grep -qxF '.claude/' .gitignore || echo '.claude/' >> .gitignore
 fi
 ```
@@ -216,191 +460,26 @@ Add other standard entries based on the detected tech stack:
 
 **IMPORTANT**: If `.gitignore` already exists, do NOT overwrite it. Only append missing entries.
 
-### Step 6: Generate /docs
+### Step 8: Human-Facing Files (Optional)
 
-Create the `docs/` directory and generate five core documentation files plus any project-specific extras.
+These are for human readers (GitHub visitors, release tracking), not agent context infrastructure. Create them if they don't exist, but they don't affect agent performance.
 
-```bash
-mkdir -p docs
-```
-
-**Five core docs (always created):**
-
-#### docs/architecture.md
-
-```markdown
-# Architecture
-
-<system design overview — what the project is, how it's structured>
-
-## Project Structure
-
-<directory tree with annotations for key directories>
-
-## Data Flow
-
-<how data moves through the system — request lifecycle, processing pipeline, etc.>
-
-## Package/Module Responsibilities
-
-<table or list of key packages/modules and what they do>
-
-<!-- TODO: Add diagrams if helpful -->
-```
-
-#### docs/development.md
-
-```markdown
-# Development
-
-## Prerequisites
-
-<runtime, language version, tools needed — detected from project>
-
-## Setup
-
-<step-by-step from clone to running — based on actual project setup>
-
-## Daily Workflow
-
-<common development loop — start dev server, run tests, etc.>
-
-## Available Commands
-
-<full list of all scripts/make targets with descriptions>
-```
-
-#### docs/coding-guidelines.md
-
-```markdown
-# Coding Guidelines
-
-## Code Style
-
-<detected style rules — formatter, linter config, import ordering, etc.>
-
-## Error Handling
-
-<project's error handling patterns — detected from code or marked TODO>
-
-## Naming Conventions
-
-<file naming, function naming, variable naming patterns detected>
-
-## Documentation
-
-<when to add comments, docstring conventions, etc.>
-
-<!-- TODO: Add examples from the codebase -->
-```
-
-#### docs/testing.md
-
-```markdown
-# Testing
-
-## Running Tests
-
-<exact test commands from project>
-
-## Test Conventions
-
-<test file location, naming, framework-specific patterns>
-
-## Writing Tests
-
-<patterns detected in existing tests — describe what you see>
-
-## Coverage
-
-<coverage commands if available, coverage expectations>
-```
-
-#### docs/pr-workflow.md
-
-```markdown
-# PR Workflow
-
-## Commit Conventions
-
-Format: `<type>(<scope>): <description>`
-
-Types: feat, fix, docs, refactor, test, chore, perf
-
-### Examples
-
-<2-3 examples using actual project scopes>
-
-## Branch Naming
-
-Format: `<type>/<issue-number>-<short-kebab-description>`
-
-### Examples
-
-<2-3 examples relevant to the project>
-
-## PR Checklist
-
-- [ ] Code follows project guidelines (see [Coding Guidelines](coding-guidelines.md))
-- [ ] Tests added/updated (see [Testing](testing.md))
-- [ ] Documentation updated (if applicable)
-- [ ] CHANGELOG.md updated for user-facing changes
-- [ ] Lint/format checks pass
-- [ ] All tests pass
-
-## Review Process
-
-<project-specific review norms, or standard forge workflow>
-```
-
-**Additional project-specific docs — offer based on detection:**
-
-| Detected Signal | Suggested Doc |
-|-----------------|---------------|
-| REST/GraphQL routes, OpenAPI spec | `docs/api-reference.md` |
-| Dockerfile, docker-compose | `docs/deployment.md` |
-| CI workflow files | `docs/ci.md` |
-| Auth middleware, security headers | `docs/security.md` |
-| React/Vue/Svelte components | `docs/frontend.md` |
-| Database migrations, ORM config | `docs/database.md` |
-| Multiple packages/workspaces | `docs/monorepo.md` |
-
-Use AskUserQuestion to offer detected extras:
-```
-Based on what I found in the codebase, I'd also suggest creating:
-- docs/api-reference.md (detected REST routes in src/routes/)
-- docs/deployment.md (detected Dockerfile and docker-compose.yml)
-
-Which of these would you like me to create?
-```
-
-**Content rules for all docs:**
-- Every sentence must be specific to THIS project — no generic filler
-- Use `<!-- TODO: ... -->` for anything that can't be determined from code
-- Reference actual file paths, actual commands, actual patterns found in the codebase
-- Keep each doc focused — if it's getting long, you're adding too much
-
-### Step 7: Generate README.md
-
-**If no README.md exists**, create one following this structure:
+**README.md** — if no README exists, create one:
 
 ```markdown
 <p align="center">
   <strong><one-line project description></strong><br>
-  <short tagline — a punchy subtitle that complements the description>
+  <short tagline>
 </p>
 
 <p align="center">
   <a href="docs/architecture.md">Architecture</a> &middot;
-  <a href="docs/development.md">Development</a> &middot;
-  <a href="docs/coding-guidelines.md">Guidelines</a> &middot;
-  <a href="docs/testing.md">Testing</a> &middot;
-  <a href="docs/pr-workflow.md">PR Workflow</a>
+  <additional links only for docs that were actually created>
 </p>
 
 ---
 
-<project story from Step 3 — the metaphor connecting the name to the purpose>
+<project story from Step 4>
 
 ---
 
@@ -408,25 +487,17 @@ Which of these would you like me to create?
 
 <minimal steps to get running — clone, install, start>
 
-## Features
-
-<bullet list of key features — derived from codebase exploration>
-
 ## Development
 
 <essential dev commands — install, dev, test, lint>
 
-See [Development Guide](docs/development.md) for full setup instructions.
+<if docs/development.md was created, add: See [Development Guide](docs/development.md) for full setup instructions.>
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [Architecture](docs/architecture.md) | System design and data flow |
-| [Development](docs/development.md) | Setup and daily workflow |
-| [Coding Guidelines](docs/coding-guidelines.md) | Code style and conventions |
-| [Testing](docs/testing.md) | Test commands and patterns |
-| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, and review process |
+<only list docs that were created>
 
 ## Contributing
 
@@ -438,21 +509,14 @@ See [Development Guide](docs/development.md) for full setup instructions.
 ```
 
 **Header rules:**
-- If the project has a logo (`assets/logo.svg` or similar), add a centered `<img>` above the tagline
-- The story paragraph goes between two `---` dividers, right after the nav links
-- Keep the story to 2-3 sentences — evocative, not verbose
+- If the project has a logo, add a centered `<img>` above the tagline
+- The story paragraph goes between two `---` dividers
+- Keep the story to 2-3 sentences
 
 **If README.md already exists**, use AskUserQuestion:
-```
-A README.md already exists. How would you like to proceed?
-1. Replace it entirely with the new structure
-2. Merge — keep existing content and add missing sections
-3. Keep the existing README.md unchanged
-```
+> A README.md already exists. Replace it, merge missing sections, or keep it unchanged?
 
-### Step 8: Generate CHANGELOG.md
-
-**If no CHANGELOG.md exists**, create one with header only:
+**CHANGELOG.md** — if none exists, create with header only:
 
 ```markdown
 # Changelog
@@ -462,25 +526,24 @@ All notable user-facing changes to this project will be documented in this file.
 Changes are grouped by release date and category. Only user-facing changes are included — internal refactors, test updates, and CI changes are omitted.
 ```
 
-**If the project has existing git history**, use AskUserQuestion:
-```
-This project has existing git history. Would you like me to backfill the changelog from recent commits?
-1. Yes — scan recent commits and create initial entries
-2. No — start fresh from this point forward
-```
-
-If backfilling, follow the `forge-update-changelog` conventions (user-facing, plain language, no jargon).
+If the project has existing git history, ask whether to backfill from recent commits.
 
 ### Step 9: Commit
 
 Stage all new and modified meta files and commit:
 
 ```bash
-# Stage only the meta files we created/modified
-git add CLAUDE.md AGENTS.md .gitignore docs/ README.md CHANGELOG.md
+# Stage context infrastructure files
+git add CLAUDE.md AGENTS.md .gitignore docs/
 
-# Commit with conventional format
-git commit -m "docs: add agentic engineering meta-structure"
+# Stage human-facing files if created/modified
+git add README.md CHANGELOG.md 2>/dev/null
+
+# Commit with conventional format — use the appropriate message
+# For Setup mode:
+git commit -m "docs: set up agentic context infrastructure"
+# For Audit & Update mode:
+git commit -m "docs: update context infrastructure with tiered guidance"
 ```
 
 **Do NOT commit if:**
@@ -490,38 +553,120 @@ git commit -m "docs: add agentic engineering meta-structure"
 
 ### Step 10: Summary
 
-Present a summary of everything that was created:
+**For Setup mode:**
 
 ```text
 ## Setup Complete
 
-### Files Created
-- CLAUDE.md — Project guide with commands, docs table, principles, commit conventions
-- AGENTS.md — Symlink → CLAUDE.md
-- .claude/settings.local.json — Attribution settings (user-local, not committed)
-- .gitignore — Git ignore rules (includes .claude/)
-- docs/architecture.md — System design and structure
-- docs/development.md — Prerequisites, setup, workflow
-- docs/coding-guidelines.md — Code style and conventions
-- docs/testing.md — Test commands and patterns
-- docs/pr-workflow.md — Commit, PR, and review conventions
-<any additional docs created>
-- README.md — Project overview and quick start
-- CHANGELOG.md — Ready for entries
+### Context Infrastructure
+
+**Tier 1 — Hot Memory (always loaded):**
+- CLAUDE.md — <line count> lines
+
+**Tier 2 — Warm Memory (on-demand):**
+- docs/architecture.md — Design decisions and data flow
+<list only docs that were created, with brief note>
+
+**Tier 3 — Cold Memory (recommended for later):**
+<suggest specs/references for complex projects — API docs, DB schemas, deployment runbooks>
+<omit this section if project is simple>
+
+### Agent Readiness
+
+| Dimension | Status | Action |
+|-----------|--------|--------|
+| Feedback loops | <e.g., "Tests pass, lint works, build <30s"> | <or "No tests — add test coverage as first priority"> |
+| Module structure | <e.g., "Clear boundaries in src/"> | <or "Flat import web — consider module extraction"> |
+| App legibility | <e.g., "Bootable, logs queryable"> | <or "No local boot — add dev server script"> |
+| Known risks | <list from Step 2> | <documented in CLAUDE.md Failure Modes / Domain Invariants> |
+
+### Supporting Files
+- AGENTS.md → CLAUDE.md (symlink)
+- .claude/settings.local.json — Attribution settings (not committed)
+- .gitignore
+
+### Also Created
+- README.md — project overview for GitHub visitors
+- CHANGELOG.md — release tracking for humans
+<omit entries that were not created or already existed>
 
 ### Next Steps
-1. Review each generated file and fill in any <!-- TODO --> markers
-2. Use /forge-create-issue to plan your first piece of work
-3. Use /forge-implement-issue to start implementing
+1. Review each file and fill any <!-- TODO --> markers
+2. Add failure modes to CLAUDE.md as you encounter agent mistakes
+3. Update domain invariants when new rules emerge
+4. Re-run /forge-setup-project periodically — context rots as code evolves
+5. Use /forge-create-issue to plan your first piece of work
+```
+
+**For Audit & Update mode:**
+
+```text
+## Audit Complete
+
+### Changes Applied
+- CLAUDE.md: <specific changes — e.g., "removed generic description, added failure modes table, trimmed from 250 to 180 lines">
+- docs/architecture.md: <specific changes>
+<list each changed file>
+
+### Agent Readiness
+
+| Dimension | Status | Action |
+|-----------|--------|--------|
+| Feedback loops | <e.g., "Tests pass, lint works, build <30s"> | <or "No tests — add test coverage as first priority"> |
+| Module structure | <e.g., "Clear boundaries in src/"> | <or "Flat import web — consider module extraction"> |
+| App legibility | <e.g., "Bootable, logs queryable"> | <or "No local boot — add dev server script"> |
+| Known risks | <list from Step 2> | <documented in CLAUDE.md Failure Modes / Domain Invariants> |
+
+### Recommendations Deferred
+<items the user chose not to apply, or gaps that need future input>
+
+### Next Steps
+1. Review changes and verify accuracy
+2. Revisit deferred recommendations when ready
+3. Re-run /forge-setup-project periodically — docs rot as code evolves. Treat context maintenance like garbage collection: small, regular sweeps beat large cleanups
 ```
 
 ## Important Guidelines
 
-### Content Quality
+### The Undiscoverability Test
 
-- **No generic boilerplate**: Every sentence must be specific to the project. "This project uses React" is specific. "Follow best practices" is not.
-- **Placeholders over fiction**: If you can't determine something from the code, use `<!-- TODO: describe X -->` rather than making something up.
-- **Derived from exploration**: Commands, structure, patterns — all must come from actual codebase analysis, not assumptions.
+Before writing ANY content, ask: "Would an agent exploring this codebase with Grep, Glob, and Read find this information?" If yes → don't write it.
+
+**Write:** design decisions, conventions not enforced by tools, failure modes, domain invariants, gotchas, preferred approaches when multiple exist. Also capture knowledge that currently lives only in Slack threads, Google Docs, or people's heads — anything an agent can't access in-context effectively doesn't exist.
+
+**Don't write:** directory structure, available commands (unless verified — these are borderline), generic descriptions, framework overviews, boilerplate.
+
+### Signal Over Volume
+
+Context that **hurts** agent performance:
+- Generic overviews ("This project uses React for the frontend")
+- Discoverable information (directory trees, package listings)
+- Verbose explanations where a table would do
+- Empty sections with only `<!-- TODO -->` markers
+- Too much guidance — when everything is "important," nothing is. Agents pattern-match locally instead of navigating intentionally. A 500-line CLAUDE.md is non-guidance.
+
+Context that **helps** agent performance:
+- Symptom → cause → fix tables
+- Decision → choice → rationale tables
+- Constraint hierarchies (musts, must-nots, preferences)
+- Code patterns with actual file paths
+- Domain invariants that prevent silent bugs
+
+### Tier Discipline
+
+- **Tier 1 (CLAUDE.md)**: Target ~150-200 lines. If it's growing past 200, move detail to Tier 2.
+- **Tier 2 (docs/)**: Only create a doc if it has actual content. Delete or skip docs that would be mostly generic or empty.
+- **Tier 3**: Referenced in summary for complex projects. Not created by this skill.
+- **No duplication across tiers.** Commands live in CLAUDE.md. Design decisions live in docs/architecture.md. Don't repeat. Canonical example: commit format is defined in CLAUDE.md's `## Commits` section — docs/pr-workflow.md references it instead of repeating it.
+
+### Context Budget
+
+CLAUDE.md is not the only context an agent loads. Auto-memory files, MCP tool definitions, skill files, and conversation history all consume the context window. Research shows agent performance degrades past ~40% context utilization.
+
+Keep this in mind:
+- CLAUDE.md target: 150-200 lines (~3-4K tokens)
+- If the project uses many MCP servers or large skill files, lean toward the lower end
+- When auditing, count total loaded context — not just CLAUDE.md
 
 ### What NOT to Do
 
@@ -531,13 +676,14 @@ Present a summary of everything that was created:
 - Don't include time estimates anywhere
 - Don't add commands to CLAUDE.md that don't exist in the project
 - Don't create AGENTS.md as a regular file — it must be a symlink
+- Don't create empty docs — better to have no doc than a generic one
 - Don't generate content that contradicts existing project configuration
 
 ### Handling Edge Cases
 
 - **Monorepo**: Create root-level meta files that reference sub-packages. Suggest per-package CLAUDE.md files as a follow-up.
-- **No tests yet**: Create `docs/testing.md` with `<!-- TODO -->` markers and recommend setting up a test framework.
-- **No CI yet**: Skip `docs/ci.md` but mention it as a follow-up in the summary.
+- **No tests yet**: Skip `docs/testing.md` entirely. Mention test setup as a recommended next step in the summary.
+- **No CI yet**: Skip `docs/ci.md`. Mention it as a follow-up.
 - **Multiple languages**: Document all detected languages in CLAUDE.md commands section, grouped by language.
 
 ## Related Skills

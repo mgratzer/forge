@@ -7,7 +7,7 @@ Forge is a prompt-only repository — no application code, no runtime, no depend
 ```
 forge/
 ├── skills/
-│   ├── forge-setup-project/SKILL.md       # Step 0: Project meta-structure setup
+│   ├── forge-setup-project/SKILL.md       # Step 0: Context infrastructure setup/audit
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
 │   ├── forge-reflect-pr/SKILL.md          # Step 3: Self-review before peer review
@@ -28,7 +28,7 @@ The skills form a linear workflow. Each skill references the next in its "Relate
 forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback → forge-update-changelog
 ```
 
-- **forge-setup-project** creates the meta-structure that all other skills rely on (CLAUDE.md, docs/, etc.)
+- **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: CLAUDE.md as lean hot memory, docs/ as earned warm memory, with signal-to-noise scoring for existing guidance. Includes an agent readiness assessment covering feedback loops, module structure, and known risks
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
 - **forge-reflect-pr** self-reviews the PR diff for missed opportunities
@@ -78,3 +78,7 @@ Skills follow a consistent section order:
 | GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
+| Conditional sub-agent | Planned enhancement for reflect-pr | Fresh context for unbiased review when supported by the active agent/tooling |
+| Three-tier context model | Hot (CLAUDE.md) / Warm (docs/) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
+| Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
+| Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |
