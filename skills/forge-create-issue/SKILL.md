@@ -355,6 +355,6 @@ Integrate a transactional email service to send templated emails on key order ev
 
 ## Related Skills
 
-**Before:** Use `forge-setup-project` to set up the project's context infrastructure (CLAUDE.md, docs/, etc.).
+**Before:** Use `forge-setup-project` to set up the project's context infrastructure (`AGENTS.md`, docs/, compatibility symlink, etc.).
 **Next step:** Use `forge-implement-issue` to implement the issue you just created.
 **Full workflow:** `forge-setup-project` → `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback` → `forge-update-changelog`

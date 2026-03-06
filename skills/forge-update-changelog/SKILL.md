@@ -18,10 +18,7 @@ If not provided, will look at commits since the last changelog update.
 
 ### Step 1: Read Current Changelog
 
-```bash
-# Read the current changelog to understand the format and last update
-cat CHANGELOG.md
-```
+Use the `Read` tool to inspect `CHANGELOG.md` and understand the format and last update.
 
 ### Step 2: Gather Recent Changes
 

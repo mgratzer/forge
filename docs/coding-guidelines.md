@@ -19,7 +19,7 @@ Every skill follows the same section order. Do not deviate from this structure:
 ## Frontmatter Conventions
 
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
-- `description`: one sentence describing what the skill does and when to use it. This text is what Claude Code uses for skill discovery, so it must be descriptive.
+- `description`: one sentence describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
 - `disable-model-invocation`: set to `true` for skills that require heavy user interaction
 - `allowed-tools`: comma-separated list of tools the skill may use. Omit to allow all tools.
 
@@ -36,6 +36,7 @@ Every skill follows the same section order. Do not deviate from this structure:
 - Use placeholder syntax consistently: `<ISSUE_NUMBER>`, `<OWNER>`, `<REPO>`, `<BRANCH_NAME>`
 - Include comments in multi-step bash blocks explaining each command
 - Show both the command and the expected usage pattern
+- When reading repository files in examples, prefer the `Read` tool over shelling out with `cat`
 
 ## Cross-Skill Consistency
 
@@ -48,6 +49,7 @@ Several conventions are shared across all skills and must be identical everywher
 | Issue titles | `<type>(<scope>): <description>` | create-issue |
 | PR titles | `<type>(<scope>): <description>` | implement-issue |
 | Commit types | feat, fix, docs, refactor, test, chore, perf | All skills |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement-issue, reflect-pr, address-pr-feedback |
 | No attribution | Never add Co-Authored-By lines | implement-issue, address-pr-feedback |
 | No time estimates | Never include time estimates | create-issue |
 | Validate approach | Present plan and get user confirmation before implementing | implement-issue |
