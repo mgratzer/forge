@@ -28,7 +28,7 @@ The skills form a linear workflow. Each skill references the next in its "Relate
 forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback → forge-update-changelog
 ```
 
-- **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
+- **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
 - **forge-reflect-pr** self-reviews the PR diff for missed opportunities
