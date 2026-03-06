@@ -78,4 +78,4 @@ Skills are prompt templates — review focuses on:
 1. **Correctness**: Do the bash examples work? Are `gh` commands valid?
 2. **Consistency**: Do shared conventions match across all skills?
 3. **Completeness**: Does the skill handle edge cases mentioned in its Guidelines section?
-4. **Clarity**: Would a future compatible agent follow the instructions unambiguously?
+4. **Clarity**: Would a future-compatible agent follow the instructions unambiguously?
