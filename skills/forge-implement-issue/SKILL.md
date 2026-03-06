@@ -185,7 +185,7 @@ EOF
 )"
 ```
 
-Commit types: feat, fix, docs, style, refactor, test, chore
+Commit types: feat, fix, docs, refactor, test, chore, perf
 
 Never add Co-Authored-By or any other attribution.
 

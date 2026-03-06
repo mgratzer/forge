@@ -49,8 +49,8 @@ Several conventions are shared across all skills and must be identical everywher
 | Issue titles | `<type>(<scope>): <description>` | create-issue |
 | PR titles | `<type>(<scope>): <description>` | implement-issue |
 | Commit types | feat, fix, docs, refactor, test, chore, perf | All skills |
-| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement-issue, reflect-pr, address-pr-feedback |
-| No attribution | Never add Co-Authored-By lines | implement-issue, address-pr-feedback |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, create-issue, implement-issue, reflect-pr, address-pr-feedback |
+| No attribution | Never add Co-Authored-By lines | setup-project, create-issue, implement-issue, address-pr-feedback |
 | No time estimates | Never include time estimates | create-issue |
 | Validate approach | Present plan and get user confirmation before implementing | implement-issue |
 | Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement-issue |

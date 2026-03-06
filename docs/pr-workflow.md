@@ -10,7 +10,9 @@ Format: `<type>(<scope>): <description>`
 | `fix` | Fix incorrect behavior in a skill |
 | `docs` | Documentation changes (docs/, README, AGENTS.md) |
 | `refactor` | Restructure a skill without changing its behavior |
+| `test` | Add or update validation guidance, test instructions, or manual test workflows |
 | `chore` | Repository maintenance, tooling changes |
+| `perf` | Improve skill efficiency, clarity, or token usage without changing behavior |
 
 Scope is the skill name without the `forge-` prefix, or a general area:
 
