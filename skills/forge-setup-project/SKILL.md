@@ -412,7 +412,10 @@ Stage all new and modified meta files and commit:
 
 ```bash
 # Stage context infrastructure files
-git add AGENTS.md CLAUDE.md .gitignore docs/
+git add AGENTS.md CLAUDE.md .gitignore
+if find docs -type f -name '*.md' -print -quit | grep -q .; then
+  git add docs/
+fi
 
 # Stage human-facing files if created/modified
 git add README.md CHANGELOG.md 2>/dev/null
