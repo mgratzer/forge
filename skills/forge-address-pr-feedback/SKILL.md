@@ -83,7 +83,7 @@ For each unresolved thread, in order:
 1. **Make the change** (if actionable):
    - Read the file(s) that need changes
    - Make the requested changes using Edit tool
-   - Run the project's lint/format/check commands (see CLAUDE.md or package.json for scripts)
+   - Run the project's lint/format/check commands (see AGENTS.md or package.json for scripts)
 
 2. **Commit the change** (if code was modified):
    ```bash

@@ -54,7 +54,12 @@ npx skills add mgratzer/forge
 ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
-Check your agent's docs for the skills directory path (e.g. `~/.claude/skills/`, `~/.agents/skills/`).
+Check your agent's docs for the correct skills directory path.
+
+## Project Guidance
+
+- [`AGENTS.md`](AGENTS.md) is the canonical project guidance file
+- [`CLAUDE.md`](CLAUDE.md) is a compatibility symlink for tools that still look for that filename
 
 ## Documentation
 
@@ -72,7 +77,7 @@ Check your agent's docs for the skills directory path (e.g. `~/.claude/skills/`,
 
 ## Contributing
 
-1. Read [CLAUDE.md](CLAUDE.md) for project principles and conventions
+1. Read [AGENTS.md](AGENTS.md) for project principles and conventions
 2. Follow [docs/coding-guidelines.md](docs/coding-guidelines.md) for skill authoring rules
 3. Test your changes by invoking the skill on a real project
 4. Use conventional commits: `feat(skills): add new skill`

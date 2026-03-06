@@ -1,6 +1,6 @@
 # Architecture
 
-Forge is a prompt-only repository — no application code, no runtime, no dependencies. It contains Claude Code skill files (SKILL.md) that teach Claude Code how to execute a structured GitHub development workflow.
+Forge is a prompt-only repository — no application code, no runtime, no dependencies. It contains Agent Skills prompt files (`SKILL.md`) that teach compatible agents how to execute a structured GitHub development workflow.
 
 ## Project Structure
 
@@ -13,11 +13,11 @@ forge/
 │   ├── forge-reflect-pr/SKILL.md          # Step 3: Self-review before peer review
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 │   └── forge-update-changelog/SKILL.md    # Step 5: Update changelog
-├── docs/                                   # Project documentation
-├── CLAUDE.md                               # Agent quick reference
-├── AGENTS.md → CLAUDE.md                   # Symlink for agent discovery
-├── README.md                               # Project overview
-└── CHANGELOG.md                            # User-facing changes
+├── docs/                                  # Project documentation
+├── AGENTS.md                              # Canonical agent guidance
+├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
+├── README.md                              # Project overview
+└── CHANGELOG.md                           # User-facing changes
 ```
 
 ## Skill Pipeline
@@ -28,7 +28,7 @@ The skills form a linear workflow. Each skill references the next in its "Relate
 forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback → forge-update-changelog
 ```
 
-- **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: CLAUDE.md as lean hot memory, docs/ as earned warm memory, with signal-to-noise scoring for existing guidance. Includes an agent readiness assessment covering feedback loops, module structure, and known risks
+- **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
 - **forge-reflect-pr** self-reviews the PR diff for missed opportunities
@@ -44,7 +44,7 @@ Every SKILL.md has two parts:
 ```yaml
 ---
 name: forge-<name>              # Kebab-case, prefixed with "forge-"
-description: <what it does>     # Used by Claude Code for skill discovery
+description: <what it does>     # Used by compatible agents for skill discovery
 disable-model-invocation: true  # Optional: prevents auto-invocation
 allowed-tools: Read, Bash, ...  # Optional: restricts available tools
 ---
@@ -53,7 +53,7 @@ allowed-tools: Read, Bash, ...  # Optional: restricts available tools
 | Field | Required | Purpose |
 |-------|----------|---------|
 | `name` | Yes | Skill identifier, used as the slash command name |
-| `description` | Yes | Triggers skill selection — Claude Code matches user intent to this |
+| `description` | Yes | Triggers skill selection — compatible agents match user intent to this |
 | `disable-model-invocation` | No | When `true`, skill can only be invoked by the user via slash command |
 | `allowed-tools` | No | Restricts which tools the skill can use. Omit to allow all tools |
 
@@ -79,6 +79,7 @@ Skills follow a consistent section order:
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Conditional sub-agent | Planned enhancement for reflect-pr | Fresh context for unbiased review when supported by the active agent/tooling |
-| Three-tier context model | Hot (CLAUDE.md) / Warm (docs/) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
+| Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
+| Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

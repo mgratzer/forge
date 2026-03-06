@@ -137,7 +137,7 @@ Branch naming examples:
 
 ### Step 7: Implement the Solution
 
-Follow CLAUDE.md guidelines strictly:
+Follow AGENTS.md guidance strictly (`CLAUDE.md` may exist as a compatibility symlink):
 
 **Pre-flight Validation:**
 Before writing feature code, verify your assumptions:
@@ -147,8 +147,8 @@ Before writing feature code, verify your assumptions:
 - If adding new environment variables — confirm they're set and accessible in the current environment
 
 **Code Quality:**
-- Follow the project's CLAUDE.md for architecture and layering conventions
-- Run the project's lint/format commands (check CLAUDE.md or package.json scripts)
+- Follow the project's AGENTS.md for architecture and layering conventions
+- Run the project's lint/format commands (check AGENTS.md or package.json scripts)
 - Follow the project's type strictness conventions
 - No hardcoded secrets - use environment variables
 
@@ -185,7 +185,7 @@ EOF
 )"
 ```
 
-Commit types: feat, fix, docs, style, refactor, test, chore
+Commit types: feat, fix, docs, refactor, test, chore, perf
 
 Never add Co-Authored-By or any other attribution.
 
@@ -225,7 +225,7 @@ If behavior changed, update relevant docs:
 - `CHANGELOG.md` for user-facing features/fixes (write in plain language, skip internal changes)
 - Code comments where logic isn't self-evident
 - README if setup/usage changed
-- CLAUDE.md if guidelines need updates
+- AGENTS.md if guidance or conventions need updates
 
 **Changelog Guidelines:**
 - Only include user-facing changes (features users see, bugs they experienced)
@@ -236,7 +236,7 @@ If behavior changed, update relevant docs:
 
 ### Step 11: Quality Gates
 
-Before creating PR, run all project quality checks. Discover available scripts from CLAUDE.md or `package.json` and run them. Typical checks include:
+Before creating PR, run all project quality checks. Discover available scripts from AGENTS.md or `package.json` and run them. Typical checks include:
 - Lint/format
 - Type checking
 - Tests
@@ -307,14 +307,12 @@ Closes #<ISSUE_NUMBER>
 
 ## Checklist
 
-- [ ] Code follows project guidelines (CLAUDE.md)
+- [ ] Code follows project guidance (AGENTS.md)
 - [ ] Tests added/updated
 - [ ] Documentation updated (if applicable)
 - [ ] CHANGELOG.md updated for user-facing changes
 - [ ] Lint/format checks pass
 - [ ] Tests pass
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
 EOF
 )"
 ```
@@ -355,7 +353,7 @@ Provide implementation summary:
 
 ## Important Guidelines
 
-1. **Read CLAUDE.md first**: Understand project-specific requirements
+1. **Read AGENTS.md first**: Understand project-specific requirements
 2. **Explore before coding**: Use codebase-locator/analyzer agents to understand existing patterns
 3. **Match existing style**: Follow conventions already in the codebase
 4. **Small commits**: Each commit should be one logical change

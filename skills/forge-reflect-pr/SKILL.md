@@ -67,7 +67,7 @@ Check if any of these need updates based on changes made:
    grep -r "<feature-keyword>" docs/
    ```
 
-2. **`CLAUDE.md`** - Project conventions, patterns, quick reference
+2. **`AGENTS.md`** - Project conventions, patterns, quick reference (`CLAUDE.md` may exist as a compatibility symlink)
    - New patterns or conventions established?
    - New scripts or commands added?
    - Architecture changes?
@@ -92,7 +92,7 @@ Verify:
 
 ### Step 7: Run Quality Gates
 
-Run the project's quality check commands. Discover available scripts from CLAUDE.md or `package.json`. Typical checks include lint/format, type checking, and tests.
+Run the project's quality check commands. Discover available scripts from AGENTS.md or `package.json`. Typical checks include lint/format, type checking, and tests.
 
 ### Step 8: Report Findings
 
