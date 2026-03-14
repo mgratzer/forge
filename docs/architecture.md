@@ -64,7 +64,7 @@ allowed-tools: Read, Bash, ...  # Optional: restricts available tools
 Skills follow a consistent section order:
 1. Title (`# <Action>`)
 2. Description paragraph (optional)
-3. Input section (`$ARGUMENTS`, including the shared trailing context syntax `-- <additional context>`)
+3. Input section (`$ARGUMENTS`; for skills with structured primary input, include the shared trailing context syntax `-- <additional context>`)
 4. Process section (numbered Steps)
 5. Guidelines (brief behavioral rules)
 6. Related Skills
@@ -72,7 +72,7 @@ Skills follow a consistent section order:
 
 Skills use **progressive disclosure**: `SKILL.md` contains core instructions (<500 lines), while templates and detailed reference material live in `references/` and load only when needed.
 
-All Forge skills share one invocation convention: append `-- <additional context>` as the final segment to provide extra execution guidance without replacing the skill's primary input.
+Forge skills with structured primary input may accept `-- <additional context>` as the final segment to provide extra execution guidance without replacing the skill's primary input.
 
 ## Design Decisions
 

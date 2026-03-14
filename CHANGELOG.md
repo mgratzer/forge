@@ -8,7 +8,7 @@ Changes are grouped by date and category. Only user-facing changes are included 
 
 ### Improvements
 
-- **Optional execution context for every skill** — Every Forge skill invocation can now append `-- <additional context>` to provide extra guidance while keeping the primary input intact.
+- **Optional execution context for structured-input skills** — Forge skills with a clear primary input can now append `-- <additional context>` to provide extra guidance while keeping that primary input intact.
 - **AGENTS.md-first project guidance** — Forge now treats `AGENTS.md` as the canonical guidance file, keeps `CLAUDE.md` as a compatibility symlink, and removes vendor-specific setup from generated project scaffolding.
 
 ---

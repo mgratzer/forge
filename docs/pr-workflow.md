@@ -39,7 +39,7 @@ docs/56-update-architecture-docs
 Before committing changes to any skill:
 
 1. Verify YAML frontmatter is valid (`name`, `description` present)
-2. Check cross-skill consistency for shared conventions (commit format, pipeline order, canonical guidance file, trailing context syntax)
+2. Check cross-skill consistency for shared conventions (commit format, pipeline order, canonical guidance file, trailing context syntax where applicable)
 3. Confirm "Related Skills" references are correct
 4. Verify all bash examples use valid `gh`/`git` syntax
 
@@ -48,7 +48,7 @@ Before committing changes to any skill:
 - [ ] Skill follows the standard section order
 - [ ] YAML frontmatter is complete and accurate
 - [ ] Bash examples are valid and runnable
-- [ ] Cross-skill conventions are consistent, including the shared `-- <additional context>` syntax
+- [ ] Cross-skill conventions are consistent, including the shared `-- <additional context>` syntax where applicable
 - [ ] Pipeline references updated in adjacent skills (if pipeline order changed)
 - [ ] AGENTS.md updated (if guidance or commands changed)
 - [ ] README.md updated (if features or docs table changed)

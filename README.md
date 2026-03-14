@@ -30,7 +30,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | Update Changelog | `/forge-update-changelog` | Update CHANGELOG.md with user-facing changes |
 
-All skills also accept optional trailing execution guidance using `-- <additional context>`.
+Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
 
 ## Workflow
 
