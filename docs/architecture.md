@@ -7,7 +7,9 @@ Forge is a prompt-only repository — no application code, no runtime, no depend
 ```
 forge/
 ├── skills/
-│   ├── forge-setup-project/SKILL.md       # Step 0: Context infrastructure setup/audit
+│   ├── forge-setup-project/
+│   │   ├── SKILL.md                       # Step 0: Context infrastructure setup/audit
+│   │   └── references/                    # Progressive disclosure: templates, output format
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
 │   ├── forge-reflect-pr/SKILL.md          # Step 3: Self-review before peer review
@@ -61,13 +63,14 @@ allowed-tools: Read, Bash, ...  # Optional: restricts available tools
 
 Skills follow a consistent section order:
 1. Title (`# <Action>`)
-2. Description paragraph
+2. Description paragraph (optional)
 3. Input section (`$ARGUMENTS`)
-4. Process section (numbered Steps with bash examples)
-5. Guidelines / Important Guidelines
-6. Examples
-7. Related Skills (with pipeline reference)
-8. Example Usage (slash command invocations)
+4. Process section (numbered Steps)
+5. Guidelines (brief behavioral rules)
+6. Related Skills
+7. Example Usage
+
+Skills use **progressive disclosure**: `SKILL.md` contains core instructions (<500 lines), while templates and detailed reference material live in `references/` and load only when needed.
 
 ## Design Decisions
 

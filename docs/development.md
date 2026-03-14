@@ -22,7 +22,7 @@ No dependency installation required.
 1. Create a directory under `skills/` named `forge-<skill-name>/`
 2. Create a `SKILL.md` file inside it
 3. Add YAML frontmatter with `name` and `description` (see [Architecture](architecture.md) for field reference)
-4. Write the structured prompt body following the section order: Title → Input → Process → Guidelines → Examples → Related Skills → Example Usage
+4. Write the structured prompt body following the section order: Title → Input → Process → Guidelines → Related Skills → Example Usage
 5. Update the pipeline references in adjacent skills' "Related Skills" sections
 6. Update the docs table in `AGENTS.md` and `README.md` if a new doc category is needed
 

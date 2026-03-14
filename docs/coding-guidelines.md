@@ -4,23 +4,23 @@ These guidelines apply to writing and modifying SKILL.md files.
 
 ## Skill Structure
 
-Every skill follows the same section order. Do not deviate from this structure:
+Every skill follows the same section order:
 
 1. YAML frontmatter (`---` delimited)
 2. Title (`# <Action Verb> <Object>`)
-3. Description paragraph
+3. Description paragraph (optional — omit if the title is self-explanatory)
 4. `## Input` — document `$ARGUMENTS` and default behavior
 5. `## Process` — numbered `### Step N: <Action>` sections
-6. `## Guidelines` or `## Important Guidelines`
-7. `## Examples` (optional)
-8. `## Related Skills` — pipeline links
-9. `## Example Usage` — slash command examples
+6. `## Guidelines` — brief behavioral rules as a list
+7. `## Output Format` (optional) — template for structured output
+7. `## Related Skills` — link to the next skill in the pipeline
+8. `## Example Usage` — slash command examples
 
 ## Frontmatter Conventions
 
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
 - `description`: one sentence describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
-- `disable-model-invocation`: set to `true` for skills that require heavy user interaction
+- `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
 - `allowed-tools`: comma-separated list of tools the skill may use. Omit to allow all tools.
 
 ## Writing Process Steps
@@ -40,26 +40,18 @@ Every skill follows the same section order. Do not deviate from this structure:
 
 ## Cross-Skill Consistency
 
-Several conventions are shared across all skills and must be identical everywhere:
+Conventions shared across skills. When modifying any, update every skill that references them:
 
 | Convention | Format | Referenced In |
 |------------|--------|---------------|
-| Commit messages | `<type>(<scope>): <description>` | create-issue, implement-issue, reflect-pr, address-pr-feedback |
-| Branch names | `<type>/<issue-number>-<description>` | create-issue, implement-issue |
-| Issue titles | `<type>(<scope>): <description>` | create-issue |
-| PR titles | `<type>(<scope>): <description>` | implement-issue |
-| Commit types | feat, fix, docs, refactor, test, chore, perf | All skills |
-| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, create-issue, implement-issue, reflect-pr, address-pr-feedback |
-| No attribution | Never add Co-Authored-By lines | setup-project, create-issue, implement-issue, address-pr-feedback |
-| No time estimates | Never include time estimates | create-issue |
+| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement-issue, address-pr-feedback |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement-issue, reflect-pr |
 | Validate approach | Present plan and get user confirmation before implementing | implement-issue |
 | Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement-issue |
-| Continuous quality checks | Run tests after each commit, not just at the end | implement-issue |
+| Test as you go | Run tests after each commit, not just at the end | implement-issue |
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Pipeline order | setup → create → implement → reflect → address → changelog | All skills |
-
-When modifying any of these conventions, update **every skill** that references them.
 
 ## Style Rules
 
