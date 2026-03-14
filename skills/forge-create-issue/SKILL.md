@@ -11,15 +11,22 @@ Collaboratively plan and create well-structured GitHub issues through interactiv
 
 ## Input
 
-The issue idea or problem description: $ARGUMENTS
+Primary input: the issue idea or problem description.
 
-If no argument is provided, ask the user what they'd like to create an issue for.
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as one of:
+- `<issue idea>`
+- `<issue idea> -- <additional context>`
+
+If no issue idea is provided, ask the user what they'd like to create an issue for.
+Use any additional context to shape clarification questions, alternatives, and constraints.
 
 ## Process
 
 ### Step 1: Understand and Clarify
 
-Parse the user's input, then use AskUserQuestion to gather:
+Parse the user's input and any optional additional context, then use AskUserQuestion to gather:
 - **Problem context** — what triggered this, who's affected, current vs desired behavior
 - **Success criteria** — how will we know this is done
 - **Constraints** — technical limitations, dependencies
@@ -120,5 +127,6 @@ Share the issue URL. Suggest using `forge-implement-issue` to start implementati
 
 ```
 /forge-create-issue add dark mode support
+/forge-create-issue add dark mode support -- prioritize accessibility and avoid new runtime dependencies
 /forge-create-issue
 ```

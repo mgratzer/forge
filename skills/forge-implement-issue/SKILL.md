@@ -10,7 +10,17 @@ Implement a feature or fix based on a GitHub issue, following project standards.
 
 ## Input
 
-The issue number or URL: $ARGUMENTS
+Primary input: the issue number or URL.
+
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as one of:
+- `<issue-number>`
+- `<issue-url>`
+- `<issue-number> -- <additional context>`
+- `<issue-url> -- <additional context>`
+
+Use any additional context as execution guidance while still following the issue requirements.
 
 ## Process
 
@@ -30,7 +40,7 @@ Flag for user input if: vague acceptance criteria, `discovery` label, unanswered
 
 ### Step 3: Plan and Validate Approach
 
-Create a task list with TodoWrite. Present the approach to the user:
+Create a task list with TodoWrite. Fold any optional additional context into the plan. Present the approach to the user:
 - Files to create or modify
 - Libraries, APIs, or services to use
 - Where configuration changes live
@@ -135,5 +145,6 @@ If the issue has sub-issues, treat each as a separate TodoWrite task. Close sub-
 
 ```
 /forge-implement-issue 123
+/forge-implement-issue 123 -- keep the diff minimal and prefer existing UI patterns
 /forge-implement-issue https://github.com/owner/repo/issues/123
 ```

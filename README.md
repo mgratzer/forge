@@ -30,6 +30,8 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | Update Changelog | `/forge-update-changelog` | Update CHANGELOG.md with user-facing changes |
 
+All skills also accept optional trailing execution guidance using `-- <additional context>`.
+
 ## Workflow
 
 The skills form a pipeline — each step feeds into the next:

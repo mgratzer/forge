@@ -10,7 +10,12 @@ Self-review the current PR branch before requesting peer review.
 
 ## Input
 
-No arguments required. Operates on the current branch.
+No primary argument required. Operates on the current branch.
+
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as optional execution guidance for the review focus.
+If no argument is provided, use the default review checklist.
 
 ## Process
 
@@ -23,7 +28,7 @@ git diff --name-only $DEFAULT_BRANCH...HEAD
 
 ### Step 2: Review Each Changed File
 
-For each file, check:
+For each file, check the default criteria, while prioritizing any areas called out in the optional additional context:
 1. **Duplication** — repeated patterns that should be extracted
 2. **Function size** — anything too long to follow at a glance
 3. **Naming** — clear and consistent
@@ -111,4 +116,5 @@ gh issue create --title "<title>" --body "<context and proposed solution>"
 
 ```
 /forge-reflect-pr
+/forge-reflect-pr -- pay extra attention to migration safety and missing regression tests
 ```

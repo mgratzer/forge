@@ -49,4 +49,7 @@ grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-add
 
 # Check guidance file references
 grep -rn "AGENTS.md\|CLAUDE.md" skills/
+
+# Check trailing context syntax
+grep -rn "additional context\|-- <additional context>" skills/
 ```

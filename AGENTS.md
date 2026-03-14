@@ -34,6 +34,7 @@ gh pr list                          # list open pull requests
 3. **Never invent content** — use `<!-- TODO -->` markers rather than generating generic boilerplate
 4. **Conventional commits everywhere** — every skill enforces the same commit, branch, issue, and PR naming format
 5. **Standards first, compatibility second** — prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility lightweight
+6. **One invocation convention** — every skill should support optional trailing execution context via `-- <additional context>` when additional guidance is useful
 
 ## Commits
 

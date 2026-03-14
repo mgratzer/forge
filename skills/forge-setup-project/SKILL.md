@@ -21,9 +21,17 @@ Set up or update a project's context infrastructure for agentic engineering. Con
 
 ## Input
 
-Optional: A path to the project root: $ARGUMENTS
+Primary input: optional project root path.
 
-If no argument is provided, use the current working directory.
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as one of:
+- `<path>`
+- `<path> -- <additional context>`
+- `-- <additional context>`
+
+If no path is provided, use the current working directory.
+Use any additional context as execution guidance, not as a replacement for codebase exploration.
 
 ## Process
 
@@ -73,6 +81,7 @@ Present an audit report. Group recommendations into quick wins, high-value addit
 ### Step 4: Gather Project Information
 
 Use AskUserQuestion to collect what cannot be determined from code.
+Incorporate any optional additional context when deciding what to ask, audit, or prioritize.
 
 **Always ask:**
 
@@ -165,4 +174,6 @@ Report what was created/changed. See [output-format.md](references/output-format
 ```
 /forge-setup-project
 /forge-setup-project /path/to/project
+/forge-setup-project /path/to/project -- focus on the docs/ and AGENTS.md split for a monorepo
+/forge-setup-project -- keep the setup lean and call out missing feedback loops
 ```

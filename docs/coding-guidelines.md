@@ -9,7 +9,7 @@ Every skill follows the same section order:
 1. YAML frontmatter (`---` delimited)
 2. Title (`# <Action Verb> <Object>`)
 3. Description paragraph (optional — omit if the title is self-explanatory)
-4. `## Input` — document `$ARGUMENTS` and default behavior
+4. `## Input` — document `$ARGUMENTS`, default behavior, and the shared trailing context syntax (`-- <additional context>`)
 5. `## Process` — numbered `### Step N: <Action>` sections
 6. `## Guidelines` — brief behavioral rules as a list
 7. `## Output Format` (optional) — template for structured output
@@ -51,6 +51,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test as you go | Run tests after each commit, not just at the end | implement-issue |
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for any skill | All skills |
 | Pipeline order | setup → create → implement → reflect → address → changelog | All skills |
 
 ## Style Rules
