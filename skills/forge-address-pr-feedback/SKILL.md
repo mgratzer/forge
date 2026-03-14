@@ -11,9 +11,19 @@ Systematically address unresolved review feedback on a pull request.
 
 ## Input
 
-The PR number or URL: $ARGUMENTS
+Primary input: the PR number or URL.
 
-If no argument is provided, detect from the current branch: `gh pr view --json number`.
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as one of:
+- `<pr-number>`
+- `<pr-url>`
+- `<pr-number> -- <additional context>`
+- `<pr-url> -- <additional context>`
+- `-- <additional context>`
+
+If no PR input is provided, detect it from the current branch: `gh pr view --json number`.
+Use any additional context to prioritize reviewer concerns, constraints, or follow-up expectations.
 
 ## Process
 
@@ -52,7 +62,7 @@ Filter for unresolved threads: `select(.isResolved == false)`.
 
 ### Step 2: Process Each Thread
 
-For each unresolved thread, read the file and surrounding context, then categorize:
+For each unresolved thread, read the file and surrounding context, then categorize. Incorporate any optional additional context when choosing how to respond:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
@@ -130,6 +140,7 @@ Report: feedback items addressed, commits created, follow-up issues created, ite
 
 ```
 /forge-address-pr-feedback 123
+/forge-address-pr-feedback 123 -- prioritize security comments and avoid broad refactors
 /forge-address-pr-feedback https://github.com/owner/repo/pull/123
 /forge-address-pr-feedback
 ```

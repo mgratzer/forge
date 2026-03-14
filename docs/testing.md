@@ -38,7 +38,7 @@ The most reliable test is running the skill on a real project:
 
 ### 4. Cross-Skill Consistency Check
 
-After modifying any shared convention, grep across all skills to ensure consistency:
+After modifying any shared convention, grep across all relevant skills to ensure consistency:
 
 ```bash
 # Check commit format references
@@ -49,4 +49,12 @@ grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-add
 
 # Check guidance file references
 grep -rn "AGENTS.md\|CLAUDE.md" skills/
+
+# Check trailing context syntax in structured-input skills
+grep -rn "additional context\|-- <additional context>" \
+  skills/forge-setup-project \
+  skills/forge-implement-issue \
+  skills/forge-reflect-pr \
+  skills/forge-address-pr-feedback \
+  skills/forge-update-changelog
 ```

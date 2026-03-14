@@ -10,9 +10,19 @@ Update CHANGELOG.md with user-facing changes from recent development work.
 
 ## Input
 
-Optional: A date (YYYY-MM-DD) or commit hash to start from: $ARGUMENTS
+Primary input: optional start reference — a date (YYYY-MM-DD) or commit hash.
 
-If not provided, look at commits since the last changelog update.
+Optional last parameter: `-- <additional context>`
+
+Interpret `$ARGUMENTS` as one of:
+- `<date>`
+- `<commit>`
+- `<date> -- <additional context>`
+- `<commit> -- <additional context>`
+- `-- <additional context>`
+
+If no start reference is provided, look at commits since the last changelog update.
+Use any additional context to influence grouping, emphasis, or release framing.
 
 ## Process
 
@@ -38,7 +48,7 @@ Skip internal changes: refactors, tests, chore, CI, docs (unless user-facing hel
 
 ### Step 4: Write Entries
 
-Group by category (Features, Improvements, Bug Fixes, Performance). Adapt categories to the project's domain when appropriate.
+Group by category (Features, Improvements, Bug Fixes, Performance). Adapt categories to the project's domain when appropriate, and factor in any optional additional context.
 
 **Writing rules:**
 - Active voice: "Create shareable links" not "Shareable links were added"
@@ -85,4 +95,5 @@ Add a new section at the top (after the header):
 ```
 /forge-update-changelog
 /forge-update-changelog 2025-01-01
+/forge-update-changelog 2025-01-01 -- emphasize user-visible setup workflow improvements
 ```

@@ -30,11 +30,17 @@ No dependency installation required.
 
 1. Read the full SKILL.md to understand the current flow
 2. Make targeted changes — avoid rewriting entire skills when a small edit suffices
-3. If changing conventions (commit format, branch naming, guidance filenames, etc.), grep across all skills to update consistently:
+3. If changing conventions (commit format, branch naming, guidance filenames, structured-input syntax, etc.), grep across all relevant skills to update consistently:
    ```bash
    grep -r "conventional commit" skills/
    grep -r "branch naming" skills/
    grep -r "AGENTS.md\|CLAUDE.md" skills/
+   grep -r "additional context\|-- <additional context>" \
+     skills/forge-setup-project \
+     skills/forge-implement-issue \
+     skills/forge-reflect-pr \
+     skills/forge-address-pr-feedback \
+     skills/forge-update-changelog
    ```
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
 
@@ -55,7 +61,7 @@ This is a documentation-only repository. The relevant commands are:
 
 Before committing changes to any SKILL.md:
 
-1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other skills (commit format, branch naming, pipeline order, canonical guidance file)
+1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other relevant skills (commit format, branch naming, pipeline order, canonical guidance file, shared trailing context syntax where applicable)
 2. **Pipeline continuity**: Verify the "Related Skills" section correctly links to adjacent skills
 3. **Frontmatter validity**: Confirm `name` and `description` are present and accurate
 4. **Bash example accuracy**: All `gh` and `git` commands in examples must be valid and runnable
