@@ -47,6 +47,6 @@ grep -rn "type.*scope.*description" skills/
 # Check pipeline order
 grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-address-pr-feedback\|forge-update-changelog\|forge-setup-project" skills/
 
-# Check guidance file and attribution policy
-grep -rn "AGENTS.md\|CLAUDE.md\|Co-Authored-By\|attribution" skills/
+# Check guidance file references
+grep -rn "AGENTS.md\|CLAUDE.md" skills/
 ```

@@ -6,105 +6,74 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 
 # Reflect on PR
 
-Review the current PR branch for cleanup opportunities before finalizing.
+Self-review the current PR branch before requesting peer review.
 
-## When to Use
+## Input
 
-Run this after completing the main implementation work on a PR, before requesting review.
+No arguments required. Operates on the current branch.
 
 ## Process
 
-### Step 1: Identify Changed Files
+### Step 1: Identify Changes
 
 ```bash
-# Detect the default branch, then get list of changed files
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 git diff --name-only $DEFAULT_BRANCH...HEAD
 ```
 
-### Step 2: Check for Refactoring Opportunities
+### Step 2: Review Each Changed File
 
-For each changed file, assess:
-1. **Code duplication**: Are there repeated patterns that should be extracted?
-2. **Function size**: Are any functions too long and should be split?
-3. **Naming**: Are variable/function names clear and consistent?
-4. **Abstractions**: Is logic in the right layer (routes vs services vs repositories)?
-5. **Dead code**: Any unused imports, variables, or functions introduced?
-6. **Pattern consistency**: If a pattern was changed in this PR (error handling, component structure, API call convention), are ALL files using that pattern updated? Search for remaining instances:
+For each file, check:
+1. **Duplication** — repeated patterns that should be extracted
+2. **Function size** — anything too long to follow at a glance
+3. **Naming** — clear and consistent
+4. **Layer placement** — logic in the right abstraction layer
+5. **Dead code** — unused imports, variables, or functions introduced
+6. **Pattern consistency** — if a pattern was changed, are ALL files using it updated?
    ```bash
    grep -rn "<changed-pattern>" src/
    ```
 
-### Step 3: Check Environment and Configuration
+### Step 3: Check Configuration
 
-Review changes for configuration correctness:
-
-1. **New environment variables** — Are they documented (e.g., in `.env.example` or equivalent)?
-2. **Configuration placement** — Are settings placed where they're consumed? (runtime config vs build config vs compile-time constants)
-3. **External service dependencies** — Are new integrations noted? Are credentials properly handled (not hardcoded)?
-4. **Deployment needs** — Do changes require manual steps not yet captured in the PR description?
+- New env vars documented in `.env.example`?
+- Config placed where it's consumed?
+- External service credentials handled properly (not hardcoded)?
+- Manual deployment steps captured in PR description?
 
 ### Step 4: Assess Test Coverage
 
-1. For each new/modified module, check if corresponding `.test.ts` file exists
-2. Run coverage on changed files:
-   ```bash
-   # Run the project's coverage command with a path filter (check package.json for the exact script)
-   # e.g.: npm run test:coverage -- --testPathPattern="<pattern>"
-   ```
-3. Identify untested code paths, especially:
-   - Error handling branches
-   - Edge cases
-   - New public functions/methods
+Check for corresponding test files. Run coverage on changed files if supported. Focus on: error handling branches, edge cases, new public functions.
 
 ### Step 5: Review Documentation
 
-Check if any of these need updates based on changes made:
+Check if changes require updates to: `docs/*.md`, `AGENTS.md`, code comments, README.
 
-1. **`/docs/*.md`** - Architecture, API reference, development guides
-   ```bash
-   # Search for references to changed functionality
-   grep -r "<feature-keyword>" docs/
-   ```
-
-2. **`AGENTS.md`** - Project conventions, patterns, quick reference (`CLAUDE.md` may exist as a compatibility symlink)
-   - New patterns or conventions established?
-   - New scripts or commands added?
-   - Architecture changes?
-
-3. **Code comments** - Outdated comments in changed files?
-   - Search for dimension references, format mentions, etc.
-   ```bash
-   grep -rn "<old-value>" src/
-   ```
-
-4. **JSDoc/TSDoc** - Public function documentation accurate?
-
-### Step 6: Cleanup Checklist
-
-Verify:
-- [ ] No `console.log` debugging statements left
-- [ ] No commented-out code that should be removed
-- [ ] No TODO comments that should be addressed now
-- [ ] Import statements are clean (no unused imports)
-- [ ] No hardcoded values that should be constants
-- [ ] Error messages are user-friendly and actionable
-
-### Step 7: Run Quality Gates
-
-Run the project's quality check commands. Discover available scripts from AGENTS.md or `package.json`. Typical checks include lint/format, type checking, and tests.
-
-### Step 8: Report Findings
-
-Provide a summary of:
-1. **Refactoring done** (if any)
-2. **Tests added** (if any)
-3. **Documentation updated** (if any)
-4. **Items deferred** - Valid improvements that should be separate PRs/issues
-
-For each deferred item, create a GitHub issue — do not leave deferred items as untracked notes:
+If you removed or renamed something, grep docs for stale references:
 ```bash
-gh issue create --title "<title>" --body "<description>"
+grep -rn "<removed-term>" docs/
+```
+
+### Step 6: Cleanup
+
+- No `console.log` debugging statements
+- No commented-out code
+- No TODO comments that should be addressed now
+- No unused imports
+- No hardcoded values that should be constants
+
+### Step 7: Quality Gates
+
+Run the project's lint, format, type check, and test commands. Fix issues.
+
+### Step 8: Report
+
+Summarize: refactoring done, tests added, documentation updated, items deferred.
+
+For each deferred item, create a GitHub issue — do not leave deferred improvements untracked:
+
+```bash
+gh issue create --title "<title>" --body "<context and proposed solution>"
 ```
 
 ## Output Format
@@ -113,36 +82,33 @@ gh issue create --title "<title>" --body "<description>"
 ## PR Reflection Summary
 
 ### Refactoring
-- [x] Extracted `<function>` to reduce duplication
-- [ ] No refactoring needed
+- [x/none] <what was done>
 
 ### Tests
-- [x] Added tests for `<module>`
-- [ ] Coverage adequate for changes
+- [x/none] <what was added>
 
 ### Documentation
-- [x] Updated `docs/api-reference.md` with new endpoint
-- [x] Fixed outdated comments in `<file>`
-- [ ] No documentation updates needed
+- [x/none] <what was updated>
 
 ### Cleanup
-- [x] Removed debug logging
-- [x] Fixed lint warnings
-- [ ] No cleanup needed
+- [x/none] <what was fixed>
 
 ### Deferred Items
-- Created issue #<num>: <title> (required for every deferred item)
-- None identified
+- Created #<num>: <title> (or: None identified)
 ```
+
+## Guidelines
+
+- **Pattern consistency is the highest-value check** — a missed pattern update causes bugs across the codebase
+- **Create issues for deferred items** — never leave improvements as untracked notes
+- **Run quality gates before reporting** — catch issues before the reviewer does
 
 ## Related Skills
 
-**Before:** Use `forge-implement-issue` to implement the feature/fix.
 **After review:** Use `forge-address-pr-feedback` to address reviewer feedback.
-**Full workflow:** `forge-setup-project` → `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback` → `forge-update-changelog`
 
 ## Example Usage
 
-```bash
+```
 /forge-reflect-pr
 ```
