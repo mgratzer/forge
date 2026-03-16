@@ -23,7 +23,7 @@ No dependency installation required.
 2. Create a `SKILL.md` file inside it
 3. Add YAML frontmatter with `name` and `description` (see [Architecture](architecture.md) for field reference)
 4. Write the structured prompt body following the section order: Title → Input → Process → Guidelines → Related Skills → Example Usage
-5. Update the pipeline references in adjacent skills' "Related Skills" sections
+5. Update workflow references in relevant skills' "Related Skills" sections
 6. Update the docs table in `AGENTS.md` and `README.md` if a new doc category is needed
 
 ## Modifying an Existing Skill
@@ -60,7 +60,7 @@ This is a documentation-only repository. The relevant commands are:
 
 Before committing changes to any SKILL.md:
 
-1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other relevant skills (commit format, branch naming, pipeline order, canonical guidance file, shared trailing context syntax where applicable)
+1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other relevant skills (commit format, branch naming, workflow order, canonical guidance file, shared trailing context syntax where applicable)
 2. **Workflow continuity**: Verify the "Related Skills" section correctly links to the next relevant step
 3. **Frontmatter validity**: Confirm `name` and `description` are present and accurate
 4. **Bash example accuracy**: All `gh` and `git` commands in examples must be valid and runnable

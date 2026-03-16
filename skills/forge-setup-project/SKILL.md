@@ -49,7 +49,7 @@ Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`.
 
 Skip for greenfield projects (no code exists).
 
-Explore the project thoroughly: directory structure, language/runtime, package manager and scripts, entry points, CI/CD, lint/format/test configuration, Docker setup, existing documentation.
+Explore the project thoroughly: directory structure, language/runtime, package manager and scripts, entry points, CI/CD, lint/format/test configuration, local development/runtime setup, existing documentation.
 
 As you explore, classify each finding:
 - **Discoverable** — an agent can find this by exploring (file patterns, scripts, structure)

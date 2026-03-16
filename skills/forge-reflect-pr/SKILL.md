@@ -36,12 +36,12 @@ For each file, check the default criteria, while prioritizing any areas called o
 5. **Dead code** — unused imports, variables, or functions introduced
 6. **Pattern consistency** — if a pattern was changed, are ALL files using it updated?
    ```bash
-   grep -rn "<changed-pattern>" src/
+   grep -rn "<changed-pattern>" <search-root>/
    ```
 
 ### Step 3: Check Configuration
 
-- New env vars documented in `.env.example`?
+- New env vars documented in the appropriate sample env file or setup docs?
 - Config placed where it's consumed?
 - External service credentials handled properly (not hardcoded)?
 - Manual deployment steps captured in PR description?
@@ -61,7 +61,7 @@ grep -rn "<removed-term>" docs/
 
 ### Step 6: Cleanup
 
-- No `console.log` debugging statements
+- No temporary debug logging statements
 - No commented-out code
 - No TODO comments that should be addressed now
 - No unused imports

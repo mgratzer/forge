@@ -52,7 +52,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, implement-issue, reflect-pr, address-pr-feedback |
-| Pipeline order | setup → create → implement → reflect → address | All skills |
+| Workflow order | setup → create → implement → reflect → address | All skills |
 
 ## Style Rules
 

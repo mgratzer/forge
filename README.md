@@ -33,7 +33,7 @@ Skills with structured primary input also accept optional trailing execution gui
 
 ## Workflow
 
-The skills form a pipeline — each step feeds into the next:
+The skills form a simple workflow — each step feeds into the next:
 
 ```
 forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
@@ -66,7 +66,7 @@ Check your agent's docs for the correct skills directory path.
 
 | Document | Purpose |
 |----------|---------|
-| [Architecture](docs/architecture.md) | Skill pipeline, file format, design decisions |
+| [Architecture](docs/architecture.md) | Skill workflow, file format, design decisions |
 | [Development](docs/development.md) | How to create and modify skills |
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill authoring conventions and style rules |
 | [Testing](docs/testing.md) | How to validate skills manually |

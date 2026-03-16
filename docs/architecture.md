@@ -20,7 +20,7 @@ forge/
 └── README.md                              # Project overview
 ```
 
-## Skill Pipeline
+## Skill Workflow
 
 The skills form a linear workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 

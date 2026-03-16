@@ -44,7 +44,7 @@ After modifying any shared convention, grep across all relevant skills to ensure
 # Check commit format references
 grep -rn "type.*scope.*description" skills/
 
-# Check pipeline order
+# Check workflow order
 grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-address-pr-feedback\|forge-setup-project" skills/
 
 # Check guidance file references
