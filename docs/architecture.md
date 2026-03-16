@@ -4,7 +4,7 @@ Forge is a prompt-only repository — no application code, no runtime, no depend
 
 ## Project Structure
 
-```
+```text
 forge/
 ├── skills/
 │   ├── forge-setup-project/
@@ -13,21 +13,19 @@ forge/
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
 │   ├── forge-reflect-pr/SKILL.md          # Step 3: Self-review before peer review
-│   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
-│   └── forge-update-changelog/SKILL.md    # Step 5: Update changelog
+│   └── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
-├── README.md                              # Project overview
-└── CHANGELOG.md                           # User-facing changes
+└── README.md                              # Project overview
 ```
 
 ## Skill Pipeline
 
-The skills form a linear workflow. Each skill references the next in its "Related Skills" section:
+The skills form a linear workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback → forge-update-changelog
+forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
 ```
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
@@ -35,7 +33,6 @@ forge-setup-project → forge-create-issue → forge-implement-issue → forge-r
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
 - **forge-reflect-pr** self-reviews the PR diff for missed opportunities
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-update-changelog** transforms commit messages into user-friendly changelog entries
 
 ## Skill File Format
 

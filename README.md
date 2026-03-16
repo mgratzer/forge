@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured, GitHub-centric development.</strong><br>
-  One workflow. Six skills. From issue to shipped code.
+  One workflow. Five skills. From issue to review-ready code.
 </p>
 
 <p align="center">
@@ -28,7 +28,6 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Implement Issue | `/forge-implement-issue <number>` | Implement a feature or fix from a GitHub issue |
 | Reflect on PR | `/forge-reflect-pr` | Self-review before requesting peer review |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
-| Update Changelog | `/forge-update-changelog` | Update CHANGELOG.md with user-facing changes |
 
 Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
 
@@ -37,7 +36,7 @@ Skills with structured primary input also accept optional trailing execution gui
 The skills form a pipeline — each step feeds into the next:
 
 ```
-forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback → forge-update-changelog
+forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
 ```
 
 ## Install

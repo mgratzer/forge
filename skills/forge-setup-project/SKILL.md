@@ -37,7 +37,7 @@ Use any additional context as execution guidance, not as a replacement for codeb
 
 ### Step 1: Determine Mode
 
-Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`, and `docs/`.
+Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`.
 
 | Mode | Trigger | Behavior |
 |------|---------|----------|
@@ -138,10 +138,9 @@ Create or update `.gitignore` with entries matching the detected stack. Never ov
 
 ### Step 8: Human-Facing Files
 
-Create if they don't exist (these are for humans, not agent context):
+Create if it doesn't exist (this is for humans, not agent context):
 
 - **README.md** — project description, quick start, docs links. If one exists, ask: replace, merge, or keep?
-- **CHANGELOG.md** — header only if new. Ask about backfilling from git history.
 
 ### Step 9: Commit
 

@@ -101,7 +101,6 @@ grep -rn "<pattern>" src/
 
 If behavior changed, update:
 - `docs/*.md` — architecture, API, development guides
-- `CHANGELOG.md` — user-facing changes only, plain language, bold feature names
 - `AGENTS.md` — if conventions or patterns changed
 - Code comments — only where logic isn't self-evident
 

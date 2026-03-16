@@ -39,8 +39,7 @@ No dependency installation required.
      skills/forge-setup-project \
      skills/forge-implement-issue \
      skills/forge-reflect-pr \
-     skills/forge-address-pr-feedback \
-     skills/forge-update-changelog
+     skills/forge-address-pr-feedback
    ```
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
 
@@ -62,6 +61,6 @@ This is a documentation-only repository. The relevant commands are:
 Before committing changes to any SKILL.md:
 
 1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other relevant skills (commit format, branch naming, pipeline order, canonical guidance file, shared trailing context syntax where applicable)
-2. **Pipeline continuity**: Verify the "Related Skills" section correctly links to adjacent skills
+2. **Workflow continuity**: Verify the "Related Skills" section correctly links to the next relevant step
 3. **Frontmatter validity**: Confirm `name` and `description` are present and accurate
 4. **Bash example accuracy**: All `gh` and `git` commands in examples must be valid and runnable

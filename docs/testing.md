@@ -11,8 +11,8 @@ Before committing a new or modified skill, verify:
 - [ ] YAML frontmatter has `name` and `description`
 - [ ] `name` matches the directory name (e.g., `forge-setup-project` in `skills/forge-setup-project/`)
 - [ ] All sections follow the standard order (see [Coding Guidelines](coding-guidelines.md))
-- [ ] "Related Skills" section references the correct adjacent skills in the pipeline
-- [ ] Pipeline order is consistent: `forge-setup-project` → `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback` → `forge-update-changelog`
+- [ ] "Related Skills" section references the correct next step or follow-up skill in the workflow
+- [ ] Pipeline order is consistent: `forge-setup-project` → `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback`
 
 ### 2. Bash Command Validation
 
@@ -45,7 +45,7 @@ After modifying any shared convention, grep across all relevant skills to ensure
 grep -rn "type.*scope.*description" skills/
 
 # Check pipeline order
-grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-address-pr-feedback\|forge-update-changelog\|forge-setup-project" skills/
+grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-address-pr-feedback\|forge-setup-project" skills/
 
 # Check guidance file references
 grep -rn "AGENTS.md\|CLAUDE.md" skills/
@@ -55,6 +55,5 @@ grep -rn "additional context\|-- <additional context>" \
   skills/forge-setup-project \
   skills/forge-implement-issue \
   skills/forge-reflect-pr \
-  skills/forge-address-pr-feedback \
-  skills/forge-update-changelog
+  skills/forge-address-pr-feedback
 ```
