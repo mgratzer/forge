@@ -13,7 +13,7 @@ Every skill follows the same section order:
 5. `## Process` — numbered `### Step N: <Action>` sections
 6. `## Guidelines` — brief behavioral rules as a list
 7. `## Output Format` (optional) — template for structured output
-7. `## Related Skills` — link to the next skill in the pipeline
+7. `## Related Skills` — link to the next relevant skill in the workflow
 8. `## Example Usage` — slash command examples
 
 ## Frontmatter Conventions
@@ -51,8 +51,8 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test as you go | Run tests after each commit, not just at the end | implement-issue |
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, implement-issue, reflect-pr, address-pr-feedback, update-changelog |
-| Pipeline order | setup → create → implement → reflect → address → changelog | All skills |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, implement-issue, reflect-pr, address-pr-feedback |
+| Workflow order | setup → create → implement → reflect → address | All skills |
 
 ## Style Rules
 

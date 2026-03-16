@@ -65,10 +65,10 @@ git checkout -b <type>/<issue-number>-<brief-description>
 Read AGENTS.md first. Follow project conventions strictly.
 
 **Pre-flight checks** — before writing feature code:
-- Run code generators (GraphQL codegen, OpenAPI, protobuf) and verify types exist
+- Run code generators (if the project uses them) and verify generated artifacts are current
 - Grep for where config is consumed before placing new config values
 - Verify external services and APIs are accessible
-- Confirm new environment variables are set
+- Confirm required environment variables, secrets, and credentials are available
 
 **As you code:**
 - Follow project lint/format/type conventions
@@ -94,20 +94,19 @@ Refs #<ISSUE_NUMBER>"
 If you changed a pattern (error handling, component structure, API convention), search for ALL files using that pattern and update them too:
 
 ```bash
-grep -rn "<pattern>" src/
+grep -rn "<pattern>" <search-root>/
 ```
 
 ### Step 7: Update Documentation
 
 If behavior changed, update:
 - `docs/*.md` — architecture, API, development guides
-- `CHANGELOG.md` — user-facing changes only, plain language, bold feature names
 - `AGENTS.md` — if conventions or patterns changed
 - Code comments — only where logic isn't self-evident
 
 ### Step 8: Quality Gates
 
-Run all project quality checks (discover from AGENTS.md or package.json): lint, format, type check, tests. Run coverage for substantial changes. Fix issues and commit fixes.
+Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts): lint, format, type check, tests. Run coverage for substantial changes when the project supports it. Fix issues and commit fixes.
 
 ### Step 9: Push and Create PR
 
@@ -117,7 +116,7 @@ git push -u origin <branch-name>
 
 Create PR with conventional commit title format. Include: summary closing the issue, list of changes, test plan checklist, and quality checklist.
 
-If the implementation requires manual deployment steps (env vars, infra changes, Docker config, migrations), add a prominent `> [!WARNING]` block at the top of the PR body.
+If the implementation requires manual deployment steps (env vars, infra changes, container/runtime config, migrations), add a prominent `> [!WARNING]` block at the top of the PR body.
 
 ### Step 10: Summary
 
