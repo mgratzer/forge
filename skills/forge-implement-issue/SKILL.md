@@ -147,4 +147,3 @@ If the issue has sub-issues, treat each as a separate TodoWrite task. Close sub-
 /forge-implement-issue 123 -- keep the diff minimal and prefer existing UI patterns
 /forge-implement-issue https://github.com/owner/repo/issues/123
 ```
-
