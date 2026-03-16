@@ -166,7 +166,7 @@ Report what was created/changed. See [output-format.md](references/output-format
 
 ## Related Skills
 
-**Next step:** Use `forge-create-issue` to plan your first piece of work.
+**Next step:** Use `forge-create-issue` to plan your first piece of work — or `forge-brainstorm` if the idea is still rough and needs exploration first.
 
 ## Example Usage
 

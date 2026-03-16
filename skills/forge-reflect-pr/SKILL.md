@@ -28,10 +28,11 @@ git diff --name-only $DEFAULT_BRANCH...HEAD
 
 ### Step 2: Review Each Changed File
 
-For each file, check the default criteria, while prioritizing any areas called out in the optional additional context:
+For each file, check the default criteria, while prioritizing any areas called out in the optional additional context. Classify every finding using the [review rubric](references/review-rubric.md) — only flag P0, P1, and P2 items:
+
 1. **Duplication** — repeated patterns that should be extracted
 2. **Function size** — anything too long to follow at a glance
-3. **Naming** — clear and consistent
+3. **Naming** — clear and consistent (only flag if actively misleading, not preference)
 4. **Layer placement** — logic in the right abstraction layer
 5. **Dead code** — unused imports, variables, or functions introduced
 6. **Pattern consistency** — if a pattern was changed, are ALL files using it updated?
@@ -87,24 +88,27 @@ gh issue create --title "<title>" --body "<context and proposed solution>"
 ## PR Reflection Summary
 
 ### Refactoring
-- [x/none] <what was done>
+- [P1] <what was done>
 
 ### Tests
-- [x/none] <what was added>
+- [P2] <what was added>
 
 ### Documentation
-- [x/none] <what was updated>
+- [P2] <what was updated>
 
 ### Cleanup
-- [x/none] <what was fixed>
+- [P1] <what was fixed>
 
 ### Deferred Items
 - Created #<num>: <title> (or: None identified)
+
+(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](references/review-rubric.md).)
 ```
 
 ## Guidelines
 
 - **Pattern consistency is the highest-value check** — a missed pattern update causes bugs across the codebase
+- **Skip noise** — see [review rubric](references/review-rubric.md) for severity calibration and what not to flag
 - **Create issues for deferred items** — never leave improvements as untracked notes
 - **Run quality gates before reporting** — catch issues before the reviewer does
 

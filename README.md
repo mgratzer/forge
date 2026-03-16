@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured, GitHub-centric development.</strong><br>
-  One workflow. Five skills. From issue to review-ready code.
+  One workflow. Six skills. From idea to review-ready code.
 </p>
 
 <p align="center">
@@ -24,6 +24,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
+| Brainstorm | `/forge-brainstorm` | Explore a vague idea and converge on a plan before creating issues |
 | Create Issue | `/forge-create-issue` | Collaboratively plan and create GitHub issues |
 | Implement Issue | `/forge-implement-issue <number>` | Implement a feature or fix from a GitHub issue |
 | Reflect on PR | `/forge-reflect-pr` | Self-review before requesting peer review |
@@ -36,7 +37,7 @@ Skills with structured primary input also accept optional trailing execution gui
 The skills form a simple workflow — each step feeds into the next:
 
 ```
-forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
+forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
 ```
 
 ## Install

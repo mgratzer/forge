@@ -10,9 +10,12 @@ forge/
 │   ├── forge-setup-project/
 │   │   ├── SKILL.md                       # Step 0: Context infrastructure setup/audit
 │   │   └── references/                    # Progressive disclosure: templates, output format
+│   ├── forge-brainstorm/SKILL.md          # Optional: Explore ideas before issue creation
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
-│   ├── forge-reflect-pr/SKILL.md          # Step 3: Self-review before peer review
+│   ├── forge-reflect-pr/
+│   │   ├── SKILL.md                       # Step 3: Self-review before peer review
+│   │   └── references/                    # Review rubric (P0-P3 severity)
 │   └── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
@@ -22,16 +25,19 @@ forge/
 
 ## Skill Workflow
 
-The skills form a linear workflow. Each non-terminal skill references the next step in its "Related Skills" section:
+The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
+forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
 ```
+
+`forge-brainstorm` is optional — use it when the idea is vague and needs exploration before issue creation.
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
+- **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
-- **forge-reflect-pr** self-reviews the PR diff for missed opportunities
+- **forge-reflect-pr** self-reviews the PR diff using a P0-P3 severity rubric, focusing on real problems over noise
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 
 ## Skill File Format
@@ -63,9 +69,10 @@ Skills follow a consistent section order:
 2. Description paragraph (optional)
 3. Input section (`$ARGUMENTS`; for skills with structured primary input, include the shared trailing context syntax `-- <additional context>`)
 4. Process section (numbered Steps)
-5. Guidelines (brief behavioral rules)
-6. Related Skills
-7. Example Usage
+5. Output Format (optional)
+6. Guidelines (brief behavioral rules)
+7. Related Skills
+8. Example Usage
 
 Skills use **progressive disclosure**: `SKILL.md` contains core instructions (<500 lines), while templates and detailed reference material live in `references/` and load only when needed.
 
