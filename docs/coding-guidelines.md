@@ -11,10 +11,10 @@ Every skill follows the same section order:
 3. Description paragraph (optional — omit if the title is self-explanatory)
 4. `## Input` — document `$ARGUMENTS`, default behavior, and, for skills with structured primary input, the shared trailing context syntax (`-- <additional context>`)
 5. `## Process` — numbered `### Step N: <Action>` sections
-6. `## Guidelines` — brief behavioral rules as a list
-7. `## Output Format` (optional) — template for structured output
-7. `## Related Skills` — link to the next relevant skill in the workflow
-8. `## Example Usage` — slash command examples
+6. `## Output Format` (optional) — template for structured output
+7. `## Guidelines` — brief behavioral rules as a list
+8. `## Related Skills` — link to the next relevant skill in the workflow
+9. `## Example Usage` — slash command examples
 
 ## Frontmatter Conventions
 
@@ -51,8 +51,10 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test as you go | Run tests after each commit, not just at the end | implement-issue |
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, implement-issue, reflect-pr, address-pr-feedback |
-| Workflow order | setup → create → implement → reflect → address | All skills |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
+| Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
+| Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
+| Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
 ## Style Rules
 
