@@ -42,6 +42,7 @@ No dependency installation required.
      skills/forge-address-pr-feedback
    ```
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
+5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are fully self-contained and the skill works correctly when executed inline
 
 ## Available Commands
 

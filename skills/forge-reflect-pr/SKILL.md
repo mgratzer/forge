@@ -1,7 +1,6 @@
 ---
 name: forge-reflect-pr
 description: Review the current PR branch for refactoring opportunities, missing tests, documentation updates, and cleanup before finalizing. Use when the user has finished implementing a feature and wants to self-review before requesting peer review.
-allowed-tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
 # Reflect on PR
@@ -26,57 +25,57 @@ DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remote
 git diff --name-only $DEFAULT_BRANCH...HEAD
 ```
 
-### Step 2: Review Each Changed File
+Collect the full diff and the list of changed files for the review step.
 
-For each file, check the default criteria, while prioritizing any areas called out in the optional additional context. Classify every finding using the [review rubric](references/review-rubric.md) — only flag P0, P1, and P2 items:
+### Step 2: Review Changes (delegate)
 
-1. **Duplication** — repeated patterns that should be extracted
-2. **Function size** — anything too long to follow at a glance
-3. **Naming** — clear and consistent (only flag if actively misleading, not preference)
-4. **Layer placement** — logic in the right abstraction layer
-5. **Dead code** — unused imports, variables, or functions introduced
-6. **Pattern consistency** — if a pattern was changed, are ALL files using it updated?
-   ```bash
-   grep -rn "<changed-pattern>" <search-root>/
-   ```
+**Delegate this step to a sub-agent with fresh context** if the runtime supports it. The fresh context eliminates self-review bias — the reviewer has no memory of implementation decisions. If the runtime does not support sub-agents, execute the instructions inline.
 
-### Step 3: Check Configuration
+**Sub-agent instructions:**
 
-- New env vars documented in the appropriate sample env file or setup docs?
-- Config placed where it's consumed?
-- External service credentials handled properly (not hardcoded)?
-- Manual deployment steps captured in PR description?
+> You are reviewing a PR diff for real problems. Read `AGENTS.md` to understand project conventions. Classify every finding using the review rubric — only flag P0, P1, and P2 items.
+>
+> For each changed file, check:
+>
+> 1. **Duplication** — repeated patterns that should be extracted
+> 2. **Function size** — anything too long to follow at a glance
+> 3. **Naming** — clear and consistent (only flag if actively misleading, not preference)
+> 4. **Layer placement** — logic in the right abstraction layer
+> 5. **Dead code** — unused imports, variables, or functions introduced
+> 6. **Pattern consistency** — if a pattern was changed, grep for ALL files using it:
+>    ```bash
+>    grep -rn "<changed-pattern>" <search-root>/
+>    ```
+> 7. **Configuration** — new env vars documented in sample env or setup docs? Config placed where consumed? No hardcoded credentials? Manual deployment steps captured?
+> 8. **Test coverage** — corresponding test files exist? Error handling branches covered? Edge cases for new public functions?
+> 9. **Documentation** — changes require updates to `docs/*.md`, `AGENTS.md`, code comments, or README? Grep docs for stale references to anything removed or renamed:
+>    ```bash
+>    grep -rn "<removed-term>" docs/
+>    ```
+> 10. **Cleanup** — no temporary debug logging, commented-out code, untracked TODOs, unused imports, or hardcoded values that should be constants
+>
+> Return findings grouped by file, with severity tags (P0/P1/P2).
 
-### Step 4: Assess Test Coverage
+**Inputs provided to sub-agent:**
+- Output of `git diff $DEFAULT_BRANCH...HEAD`
+- List of changed files
+- Contents of [review-rubric.md](references/review-rubric.md)
+- Contents of `AGENTS.md` (project conventions)
+- Any additional context from the user's invocation
 
-Check for corresponding test files. Run coverage on changed files if supported. Focus on: error handling branches, edge cases, new public functions.
+**Expected output:** Structured findings list with severity tags, grouped by file.
 
-### Step 5: Review Documentation
+### Step 3: Quality Gates
 
-Check if changes require updates to: `docs/*.md`, `AGENTS.md`, code comments, README.
+Run the project's lint, format, type check, and test commands. Fix issues and commit fixes.
 
-If you removed or renamed something, grep docs for stale references:
-```bash
-grep -rn "<removed-term>" docs/
-```
+### Step 4: Report
 
-### Step 6: Cleanup
+Synthesize the review findings (from Step 2) with quality gate results (from Step 3) into the summary format below.
 
-- No temporary debug logging statements
-- No commented-out code
-- No TODO comments that should be addressed now
-- No unused imports
-- No hardcoded values that should be constants
+### Step 5: Track Deferred Items
 
-### Step 7: Quality Gates
-
-Run the project's lint, format, type check, and test commands. Fix issues.
-
-### Step 8: Report
-
-Summarize: refactoring done, tests added, documentation updated, items deferred.
-
-For each deferred item, create a GitHub issue — do not leave deferred improvements untracked:
+For each deferred improvement, create a GitHub issue — do not leave deferred items untracked:
 
 ```bash
 gh issue create --title "<title>" --body "<context and proposed solution>"
@@ -111,6 +110,7 @@ gh issue create --title "<title>" --body "<context and proposed solution>"
 - **Skip noise** — see [review rubric](references/review-rubric.md) for severity calibration and what not to flag
 - **Create issues for deferred items** — never leave improvements as untracked notes
 - **Run quality gates before reporting** — catch issues before the reviewer does
+- **Prefer fresh context** — a reviewer without implementation memory catches issues the author overlooks
 
 ## Related Skills
 

@@ -30,6 +30,18 @@ Every skill follows the same section order:
 - Use `AskUserQuestion` for user decisions — never assume
 - Steps should be numbered sequentially and named with action verbs: "Create", "Fetch", "Analyze", "Generate"
 
+## Writing Delegate Steps
+
+Steps marked `(delegate)` instruct the agent to use a sub-agent with fresh context when the runtime supports it. If the runtime does not support sub-agents, the agent executes the instructions inline.
+
+- Mark the step title: `### Step N: <Action> (delegate)`
+- Open with the delegation instruction and inline fallback
+- Sub-agent instructions must be **fully self-contained** in a blockquote — the sub-agent has no prior context
+- List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
+- List **Expected output** — what the parent receives back
+- Keep the sub-agent read-only when possible — let the parent handle file writes and commits
+- Only delegate when fresh context provides a genuine quality improvement (e.g., unbiased review)
+
 ## Bash Examples in Skills
 
 - Every `gh` command must be a valid GitHub CLI command
@@ -53,6 +65,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
+| Sub-agent delegation | `(delegate)` step marker with self-contained instructions, inputs, expected output; inline fallback | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
