@@ -1,6 +1,7 @@
 ---
 name: forge-reflect-pr
 description: Review the current PR branch for refactoring opportunities, missing tests, documentation updates, and cleanup before finalizing. Use when the user has finished implementing a feature and wants to self-review before requesting peer review.
+context: fork
 ---
 
 # Reflect on PR

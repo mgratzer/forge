@@ -87,7 +87,7 @@ Forge skills with structured primary input may accept `-- <additional context>` 
 | GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
-| Sub-agent delegation | `(delegate)` step pattern with inline fallback | Fresh context for unbiased review; degrades to inline execution on runtimes without sub-agent support |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
