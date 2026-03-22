@@ -30,6 +30,24 @@ Every skill follows the same section order:
 - Use `AskUserQuestion` for user decisions — never assume
 - Steps should be numbered sequentially and named with action verbs: "Create", "Fetch", "Analyze", "Generate"
 
+## Writing Delegate Steps
+
+When a skill benefits from fresh context (e.g., unbiased review), use two complementary mechanisms:
+
+1. **`context: fork` frontmatter** — Claude Code's native mechanism. Forks the entire skill into a sub-agent. Ignored by runtimes that don't support it.
+2. **`(delegate)` step annotation** — cross-runtime fallback. Instructs any runtime with sub-agent support to delegate a specific step.
+
+Both can coexist in the same skill — `context: fork` handles Claude Code, `(delegate)` hints to other runtimes.
+
+**Writing `(delegate)` steps:**
+
+- Mark the step title: `### Step N: <Action> (delegate)`
+- Open with the delegation instruction and inline fallback
+- Sub-agent instructions must be **fully self-contained** in a blockquote — the sub-agent has no prior context
+- List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
+- List **Expected output** — what the parent receives back
+- Only delegate when fresh context provides a genuine quality improvement (e.g., unbiased review)
+
 ## Bash Examples in Skills
 
 - Every `gh` command must be a valid GitHub CLI command
@@ -53,6 +71,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
