@@ -33,6 +33,8 @@ gh issue list --state all --search "<relevant keywords>"
 
 ### Step 2: Clarify the Problem
 
+Before asking any question, check whether Step 1 findings already answer it. **Only ask the user what you genuinely cannot determine from the codebase.** For each question you do ask, provide your recommended answer based on Step 1 findings — this accelerates convergence and shows the user you've done the homework.
+
 Use AskUserQuestion to understand the problem — not the solution:
 - **What's happening now?** — current behavior, pain point, trigger
 - **What should be different?** — desired outcome, who benefits
@@ -42,18 +44,35 @@ Ground questions in what you found in Step 1. Reference specific code or pattern
 
 **Stop after asking. Do not proceed until the user responds.**
 
-### Step 3: Explore Approaches
+### Step 3: Explore Approaches (delegate)
 
-Present **2-3 approaches** including a **minimal option** (smallest change that addresses the core problem).
+**Delegate approach generation to 2-3 parallel sub-agents**, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
 
-For each approach:
-- One-line summary
-- How it works, referencing specific files and patterns from Step 1
-- Tradeoffs (what you gain, what you give up)
-- Relative complexity (Low / Medium / High)
-- Risk factors
+Assign each sub-agent one constraint lens (adapt to the problem):
+- **Minimal** — smallest change that addresses the core problem
+- **Reuse-first** — maximize use of existing patterns and code
+- **Extensibility-first** — optimize for future flexibility
+- **Performance-first** — optimize for speed or resource efficiency
 
-Let the user choose, combine, or reject all approaches.
+**Sub-agent instructions:**
+
+> You are designing one approach to a problem, constrained by a specific design lens. Follow your assigned constraint strictly — do not hedge toward a balanced middle ground.
+>
+> Given the codebase findings and problem clarification provided as input, propose one approach:
+> - One-line summary
+> - How it works, referencing specific files and patterns
+> - Tradeoffs (what you gain, what you give up)
+> - Relative complexity (Low / Medium / High)
+> - Risk factors
+
+**Inputs provided to each sub-agent:**
+- Codebase findings from Step 1
+- Problem clarification from Step 2
+- The specific constraint lens to apply
+
+**Expected output:** One approach per sub-agent, formatted as above.
+
+Always include a **minimal option**. Present the contrasting approaches and let the user choose, combine, or reject all of them.
 
 ### Step 4: Validate Design
 

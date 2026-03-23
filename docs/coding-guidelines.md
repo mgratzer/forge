@@ -46,7 +46,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 - Sub-agent instructions must be **fully self-contained** in a blockquote — the sub-agent has no prior context
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
 - List **Expected output** — what the parent receives back
-- Only delegate when fresh context provides a genuine quality improvement (e.g., unbiased review)
+- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect-pr) or parallel sub-agents for divergent exploration (e.g., brainstorm)
 
 ## Bash Examples in Skills
 
@@ -73,6 +73,10 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
+| Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
+| Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
+| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
+| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement-issue |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
 ## Style Rules

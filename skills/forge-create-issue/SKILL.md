@@ -54,6 +54,14 @@ Evaluate if this should be one issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
+**When splitting, use vertical slices** — each issue should be a thin end-to-end path across all affected layers (data, logic, UI, tests), not a horizontal layer slice. Each slice must be independently verifiable.
+
+Classify each issue:
+- **AFK** (Away From Keyboard) — can be implemented by an agent without human intervention
+- **HITL** (Human In The Loop) — requires architectural decisions, design review, or external input
+
+Order issues by dependency — earlier slices unblock later ones.
+
 If splitting makes sense, offer: single issue, multiple linked issues, or epic with sub-issues.
 
 ### Step 5: Draft the Issue
