@@ -73,6 +73,10 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
+| Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
+| Divergent sub-agents | Spawn parallel sub-agents with radically different constraints for approach contrast | brainstorm |
+| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
+| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement-issue |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
 ## Style Rules

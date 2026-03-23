@@ -40,11 +40,19 @@ Flag for user input if: vague acceptance criteria, `discovery` label, unanswered
 
 ### Step 3: Plan and Validate Approach
 
+First, identify **durable architectural decisions** — choices that will survive implementation changes and apply across the entire issue:
+- Data model or schema shape
+- Route structures or API contracts
+- Auth/authorization approach
+- Key abstractions or module boundaries
+
+Keep these as a reference header in the plan — individual tasks should point back to them rather than re-specifying volatile details like file names or function signatures.
+
 Create a task list with TodoWrite. Fold any optional additional context into the plan. Present the approach to the user:
+- Durable decisions (above)
 - Files to create or modify
 - Libraries, APIs, or services to use
 - Where configuration changes live
-- Key design decisions
 - What will NOT change (scope boundaries)
 
 If the issue includes Implementation Constraints (from `forge-create-issue`), follow those guardrails.

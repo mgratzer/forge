@@ -2,7 +2,7 @@
 name: forge-brainstorm
 description: Explore a vague idea through codebase investigation, structured questioning, and approach comparison to produce a clear plan ready for issue creation. Use when the user has a rough idea or problem but hasn't decided on an approach yet.
 disable-model-invocation: true
-allowed-tools: Read, Bash, Grep, Glob, WebSearch, AskUserQuestion
+allowed-tools: Read, Bash, Grep, Glob, WebSearch, AskUserQuestion, Agent
 ---
 
 # Brainstorm Ideas
@@ -33,6 +33,8 @@ gh issue list --state all --search "<relevant keywords>"
 
 ### Step 2: Clarify the Problem
 
+Before asking any question, check whether Step 1 findings already answer it. **Only ask the user what you genuinely cannot determine from the codebase.** For each question you do ask, provide your recommended answer based on Step 1 findings — this accelerates convergence and shows the user you've done the homework.
+
 Use AskUserQuestion to understand the problem — not the solution:
 - **What's happening now?** — current behavior, pain point, trigger
 - **What should be different?** — desired outcome, who benefits
@@ -44,16 +46,22 @@ Ground questions in what you found in Step 1. Reference specific code or pattern
 
 ### Step 3: Explore Approaches
 
-Present **2-3 approaches** including a **minimal option** (smallest change that addresses the core problem).
+Use the Agent tool to spawn **2-3 sub-agents in parallel**, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea.
 
-For each approach:
+Give each agent the findings from Steps 1-2 and one of these constraint lenses (adapt to the problem):
+- **Minimal** — smallest change that addresses the core problem
+- **Reuse-first** — maximize use of existing patterns and code
+- **Extensibility-first** — optimize for future flexibility
+- **Performance-first** — optimize for speed or resource efficiency
+
+Each agent should return:
 - One-line summary
 - How it works, referencing specific files and patterns from Step 1
 - Tradeoffs (what you gain, what you give up)
 - Relative complexity (Low / Medium / High)
 - Risk factors
 
-Let the user choose, combine, or reject all approaches.
+Always include a **minimal option**. Present the contrasting approaches and let the user choose, combine, or reject all of them.
 
 ### Step 4: Validate Design
 
