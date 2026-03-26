@@ -74,13 +74,20 @@ Run the project's lint, format, type check, and test commands. Fix issues and co
 
 Synthesize the review findings (from Step 2) with quality gate results (from Step 3) into the summary format below.
 
-### Step 5: Track Deferred Items
+### Step 5: Triage Deferred Items
 
-For each deferred improvement, create a GitHub issue — do not leave deferred items untracked:
+Present each deferred improvement to the user and ask whether to **fix now** or **defer as a follow-up issue**.
 
-```bash
-gh issue create --title "<title>" --body "<context and proposed solution>"
-```
+For each item, recommend one of:
+- **Fix now** — small, low-effort changes that fit naturally in this PR (e.g., a missing test case, a stale doc reference, a duplicated line)
+- **Defer** — larger changes that would expand the PR scope or require separate review (e.g., a cross-cutting refactor, a new feature suggestion)
+
+State your recommendation and let the user decide. Then:
+- **Fix now items:** apply the fix and commit it
+- **Deferred items:** create a GitHub issue to track:
+  ```bash
+  gh issue create --title "<title>" --body "<context and proposed solution>"
+  ```
 
 ## Output Format
 
@@ -100,7 +107,9 @@ gh issue create --title "<title>" --body "<context and proposed solution>"
 - [P1] <what was fixed>
 
 ### Deferred Items
-- Created #<num>: <title> (or: None identified)
+- Fixed in PR: <what was addressed>
+- Created #<num>: <title>
+- (or: None identified)
 
 (Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](references/review-rubric.md).)
 ```
@@ -109,7 +118,7 @@ gh issue create --title "<title>" --body "<context and proposed solution>"
 
 - **Pattern consistency is the highest-value check** — a missed pattern update causes bugs across the codebase
 - **Skip noise** — see [review rubric](references/review-rubric.md) for severity calibration and what not to flag
-- **Create issues for deferred items** — never leave improvements as untracked notes
+- **Triage deferred items with the user** — ask whether each item should be fixed now or deferred as a follow-up issue; only create issues for confirmed deferrals
 - **Run quality gates before reporting** — catch issues before the reviewer does
 - **Prefer fresh context** — a reviewer without implementation memory catches issues the author overlooks
 
