@@ -12,12 +12,11 @@ forge/
 │   │   └── references/                    # Progressive disclosure: templates, output format
 │   ├── forge-brainstorm/SKILL.md          # Optional: Explore ideas before issue creation
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
-│   ├── forge-design-issue/SKILL.md        # Step 2: Design approach before coding
-│   ├── forge-implement-issue/SKILL.md     # Step 3: Implement from an issue
+│   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
 │   ├── forge-reflect-pr/
-│   │   ├── SKILL.md                       # Step 4: Self-review before peer review
+│   │   ├── SKILL.md                       # Step 3: Self-review before peer review
 │   │   └── references/                    # Review rubric (P0-P3 severity)
-│   └── forge-address-pr-feedback/SKILL.md # Step 5: Address PR review comments
+│   └── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
@@ -29,17 +28,15 @@ forge/
 The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → [forge-brainstorm →] forge-create-issue → [forge-design-issue →] forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
+forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
 ```
 
 `forge-brainstorm` is optional — use it when the idea is vague and needs exploration before issue creation.
-`forge-design-issue` is optional — use it for complex work that benefits from upfront alignment on architecture and approach.
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
-- **forge-design-issue** produces a design discussion and structure outline through objective codebase research (delegated to a sub-agent that doesn't see the ticket) and interactive alignment with the user
-- **forge-implement-issue** reads an issue (and its design if one exists), creates a branch, implements following vertical phases, and opens a PR
+- **forge-implement-issue** reads an issue, researches the codebase (optionally via blind sub-agent delegation for complex work), plans vertical implementation phases, and opens a PR
 - **forge-reflect-pr** self-reviews the PR diff via four parallel review agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 
@@ -91,8 +88,7 @@ Forge skills with structured primary input may accept `-- <additional context>` 
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
-| Separate research from intent | Sub-agent researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better design decisions |
-| Design before implement | Optional design discussion + structure outline before coding | Catch wrong patterns in a 200-line doc instead of 1,000 lines of code; shorter artifact for team review |
+| Blind research delegation | Sub-agent researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |

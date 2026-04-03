@@ -38,7 +38,6 @@ No dependency installation required.
    grep -r "additional context\|-- <additional context>" \
      skills/forge-setup-project \
      skills/forge-brainstorm \
-     skills/forge-design-issue \
      skills/forge-implement-issue \
      skills/forge-reflect-pr \
      skills/forge-address-pr-feedback

@@ -69,19 +69,18 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test as you go | Run tests after each commit, not just at the end | implement-issue |
 | Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, design-issue, implement-issue, reflect-pr, address-pr-feedback |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | brainstorm, design-issue, reflect-pr |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | brainstorm, implement-issue, reflect-pr |
 | Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Objective research delegation | `(delegate)` research step where sub-agent receives questions but not the ticket; inline fallback answers factually without suggesting implementations | design-issue |
-| Design discussion artifact | ~150-200 line markdown covering current state, desired end state, patterns, design decisions, open questions; posted as issue comment | design-issue |
-| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | design-issue, implement-issue |
-| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | design-issue, implement-issue |
-| Workflow order | setup → [brainstorm →] create → [design →] implement → reflect → address | All skills |
+| Blind research delegation | `(delegate)` research step where sub-agent receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement-issue |
+| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement-issue |
+| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement-issue |
+| Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
 
 ## Instruction Budget
 
