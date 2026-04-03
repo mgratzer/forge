@@ -41,7 +41,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 
 **Writing `(delegate)` steps:**
 
-- Mark the step title: `### Step N: <Action> (delegate)`
+- Mark the step title: `### Step N: <Action> (delegate)` — or `#### <Action> (delegate)` when delegation is a conditional sub-step within a larger step
 - Open with the delegation instruction and inline fallback
 - Sub-agent instructions must be **fully self-contained** in a blockquote — the sub-agent has no prior context
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
