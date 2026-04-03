@@ -37,7 +37,7 @@ forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-impl
 - **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement-issue** reads an issue, creates a branch, implements the changes, and opens a PR
-- **forge-reflect-pr** self-reviews the PR diff using a P0-P3 severity rubric, focusing on real problems over noise
+- **forge-reflect-pr** self-reviews the PR diff via four parallel review agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 
 ## Skill File Format

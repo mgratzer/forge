@@ -4,7 +4,7 @@
 
 | Severity | Definition | Action | Examples |
 |----------|-----------|--------|----------|
-| **P0** | Production-breaking, data loss, security vulnerability | Must fix before merge | SQL injection, unhandled null on critical path, data corruption, auth bypass |
+| **P0** | Production-breaking, data loss, security vulnerability | Must fix before merge | SQL/command/XSS injection, unhandled null on critical path, data corruption, auth bypass, secrets in code, SSRF, insecure deserialization |
 | **P1** | Real foot guns — will cause bugs or confusion in practice | Should fix before merge | Race condition, missing error handling on external call, wrong enum value persisted |
 | **P2** | Real improvements — non-urgent but worth doing | Fix now or create issue | Duplicated logic across files, missing test for error branch, unclear naming that hides intent |
 | **P3** | Marginal value — technically imperfect but harmless | Skip — do not flag | Minor naming preference, slightly verbose code, hypothetical future concern |
@@ -13,7 +13,7 @@
 
 - Logic errors, off-by-one, wrong operator
 - Missing error handling on I/O or external calls
-- Security issues (injection, auth, secrets in code)
+- Security issues (injection, auth bypass, secrets in code, missing input validation, SSRF, path traversal, insecure crypto, information leakage)
 - Data integrity risks (silent data loss, corrupt state)
 - Missing tests for code paths that have failed before
 - Pattern inconsistency that will cause bugs when the next developer follows the old pattern
