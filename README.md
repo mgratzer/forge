@@ -29,7 +29,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Implement | `/forge-implement <input>` | Implement from a GitHub issue, plan file, or description |
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
-| **Ship** | **`/forge-ship <number>`** | **Implement + review in one invocation** |
+| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation** |
 
 Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
 
