@@ -134,7 +134,7 @@ Report: feedback items addressed, commits created, follow-up issues created, ite
 
 ## Related Skills
 
-**If the feedback required substantial changes:** Use `forge-reflect-pr` for one more self-review before re-requesting review.
+**If the feedback required substantial changes:** Use `forge-reflect` for one more self-review before re-requesting review.
 
 ## Example Usage
 
