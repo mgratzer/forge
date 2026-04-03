@@ -43,7 +43,38 @@ No dependency installation required.
      skills/forge-address-pr-feedback
    ```
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
-5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are fully self-contained and the skill works correctly when executed inline
+5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are self-contained (or composed from a role reference + task instructions) and the skill works correctly when executed inline
+6. If modifying a role file, verify all skills referencing that role still work correctly
+
+## Adding or Modifying Roles
+
+Roles are sub-agent persona definitions that live inside the skill directory that uses them (under `roles/`).
+
+### Adding a New Role
+
+1. Create a `roles/` directory inside the skill that will use it
+2. Create a `<role-name>.md` file there
+3. Add YAML frontmatter with `name`, `description`, and optionally `model-hint`
+4. Write the prompt body: identity, behavior rules, output format, constraints
+5. Update the skill’s delegation step to reference the role
+
+### When to Extract a Role
+
+Extract a persona into a role file when:
+- The persona has calibration rules or behavior that benefits from separation (severity rubrics, research methodology)
+- The skill body is approaching the instruction budget and the persona can be loaded on demand
+
+**Don’t extract** trivial personas that are just a sentence or two — inline them in the skill’s blockquote.
+
+If multiple skills need the same role, duplicate the file into each skill. Self-containment beats DRY for distributed prompt files.
+
+### Modifying an Existing Role
+
+1. Read the role file and the skill that uses it
+2. Make targeted changes
+3. Verify the skill’s delegation step still works with the updated role
+4. Check the `model-hint` is still appropriate
+5. If the same role is duplicated across skills, update all copies
 
 ## Available Commands
 
