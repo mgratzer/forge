@@ -46,11 +46,11 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 - Sub-agent instructions are either **fully self-contained in a blockquote** or **composed from a role reference plus task-specific instructions** (see [Using Roles in Delegate Steps](#using-roles-in-delegate-steps) below)
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
 - List **Expected output** — what the parent receives back
-- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect-pr) or parallel sub-agents for divergent exploration (e.g., brainstorm)
+- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., brainstorm)
 
 ### Using Roles in Delegate Steps
 
-When a delegation step benefits from a separated persona, extract it into a **role file** under the skill’s `roles/` directory (see [Architecture — Role File Format](architecture.md#role-file-format)). The skill then references the role and provides only task-specific instructions:
+When a delegation step benefits from a separated persona, extract it into a **role file** under the skill's `roles/` directory (see [Architecture — Role File Format](architecture.md#role-file-format)). The skill then references the role and provides only task-specific instructions:
 
 ```markdown
 #### Research (delegate)
@@ -66,7 +66,7 @@ file and answer each question following its rules.
 **Expected output:** One factual answer per question.
 ```
 
-The role file defines the persona, behavior rules, and output format. The skill’s blockquote provides only the task-specific checklist or instructions. Runtimes that support role-aware delegation compose both into the sub-agent’s context; runtimes that don’t can read the role file inline.
+The role file defines the persona, behavior rules, and output format. The skill's blockquote provides only the task-specific checklist or instructions. Runtimes that support role-aware delegation compose both into the sub-agent's context; runtimes that don't can read the role file inline.
 
 Role files live inside the skill directory to ensure portable installation. If multiple skills need the same role, duplicate the file — self-containment beats DRY for distributed prompt files.
 
@@ -84,26 +84,28 @@ Conventions shared across skills. When modifying any, update every skill that re
 
 | Convention | Format | Referenced In |
 |------------|--------|---------------|
-| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement-issue, address-pr-feedback |
-| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement-issue, reflect-pr |
-| Validate approach | Present plan and get user confirmation before implementing | implement-issue |
-| Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement-issue |
-| Test as you go | Run tests after each commit, not just at the end | implement-issue |
-| Pattern audit | When changing a pattern, update ALL files using it | implement-issue, reflect-pr |
-| Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
-| Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | brainstorm, implement-issue, reflect-pr |
-| Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect-pr |
+| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement, address-pr-feedback |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, reflect |
+| Validate approach | Present plan and get user confirmation before implementing | implement |
+| Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement |
+| Test as you go | Run tests after each commit, not just at the end | implement |
+| Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
+| Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement, reflect, address-pr-feedback |
+| Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | brainstorm, implement, reflect |
+| Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Reusable roles | Co-located sub-agent personas under each skill’s `roles/`; skills reference them instead of inlining persona blocks | implement-issue (scout), reflect-pr (reviewer) |
-| Blind research delegation | `(delegate)` research step using scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement-issue |
-| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement-issue |
-| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement-issue |
-| Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
+| Reusable roles | Co-located sub-agent personas under each skill's `roles/`; skills reference them instead of inlining persona blocks | implement (scout), reflect (reviewer) |
+| Blind research delegation | `(delegate)` research step using scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
+| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
+| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
+| Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
+| Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
+| Workflow order | setup → [brainstorm →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
 ## Instruction Budget
 

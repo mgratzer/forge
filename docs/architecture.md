@@ -12,14 +12,15 @@ forge/
 │   │   └── references/                    # Progressive disclosure: templates, output format
 │   ├── forge-brainstorm/SKILL.md          # Optional: Explore ideas before issue creation
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
-│   ├── forge-implement-issue/
-│   │   ├── SKILL.md                       # Step 2: Implement from an issue
+│   ├── forge-implement/
+│   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
 │   │   └── roles/scout.md                 # Blind codebase research persona
-│   ├── forge-reflect-pr/
-│   │   ├── SKILL.md                       # Step 3: Self-review before peer review
+│   ├── forge-reflect/
+│   │   ├── SKILL.md                       # Step 3: Self-review changes (PR, branch, or uncommitted)
 │   │   ├── references/                    # Review rubric (P0-P3 severity)
-│   │   └── roles/reviewer.md             # PR review agent persona
-│   └── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
+│   │   └── roles/reviewer.md             # Review agent persona
+│   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
+│   └── forge-ship/SKILL.md                    # Composite: implement + review in one invocation
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
@@ -31,17 +32,21 @@ forge/
 The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
+forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
+                                                                        ╰──── forge-ship ────╯
 ```
 
 `forge-brainstorm` is optional — use it when the idea is vague and needs exploration before issue creation.
 
+`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, delegating the review step to a sub-agent with fresh context.
+
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
-- **forge-implement-issue** reads an issue, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
-- **forge-reflect-pr** self-reviews the PR diff via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
+- **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
+- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
+- **forge-ship** composes implement and reflect — implementation runs inline, review is delegated to a fresh-context sub-agent, findings are triaged with the user
 
 ## Skill File Format
 
@@ -113,7 +118,7 @@ The body follows a consistent structure:
 
 The role body is composed with task-specific instructions from the skill. Runtimes that support role-aware delegation load the role as the sub-agent's persona and the skill's blockquote as the task. Runtimes that don't can read the role file inline.
 
-Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect-pr/roles/reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
+Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect/roles/reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
 
 ### Model Hints
 
@@ -133,6 +138,8 @@ Role files live inside the skill directory that uses them (e.g., `skills/forge-r
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
+| Skill composition | Composite skills reference other skills by path | Keeps orchestrators lean; avoids duplicating step-level instructions across skills |
+| Tool-layer integration | Skills reference external tools by name, not by import | Extensions (e.g., [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents)) register tools; skills use them when available and fall back when not — zero coupling |
 | Reusable roles | `<skill>/roles/*.md` — co-located sub-agent personas | Delegation personas separated from skill body; co-located for portable installation |
 | Blind research delegation | Scout researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |

@@ -110,7 +110,7 @@ EOF
 
 For epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
 
-Share the issue URL. Suggest using `forge-implement-issue` to start implementation.
+Share the issue URL. Suggest using `forge-implement` to start implementation.
 
 ## Guidelines
 
@@ -122,7 +122,7 @@ Share the issue URL. Suggest using `forge-implement-issue` to start implementati
 
 ## Related Skills
 
-**Next step:** Use `forge-implement-issue` to implement the issue.
+**Next step:** Use `forge-implement` to implement the issue.
 
 ## Example Usage
 

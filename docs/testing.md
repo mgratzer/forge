@@ -12,7 +12,7 @@ Before committing a new or modified skill, verify:
 - [ ] `name` matches the directory name (e.g., `forge-setup-project` in `skills/forge-setup-project/`)
 - [ ] All sections follow the standard order (see [Coding Guidelines](coding-guidelines.md))
 - [ ] "Related Skills" section references the correct next step or follow-up skill in the workflow
-- [ ] Workflow order is consistent: `forge-setup-project` → [`forge-brainstorm` →] `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback`
+- [ ] Workflow order is consistent: `forge-setup-project` → [`forge-brainstorm` →] `forge-create-issue` → `forge-implement` → `forge-reflect` → `forge-address-pr-feedback`
 
 ### 2. Bash Command Validation
 
@@ -45,7 +45,7 @@ After modifying any shared convention, grep across all relevant skills to ensure
 grep -rn "type.*scope.*description" skills/
 
 # Check workflow order
-grep -rn "forge-create-issue\|forge-implement-issue\|forge-reflect-pr\|forge-address-pr-feedback\|forge-setup-project" skills/
+grep -rn "forge-create-issue\|forge-implement\|forge-reflect\|forge-address-pr-feedback\|forge-setup-project" skills/
 
 # Check guidance file references
 grep -rn "AGENTS.md\|CLAUDE.md" skills/
@@ -54,7 +54,7 @@ grep -rn "AGENTS.md\|CLAUDE.md" skills/
 grep -rn "additional context\|-- <additional context>" \
   skills/forge-setup-project \
   skills/forge-brainstorm \
-  skills/forge-implement-issue \
-  skills/forge-reflect-pr \
+  skills/forge-implement \
+  skills/forge-reflect \
   skills/forge-address-pr-feedback
 ```

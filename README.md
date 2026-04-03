@@ -26,9 +26,10 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
 | Brainstorm | `/forge-brainstorm` | Explore a vague idea and converge on a plan before creating issues |
 | Create Issue | `/forge-create-issue` | Collaboratively plan and create GitHub issues |
-| Implement Issue | `/forge-implement-issue <number>` | Implement a feature or fix from a GitHub issue |
-| Reflect on PR | `/forge-reflect-pr` | Self-review before requesting peer review |
+| Implement | `/forge-implement <input>` | Implement from a GitHub issue, plan file, or description |
+| Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
+| **Ship** | **`/forge-ship <number>`** | **Implement + review in one invocation** |
 
 Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
 
@@ -37,8 +38,11 @@ Skills with structured primary input also accept optional trailing execution gui
 The skills form a simple workflow — each step feeds into the next:
 
 ```
-forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement-issue → forge-reflect-pr → forge-address-pr-feedback
+forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
+                                                                        ╰──── forge-ship ────╯
 ```
+
+`forge-ship` composes implement + review into a single invocation. For fresh-context review in Pi, pair with [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents).
 
 ## Install
 
