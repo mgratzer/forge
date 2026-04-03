@@ -12,10 +12,13 @@ forge/
 │   │   └── references/                    # Progressive disclosure: templates, output format
 │   ├── forge-brainstorm/SKILL.md          # Optional: Explore ideas before issue creation
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
-│   ├── forge-implement-issue/SKILL.md     # Step 2: Implement from an issue
+│   ├── forge-implement-issue/
+│   │   ├── SKILL.md                       # Step 2: Implement from an issue
+│   │   └── roles/scout.md                 # Blind codebase research persona
 │   ├── forge-reflect-pr/
 │   │   ├── SKILL.md                       # Step 3: Self-review before peer review
-│   │   └── references/                    # Review rubric (P0-P3 severity)
+│   │   ├── references/                    # Review rubric (P0-P3 severity)
+│   │   └── roles/reviewer.md             # PR review agent persona
 │   └── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
@@ -36,8 +39,8 @@ forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-impl
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
-- **forge-implement-issue** reads an issue, researches the codebase (optionally via blind sub-agent delegation for complex work), plans vertical implementation phases, and opens a PR
-- **forge-reflect-pr** self-reviews the PR diff via four parallel review agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
+- **forge-implement-issue** reads an issue, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
+- **forge-reflect-pr** self-reviews the PR diff via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 
 ## Skill File Format
@@ -78,6 +81,48 @@ Skills use **progressive disclosure**: `SKILL.md` contains core instructions (<5
 
 Forge skills with structured primary input may accept `-- <additional context>` as the final segment to provide extra execution guidance without replacing the skill's primary input.
 
+## Role File Format
+
+Roles are reusable sub-agent persona definitions. Each role file lives inside the skill that uses it (under `roles/` or `references/`), keeping skills self-contained for portable installation. A role defines WHO the sub-agent is and HOW it behaves — skills provide WHAT to do (the task).
+
+Every role file has two parts:
+
+**1. YAML Frontmatter**
+
+```yaml
+---
+name: <role-name>           # Kebab-case identifier
+description: <what it does>  # One sentence
+model-hint: fast | balanced | reasoning  # Advisory — runtimes may ignore
+---
+```
+
+| Field | Required | Purpose |
+|-------|----------|----------|
+| `name` | Yes | Role identifier, referenced in skill delegation steps |
+| `description` | Yes | Describes the role's function |
+| `model-hint` | No | Advisory optimization hint for runtimes that support model selection |
+
+**2. Structured Prompt Body**
+
+The body follows a consistent structure:
+1. Title and identity statement
+2. Behavior rules (numbered steps or list)
+3. Output format
+4. Constraints (if any)
+
+The role body is composed with task-specific instructions from the skill. Runtimes that support role-aware delegation load the role as the sub-agent's persona and the skill's blockquote as the task. Runtimes that don't can read the role file inline.
+
+Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect-pr/roles/reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
+
+### Model Hints
+
+| Hint | Use For | Examples |
+|------|---------|----------|
+| `fast` | High-volume reconnaissance, simple extraction | scout |
+| `balanced` | General-purpose tasks, review, implementation | reviewer |
+| `reasoning` | Deep analysis, complex planning | planner |
+
 ## Design Decisions
 
 | Decision | Choice | Rationale |
@@ -88,7 +133,8 @@ Forge skills with structured primary input may accept `-- <additional context>` 
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
-| Blind research delegation | Sub-agent researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
+| Reusable roles | `<skill>/roles/*.md` — co-located sub-agent personas | Delegation personas separated from skill body; co-located for portable installation |
+| Blind research delegation | Scout researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |
