@@ -30,16 +30,18 @@ Collect the full diff and the list of changed files for the review step.
 
 ### Step 2: Review Changes (delegate)
 
-**Delegate this step to four parallel sub-agents with fresh context** if the runtime supports it. Fresh context eliminates self-review bias — the reviewers have no memory of implementation decisions. If the runtime does not support sub-agents, execute each agent's instructions inline sequentially.
+**Delegate to four parallel sub-agents** using the [reviewer](roles/reviewer.md) role, each assigned one quality dimension. Fresh context eliminates self-review bias — the reviewers have no memory of implementation decisions. If the runtime does not support sub-agents, read the role file and execute each review inline sequentially.
 
-Launch all four agents concurrently. Each receives the full diff so it has complete context.
+Launch all four concurrently. Each sub-agent receives:
+- Role: [reviewer](roles/reviewer.md)
+- [Review rubric](references/review-rubric.md) for severity calibration
+- `AGENTS.md` for project conventions
+- Full diff output and changed file list
+- Any additional context from the user's invocation
+- One dimension checklist (below)
 
-**Agent 1: Correctness & Patterns**
+**Agent 1 — Correctness & Patterns:**
 
-> You are reviewing a PR diff for correctness and pattern consistency. Read `AGENTS.md` to understand project conventions. Classify every finding using the review rubric — only flag P0, P1, and P2 items.
->
-> For each changed file, check:
->
 > 1. **Logic errors** — off-by-one, wrong operator, incorrect boolean logic, unhandled null/undefined on critical paths
 > 2. **Pattern consistency** — if a pattern was changed, grep for ALL files using it:
 >    ```bash
@@ -49,15 +51,9 @@ Launch all four agents concurrently. Each receives the full diff so it has compl
 > 3. **Layer placement** — logic in the right abstraction layer
 > 4. **Configuration** — new env vars documented in sample env or setup docs? Config placed where consumed? No hardcoded credentials? Manual deployment steps captured?
 > 5. **Leaky abstractions** — exposing internal details that should be encapsulated, or breaking existing abstraction boundaries
->
-> Return findings grouped by file, with severity tags (P0/P1/P2).
 
-**Agent 2: Security**
+**Agent 2 — Security:**
 
-> You are reviewing a PR diff for security vulnerabilities. Read `AGENTS.md` to understand project conventions. Classify every finding using the review rubric — only flag P0, P1, and P2 items.
->
-> For each changed file, check:
->
 > 1. **Injection** — SQL, command, XSS, template injection — anywhere user-controlled input reaches a query, shell command, or rendered output without sanitization
 > 2. **Authentication & authorization** — new endpoints or operations missing auth checks; privilege escalation paths; role checks that can be bypassed
 > 3. **Secrets & credentials** — API keys, tokens, passwords hardcoded or logged; secrets committed to version control; credentials in error messages or stack traces
@@ -68,28 +64,18 @@ Launch all four agents concurrently. Each receives the full diff so it has compl
 > 8. **Information leakage** — verbose error messages exposing internals, stack traces returned to clients, debug endpoints left enabled, sensitive data in logs
 > 9. **Insecure deserialization** — deserializing untrusted data without validation; formats that allow code execution (pickle, YAML load, eval)
 > 10. **Dependency risk** — new dependencies with known CVEs; pinned versions with known vulnerabilities; unnecessary new attack surface from added packages
->
-> Return findings grouped by file, with severity tags (P0/P1/P2).
 
-**Agent 3: Code Reuse & Quality**
+**Agent 3 — Code Reuse & Quality:**
 
-> You are reviewing a PR diff for unnecessary complexity and missed reuse. Read `AGENTS.md` to understand project conventions. Classify every finding using the review rubric — only flag P0, P1, and P2 items.
->
-> For each changed file, check:
->
 > 1. **Redundant implementations** — search the codebase for existing helpers, utilities, or shared modules that already solve the same problem before accepting new code
 > 2. **Extraction opportunities** — repeated logic across the diff, or inline code that reimplements what a shared module already provides (string manipulation, path handling, type guards, environment checks)
-> 3. **Structural bloat** — functions growing beyond a screenful, parameter lists growing instead of restructuring, state that duplicates what’s already tracked elsewhere
+> 3. **Structural bloat** — functions growing beyond a screenful, parameter lists growing instead of restructuring, state that duplicates what's already tracked elsewhere
 > 4. **Dead weight** — unused imports, unreachable branches, or variables introduced but never read
 > 5. **Misleading names** — only when a name will actively confuse the next reader, not style preferences
-> 6. **Comment noise** — comments that narrate what the code does or reference the ticket; keep only non-obvious “why” (hidden constraints, workarounds, subtle invariants)
->
-> Return findings grouped by file, with severity tags (P0/P1/P2).
+> 6. **Comment noise** — comments that narrate what the code does or reference the ticket; keep only non-obvious "why" (hidden constraints, workarounds, subtle invariants)
 
-**Agent 4: Efficiency, Tests & Docs**
+**Agent 4 — Efficiency, Tests & Docs:**
 
-> You are reviewing a PR diff for runtime cost and coverage gaps. Read `AGENTS.md` to understand project conventions. Classify every finding using the review rubric — only flag P0, P1, and P2 items.
->
 > **Efficiency:**
 > 1. **Wasted cycles** — redundant computations, duplicate I/O or network calls, N+1 query patterns
 > 2. **Sequential bottlenecks** — independent operations that could run concurrently but are chained
@@ -106,19 +92,8 @@ Launch all four agents concurrently. Each receives the full diff so it has compl
 >    grep -rn "<removed-term>" docs/
 >    ```
 > 10. **Cleanup** — no temporary debug logging, commented-out code, untracked TODOs, unused imports, or hardcoded values that should be constants
->
-> Return findings grouped by file, with severity tags (P0/P1/P2).
 
-**Inputs provided to each sub-agent:**
-- Output of `git diff $DEFAULT_BRANCH...HEAD`
-- List of changed files
-- Contents of [review-rubric.md](references/review-rubric.md)
-- Contents of `AGENTS.md` (project conventions)
-- Any additional context from the user's invocation
-
-**Expected output:** Structured findings list with severity tags, grouped by file, from each agent.
-
-If a finding is a false positive or not worth addressing, note it and move on.
+**Expected output:** Structured findings per agent, grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Quality Gates
 

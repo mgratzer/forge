@@ -49,21 +49,10 @@ Write 3–7 targeted questions about how the relevant systems work today, what p
 
 #### Research (delegate)
 
-Delegate to a sub-agent that receives only the questions — not the issue title or body. If the runtime does not support sub-agents, answer each question yourself with facts only.
-
-> You are researching a codebase to answer specific questions. You have no knowledge of what is being built or why.
->
-> For each question:
-> 1. Search the codebase thoroughly (grep, glob, read files)
-> 2. Trace relevant code paths end to end
-> 3. Report findings with file paths and function names
->
-> **Rules:**
-> - Only report what is true about the current code
-> - Do not suggest improvements or implementations
-> - Note any inconsistencies or competing patterns you discover
+Delegate to a [scout](roles/scout.md) sub-agent that receives only the questions — not the issue title or body. If the runtime does not support sub-agents, read the role file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
+- Role: [scout](roles/scout.md)
 - The research questions (not the issue)
 - Access to the full codebase via Read, Grep, Glob, Bash
 
