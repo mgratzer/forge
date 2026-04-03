@@ -34,9 +34,10 @@ Do not produce the implementation summary yet — the review will inform the fin
 Collect the materials the reviewer needs:
 
 ```bash
+git fetch origin
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git diff $DEFAULT_BRANCH...HEAD
-git diff --name-only $DEFAULT_BRANCH...HEAD
+git diff origin/$DEFAULT_BRANCH...HEAD
+git diff --name-only origin/$DEFAULT_BRANCH...HEAD
 ```
 
 Read [forge-reflect](../forge-reflect/SKILL.md) to obtain the four review dimensions and their checklists (Correctness & Patterns, Security, Code Reuse & Quality, Efficiency & Tests & Docs).
