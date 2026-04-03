@@ -41,7 +41,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 
 **Writing `(delegate)` steps:**
 
-- Mark the step title: `### Step N: <Action> (delegate)`
+- Mark the step title: `### Step N: <Action> (delegate)` — or `#### <Action> (delegate)` when delegation is a conditional sub-step within a larger step
 - Open with the delegation instruction and inline fallback
 - Sub-agent instructions must be **fully self-contained** in a blockquote — the sub-agent has no prior context
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
@@ -71,14 +71,24 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect-pr |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement-issue, reflect-pr, address-pr-feedback |
 | Review severity | P0-P3 (see reflect-pr/references/review-rubric.md) | reflect-pr |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | reflect-pr |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with self-contained instructions and inline fallback | brainstorm, implement-issue, reflect-pr |
 | Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect-pr |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
+| Blind research delegation | `(delegate)` research step where sub-agent receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement-issue |
+| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement-issue |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement-issue |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address | All skills |
+
+## Instruction Budget
+
+Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, adherence degrades and steps get skipped unpredictably. Since skills share the context window with AGENTS.md, system prompts, and tool definitions, keep individual skills lean:
+
+- **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
+- **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
+- **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 
 ## Style Rules
 

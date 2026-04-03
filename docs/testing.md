@@ -12,7 +12,7 @@ Before committing a new or modified skill, verify:
 - [ ] `name` matches the directory name (e.g., `forge-setup-project` in `skills/forge-setup-project/`)
 - [ ] All sections follow the standard order (see [Coding Guidelines](coding-guidelines.md))
 - [ ] "Related Skills" section references the correct next step or follow-up skill in the workflow
-- [ ] Workflow order is consistent: `forge-setup-project` → `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback`
+- [ ] Workflow order is consistent: `forge-setup-project` → [`forge-brainstorm` →] `forge-create-issue` → `forge-implement-issue` → `forge-reflect-pr` → `forge-address-pr-feedback`
 
 ### 2. Bash Command Validation
 
@@ -53,6 +53,7 @@ grep -rn "AGENTS.md\|CLAUDE.md" skills/
 # Check trailing context syntax in structured-input skills
 grep -rn "additional context\|-- <additional context>" \
   skills/forge-setup-project \
+  skills/forge-brainstorm \
   skills/forge-implement-issue \
   skills/forge-reflect-pr \
   skills/forge-address-pr-feedback

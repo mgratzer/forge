@@ -35,6 +35,8 @@ gh pr list                          # list open pull requests
 4. **Conventional commits everywhere** — every skill enforces the same commit, branch, issue, and PR naming format
 5. **Standards first, compatibility second** — prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility lightweight
 6. **One invocation convention** — skills with structured primary input should support optional trailing execution context via `-- <additional context>` when additional guidance is useful
+7. **Plan before code** — for complex work, research the codebase objectively and align on architecture before writing implementation; delegate research to sub-agents for unbiased findings
+8. **Mind the instruction budget** — keep skills under ~35 instructions; delegate to sub-agents when complexity grows
 
 ## Commits
 
