@@ -95,7 +95,7 @@ Launch all four agents concurrently. Each receives the full diff so it has compl
 > 2. **Sequential bottlenecks** — independent operations that could run concurrently but are chained
 > 3. **Hot-path impact** — new synchronous work on startup, request, or render critical paths
 > 4. **Phantom updates** — state mutations that fire without checking whether anything actually changed, triggering unnecessary downstream work
-> 5. **Premature existence checks** — verifying a resource exists before operating on it (TOCTOU); prefer operating and handling the error
+> 5. **Premature existence checks** — verifying a resource exists before operating on it; prefer operating and handling the error (skip if already flagged as a security race condition by another reviewer)
 > 6. **Resource leaks** — unbounded collections, missing cleanup handlers, dangling event listeners
 > 7. **Over-fetching** — reading entire resources when a slice would suffice; loading all records to filter for one
 >
