@@ -44,9 +44,21 @@ git diff --name-only --cached # staged
 ```
 If there are uncommitted changes, review those.
 
-**Use the first scope that has changes.** Combine staged + unstaged when reviewing uncommitted work. If nothing to review, tell the user.
+**Use the first scope that has changes.** If nothing to review, tell the user.
 
-Collect the full diff and the list of changed files for the review step.
+Collect the full diff and changed file list for the detected scope:
+
+```bash
+# PR or branch diff
+git fetch origin
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git diff origin/$DEFAULT_BRANCH...HEAD
+git diff --name-only origin/$DEFAULT_BRANCH...HEAD
+
+# Uncommitted changes (staged + unstaged combined)
+git diff HEAD
+git diff --name-only HEAD
+```
 
 ### Step 2: Review Changes (delegate)
 
