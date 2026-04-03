@@ -54,18 +54,18 @@ git checkout -b <type>/<issue-number>-<brief-description>
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-**Pre-flight checks** -- before writing feature code:
+**Pre-flight checks** — before writing feature code:
 - Run code generators (if the project uses them) and verify generated artifacts are current
 - Grep for where config is consumed before placing new config values
 - Verify external services and APIs are accessible
 - Confirm required environment variables, secrets, and credentials are available
 
-**If a structure outline exists, follow its phases in order.** Each phase is a vertical slice -- implement it end to end and verify before starting the next phase. Use TodoWrite to track progress through phases.
+**If a structure outline exists, follow its phases in order.** Each phase is a vertical slice — implement it end to end and verify before starting the next phase. Use TodoWrite to track progress through phases.
 
 **As you code:**
 - Follow project lint/format/type conventions
-- Check for duplication -- extract shared logic
-- Keep functions focused -- split if growing too large
+- Check for duplication — extract shared logic
+- Keep functions focused — split if growing too large
 - Look for existing patterns before writing new code
 - Run tests after each commit, not just at the end
 - When writing tests, verify assertions match actual output immediately
@@ -92,9 +92,9 @@ grep -rn "<pattern>" <search-root>/
 ### Step 5: Update Documentation
 
 If behavior changed, update:
-- `docs/*.md` -- architecture, API, development guides
-- `AGENTS.md` -- if conventions or patterns changed
-- Code comments -- only where logic isn't self-evident
+- `docs/*.md` — architecture, API, development guides
+- `AGENTS.md` — if conventions or patterns changed
+- Code comments — only where logic isn't self-evident
 
 ### Step 6: Quality Gates
 
@@ -116,17 +116,17 @@ Report: branch name, PR link, commits made, files changed, tests added, docs upd
 
 ## Guidelines
 
-- **Read AGENTS.md first** -- understand project-specific requirements
-- **Follow the design** -- if a design discussion exists, treat its decisions as settled
-- **Vertical phases** -- implement each phase end to end and verify before moving on
-- **Small commits** -- one logical change each
-- **Test as you go** -- don't defer testing to the end
-- **Ask when unsure** -- better to clarify than implement wrong
-- **Don't scope creep** -- implement what the issue asks, nothing more
+- **Read AGENTS.md first** — understand project-specific requirements
+- **Follow the design** — if a design discussion exists, treat its decisions as settled
+- **Vertical phases** — implement each phase end to end and verify before moving on
+- **Small commits** — one logical change each
+- **Test as you go** — don't defer testing to the end
+- **Ask when unsure** — better to clarify than implement wrong
+- **Don't scope creep** — implement what the issue asks, nothing more
 
 ## Sub-Issue Handling
 
-If the issue has sub-issues, treat each as a separate task. Close sub-issues as you complete them -- GitHub automatically updates parent progress.
+If the issue has sub-issues, treat each as a separate task. Close sub-issues as you complete them — GitHub automatically updates parent progress.
 
 ## Related Skills
 

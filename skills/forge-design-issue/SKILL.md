@@ -45,7 +45,7 @@ From the issue, write 3-7 targeted questions about the codebase that an engineer
 
 ### Step 3: Research the Codebase (delegate)
 
-**Delegate this step to a sub-agent.** The sub-agent receives only the research questions from Step 2 -- not the issue title, body, or any knowledge of what is being built. This separation keeps the research objective. If the runtime does not support sub-agents, execute the research yourself but deliberately answer each question with facts only, not suggestions.
+**Delegate this step to a sub-agent.** The sub-agent receives only the research questions from Step 2 — not the issue title, body, or any knowledge of what is being built. This separation keeps the research objective. If the runtime does not support sub-agents, execute the research yourself but deliberately answer each question with facts only, not suggestions.
 
 **Sub-agent instructions:**
 
@@ -54,7 +54,7 @@ From the issue, write 3-7 targeted questions about the codebase that an engineer
 > For each question:
 > 1. Search the codebase thoroughly (grep, glob, read files)
 > 2. Trace relevant code paths end to end
-> 3. Report what you find -- how the code works today, what patterns are used, where the boundaries are
+> 3. Report what you find — how the code works today, what patterns are used, where the boundaries are
 >
 > **Rules:**
 > - Only report what is true about the current code
@@ -86,7 +86,7 @@ Derived from the issue requirements.]
 
 ## Patterns to Follow
 [Existing patterns the implementation should use.
-Flag any competing patterns found in the research -- the user must choose.]
+Flag any competing patterns found in the research — the user must choose.]
 
 ## Key Design Decisions
 [Decisions that need to be made before implementation.
@@ -100,10 +100,10 @@ For each: state the options, your recommendation, and why.]
 
 Present the design discussion to the user via AskUserQuestion. Walk through it section by section:
 
-1. **Current State** -- confirm the research findings are accurate
-2. **Patterns to Follow** -- resolve any competing patterns
-3. **Key Design Decisions** -- get a decision on each open item
-4. **Open Questions** -- answer or defer each one
+1. **Current State** — confirm the research findings are accurate
+2. **Patterns to Follow** — resolve any competing patterns
+3. **Key Design Decisions** — get a decision on each open item
+4. **Open Questions** — answer or defer each one
 
 Update the design discussion with resolved decisions. **Do not proceed until the user approves the design.**
 
@@ -111,7 +111,7 @@ Update the design discussion with resolved decisions. **Do not proceed until the
 
 From the approved design, create a structure outline: the high-level phases of implementation, ordered as **vertical slices**.
 
-Each phase should be a thin end-to-end path through all affected layers (data, logic, API, UI, tests) -- not a horizontal layer-by-layer plan. Each phase must produce something verifiable.
+Each phase should be a thin end-to-end path through all affected layers (data, logic, API, UI, tests) — not a horizontal layer-by-layer plan. Each phase must produce something verifiable.
 
 Structure:
 
@@ -155,11 +155,11 @@ Suggest using `forge-implement-issue` to start implementation.
 
 ## Guidelines
 
-- **Research must stay objective** -- the sub-agent never sees the ticket
-- **Design before code** -- catch wrong patterns in a 200-line doc, not in 1,000 lines of code
-- **Vertical phases** -- every phase is a testable end-to-end slice, never a horizontal layer
-- **Resolve decisions explicitly** -- no unresolved items should carry forward to implementation
-- **Short enough to review** -- if the design exceeds 200 lines, compress or move detail to the outline
+- **Research must stay objective** — the sub-agent never sees the ticket
+- **Design before code** — catch wrong patterns in a 200-line doc, not in 1,000 lines of code
+- **Vertical phases** — every phase is a testable end-to-end slice, never a horizontal layer
+- **Resolve decisions explicitly** — no unresolved items should carry forward to implementation
+- **Short enough to review** — if the design exceeds 200 lines, compress or move detail to the outline
 
 ## Related Skills
 
