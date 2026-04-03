@@ -1,6 +1,7 @@
 ---
 name: forge-reflect-pr
 description: "⚠️ Renamed to forge-reflect. This stub exists for migration — remove it and install forge-reflect instead."
+disable-model-invocation: true
 ---
 
 # ⚠️ Renamed to `forge-reflect`

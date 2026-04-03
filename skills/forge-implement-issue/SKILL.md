@@ -1,6 +1,7 @@
 ---
 name: forge-implement-issue
 description: "⚠️ Renamed to forge-implement. This stub exists for migration — remove it and install forge-implement instead."
+disable-model-invocation: true
 ---
 
 # ⚠️ Renamed to `forge-implement`

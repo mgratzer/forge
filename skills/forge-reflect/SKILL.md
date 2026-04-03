@@ -2,6 +2,7 @@
 name: forge-reflect
 description: Review current changes for correctness, security, code reuse, quality, and efficiency using parallel review agents. Works on a PR, branch diff, or uncommitted changes. Use when the user wants to self-review before committing, pushing, or requesting peer review.
 context: fork
+disable-model-invocation: true
 ---
 
 # Reflect
