@@ -73,7 +73,7 @@ From the research (or your own codebase exploration for straightforward issues),
 
 Fold any optional additional context from `$ARGUMENTS` into the plan. If the issue includes Implementation Constraints (from `forge-create-issue`), follow those guardrails.
 
-Present the plan via AskUserQuestion. Get user confirmation before coding.
+Present the plan via AskUserQuestion. Get user confirmation before coding. **When called with unattended mode** (e.g., from `forge-ship --unattended`): skip AskUserQuestion and proceed with the plan.
 
 ### Step 3: Create Feature Branch
 

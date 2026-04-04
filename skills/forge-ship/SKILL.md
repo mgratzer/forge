@@ -21,11 +21,21 @@ Interpret `$ARGUMENTS` the same way as [forge-implement](../forge-implement/SKIL
 - `<free-text>` — inline description of what to build
 - Any of the above followed by `-- <additional context>`
 
+### Unattended Mode
+
+When `$ARGUMENTS` contains `--unattended`, the skill runs without user interaction:
+- Plan approval is skipped — the agent proceeds with the plan it creates
+- Review findings are auto-triaged using severity (see Step 4)
+
+Strip `--unattended` from the arguments before passing them to forge-implement.
+
 ## Process
 
 ### Step 1: Implement
 
 Read [forge-implement](../forge-implement/SKILL.md) and execute its Steps 1 through 8 (Understand → Plan → Branch → Implement → Pattern Audit → Docs → Quality Gates → Push & Create PR).
+
+**In unattended mode:** skip plan approval in forge-implement Step 2 — proceed with the plan without calling AskUserQuestion.
 
 Do not produce the implementation summary yet — the review will inform the final report.
 
@@ -64,13 +74,22 @@ Wait for the review results before proceeding.
 
 ### Step 4: Triage Findings
 
-Aggregate and deduplicate review findings. Present each to the user with a recommendation:
+Aggregate and deduplicate review findings.
+
+**In attended mode (default):** present each finding to the user with a recommendation:
 
 - **Fix now** — small, low-effort changes that fit in this PR → apply fix, commit
-- **Defer** — larger changes that expand PR scope → create a GitHub issue:
-  ```bash
-  gh issue create --title "<title>" --body "<context and proposed solution>"
-  ```
+- **Defer** — larger changes that expand PR scope → create a GitHub issue
+
+**In unattended mode:** auto-triage using severity from the [review rubric](../forge-reflect/references/review-rubric.md):
+
+- **P0–P1** → fix now, commit
+- **P2–P3** → defer, create a GitHub issue
+
+For both modes, deferred items become GitHub issues:
+```bash
+gh issue create --title "<title>" --body "<context and proposed solution>"
+```
 
 ### Step 5: Summary
 
@@ -101,11 +120,12 @@ Report implementation and review results together.
 
 ## Guidelines
 
-- **Implementation runs inline** — user interaction for plan approval is preserved
+- **Implementation runs inline** — user interaction for plan approval is preserved (unless `--unattended`)
 - **Review runs in fresh context** — sub-agent has no memory of implementation decisions
 - **Don't skip the review** — even if implementation felt clean, review catches blind spots
-- **Triage with the user** — don't auto-fix findings without asking
+- **Triage with the user** — don't auto-fix findings without asking (unless `--unattended`, which uses severity-based auto-triage)
 - **Graceful degradation** — the `subagent` tool is provided by external extensions; the skill works without it via inline fallback, but fresh-context review requires sub-agent support
+- **Unattended = severity-gated** — P0–P1 findings are always fixed; P2–P3 are always deferred. The review itself is never skipped.
 
 ## Related Skills
 
@@ -120,4 +140,6 @@ Report implementation and review results together.
 /forge-ship https://github.com/owner/repo/issues/42
 /forge-ship docs/roadmap.md
 /forge-ship add a dark mode toggle to the settings page
+/forge-ship --unattended 42
+/forge-ship --unattended 42 -- keep the diff minimal
 ```
