@@ -86,7 +86,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 |------------|--------|---------------|
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, reflect |
-| Validate approach | Present plan and get user confirmation before implementing | implement |
+| Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement |
 | Test as you go | Run tests after each commit, not just at the end | implement |
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
@@ -105,6 +105,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
+| Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage uses severity (P0–P1 fix, P2–P3 defer) | ship, implement |
 | Workflow order | setup → [brainstorm →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
 ## Instruction Budget
