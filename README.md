@@ -4,6 +4,7 @@
 </p>
 
 <p align="center">
+  <a href="CONTEXT.md">Context</a> &middot;
   <a href="docs/architecture.md">Architecture</a> &middot;
   <a href="docs/development.md">Development</a> &middot;
   <a href="docs/coding-guidelines.md">Guidelines</a> &middot;
@@ -71,6 +72,7 @@ Check your agent's docs for the correct skills directory path.
 
 | Document | Purpose |
 |----------|---------|
+| [Context](CONTEXT.md) | Shared vocabulary used across forge skills |
 | [Architecture](docs/architecture.md) | Skill workflow, file format, design decisions |
 | [Development](docs/development.md) | How to create and modify skills |
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill authoring conventions and style rules |

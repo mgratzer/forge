@@ -19,6 +19,7 @@ gh pr list                          # list open pull requests
 
 | Document | Purpose |
 |----------|---------|
+| [Context](CONTEXT.md) | Shared vocabulary used across forge skills |
 | [Architecture](docs/architecture.md) | Skill workflow, file format, role format, design decisions |
 | [Development](docs/development.md) | How to create and modify skills |
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill authoring conventions and style rules |
