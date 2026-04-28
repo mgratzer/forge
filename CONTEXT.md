@@ -26,6 +26,10 @@ Forge's shared vocabulary. This file defines language used across multiple skill
 
 **Self-containment** — when multiple skills need the same role or reference, the file is duplicated rather than shared via cross-skill path. Skills install independently of each other; cross-skill paths break portability.
 
+**Smart zone** — the portion of an LLM's context window where attention relationships remain manageable and the model performs reliably. Empirically the first ~100k tokens regardless of the advertised context size; performance degrades past this point as accumulated tokens force quadratic attention work. Forge's delegation, fresh-context review, and progressive-disclosure patterns are all responses to this constraint. See [architecture.md — Operating Constraints](docs/architecture.md#operating-constraints) for the full framing.
+
+**Dumb zone** — the portion of context past the smart zone where output quality drops measurably. Visible as missed instructions, forgotten constraints, hallucinated details, and confusion between similarly-named entities. Not a hard threshold; a gradual degradation that becomes pronounced enough to act on.
+
 **Pattern audit** — when a pattern changes in a diff, grep for ALL files using the old pattern and update them. Surfaced both during implementation and during reflection.
 
 **Quality gates** — lint, format, type check, tests. Run before commit, before PR push, and during reflection. A skill is responsible for both running them and reporting results.
