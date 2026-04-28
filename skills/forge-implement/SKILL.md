@@ -67,7 +67,7 @@ Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only t
 
 From the research (or your own codebase exploration for straightforward issues), create a plan:
 - Durable decisions
-- **Structure outline** — order work as vertical phases; each phase is a thin end-to-end slice across all affected layers with a verification step
+- **Structure outline** — order work as vertical phases, each spanning all affected layers with a verification step. See [vertical-phases.md](references/vertical-phases.md) for what makes a phase verifiable, common failure modes (layered phases in disguise, phases without verification), and worked examples.
 - Files to create or modify
 - Scope boundaries (what will NOT change)
 
@@ -90,11 +90,7 @@ When working from a plan file or free-text (no issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-**Pre-flight checks** — before writing feature code:
-- Run code generators (if the project uses them) and verify generated artifacts are current
-- Grep for where config is consumed before placing new config values
-- Verify external services and APIs are accessible
-- Confirm required environment variables, secrets, and credentials are available
+**Pre-flight checks** — before writing feature code, validate the foundation: codegen current, config readers grep'd, external services reachable, env vars/secrets present, existing patterns identified. See [pre-flight.md](references/pre-flight.md) for the rationale, what each check costs vs catches, and when a check can be skipped.
 
 **Follow the structure outline from Step 2.** Each phase is a vertical slice — implement it end to end and verify before starting the next phase. Use TodoWrite to track progress through phases.
 
@@ -119,11 +115,13 @@ Refs #<ISSUE_NUMBER>"  # omit Refs line when there is no issue
 
 ### Step 5: Pattern Consistency Audit
 
-If you changed a pattern (error handling, component structure, API convention), search for ALL files using that pattern and update them too:
+If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too:
 
 ```bash
 grep -rn "<pattern>" <search-root>/
 ```
+
+See [pattern-audit.md](references/pattern-audit.md) for what counts as "the pattern", how to scope the search, distinguishing missed updates from intentional drift, and worked examples.
 
 ### Step 6: Update Documentation
 
