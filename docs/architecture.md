@@ -122,6 +122,25 @@ Role files live inside the skill directory that uses them (e.g., `skills/forge-r
 
 Role names are prefixed with `forge-` (e.g., `forge-scout`, `forge-reviewer`) to keep forge's roles in their own namespace. Subagent runtimes that ship bundled agents under generic names (`scout`, `reviewer`, `worker`) won't shadow forge's roles, and users mixing forge with other skill packs can tell them apart at a glance.
 
+## Operating Constraints
+
+LLMs degrade past approximately 100k tokens regardless of the advertised context window. Attention relationships scale quadratically with token count; the further past 100k a session goes, the worse its instruction-following, recall, and reasoning become. The boundary is not a hard threshold — it is a gradual degradation that becomes pronounced enough to act on.
+
+Practitioners call the workable region the **smart zone** and the degraded region the **dumb zone**. Forge's design choices respond to this constraint:
+
+| Mechanism | How it responds |
+|-----------|-----------------|
+| Sub-agent delegation (`(delegate)` steps) | Move work into fresh context windows when the parent is approaching the dumb zone |
+| Fresh-context review (`forge-reflect`, `forge-ship`) | Reviewer starts in smart zone; implementation memory does not bias review |
+| Progressive disclosure (`references/`) | Load companion philosophy on demand instead of always-loading every skill's full content |
+| Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; cold tier loads only when needed |
+| Instruction budget (~150–200 instructions per skill body) | Skills stay lean enough to compose without exceeding what frontier LLMs follow consistently |
+| Role files (`roles/*.md`) | Sub-agents start with focused persona context, not the parent's accumulated history |
+
+The smart-zone constraint is approximate, model-dependent, and changing — but treating it as a real boundary tends to produce more reliable workflows than assuming the advertised context size is the working size. When a skill's design feels like it has too many moving parts to fit in one head, that is also approximately when it has too many tokens to fit in the smart zone.
+
+The instruction-budget figure (~150–200 instructions) is a related but distinct constraint covered in [coding-guidelines.md](coding-guidelines.md#instruction-budget) — it concerns how many discrete instructions an LLM follows reliably, separately from how many tokens fit in the smart zone.
+
 ## Design Decisions
 
 | Decision | Choice | Rationale |
