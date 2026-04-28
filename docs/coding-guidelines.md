@@ -46,7 +46,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 - Sub-agent instructions are either **fully self-contained in a blockquote** or **composed from a role reference plus task-specific instructions** (see [Using Roles in Delegate Steps](#using-roles-in-delegate-steps) below)
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
 - List **Expected output** — what the parent receives back
-- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., brainstorm)
+- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape)
 
 ### Using Roles in Delegate Steps
 
@@ -91,13 +91,13 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test as you go | Run tests after each commit, not just at the end | implement |
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement, reflect, address-pr-feedback |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
 | Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect, ship |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | brainstorm, implement, reflect |
+| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
 | Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect, ship |
-| Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
-| Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
-| Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
+| One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
+| Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
+| Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
 | Reusable roles | Co-located sub-agent personas under each skill's `roles/`; skills reference them instead of inlining persona blocks | implement (forge-scout), reflect (forge-reviewer) |
 | Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
@@ -106,7 +106,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage uses severity (P0–P1 fix, P2–P3 defer) | ship, implement |
-| Workflow order | setup → [brainstorm →] create → implement → reflect → address; ship composes implement + reflect | All skills |
+| Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
 ## Instruction Budget
 

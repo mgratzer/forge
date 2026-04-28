@@ -25,7 +25,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
-| Brainstorm | `/forge-brainstorm` | Explore a vague idea and converge on a plan before creating issues |
+| Shape | `/forge-shape` | Shape a vague idea into a clear plan through one-at-a-time structured questioning |
 | Create Issue | `/forge-create-issue` | Collaboratively plan and create GitHub issues |
 | Implement | `/forge-implement <input>` | Implement from a GitHub issue, plan file, or description |
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
@@ -39,7 +39,7 @@ Skills with structured primary input also accept optional trailing execution gui
 The skills form a simple workflow — each step feeds into the next:
 
 ```
-forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
                                                                         ╰──── forge-ship ────╯
 ```
 
