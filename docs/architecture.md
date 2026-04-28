@@ -14,13 +14,13 @@ forge/
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement/
 │   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
-│   │   └── roles/scout.md                 # Blind codebase research persona
+│   │   └── roles/forge-scout.md           # Blind codebase research persona
 │   ├── forge-reflect/
 │   │   ├── SKILL.md                       # Step 3: Self-review changes (PR, branch, or uncommitted)
-│   │   ├── references/                    # Review rubric (P0-P3 severity)
-│   │   └── roles/reviewer.md             # Review agent persona
+│   │   ├── references/                    # Review dimensions and severity rubric
+│   │   └── roles/forge-reviewer.md        # Review agent persona
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
-│   └── forge-ship/SKILL.md                    # Composite: implement + review in one invocation
+│   └── forge-ship/SKILL.md                # Composite: implement + review in one invocation
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
@@ -38,7 +38,7 @@ forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-impl
 
 `forge-brainstorm` is optional — use it when the idea is vague and needs exploration before issue creation.
 
-`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, delegating the review step to a sub-agent with fresh context.
+`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, delegating review to fresh-context reviewer sub-agents.
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
@@ -46,7 +46,7 @@ forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-impl
 - **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** composes implement and reflect — implementation runs inline, review is delegated to a fresh-context sub-agent, findings are triaged with the user
+- **forge-ship** composes implement and reflect — implementation runs inline, review is delegated to fresh-context reviewer sub-agents, findings are triaged with the user
 
 ## Skill File Format
 
@@ -96,9 +96,8 @@ Every role file has two parts:
 
 ```yaml
 ---
-name: <role-name>           # Kebab-case identifier
+name: <role-name>           # Kebab-case identifier, prefixed with `forge-`
 description: <what it does>  # One sentence
-model-hint: fast | balanced | reasoning  # Advisory — runtimes may ignore
 ---
 ```
 
@@ -106,7 +105,6 @@ model-hint: fast | balanced | reasoning  # Advisory — runtimes may ignore
 |-------|----------|----------|
 | `name` | Yes | Role identifier, referenced in skill delegation steps |
 | `description` | Yes | Describes the role's function |
-| `model-hint` | No | Advisory optimization hint for runtimes that support model selection |
 
 **2. Structured Prompt Body**
 
@@ -118,15 +116,9 @@ The body follows a consistent structure:
 
 The role body is composed with task-specific instructions from the skill. Runtimes that support role-aware delegation load the role as the sub-agent's persona and the skill's blockquote as the task. Runtimes that don't can read the role file inline.
 
-Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect/roles/reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
+Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect/roles/forge-reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
 
-### Model Hints
-
-| Hint | Use For | Examples |
-|------|---------|----------|
-| `fast` | High-volume reconnaissance, simple extraction | scout |
-| `balanced` | General-purpose tasks, review, implementation | reviewer |
-| `reasoning` | Deep analysis, complex planning | planner |
+Role names are prefixed with `forge-` (e.g., `forge-scout`, `forge-reviewer`) to keep forge's roles in their own namespace. Subagent runtimes that ship bundled agents under generic names (`scout`, `reviewer`, `worker`) won't shadow forge's roles, and users mixing forge with other skill packs can tell them apart at a glance.
 
 ## Design Decisions
 

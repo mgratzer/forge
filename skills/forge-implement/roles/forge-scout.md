@@ -1,7 +1,6 @@
 ---
-name: scout
+name: forge-scout
 description: Researches a codebase to answer targeted questions without knowledge of the goal. Provides objective facts for unbiased planning.
-model-hint: fast
 ---
 
 # Scout

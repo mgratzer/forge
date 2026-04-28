@@ -1,7 +1,6 @@
 ---
-name: reviewer
+name: forge-reviewer
 description: Reviews code changes for a specific quality dimension using severity-tagged findings. Used by skills that delegate parallel review with fresh context.
-model-hint: balanced
 ---
 
 # Reviewer

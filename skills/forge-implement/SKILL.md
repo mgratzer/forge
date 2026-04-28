@@ -56,10 +56,10 @@ Write 3–7 targeted questions about how the relevant systems work today, what p
 
 #### Research (delegate)
 
-Delegate to a [scout](roles/scout.md) sub-agent that receives only the questions — not the issue title or body. If the runtime does not support sub-agents, read the role file and answer each question following its rules.
+Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only the questions — not the issue title or body. If the runtime does not support sub-agents, read the role file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
-- Role: [scout](roles/scout.md)
+- Role: [forge-scout](roles/forge-scout.md)
 - The research questions (not the issue)
 - Access to the full codebase via Read, Grep, Glob, Bash
 
