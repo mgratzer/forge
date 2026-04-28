@@ -54,7 +54,7 @@ Roles are sub-agent persona definitions that live inside the skill directory tha
 
 1. Create a `roles/` directory inside the skill that will use it
 2. Create a `<role-name>.md` file there
-3. Add YAML frontmatter with `name`, `description`, and optionally `model-hint`
+3. Add YAML frontmatter with `name` and `description`
 4. Write the prompt body: identity, behavior rules, output format, constraints
 5. Update the skill’s delegation step to reference the role
 
@@ -73,8 +73,7 @@ If multiple skills need the same role, duplicate the file into each skill. Self-
 1. Read the role file and the skill that uses it
 2. Make targeted changes
 3. Verify the skill’s delegation step still works with the updated role
-4. Check the `model-hint` is still appropriate
-5. If the same role is duplicated across skills, update all copies
+4. If the same role is duplicated across skills, update all copies
 
 ## Available Commands
 

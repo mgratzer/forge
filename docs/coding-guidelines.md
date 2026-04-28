@@ -55,12 +55,12 @@ When a delegation step benefits from a separated persona, extract it into a **ro
 ```markdown
 #### Research (delegate)
 
-Delegate to a [scout](roles/scout.md) sub-agent that receives only
+Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only
 the questions. If the runtime does not support sub-agents, read the role
 file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
-- Role: [scout](roles/scout.md)
+- Role: [forge-scout](roles/forge-scout.md)
 - The research questions
 
 **Expected output:** One factual answer per question.
@@ -92,15 +92,15 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
 | Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, brainstorm, implement, reflect, address-pr-feedback |
-| Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect |
+| Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | brainstorm, implement, reflect |
-| Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect |
+| Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect, ship |
 | Stop after questions | Present questions, wait for user confirmation before proceeding | brainstorm |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | brainstorm |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | brainstorm |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Reusable roles | Co-located sub-agent personas under each skill's `roles/`; skills reference them instead of inlining persona blocks | implement (scout), reflect (reviewer) |
-| Blind research delegation | `(delegate)` research step using scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
+| Reusable roles | Co-located sub-agent personas under each skill's `roles/`; skills reference them instead of inlining persona blocks | implement (forge-scout), reflect (forge-reviewer) |
+| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
