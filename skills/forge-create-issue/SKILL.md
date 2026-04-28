@@ -48,21 +48,19 @@ Let the user choose or combine approaches.
 
 ### Step 4: Assess Scope
 
-Evaluate if this should be one issue or multiple.
+Evaluate if this should be one Issue or multiple.
 
 **Split when:** distinct deliverables, different codebase areas, parallelizable work, or effort exceeds 1-2 days.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-**When splitting, use vertical slices** — each issue should be a thin end-to-end path across all affected layers (data, logic, UI, tests), not a horizontal layer slice. Each slice must be independently verifiable.
+When splitting, slice **vertically** — each Issue is a thin end-to-end path through every layer the feature touches. See [vertical-slicing.md](references/vertical-slicing.md) for what makes a slice thin, common failure modes (horizontal slices in disguise, slices too thick to ship), and worked examples.
 
-Classify each issue:
-- **AFK** (Away From Keyboard) — can be implemented by an agent without human intervention
-- **HITL** (Human In The Loop) — requires architectural decisions, design review, or external input
+Classify each Issue as **AFK** (away-from-keyboard, autonomous agent execution) or **HITL** (human-in-the-loop, requires judgment during execution). See [afk-vs-hitl.md](references/afk-vs-hitl.md) for the classification test ("if the human disappears, where does the agent stall?"), common mis-classifications, and the mode lock-in rule.
 
-Order issues by dependency — earlier slices unblock later ones.
+Order Issues by dependency — earlier slices unblock later ones.
 
-If splitting makes sense, offer: single issue, multiple linked issues, or epic with sub-issues.
+If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
 
 ### Step 5: Draft the Issue
 
