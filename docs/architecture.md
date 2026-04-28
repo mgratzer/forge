@@ -10,7 +10,9 @@ forge/
 │   ├── forge-setup-project/
 │   │   ├── SKILL.md                       # Step 0: Context infrastructure setup/audit
 │   │   └── references/                    # Progressive disclosure: templates, output format
-│   ├── forge-brainstorm/SKILL.md          # Optional: Explore ideas before issue creation
+│   ├── forge-shape/                        # Optional: Shape ideas into plans before issue creation
+│   │   ├── SKILL.md
+│   │   └── references/shaping-methodology.md  # One-at-a-time questioning philosophy
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement/
 │   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
@@ -32,16 +34,16 @@ forge/
 The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → [forge-brainstorm →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
                                                                         ╰──── forge-ship ────╯
 ```
 
-`forge-brainstorm` is optional — use it when the idea is vague and needs exploration before issue creation.
+`forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
 `forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, delegating review to fresh-context reviewer sub-agents.
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
-- **forge-brainstorm** investigates the codebase, clarifies the problem through structured questioning, presents approaches with tradeoffs, and produces a plan summary ready for issue creation
+- **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning until a shared design concept emerges, optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
 - **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric

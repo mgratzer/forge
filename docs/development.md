@@ -37,7 +37,7 @@ No dependency installation required.
    grep -r "AGENTS.md\|CLAUDE.md" skills/
    grep -r "additional context\|-- <additional context>" \
      skills/forge-setup-project \
-     skills/forge-brainstorm \
+     skills/forge-shape \
      skills/forge-implement \
      skills/forge-reflect \
      skills/forge-address-pr-feedback
