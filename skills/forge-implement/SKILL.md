@@ -102,6 +102,8 @@ Read AGENTS.md first. Follow project conventions strictly.
 - Run tests after each commit, not just at the end
 - When writing tests, verify assertions match actual output immediately
 
+**Test-first when behavior is specifiable.** For testable behavior — business logic, state transitions, parsers, anything with a verifiable claim — follow the red/green/refactor cycle. See [tdd-discipline.md](references/tdd-discipline.md) for the cycle and *why test-first matters more for AI* (write-after rationalization), [good-tests.md](references/good-tests.md) for what to test (deep-module boundaries, no per-function mocking), and [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md) for the cases where TDD is the wrong tool (UI/visual, exploratory prototypes, spikes).
+
 **Commit granularly** after each logical unit of work:
 
 ```bash
