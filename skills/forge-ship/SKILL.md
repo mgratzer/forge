@@ -61,7 +61,7 @@ Compose **four self-contained review tasks** — one per dimension — that each
 - The forge-reviewer role definition (full text)
 - One dimension checklist (full text, not a file path)
 - The review rubric (full text, not a file path)
-- The project's `AGENTS.md` content
+- `AGENTS.md` content
 - The full diff and changed file list
 - Branch name and PR number
 - Any additional context from the user's `$ARGUMENTS`
