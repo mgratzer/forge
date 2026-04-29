@@ -13,6 +13,7 @@ Pocock's workshop validated nearly every existing forge primitive (vertical slic
 - **Stay standards-portable.** Skills target the Agent Skills open standard. Do not accommodate any single runtime in canonical files; runtime-specific quirks live in users' local overrides.
 - **Adopt patterns that articulate forge's implicit choices** (smart zone, tracer bullets, push/pull). Borrow Pocock's *framings*, not his *terms* (no "grill"; we use "shape").
 - **Progressive disclosure for craft opinion.** Each opinionated skill ships SKILL.md (procedure) + `references/<topic>.md` companions (philosophy). Companions load on demand.
+- **Skills are workflow entry points; principles are companions.** A skill earns its slot by being a slash-command moment a user deliberately invokes. A principle that applies *during* another skill's execution belongs as a companion under that skill, not as its own skill. Adding a skill per craft principle inflates the slash-command namespace and works against the smart-zone constraint.
 - **Preserve user-facing slash commands.** The `forge-` prefix stays. The single rename allowed in this reshape is `forge-brainstorm` → `forge-shape` because the old name was technically wrong.
 - **Self-containment beats DRY.** Companions and roles duplicate per-skill rather than cross-link, so skills install independently.
 - **No specs-to-code.** Code is the source of truth. PRDs and plans are scaffolding, not destinations.
@@ -26,28 +27,27 @@ Pocock's workshop validated nearly every existing forge primitive (vertical slic
 | [#30](https://github.com/mgratzer/forge/pull/30) | forge-create-issue progressive-disclosure pilot | Companions: `vertical-slicing.md`, `afk-vs-hitl.md` |
 | [#31](https://github.com/mgratzer/forge/pull/31) | forge-implement progressive-disclosure | Companions: `vertical-phases.md` (with tracer-bullets lineage), `pre-flight.md`, `pattern-audit.md` |
 | [#32](https://github.com/mgratzer/forge/pull/32) | forge-brainstorm → forge-shape rename + convergent methodology | Step 2 batched questioning replaced with one-at-a-time methodology; Step 3 made conditional; Step 4 dropped; companion `shaping-methodology.md` |
+| [#33](https://github.com/mgratzer/forge/pull/33) | docs: articulate smart-zone constraint and add RESHAPE.md | `docs/architecture.md` gained an "Operating Constraints" section; `CONTEXT.md` gained vocabulary entries for smart/dumb zone; this `RESHAPE.md` document was introduced |
 
 ## In progress
 
-- **This PR**: smart-zone constraint articulated in `docs/architecture.md` (new "Operating Constraints" section) and `CONTEXT.md` (vocabulary entries); this `RESHAPE.md` document
+- **This PR**: TDD discipline articulated as companions under `forge-implement` (`tdd-discipline.md`, `good-tests.md`, `when-tdd-is-wrong.md`); forge-implement Step 4 references them; RESHAPE.md gains a *skills-vs-companions* principle. Originally drafted as a `forge-tdd` skill; reframed during shaping — TDD is a discipline applied during implementation, not a workflow entry point.
 
 ## Next
 
 Ordered by leverage. Each is its own PR.
 
-1. **forge-tdd skill** — red/green/refactor as the discipline that makes AI honest. SKILL.md is the procedure; companions cover *why TDD makes AI honest* (instrumentation precedes implementation; agents that write tests after the fact fit tests to whatever they built), *what makes a good test in an AI-implemented codebase* (deep-module test boundaries, no per-function mocking), *when TDD is the wrong tool* (UI/visual work, exploratory prototypes). User has explained these verbally on past projects — first crystallization.
-2. **Push vs pull articulation** — add a Design Decisions row in `architecture.md` distinguishing push-loaded (always-in-context: AGENTS.md, system prompts) from pull-loaded (on-demand: skills, companions). Then refactor `forge-reflect` to *push* the rubric and dimensions into reviewer initial context instead of pull, since reliability matters more than token economy in review. Small PR.
-3. **forge-deep-modules skill** — Ousterhout's deep-vs-shallow philosophy as a craft skill with module-shape audit. May absorb Pocock's `improve-codebase-architecture` use case. Companion: the testability argument, the "delegate implementation, design interfaces" insight, audit checklist.
-4. **forge-barrel-imports skill** — opinion crystallization the user has had to explain too many times. Probably small (one SKILL.md + one companion).
-5. **Issue tracker abstraction (Linear, markdown `plan/` folder)** — currently noted as roadmap in `CONTEXT.md`. Promote to implementation: user repos declare provider in their `AGENTS.md` or `CONTEXT.md`; forge skills speak abstractly ("the Issue tracker") and the LLM dispatches to the actual tool. Markdown variant gets first-class spec (`plan/INDEX.md` + `plan/issues/*.md` with frontmatter).
-6. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice doesn't surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
+1. **Push vs pull articulation** — add a Design Decisions row in `architecture.md` distinguishing push-loaded (always-in-context: AGENTS.md, system prompts) from pull-loaded (on-demand: skills, companions). Then refactor `forge-reflect` to *push* the rubric and dimensions into reviewer initial context instead of pull, since reliability matters more than token economy in review. Small PR.
+2. **Deep-modules companions for forge-implement (and possibly forge-reflect)** — Ousterhout's deep-vs-shallow philosophy as companion docs invoked from forge-implement (during design choices) and from forge-reflect's Code Reuse & Quality dimension (when reviewing module shape). Companions cover the testability argument, the "delegate implementation, design interfaces" insight, and a module-shape audit checklist. Originally drafted as a `forge-deep-modules` skill; reframed by the *skills-vs-companions* principle.
+3. **Barrel-imports companion for forge-implement** — opinion crystallization the user has had to explain too many times. Likely a single short companion referenced from forge-implement's pre-flight or pattern-audit step. Originally drafted as `forge-barrel-imports` skill; reframed.
+4. **Issue tracker abstraction (Linear, markdown `plan/` folder)** — currently noted as roadmap in `CONTEXT.md`. Promote to implementation: user repos declare provider in their `AGENTS.md` or `CONTEXT.md`; forge skills speak abstractly ("the Issue tracker") and the LLM dispatches to the actual tool. Markdown variant gets first-class spec (`plan/INDEX.md` + `plan/issues/*.md` with frontmatter).
+5. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice does not surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
 
 ## Open decisions
 
-- **forge-tdd splits**: one skill or several (e.g., separate `forge-test-design`)? Lean: one skill, multiple companions, see how it feels.
 - **Issue tracker abstraction shape**: refactor `forge-create-issue` or new skill? Lean: refactor existing — adding a parallel skill creates the same "which one do I use" problem we avoided with shape.
-- **forge-deep-modules vs forge-barrel-imports**: separate craft skills, or one `forge-code-shape` with multiple companions? Open question.
-- **What other scattered craft frustrations** belong as forge skills? User mentioned deep modules and barrel imports. Likely more — capture them as they surface.
+- **Deep-modules and barrel-imports placement**: which existing skill do these companions attach to? `forge-implement` is the obvious home for both; `forge-reflect` may also want the deep-modules companion for review-time module-shape audits. Decide per-companion when the work starts.
+- **What other scattered craft frustrations** belong as companions? User mentioned deep modules and barrel imports. Likely more — capture them as they surface, default to companion-under-existing-skill before considering a new skill.
 
 ## Anti-goals
 
