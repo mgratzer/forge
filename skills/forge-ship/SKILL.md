@@ -50,14 +50,17 @@ git diff origin/$DEFAULT_BRANCH...HEAD
 git diff --name-only origin/$DEFAULT_BRANCH...HEAD
 ```
 
-Read the shared review references from `forge-reflect`:
-- [Review dimensions](../forge-reflect/references/review-dimensions.md) — the four reviewer checklists
-- [Review rubric](../forge-reflect/references/review-rubric.md) — severity calibration
+**Read and collect the review context** — this content will be embedded in each sub-agent's initial prompt (pushed, not referenced):
 
-Compose **four self-contained review tasks** — one per dimension — that each include:
-- The [forge-reviewer role](../forge-reflect/roles/forge-reviewer.md)
-- One dimension checklist from [review dimensions](../forge-reflect/references/review-dimensions.md)
-- The [review rubric](../forge-reflect/references/review-rubric.md)
+1. Read [forge-reviewer role](../forge-reflect/roles/forge-reviewer.md)
+2. Read [review dimensions](../forge-reflect/references/review-dimensions.md) — the four reviewer checklists
+3. Read [review rubric](../forge-reflect/references/review-rubric.md) — severity calibration
+4. Read `AGENTS.md` — project conventions
+
+Compose **four self-contained review tasks** — one per dimension — that each embed:
+- The forge-reviewer role definition (full text)
+- One dimension checklist (full text, not a file path)
+- The review rubric (full text, not a file path)
 - The project's `AGENTS.md` content
 - The full diff and changed file list
 - Branch name and PR number
@@ -71,7 +74,7 @@ Use the first available delegation mechanism:
 
 1. **`subagent` tool** (e.g., Pi with [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents)): spawn four concurrent sub-agents with `agent: "forge-reviewer"`, one for each dimension task.
 2. **Runtime context forking** (e.g., Claude Code Task tool): delegate four fresh-context review tasks in parallel.
-3. **Inline fallback**: if no sub-agent mechanism is available, read the [forge-reviewer role](../forge-reflect/roles/forge-reviewer.md) and execute the four review dimensions sequentially in the current context.
+3. **Inline fallback**: if no sub-agent mechanism is available, execute the four review dimensions sequentially in the current context using the role and checklists already collected in Step 2.
 
 Wait for **all four** review results before proceeding.
 

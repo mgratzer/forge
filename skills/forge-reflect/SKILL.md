@@ -62,15 +62,20 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-Read the [review dimensions](references/review-dimensions.md) to obtain the four reviewer checklists.
+**Before delegating, read and collect the review context** — sub-agents receive this content embedded in their initial prompt, not as file references to pull:
 
-**Delegate to four parallel sub-agents** using the [forge-reviewer](roles/forge-reviewer.md) role, each assigned one quality dimension. Fresh context eliminates self-review bias — the reviewers have no memory of implementation decisions. If the runtime does not support sub-agents, read the role file and execute the four review dimensions inline sequentially.
+1. Read [forge-reviewer](roles/forge-reviewer.md) role definition
+2. Read [review dimensions](references/review-dimensions.md) — the four reviewer checklists
+3. Read [review rubric](references/review-rubric.md) — severity calibration
+4. Read `AGENTS.md` — project conventions
 
-Launch all four concurrently. Each sub-agent receives:
-- Role: [forge-reviewer](roles/forge-reviewer.md)
-- One dimension checklist from [review dimensions](references/review-dimensions.md)
-- [Review rubric](references/review-rubric.md) for severity calibration
-- `AGENTS.md` for project conventions
+**Delegate to four parallel sub-agents**, each assigned one quality dimension. Fresh context eliminates self-review bias — the reviewers have no memory of implementation decisions. If the runtime does not support sub-agents, execute the four review dimensions inline sequentially.
+
+Launch all four concurrently. Each sub-agent's initial prompt contains (pushed, not referenced):
+- The forge-reviewer role definition
+- One dimension checklist (the full text, not a file path)
+- The review rubric (the full text, not a file path)
+- `AGENTS.md` content
 - Full diff output and changed file list
 - Any additional context from the user's invocation
 

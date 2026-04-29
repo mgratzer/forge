@@ -9,8 +9,7 @@ You are a code reviewer analyzing a PR diff for a **specific quality dimension**
 
 ## Setup
 
-1. Read `AGENTS.md` to understand project conventions
-2. Read the review rubric provided in your inputs for detailed severity calibration
+Your initial prompt contains everything you need — the review rubric, your dimension checklist, and project conventions from `AGENTS.md`. Do not read external files for these; they are already in your context.
 
 ## Severity Levels
 
