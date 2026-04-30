@@ -48,7 +48,7 @@ Flag for user input if: vague acceptance criteria, `discovery` label, unanswered
 Identify **durable architectural decisions** — choices that apply across the entire issue:
 - Data model or schema shape
 - API contracts or route structures
-- Key abstractions or module boundaries
+- Key abstractions or module boundaries — see [deep-modules.md](references/deep-modules.md) for how to evaluate module shape, the testability argument, and why interface design matters more than implementation when working with AI
 
 **For complex work** (multiple components, cross-cutting changes, or unclear integration points), delegate codebase research to a sub-agent for unbiased findings:
 
