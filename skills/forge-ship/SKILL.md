@@ -1,6 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation. Implements from a GitHub issue, plan file, or free-text description, then delegates review to fresh-context reviewer sub-agents. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation. Implements from an Issue, plan file, or free-text description, then delegates review to fresh-context reviewer sub-agents. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
@@ -10,13 +10,13 @@ Implement end to end — code it, review it, ship it. Implementation runs in the
 
 ## Input
 
-Primary input: a GitHub issue, a plan file, or a free-text description.
+Primary input: an Issue (from the project's Issue tracker), a plan file, or a free-text description.
 
 Optional last parameter: `-- <additional context>`
 
 Interpret `$ARGUMENTS` the same way as `forge-implement`:
-- `<issue-number>` — GitHub issue
-- `<issue-url>` — GitHub issue URL
+- `<issue-number>` — Issue in the project's Issue tracker
+- `<issue-url>` — Issue URL (GitHub, Linear, etc.)
 - `<file-path>` — path to a plan, roadmap, or spec file
 - `<free-text>` — inline description of what to build
 - Any of the above followed by `-- <additional context>`
@@ -85,17 +85,17 @@ Aggregate and deduplicate findings from all four review agents.
 **In attended mode (default):** present each finding to the user with a recommendation:
 
 - **Fix now** — small, low-effort changes that fit in this PR → apply fix, commit
-- **Defer** — larger changes that expand PR scope → create a GitHub issue
+- **Defer** — larger changes that expand PR scope → create an Issue in the project's Issue tracker
 
 **In unattended mode:** auto-triage using severity from the [review rubric](../forge-reflect/references/review-rubric.md):
 
 - **P0–P1** → fix now, commit
-- **P2–P3** → defer, create a GitHub issue
+- **P2–P3** → defer, create an Issue in the project's Issue tracker
 
-For both modes, deferred items become GitHub issues:
-```bash
-gh issue create --title "<title>" --body "<context and proposed solution>"
-```
+For both modes, deferred items become Issues:
+- **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
+- **Markdown**: create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) and commit it
+- **Other provider**: use the tool declared in AGENTS.md
 
 ### Step 5: Summary
 

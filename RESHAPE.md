@@ -32,21 +32,21 @@ Pocock's workshop validated nearly every existing forge primitive (vertical slic
 | [#36](https://github.com/mgratzer/forge/pull/36) | Push vs pull context loading | Design Decisions row in `architecture.md`; `forge-reflect` and `forge-ship` refactored to push review context into sub-agent initial prompts; `forge-reviewer` role updated to expect pushed context |
 | [#37](https://github.com/mgratzer/forge/pull/37) | Deep-modules companion | Companion: `deep-modules.md` covering Ousterhout's deep-vs-shallow philosophy, testability argument, "delegate implementation, design interfaces" insight, module-shape audit checklist; referenced from forge-implement Step 2 and forge-reflect's Code Reuse & Quality dimension |
 | [#38](https://github.com/mgratzer/forge/pull/38) | Verify-before-assume companion | Companion: `verify-before-assume.md` covering API hallucination (version drift, interpolation, flag invention), the verification discipline, and when verification isn't needed; referenced from forge-implement Step 4 |
+| [#39](https://github.com/mgratzer/forge/pull/39) | Barrel-imports companion | Companion: `barrel-imports.md` covering why agents default to barrel files, the real costs, when barrels earn their cost, and the discipline; referenced from forge-implement Step 4 |
 
 ## In progress
 
-- **This PR**: Barrel-imports companion — `barrel-imports.md` under `forge-implement/references/` covering why agents default to barrel files, the real costs (circular deps, tree-shaking, obscured origin, merge conflicts), when barrels earn their cost (published API boundary, existing convention, framework requirement), and the discipline (check before creating). Referenced from forge-implement Step 4 ("as you code" — existing patterns bullet) and forge-reflect's Code Reuse & Quality dimension (new item 5). Resolves open decision on barrel-imports placement.
+- **This PR**: Issue tracker abstraction — CONTEXT.md gains the three-provider model (GitHub default, markdown `plan/` folder, user-configured other) with detection logic. New companion `plan-folder-spec.md` defines the markdown format. All six issue-touching skills refactored with provider-conditional blocks. Resolves open decision on abstraction shape (refactor existing, not new skill). Design Decisions row added to architecture.md.
 
 ## Next
 
 Ordered by leverage. Each is its own PR.
 
-1. **Issue tracker abstraction (Linear, markdown `plan/` folder)** — currently noted as roadmap in `CONTEXT.md`. Promote to implementation: user repos declare provider in their `AGENTS.md` or `CONTEXT.md`; forge skills speak abstractly ("the Issue tracker") and the LLM dispatches to the actual tool. Markdown variant gets first-class spec (`plan/INDEX.md` + `plan/issues/*.md` with frontmatter).
-2. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice does not surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
+1. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice does not surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
 
 ## Open decisions
 
-- **Issue tracker abstraction shape**: refactor `forge-create-issue` or new skill? Lean: refactor existing — adding a parallel skill creates the same "which one do I use" problem we avoided with shape.
+- ~~**Issue tracker abstraction shape**: refactor `forge-create-issue` or new skill?~~ **Resolved**: refactored existing skills — all six issue-touching skills gained provider-conditional blocks. No new skills created.
 - **What other scattered craft frustrations** belong as companions? User mentioned deep modules, barrel imports, and API hallucination. All three are now addressed as companions. Capture more as they surface, default to companion-under-existing-skill before considering a new skill.
 
 ## Anti-goals

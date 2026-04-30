@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Git
-- [GitHub CLI](https://cli.github.com/) (`gh`) — used by skills for all GitHub operations
+- [GitHub CLI](https://cli.github.com/) (`gh`) — used by skills for GitHub issue and PR operations (only required when GitHub is the issue tracker provider)
 - A compatible coding agent that supports Agent Skills slash commands
 
 No language runtime, package manager, or build tools are needed. The repository contains only Markdown files.

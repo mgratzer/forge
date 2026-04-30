@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>Agent skills for structured, GitHub-centric development.</strong><br>
+  <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
   One workflow. Six skills. From idea to review-ready code.
 </p>
 
@@ -26,8 +26,8 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 |-------|---------|---------|
 | Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
 | Shape | `/forge-shape` | Shape a vague idea into a clear plan through one-at-a-time structured questioning |
-| Create Issue | `/forge-create-issue` | Collaboratively plan and create GitHub issues |
-| Implement | `/forge-implement <input>` | Implement from a GitHub issue, plan file, or description |
+| Create Issue | `/forge-create-issue` | Collaboratively plan and create Issues (GitHub, markdown, or other provider) |
+| Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description |
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation** |

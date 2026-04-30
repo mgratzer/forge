@@ -103,8 +103,9 @@ Reply format by category:
 
 ### Step 4: Create Follow-up Issues
 
-For valid out-of-scope improvements:
+For valid out-of-scope improvements, create an Issue in the project's Issue tracker:
 
+**GitHub:**
 ```bash
 gh issue create \
   --title "<description>" \
@@ -114,6 +115,10 @@ gh issue create \
 
 Proposed solution: <what should be done>"
 ```
+
+**Markdown:** create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) with the PR context in the body, and commit it.
+
+**Other provider:** use the tool declared in AGENTS.md.
 
 ### Step 5: Push and Summarize
 

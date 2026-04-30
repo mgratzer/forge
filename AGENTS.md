@@ -1,6 +1,6 @@
 # Forge
 
-Forge is a collection of agent skills that define a structured, GitHub-centric development workflow. Skills follow the [Agent Skills](https://agentskills.io) open standard.
+Forge is a collection of agent skills that define a structured development workflow with pluggable issue tracking. Skills follow the [Agent Skills](https://agentskills.io) open standard.
 
 `AGENTS.md` is the canonical project guidance file in this repository. `CLAUDE.md` is kept only as a compatibility symlink for tools that still look for that filename.
 
