@@ -62,17 +62,24 @@ Read AGENTS.md first. Follow project conventions strictly.
 
 **Pre-flight checks** — validate the foundation before feature code: codegen, config placement, external services, env vars, existing patterns. See [pre-flight.md](references/pre-flight.md).
 
-**Follow the structure outline from Step 2.** Each phase is a vertical slice — implement end to end and verify before starting the next. Use TodoWrite to track progress.
+**Pre-flight gate:**
+- [ ] Foundation validated (codegen current, config verified, services reachable)
+- [ ] Existing patterns identified and recorded in plan
 
-**As you code:**
-- Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](references/barrel-imports.md))
-- Verify unfamiliar APIs before using them — grep, type defs, or `--help` (see [verify-before-assume.md](references/verify-before-assume.md))
-- Check for duplication, keep functions focused
-- Run tests after each commit
+**For each vertical phase in the structure outline:**
 
-**Test-first when behavior is specifiable.** Follow red/green/refactor for business logic, state transitions, parsers. See [tdd-discipline.md](references/tdd-discipline.md), [good-tests.md](references/good-tests.md), [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md).
+1. **Implement the phase** — code and tests together, end to end across all affected layers.
+   - Test-first when behavior is specifiable — red/green/refactor for business logic, state transitions, parsers. See [tdd-discipline.md](references/tdd-discipline.md), [good-tests.md](references/good-tests.md), [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md).
+   - Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](references/barrel-imports.md))
+   - Verify unfamiliar APIs before using them (see [verify-before-assume.md](references/verify-before-assume.md))
 
-**Commit granularly** — one logical change per commit, conventional format, `Refs #<ISSUE_NUMBER>` when applicable.
+2. **Phase gate — verify before proceeding:**
+   - [ ] Tests exist for new behavior in this phase
+   - [ ] All tests pass (not just new ones)
+   - [ ] No lint/type errors introduced
+   - [ ] Commit the phase — one logical change per commit, conventional format, `Refs #<ISSUE_NUMBER>` when applicable
+
+Use TodoWrite to track progress through phases.
 
 ### Step 5: Pattern Consistency Audit
 
@@ -91,9 +98,17 @@ If behavior changed, update:
 - `AGENTS.md` — if conventions or patterns changed
 - Code comments — only where logic isn't self-evident
 
-### Step 7: Quality Gates
+### Step 7: Final Quality Gate
 
-Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts): lint, format, type check, tests. Run coverage for substantial changes when the project supports it. Fix issues and commit fixes.
+Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts):
+
+- [ ] Lint — no violations
+- [ ] Format — no violations
+- [ ] Type check — no errors
+- [ ] All tests pass
+- [ ] **Test coverage ≥ 90% for new/modified code** — run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
+
+Fix issues and commit fixes.
 
 ### Step 8: Push and Create PR
 
