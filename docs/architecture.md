@@ -53,77 +53,11 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 - **forge-ship** composes implement and reflect — implementation runs inline, review is delegated to fresh-context reviewer sub-agents, findings are triaged with the user
 
-## Skill File Format
+## Skill & Role File Format
 
-Every SKILL.md has two parts:
+See [coding-guidelines.md](coding-guidelines.md) for the complete reference: YAML frontmatter fields, section order, delegate step conventions, and role file format.
 
-**1. YAML Frontmatter**
-
-```yaml
----
-name: forge-<name>              # Kebab-case, prefixed with "forge-"
-description: <what it does>     # Used by compatible agents for skill discovery
-disable-model-invocation: true  # Optional: prevents auto-invocation
-allowed-tools: Read, Bash, ...  # Optional: restricts available tools
----
-```
-
-| Field | Required | Purpose |
-|-------|----------|---------|
-| `name` | Yes | Skill identifier, used as the slash command name |
-| `description` | Yes | Triggers skill selection — compatible agents match user intent to this |
-| `disable-model-invocation` | No | When `true`, skill can only be invoked by the user via slash command |
-| `allowed-tools` | No | Restricts which tools the skill can use. Omit to allow all tools |
-
-**2. Structured Prompt Body**
-
-Skills follow a consistent section order:
-1. Title (`# <Action>`)
-2. Description paragraph (optional)
-3. Input section (`$ARGUMENTS`; for skills with structured primary input, include the shared trailing context syntax `-- <additional context>`)
-4. Process section (numbered Steps)
-5. Output Format (optional)
-6. Guidelines (brief behavioral rules)
-7. Related Skills
-8. Example Usage
-
-Skills use **progressive disclosure**: `SKILL.md` contains core instructions (<500 lines), while templates and detailed reference material live in `references/` and load only when needed.
-
-Forge skills with structured primary input may accept `-- <additional context>` as the final segment to provide extra execution guidance without replacing the skill's primary input.
-
-## Role File Format
-
-Roles are reusable sub-agent persona definitions. Each role file lives inside the skill that uses it (under `roles/` or `references/`), keeping skills self-contained for portable installation. A role defines WHO the sub-agent is and HOW it behaves — skills provide WHAT to do (the task).
-
-Every role file has two parts:
-
-**1. YAML Frontmatter**
-
-```yaml
----
-name: <role-name>           # Kebab-case identifier, prefixed with `forge-`
-description: <what it does>  # One sentence
----
-```
-
-| Field | Required | Purpose |
-|-------|----------|----------|
-| `name` | Yes | Role identifier, referenced in skill delegation steps |
-| `description` | Yes | Describes the role's function |
-
-**2. Structured Prompt Body**
-
-The body follows a consistent structure:
-1. Title and identity statement
-2. Behavior rules (numbered steps or list)
-3. Output format
-4. Constraints (if any)
-
-The role body is composed with task-specific instructions from the skill. Runtimes that support role-aware delegation load the role as the sub-agent's persona and the skill's blockquote as the task. Runtimes that don't can read the role file inline.
-
-Role files live inside the skill directory that uses them (e.g., `skills/forge-reflect/roles/forge-reviewer.md`). This ensures roles are installed alongside skills regardless of install method (symlink, copy, or package manager). If a role is needed by multiple skills, duplicate it — self-containment beats DRY for distributed prompt files.
-
-Role names are prefixed with `forge-` (e.g., `forge-scout`, `forge-reviewer`) to keep forge's roles in their own namespace. Subagent runtimes that ship bundled agents under generic names (`scout`, `reviewer`, `worker`) won't shadow forge's roles, and users mixing forge with other skill packs can tell them apart at a glance.
+Skills use **progressive disclosure**: `SKILL.md` contains core instructions, while templates and detailed reference material live in `references/` and load only when needed. Skills with structured primary input may accept `-- <additional context>` as the final segment.
 
 ## Operating Constraints
 

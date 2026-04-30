@@ -36,12 +36,7 @@ docs/56-update-architecture-docs
 
 ## Pre-Commit Checks
 
-Before committing changes to any skill:
-
-1. Verify YAML frontmatter is valid (`name`, `description` present)
-2. Check cross-skill consistency for shared conventions (commit format, workflow order, canonical guidance file, trailing context syntax where applicable)
-3. Confirm "Related Skills" references point to the right next step or follow-up skill
-4. Verify all bash examples use valid `gh`/`git` syntax
+See [testing.md — Structural Review](testing.md#1-structural-review) for the canonical checklist.
 
 ## PR Checklist
 

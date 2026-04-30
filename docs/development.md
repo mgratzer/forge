@@ -75,24 +75,6 @@ If multiple skills need the same role, duplicate the file into each skill. Self-
 3. Verify the skill’s delegation step still works with the updated role
 4. If the same role is duplicated across skills, update all copies
 
-## Available Commands
-
-This is a documentation-only repository. The relevant commands are:
-
-| Command | Purpose |
-|---------|---------|
-| `git status` | Check working tree state |
-| `git diff` | Review changes before committing |
-| `gh issue list` | List open issues |
-| `gh pr list` | List open pull requests |
-| `gh issue create` | Create a new issue |
-| `gh pr create` | Create a pull request |
-
 ## Quality Gates
 
-Before committing changes to any SKILL.md:
-
-1. **Cross-reference check**: Ensure conventions mentioned in the modified skill match all other relevant skills (commit format, branch naming, workflow order, canonical guidance file, shared trailing context syntax where applicable)
-2. **Workflow continuity**: Verify the "Related Skills" section correctly links to the next relevant step
-3. **Frontmatter validity**: Confirm `name` and `description` are present and accurate
-4. **Bash example accuracy**: All `gh` and `git` commands in examples must be valid and runnable
+See [testing.md — Structural Review](testing.md#1-structural-review) for the pre-commit checklist.

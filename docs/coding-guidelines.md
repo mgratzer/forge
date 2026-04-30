@@ -70,6 +70,23 @@ The role file defines the persona, behavior rules, and output format. The skill'
 
 Role files live inside the skill directory to ensure portable installation. If multiple skills need the same role, duplicate the file — self-containment beats DRY for distributed prompt files.
 
+## Role File Format
+
+Role files define reusable sub-agent personas. Each lives inside the skill that uses it (under `roles/`).
+
+**YAML Frontmatter:**
+
+```yaml
+---
+name: <role-name>           # Kebab-case, prefixed with `forge-`
+description: <what it does>  # One sentence
+---
+```
+
+**Body structure:** Title and identity statement → Behavior rules → Output format → Constraints (if any). The body is composed with task-specific instructions from the skill at delegation time.
+
+Role names are prefixed with `forge-` to avoid shadowing generic names (`scout`, `reviewer`) that bundled runtimes may use.
+
 ## Bash Examples in Skills
 
 - Every `gh` command must be a valid GitHub CLI command (used in GitHub provider paths)
