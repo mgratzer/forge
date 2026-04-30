@@ -99,10 +99,10 @@ For each item, recommend one of:
 
 State your recommendation and let the user decide. Then:
 - **Fix now items:** apply the fix and commit it
-- **Deferred items:** create a GitHub issue to track:
-  ```bash
-  gh issue create --title "<title>" --body "<context and proposed solution>"
-  ```
+- **Deferred items:** create an Issue in the project's Issue tracker:
+  - **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
+  - **Markdown**: create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) and commit it
+  - **Other provider**: use the tool declared in AGENTS.md
 
 ## Output Format
 
@@ -138,7 +138,7 @@ State your recommendation and let the user decide. Then:
 
 - **Pattern consistency is the highest-value check** — a missed pattern update causes bugs across the codebase
 - **Skip noise** — see [review rubric](references/review-rubric.md) for severity calibration and what not to flag
-- **Triage deferred items with the user** — ask whether each item should be fixed now or deferred as a follow-up issue; only create issues for confirmed deferrals
+- **Triage deferred items with the user** — ask whether each item should be fixed now or deferred as a follow-up Issue; only create Issues for confirmed deferrals
 - **Run quality gates before reporting** — catch issues before the reviewer does
 - **Prefer fresh context** — a reviewer without implementation memory catches issues the author overlooks
 - **Aggregate and deduplicate** — findings from the four agents may overlap; merge duplicates and keep the highest severity

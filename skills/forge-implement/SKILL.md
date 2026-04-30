@@ -1,6 +1,6 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from a GitHub issue, plan file, or free-text description, following project standards. Use when the user wants to start working on a GitHub issue, implement a feature, fix a bug, or build from a plan or roadmap.
+description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, fix a bug, or build from a plan or roadmap.
 disable-model-invocation: true
 ---
 
@@ -10,13 +10,13 @@ Implement a feature or fix following project standards.
 
 ## Input
 
-Primary input: a GitHub issue, a plan file, or a free-text description.
+Primary input: an Issue (from the project's Issue tracker), a plan file, or a free-text description.
 
 Optional last parameter: `-- <additional context>`
 
 Interpret `$ARGUMENTS` as one of:
-- `<issue-number>` — GitHub issue
-- `<issue-url>` — GitHub issue URL
+- `<issue-number>` — Issue in the project's Issue tracker
+- `<issue-url>` — Issue URL (GitHub, Linear, etc.)
 - `<file-path>` — path to a plan, roadmap, or spec file
 - `<free-text>` — inline description of what to build
 - Any of the above followed by `-- <additional context>`
@@ -27,13 +27,15 @@ Use any additional context as execution guidance while still following the requi
 
 ### Step 1: Understand the Work
 
-Determine the input type and extract requirements:
+Determine the input type and extract requirements. Detect the project's Issue tracker provider (see [CONTEXT.md](../../CONTEXT.md)).
 
-**GitHub issue** (number or URL):
-```bash
-gh issue view <ISSUE_NUMBER> --json number,title,body,labels,assignees,milestone,state,comments
-```
-Parse: title, requirements, acceptance criteria, labels, sub-issues, comments, and linked work. If labels are missing, add appropriate ones with `gh issue edit`.
+**Issue** (number or URL) — fetch from the project's Issue tracker:
+
+- **GitHub**: `gh issue view <ISSUE_NUMBER> --json number,title,body,labels,assignees,milestone,state,comments`
+- **Markdown**: Read `plan/issues/<ISSUE_NUMBER>-*.md` — parse YAML frontmatter and body
+- **Other provider**: use the tool declared in AGENTS.md
+
+Parse: title, requirements, acceptance criteria, labels, sub-issues, comments, and linked work. If labels are missing and the provider supports editing, add appropriate ones.
 
 **Plan file** (path to a roadmap, spec, or plan):
 Read the file. Extract: goals, requirements, constraints, and acceptance criteria.
@@ -163,7 +165,7 @@ Report: branch name, PR link, commits made, files changed, tests added, docs upd
 
 ## Sub-Issue Handling
 
-When working from a GitHub issue with sub-issues, treat each as a separate task. Close sub-issues as you complete them — GitHub automatically updates parent progress.
+When working from an Issue with sub-issues, treat each as a separate task. Close sub-issues as you complete them. For GitHub, parent progress updates automatically; for markdown, update both the issue file status and the INDEX.md row.
 
 ## Related Skills
 
