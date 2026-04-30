@@ -99,6 +99,7 @@ Read AGENTS.md first. Follow project conventions strictly.
 - Check for duplication — extract shared logic
 - Keep functions focused — split if growing too large
 - Look for existing patterns before writing new code
+- Verify unfamiliar APIs before using them — grep the codebase, read type definitions, or check `--help`. See [verify-before-assume.md](references/verify-before-assume.md) for why agents hallucinate APIs, the verification discipline, and when verification isn't needed
 - Run tests after each commit, not just at the end
 - When writing tests, verify assertions match actual output immediately
 

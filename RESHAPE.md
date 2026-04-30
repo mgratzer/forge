@@ -30,10 +30,11 @@ Pocock's workshop validated nearly every existing forge primitive (vertical slic
 | [#33](https://github.com/mgratzer/forge/pull/33) | docs: articulate smart-zone constraint and add RESHAPE.md | `docs/architecture.md` gained an "Operating Constraints" section; `CONTEXT.md` gained vocabulary entries for smart/dumb zone; this `RESHAPE.md` document was introduced |
 | [#34](https://github.com/mgratzer/forge/pull/34) | TDD discipline companions | Companions: `tdd-discipline.md`, `good-tests.md`, `when-tdd-is-wrong.md`; forge-implement Step 4 references them; RESHAPE.md gained *skills-vs-companions* principle |
 | [#36](https://github.com/mgratzer/forge/pull/36) | Push vs pull context loading | Design Decisions row in `architecture.md`; `forge-reflect` and `forge-ship` refactored to push review context into sub-agent initial prompts; `forge-reviewer` role updated to expect pushed context |
+| [#37](https://github.com/mgratzer/forge/pull/37) | Deep-modules companion | Companion: `deep-modules.md` covering Ousterhout's deep-vs-shallow philosophy, testability argument, "delegate implementation, design interfaces" insight, module-shape audit checklist; referenced from forge-implement Step 2 and forge-reflect's Code Reuse & Quality dimension |
 
 ## In progress
 
-- **This PR**: Deep-modules companion — `deep-modules.md` under `forge-implement/references/` covering Ousterhout's deep-vs-shallow philosophy, the testability argument, "delegate implementation, design interfaces" insight, and module-shape audit checklist. Referenced from forge-implement Step 2 (durable architectural decisions) and forge-reflect's Code Reuse & Quality dimension (review-time module-shape audit).
+- **This PR**: Verify-before-assume companion — `verify-before-assume.md` under `forge-implement/references/` covering why agents hallucinate APIs (version drift, interpolation, flag invention), the verification discipline (grep codebase, read type definitions, check `--help`), and when verification isn't needed (stdlib, already used in codebase, already verified this session). Referenced from forge-implement Step 4 (as you code). Prompted by recurring user experience of agents inventing API methods and CLI flags that don't exist.
 
 ## Next
 
@@ -47,7 +48,7 @@ Ordered by leverage. Each is its own PR.
 
 - **Issue tracker abstraction shape**: refactor `forge-create-issue` or new skill? Lean: refactor existing — adding a parallel skill creates the same "which one do I use" problem we avoided with shape.
 - **Barrel-imports placement**: which existing skill does this companion attach to? `forge-implement` is the obvious home (pre-flight or pattern-audit step). Decide when the work starts.
-- **What other scattered craft frustrations** belong as companions? User mentioned deep modules and barrel imports. Likely more — capture them as they surface, default to companion-under-existing-skill before considering a new skill.
+- **What other scattered craft frustrations** belong as companions? User mentioned deep modules, barrel imports, and API hallucination. The first and third are now addressed as companions. Capture more as they surface, default to companion-under-existing-skill before considering a new skill.
 
 ## Anti-goals
 
