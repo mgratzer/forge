@@ -1,13 +1,13 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured GitHub issues through interactive discussion. Use when the user wants to create a GitHub issue, plan a feature, report a bug, or scope out work for implementation.
+description: Collaboratively plan and create well-structured Issues through interactive discussion. Use when the user wants to create an Issue, plan a feature, report a bug, or scope out work for implementation. Supports GitHub, markdown plan/ folder, and other providers.
 disable-model-invocation: true
 allowed-tools: Read, Bash, Grep, Glob, WebSearch
 ---
 
-# Create GitHub Issue
+# Create Issue
 
-Collaboratively plan and create well-structured GitHub issues through interactive discussion.
+Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [CONTEXT.md](../../CONTEXT.md) for provider detection.
 
 ## Input
 
@@ -66,7 +66,7 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 **Title:** Use conventional commit format — `<type>(<scope>): <description>`
 
-**Labels:** Discover available labels with `gh label list`. Apply at least one type label and relevant area labels.
+**Labels:** When using GitHub, discover available labels with `gh label list`. When using the markdown provider, choose labels freely — there is no predefined set. Apply at least one type label and relevant area labels.
 
 **Body structure:**
 
@@ -94,8 +94,9 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user. Iterate until satisfied. Then create:
+Present the draft to the user. Iterate until satisfied. Then create the Issue in the project's Issue tracker:
 
+**GitHub:**
 ```bash
 gh issue create \
   --title "<type>(<scope>): <description>" \
@@ -105,10 +106,15 @@ EOF
 )" \
   --label "<labels>"
 ```
-
 For epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
 
-Share the issue URL. Suggest using `forge-implement` to start implementation.
+**Markdown** (`plan/` folder):
+Create the issue file following the [plan-folder-spec](references/plan-folder-spec.md) — determine the next ID, write `plan/issues/<ID>-<slug>.md` with frontmatter and body, and append a row to `plan/INDEX.md`. Commit the new files.
+
+**Other provider:**
+Use the tool or CLI declared in the project's AGENTS.md to create the issue with the same title, body, and labels.
+
+Share the issue reference. Suggest using `forge-implement` to start implementation.
 
 ## Guidelines
 
