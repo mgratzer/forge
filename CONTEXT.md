@@ -4,9 +4,15 @@ Forge's shared vocabulary. This file defines language used across multiple skill
 
 ## Language
 
-**Issue tracker** — currently GitHub Issues via `gh` CLI; Issue IDs are `#<number>`. Forge skills today assume GitHub; abstracting across providers (Linear, markdown folder) is on the roadmap, not yet reality.
+**Issue tracker** — the system that tracks Issues for a project. Forge supports three providers:
 
-**Issue** — one tracked unit of work in the Issue tracker. Carries title, body, priority, labels, and an AFK/HITL mode.
+- **GitHub** (default) — Issues via `gh` CLI. Issue IDs are `#<number>`. Used when AGENTS.md does not specify a provider, or specifies `github`.
+- **Markdown** — local `plan/` folder with `INDEX.md` and `issues/*.md` files. Issue IDs are the numeric prefix of the filename (e.g., `001-feature.md` → `#1`). Used when AGENTS.md specifies `markdown` or a `plan/` folder exists. See [plan-folder-spec.md](skills/forge-create-issue/references/plan-folder-spec.md) for the format.
+- **Other** (Linear, GitLab, etc.) — user-configured provider. AGENTS.md must declare the provider name and the tool or CLI used to interact with it. Skills use the declared tool where they would otherwise use `gh`.
+
+**Provider detection**: read the project's AGENTS.md for an issue tracker declaration. If none is found and a `plan/` directory exists at the repo root, use the markdown provider. Otherwise default to GitHub.
+
+**Issue** — one tracked unit of work in the Issue tracker. Carries title, body, priority, labels, and an AFK/HITL mode. The format varies by provider but the concept is the same across all three.
 
 **Plan** — a structured proposal for implementing an Issue: durable decisions, vertical phases, verification steps. Lives either inline in conversation or as a markdown file referenced by skills.
 
@@ -18,7 +24,7 @@ Forge's shared vocabulary. This file defines language used across multiple skill
 
 **Finding** — one issue surfaced by reflection or peer review, severity-tagged P0–P3. P3 findings are not flagged.
 
-**Deferred item** — a Finding not addressed in the current PR; becomes a new Issue.
+**Deferred item** — a Finding not addressed in the current PR; becomes a new Issue in the project's Issue tracker.
 
 **Composite skill** — a skill that orchestrates other skills rather than doing work itself. Currently only `forge-ship` (composes `forge-implement` + `forge-reflect`).
 
@@ -49,6 +55,6 @@ Forge's shared vocabulary. This file defines language used across multiple skill
 
 ## Flagged ambiguities
 
-- "issue" was previously used to mean GitHub Issues specifically — resolved: **Issue** (capitalized) is the abstract concept, even though only the GitHub provider is implemented today.
+- "issue" was previously used to mean GitHub Issues specifically — resolved: **Issue** (capitalized) is the abstract concept; the provider (GitHub, markdown, or other) is determined per-project.
 - "plan" was used loosely for both the structured proposal and a markdown file containing one — resolved: **Plan** is the proposal; "plan file" is a markdown artifact that contains a Plan.
 - "review" was used for both reflection (self-review) and peer review (external GitHub PR review) — resolved: **Reflection** is self-review by parallel sub-agents; **peer review** is external.
