@@ -1,6 +1,6 @@
 # Architecture
 
-Forge is a prompt-only repository — no application code, no runtime, no dependencies. It contains Agent Skills prompt files (`SKILL.md`) that teach compatible agents how to execute a structured GitHub development workflow.
+Forge is a prompt-only repository — no application code, no runtime, no dependencies. It contains Agent Skills prompt files (`SKILL.md`) that teach compatible agents how to execute a structured development workflow with pluggable issue tracking (GitHub, markdown `plan/` folder, or user-configured provider).
 
 ## Project Structure
 
@@ -13,7 +13,9 @@ forge/
 │   ├── forge-shape/                        # Optional: Shape ideas into plans before issue creation
 │   │   ├── SKILL.md
 │   │   └── references/shaping-methodology.md  # One-at-a-time questioning philosophy
-│   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
+│   ├── forge-create-issue/
+│   │   ├── SKILL.md                       # Step 1: Plan and create Issues (provider-agnostic)
+│   │   └── references/                    # Slicing philosophy, AFK/HITL, plan-folder spec
 │   ├── forge-implement/
 │   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
 │   │   ├── references/                    # Progressive disclosure: implementation craft companions
@@ -45,7 +47,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning until a shared design concept emerges, optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
-- **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates GitHub issues with `gh`
+- **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates Issues in the project's Issue tracker (GitHub, markdown `plan/` folder, or user-configured provider)
 - **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
@@ -160,5 +162,6 @@ The instruction-budget figure (~150–200 instructions) is a related but distinc
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |
 | Push vs pull context loading | Push = embed content in initial prompt; Pull = read on demand via file references | Push when reliability matters more than token economy (review rubric, role definitions); pull for optional philosophy and templates that the agent may not need. Progressive disclosure (`references/`) is pull by default; delegation prompts should push critical instructions so sub-agents don't skip or misread them |
+| Issue tracker abstraction | Provider-conditional blocks in skills, not a code interface | Skills are prompts — the LLM reads the provider from AGENTS.md and dispatches to the right tool; no adapter pattern needed |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

@@ -72,7 +72,7 @@ Role files live inside the skill directory to ensure portable installation. If m
 
 ## Bash Examples in Skills
 
-- Every `gh` command must be a valid GitHub CLI command
+- Every `gh` command must be a valid GitHub CLI command (used in GitHub provider paths)
 - Use placeholder syntax consistently: `<ISSUE_NUMBER>`, `<OWNER>`, `<REPO>`, `<BRANCH_NAME>`
 - Include comments in multi-step bash blocks explaining each command
 - Show both the command and the expected usage pattern
@@ -90,7 +90,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement |
 | Test as you go | Run tests after each commit, not just at the end | implement |
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
-| Mandatory deferred tracking | Create GitHub issues for all deferred items found in reflection | reflect |
+| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for all deferred items found in reflection | reflect |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
 | Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
@@ -106,6 +106,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage uses severity (P0–P1 fix, P2–P3 defer) | ship, implement |
+| Issue tracker providers | Provider-conditional blocks for issue create/read/search/defer; GitHub default, markdown `plan/`, other via AGENTS.md | create-issue, implement, reflect, ship, shape, address-pr-feedback |
 | Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
 ## Instruction Budget

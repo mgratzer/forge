@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # ⚠️ Renamed to `forge-implement`
 
-This skill was renamed to **`forge-implement`** — it now accepts GitHub issues, plan files, and free-text descriptions.
+This skill was renamed to **`forge-implement`** — it now accepts Issues, plan files, and free-text descriptions.
 
 **Tell the user:**
 
