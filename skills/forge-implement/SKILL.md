@@ -98,7 +98,7 @@ Read AGENTS.md first. Follow project conventions strictly.
 - Follow project lint/format/type conventions
 - Check for duplication — extract shared logic
 - Keep functions focused — split if growing too large
-- Look for existing patterns before writing new code
+- Look for existing patterns before writing new code — in particular, follow the project's existing import style and do not introduce barrel files (index re-exports) unless the project already uses them. See [barrel-imports.md](references/barrel-imports.md) for why agents default to barrel files, the real costs, and the few cases where they earn their place
 - Verify unfamiliar APIs before using them — grep the codebase, read type definitions, or check `--help`. See [verify-before-assume.md](references/verify-before-assume.md) for why agents hallucinate APIs, the verification discipline, and when verification isn't needed
 - Run tests after each commit, not just at the end
 - When writing tests, verify assertions match actual output immediately
