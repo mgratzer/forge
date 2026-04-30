@@ -16,6 +16,7 @@ forge/
 │   ├── forge-create-issue/SKILL.md        # Step 1: Plan and create GitHub issues
 │   ├── forge-implement/
 │   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
+│   │   ├── references/                    # Progressive disclosure: implementation craft companions
 │   │   └── roles/forge-scout.md           # Blind codebase research persona
 │   ├── forge-reflect/
 │   │   ├── SKILL.md                       # Step 3: Self-review changes (PR, branch, or uncommitted)

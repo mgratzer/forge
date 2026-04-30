@@ -45,7 +45,11 @@ For **CLI tools**: use the tool's own help.
 gh issue create --help
 ```
 
-For **HTTP APIs**: make a lightweight probe before writing the integration (pre-flight check #3 already covers service reachability — this extends it to endpoint shape).
+For **HTTP APIs**: probe the actual endpoint before writing the integration.
+
+```bash
+curl -s "$API_BASE/endpoint" | head -c 500
+```
 
 ### 3. Check the version
 
@@ -53,7 +57,7 @@ When the project pins a specific version of a dependency, verify the API exists 
 
 ```bash
 # Check what version is installed
-cat package.json | grep "<package>"
+grep "<package>" package.json
 ```
 
 ## When verification isn't needed
