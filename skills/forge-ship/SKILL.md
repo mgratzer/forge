@@ -10,24 +10,9 @@ Implement end to end — code it, review it, ship it. Implementation runs in the
 
 ## Input
 
-Primary input: an Issue (from the project's Issue tracker), a plan file, or a free-text description.
+Same as `forge-implement`: Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
-Optional last parameter: `-- <additional context>`
-
-Interpret `$ARGUMENTS` the same way as `forge-implement`:
-- `<issue-number>` — Issue in the project's Issue tracker
-- `<issue-url>` — Issue URL (GitHub, Linear, etc.)
-- `<file-path>` — path to a plan, roadmap, or spec file
-- `<free-text>` — inline description of what to build
-- Any of the above followed by `-- <additional context>`
-
-### Unattended Mode
-
-When `$ARGUMENTS` contains `--unattended`, the skill runs without user interaction:
-- Plan approval is skipped — the agent proceeds with the plan it creates
-- Review findings are auto-triaged using severity (see Step 4)
-
-Strip `--unattended` from the arguments before passing them to forge-implement.
+**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity. Strip the flag before passing to forge-implement.
 
 ## Process
 
@@ -50,21 +35,9 @@ git diff origin/$DEFAULT_BRANCH...HEAD
 git diff --name-only origin/$DEFAULT_BRANCH...HEAD
 ```
 
-**Read and collect the review context** — this content will be embedded in each sub-agent's initial prompt (pushed, not referenced):
+**Read and collect** (pushed, not referenced): [forge-reviewer](../forge-reflect/roles/forge-reviewer.md), [review dimensions](../forge-reflect/references/review-dimensions.md), [review rubric](../forge-reflect/references/review-rubric.md), `AGENTS.md`.
 
-1. Read [forge-reviewer role](../forge-reflect/roles/forge-reviewer.md)
-2. Read [review dimensions](../forge-reflect/references/review-dimensions.md) — the four reviewer checklists
-3. Read [review rubric](../forge-reflect/references/review-rubric.md) — severity calibration
-4. Read `AGENTS.md` — project conventions
-
-Compose **four self-contained review tasks** — one per dimension — that each embed:
-- The forge-reviewer role definition (full text)
-- One dimension checklist (full text, not a file path)
-- The review rubric (full text, not a file path)
-- `AGENTS.md` content
-- The full diff and changed file list
-- Branch name and PR number
-- Any additional context from the user's `$ARGUMENTS`
+Compose **four self-contained review tasks** — one per dimension — each embedding: role definition, one dimension checklist, rubric, `AGENTS.md`, full diff, changed file list, branch/PR info, any additional context.
 
 ### Step 3: Review (delegate)
 
@@ -126,12 +99,10 @@ Report implementation and review results together.
 
 ## Guidelines
 
-- **Implementation runs inline** — user interaction for plan approval is preserved (unless `--unattended`)
-- **Review runs in fresh context** — four reviewer sub-agents each cover one dimension without implementation memory
-- **Don't skip the review** — even if implementation felt clean, review catches blind spots
-- **Triage with the user** — don't auto-fix findings without asking (unless `--unattended`, which uses severity-based auto-triage)
-- **Graceful degradation** — the `subagent` tool is provided by external extensions; the skill works without it via inline fallback, but fresh-context review requires sub-agent support
-- **Unattended = severity-gated** — P0–P1 findings are always fixed; P2–P3 are always deferred. The review itself is never skipped.
+- **Review runs in fresh context** — sub-agents have no implementation memory
+- **Don't skip the review** — even if implementation felt clean
+- **Triage with the user** — unless `--unattended` (P0–P1 fix, P2–P3 defer)
+- **Graceful degradation** — works inline if no sub-agent support
 
 ## Related Skills
 
@@ -142,10 +113,7 @@ Report implementation and review results together.
 
 ```
 /forge-ship 42
-/forge-ship 42 -- keep the diff minimal and prefer existing UI patterns
-/forge-ship https://github.com/owner/repo/issues/42
+/forge-ship 42 -- keep the diff minimal
 /forge-ship docs/roadmap.md
-/forge-ship add a dark mode toggle to the settings page
 /forge-ship --unattended 42
-/forge-ship --unattended 42 -- keep the diff minimal
 ```

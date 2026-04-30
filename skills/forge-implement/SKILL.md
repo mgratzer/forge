@@ -10,72 +10,40 @@ Implement a feature or fix following project standards.
 
 ## Input
 
-Primary input: an Issue (from the project's Issue tracker), a plan file, or a free-text description.
-
-Optional last parameter: `-- <additional context>`
-
-Interpret `$ARGUMENTS` as one of:
-- `<issue-number>` — Issue in the project's Issue tracker
-- `<issue-url>` — Issue URL (GitHub, Linear, etc.)
-- `<file-path>` — path to a plan, roadmap, or spec file
-- `<free-text>` — inline description of what to build
-- Any of the above followed by `-- <additional context>`
-
-Use any additional context as execution guidance while still following the requirements from the primary input.
+Primary input: an Issue number/URL, a plan file path, or free-text description. Optional: `-- <additional context>` for execution guidance.
 
 ## Process
 
 ### Step 1: Understand the Work
 
-Determine the input type and extract requirements. Detect the project's Issue tracker provider: check AGENTS.md for a declaration, fall back to `plan/` directory if present, otherwise default to GitHub (see [CONTEXT.md](../../CONTEXT.md) for details).
+Determine the input type and extract requirements. Detect the Issue tracker provider (see [CONTEXT.md](../../CONTEXT.md)).
 
-**Issue** (number or URL) — fetch from the project's Issue tracker:
+- **Issue** — fetch via `gh issue view` (GitHub), read `plan/issues/<ID>-*.md` (Markdown), or use the declared tool (Other). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing.
+- **Plan file** — extract goals, requirements, constraints, acceptance criteria.
+- **Free-text** — parse scope and constraints. Ask clarifying questions if underspecified.
 
-- **GitHub**: `gh issue view <ISSUE_NUMBER> --json number,title,body,labels,assignees,milestone,state,comments`
-- **Markdown**: Read `plan/issues/<ISSUE_NUMBER>-*.md` — parse YAML frontmatter and body
-- **Other provider**: use the tool declared in AGENTS.md
-
-Parse: title, requirements, acceptance criteria, labels, sub-issues, comments, and linked work. If labels are missing and the provider supports editing, add appropriate ones.
-
-**Plan file** (path to a roadmap, spec, or plan):
-Read the file. Extract: goals, requirements, constraints, and acceptance criteria.
-
-**Free-text description:**
-Parse the description for scope, requirements, and constraints. If underspecified, ask clarifying questions before proceeding.
-
-Flag for user input if: vague acceptance criteria, `discovery` label, unanswered questions, scope too large, or dependencies incomplete.
+Flag for user input if: vague criteria, `discovery` label, scope too large, or dependencies incomplete.
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — choices that apply across the entire issue:
-- Data model or schema shape
-- API contracts or route structures
-- Key abstractions or module boundaries — see [deep-modules.md](references/deep-modules.md) for how to evaluate module shape, the testability argument, and why interface design matters more than implementation when working with AI
+Identify **durable architectural decisions** — data model, API contracts, module boundaries (see [deep-modules.md](references/deep-modules.md)).
 
-**For complex work** (multiple components, cross-cutting changes, or unclear integration points), delegate codebase research to a sub-agent for unbiased findings:
-
-Write 3–7 targeted questions about how the relevant systems work today, what patterns exist, and where the integration points are. **Questions must request facts, not opinions.**
+**For complex work**, delegate codebase research to a sub-agent for unbiased findings:
 
 #### Research (delegate)
 
-Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only the questions — not the issue title or body. If the runtime does not support sub-agents, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only the questions — not the issue. If no sub-agent support, read the role file and answer each question following its rules.
 
-**Inputs provided to sub-agent:**
-- Role: [forge-scout](roles/forge-scout.md)
-- The research questions (not the issue)
-- Access to the full codebase via Read, Grep, Glob, Bash
-
+**Inputs:** Role: [forge-scout](roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
-From the research (or your own codebase exploration for straightforward issues), create a plan:
+From the research, create a plan:
 - Durable decisions
-- **Structure outline** — order work as vertical phases, each spanning all affected layers with a verification step. See [vertical-phases.md](references/vertical-phases.md) for what makes a phase verifiable, common failure modes (layered phases in disguise, phases without verification), and worked examples.
+- **Structure outline** — vertical phases, each spanning all affected layers with a verification step. See [vertical-phases.md](references/vertical-phases.md).
 - Files to create or modify
 - Scope boundaries (what will NOT change)
 
-Fold any optional additional context from `$ARGUMENTS` into the plan. If the issue includes Implementation Constraints (from `forge-create-issue`), follow those guardrails.
-
-Present the plan via AskUserQuestion. Get user confirmation before coding. **When called with unattended mode** (e.g., from `forge-ship --unattended`): skip AskUserQuestion and proceed with the plan.
+Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.
 
 ### Step 3: Create Feature Branch
 
@@ -92,31 +60,19 @@ When working from a plan file or free-text (no issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-**Pre-flight checks** — before writing feature code, validate the foundation: codegen current, config readers grep'd, external services reachable, env vars/secrets present, existing patterns identified. See [pre-flight.md](references/pre-flight.md) for the rationale, what each check costs vs catches, and when a check can be skipped.
+**Pre-flight checks** — validate the foundation before feature code: codegen, config placement, external services, env vars, existing patterns. See [pre-flight.md](references/pre-flight.md).
 
-**Follow the structure outline from Step 2.** Each phase is a vertical slice — implement it end to end and verify before starting the next phase. Use TodoWrite to track progress through phases.
+**Follow the structure outline from Step 2.** Each phase is a vertical slice — implement end to end and verify before starting the next. Use TodoWrite to track progress.
 
 **As you code:**
-- Follow project lint/format/type conventions
-- Check for duplication — extract shared logic
-- Keep functions focused — split if growing too large
-- Look for existing patterns before writing new code — in particular, follow the project's existing import style and do not introduce barrel files (index re-exports) unless the project already uses them. See [barrel-imports.md](references/barrel-imports.md) for why agents default to barrel files, the real costs, and the few cases where they earn their place
-- Verify unfamiliar APIs before using them — grep the codebase, read type definitions, or check `--help`. See [verify-before-assume.md](references/verify-before-assume.md) for why agents hallucinate APIs, the verification discipline, and when verification isn't needed
-- Run tests after each commit, not just at the end
-- When writing tests, verify assertions match actual output immediately
+- Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](references/barrel-imports.md))
+- Verify unfamiliar APIs before using them — grep, type defs, or `--help` (see [verify-before-assume.md](references/verify-before-assume.md))
+- Check for duplication, keep functions focused
+- Run tests after each commit
 
-**Test-first when behavior is specifiable.** For testable behavior — business logic, state transitions, parsers, anything with a verifiable claim — follow the red/green/refactor cycle. See [tdd-discipline.md](references/tdd-discipline.md) for the cycle and *why test-first matters more for AI* (write-after rationalization), [good-tests.md](references/good-tests.md) for what to test (deep-module boundaries, no per-function mocking), and [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md) for the cases where TDD is the wrong tool (UI/visual, exploratory prototypes, spikes).
+**Test-first when behavior is specifiable.** Follow red/green/refactor for business logic, state transitions, parsers. See [tdd-discipline.md](references/tdd-discipline.md), [good-tests.md](references/good-tests.md), [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md).
 
-**Commit granularly** after each logical unit of work:
-
-```bash
-git add <files>
-git commit -m "<type>(<scope>): <description>
-
-<body>
-
-Refs #<ISSUE_NUMBER>"  # omit Refs line when there is no issue
-```
+**Commit granularly** — one logical change per commit, conventional format, `Refs #<ISSUE_NUMBER>` when applicable.
 
 ### Step 5: Pattern Consistency Audit
 
@@ -155,17 +111,13 @@ Report: branch name, PR link, commits made, files changed, tests added, docs upd
 
 ## Guidelines
 
-- **Read AGENTS.md first** — understand project-specific requirements
-- **Explore before coding** — research the codebase objectively before committing to an approach
-- **Vertical phases** — implement each phase end to end and verify before moving on
-- **Small commits** — one logical change each
-- **Test as you go** — don't defer testing to the end
+- **Explore before coding** — research the codebase before committing to an approach
 - **Ask when unsure** — better to clarify than implement wrong
 - **Don't scope creep** — implement what was asked, nothing more
 
 ## Sub-Issue Handling
 
-When working from an Issue with sub-issues, treat each as a separate task. Close sub-issues as you complete them. For GitHub, parent progress updates automatically; for markdown, update both the issue file status and the INDEX.md row.
+When working from an Issue with sub-issues, treat each as a separate task. Close sub-issues as you complete them.
 
 ## Related Skills
 
@@ -177,8 +129,6 @@ When working from an Issue with sub-issues, treat each as a separate task. Close
 ```
 /forge-implement 123
 /forge-implement 123 -- keep the diff minimal and prefer existing UI patterns
-/forge-implement https://github.com/owner/repo/issues/123
 /forge-implement docs/roadmap.md
-/forge-implement docs/roadmap.md -- focus on phase 1 only
 /forge-implement add a dark mode toggle to the settings page
 ```

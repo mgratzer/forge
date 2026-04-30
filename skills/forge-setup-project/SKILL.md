@@ -21,17 +21,7 @@ Set up or update a project's context infrastructure for agentic engineering. Con
 
 ## Input
 
-Primary input: optional project root path.
-
-Optional last parameter: `-- <additional context>`
-
-Interpret `$ARGUMENTS` as one of:
-- `<path>`
-- `<path> -- <additional context>`
-- `-- <additional context>`
-
-If no path is provided, use the current working directory.
-Use any additional context as execution guidance, not as a replacement for codebase exploration.
+Optional project root path (defaults to cwd). Optional: `-- <additional context>` for execution guidance.
 
 ## Process
 
@@ -49,21 +39,9 @@ Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`.
 
 Skip for greenfield projects (no code exists).
 
-Explore the project thoroughly: directory structure, language/runtime, package manager and scripts, entry points, CI/CD, lint/format/test configuration, local development/runtime setup, existing documentation.
+Explore thoroughly: structure, language/runtime, scripts, CI/CD, lint/format/test config, docs. Classify each finding as **discoverable** (agents can find it) or **requires documentation** (decisions, conventions, failure modes). Only the second category belongs in context files.
 
-As you explore, classify each finding:
-- **Discoverable** — an agent can find this by exploring (file patterns, scripts, structure)
-- **Requires documentation** — an agent cannot infer this from code (decisions, conventions, failure modes, invariants)
-
-Only the second category belongs in context files.
-
-After exploration, assess **agent readiness**:
-- **Feedback loops** — tests exist and pass? Linter? Build? How fast is the cycle?
-- **Module structure** — clear entry points? Logical boundaries? Explicit interfaces?
-- **App legibility** — bootable locally? UI inspectable? Logs queryable?
-- **Known risks** — what will trip an agent up?
-
-Record findings for the summary.
+Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure (entry points, boundaries), app legibility (bootable locally?), known risks.
 
 ### Step 3: Audit Existing Guidance (Audit & Legacy Migration modes only)
 
@@ -156,13 +134,10 @@ Report what was created/changed. See [output-format.md](references/output-format
 
 ## Guidelines
 
-**The Undiscoverability Test**: Before writing any content — "Would an agent find this by exploring?" If yes, don't write it. Write: decisions, unenforced conventions, failure modes, invariants, gotchas. Don't write: directory structure, generic descriptions, boilerplate.
-
-**Signal Over Volume**: Tables beat paragraphs. Constraint hierarchies beat generic advice. Empty sections with `<!-- TODO -->` markers waste context — omit the section instead.
-
-**Tier Discipline**: AGENTS.md targets 150-200 lines. If growing past 200, move detail to Tier 2. No duplication across tiers. Factor in other context consumers (auto-memory, MCP tools, skills).
-
-**Edge Cases**: Monorepos — root-level files referencing sub-packages, suggest per-package AGENTS.md. No tests/CI — skip those docs, mention as next steps. Multiple languages — group commands by language.
+- **Undiscoverability test** — "Would an agent find this by exploring?" If yes, don't write it.
+- **Signal over volume** — tables beat paragraphs; omit empty sections.
+- **Tier discipline** — AGENTS.md targets 150-200 lines. Past 200, move to Tier 2.
+- **Edge cases** — monorepos: suggest per-package AGENTS.md. No tests/CI: mention as next steps.
 
 ## Related Skills
 
@@ -173,6 +148,5 @@ Report what was created/changed. See [output-format.md](references/output-format
 ```
 /forge-setup-project
 /forge-setup-project /path/to/project
-/forge-setup-project /path/to/project -- focus on the docs/ and AGENTS.md split for a monorepo
 /forge-setup-project -- keep the setup lean and call out missing feedback loops
 ```

@@ -11,12 +11,7 @@ Self-review current changes before committing, pushing, or requesting peer revie
 
 ## Input
 
-No primary argument required. Automatically detects what to review.
-
-Optional last parameter: `-- <additional context>`
-
-Interpret `$ARGUMENTS` as optional execution guidance for the review focus.
-If no argument is provided, use the default review checklist.
+No primary argument required — automatically detects what to review. Optional: `-- <additional context>` for review focus guidance.
 
 ## Process
 
@@ -62,24 +57,13 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-**Before delegating, read and collect the review context** — sub-agents receive this content embedded in their initial prompt, not as file references to pull:
+**Before delegating, read and collect** (pushed, not referenced): [forge-reviewer](roles/forge-reviewer.md) role, [review dimensions](references/review-dimensions.md), [review rubric](references/review-rubric.md), `AGENTS.md`.
 
-1. Read [forge-reviewer](roles/forge-reviewer.md) role definition
-2. Read [review dimensions](references/review-dimensions.md) — the four reviewer checklists
-3. Read [review rubric](references/review-rubric.md) — severity calibration
-4. Read `AGENTS.md` — project conventions
+**Delegate to four parallel sub-agents**, each assigned one quality dimension. Fresh context eliminates self-review bias. If no sub-agent support, execute dimensions inline sequentially.
 
-**Delegate to four parallel sub-agents**, each assigned one quality dimension. Fresh context eliminates self-review bias — the reviewers have no memory of implementation decisions. If the runtime does not support sub-agents, execute the four review dimensions inline sequentially.
+Each sub-agent receives: role definition, one dimension checklist, rubric, `AGENTS.md`, full diff, changed file list, any additional context.
 
-Launch all four concurrently. Each sub-agent's initial prompt contains (pushed, not referenced):
-- The forge-reviewer role definition
-- One dimension checklist (the full text, not a file path)
-- The review rubric (the full text, not a file path)
-- `AGENTS.md` content
-- Full diff output and changed file list
-- Any additional context from the user's invocation
-
-**Expected output:** Structured findings per agent, grouped by file with severity tags (P0/P1/P2).
+**Expected output:** Findings per agent, grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Quality Gates
 
@@ -136,12 +120,10 @@ State your recommendation and let the user decide. Then:
 
 ## Guidelines
 
-- **Pattern consistency is the highest-value check** — a missed pattern update causes bugs across the codebase
-- **Skip noise** — see [review rubric](references/review-rubric.md) for severity calibration and what not to flag
-- **Triage deferred items with the user** — ask whether each item should be fixed now or deferred as a follow-up Issue; only create Issues for confirmed deferrals
-- **Run quality gates before reporting** — catch issues before the reviewer does
-- **Prefer fresh context** — a reviewer without implementation memory catches issues the author overlooks
-- **Aggregate and deduplicate** — findings from the four agents may overlap; merge duplicates and keep the highest severity
+- **Pattern consistency is the highest-value check**
+- **Skip noise** — see [review rubric](references/review-rubric.md)
+- **Triage deferred items with the user** — only create Issues for confirmed deferrals
+- **Aggregate and deduplicate** — merge overlapping findings, keep highest severity
 
 ## Related Skills
 

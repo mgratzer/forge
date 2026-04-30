@@ -11,19 +11,7 @@ Systematically address unresolved review feedback on a pull request.
 
 ## Input
 
-Primary input: the PR number or URL.
-
-Optional last parameter: `-- <additional context>`
-
-Interpret `$ARGUMENTS` as one of:
-- `<pr-number>`
-- `<pr-url>`
-- `<pr-number> -- <additional context>`
-- `<pr-url> -- <additional context>`
-- `-- <additional context>`
-
-If no PR input is provided, detect it from the current branch: `gh pr view --json number`.
-Use any additional context to prioritize reviewer concerns, constraints, or follow-up expectations.
+PR number or URL (auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
 
 ## Process
 
@@ -62,13 +50,13 @@ Filter for unresolved threads: `select(.isResolved == false)`.
 
 ### Step 2: Process Each Thread
 
-For each unresolved thread, read the file and surrounding context, then categorize. Incorporate any optional additional context when choosing how to respond:
+For each unresolved thread, read the file and surrounding context, then categorize:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
-- **Already addressed** — change was made but thread not resolved
-- **Won't fix** — explain why current approach is preferred
-- **Follow-up** — valid improvement, out of scope — create linked issue
+- **Already addressed** — thread not resolved but change was made
+- **Won't fix** — current approach is preferred
+- **Follow-up** — valid but out of scope — create linked issue
 
 ### Step 3: Address and Reply Individually
 
@@ -131,11 +119,9 @@ Report: feedback items addressed, commits created, follow-up issues created, ite
 ## Guidelines
 
 - **GraphQL for discovery** — REST API doesn't show resolution status
-- **Reply individually** — keeps discussions organized and threads resolvable
-- **Reply immediately** — address, reply, then move to next thread
+- **Address, reply, then next** — don't batch
 - **Be specific** — reference commits, line numbers, and code
 - **Test changes** — run checks before committing
-- **Granular commits** — one per logical change
 
 ## Related Skills
 
@@ -145,7 +131,6 @@ Report: feedback items addressed, commits created, follow-up issues created, ite
 
 ```
 /forge-address-pr-feedback 123
-/forge-address-pr-feedback 123 -- prioritize security comments and avoid broad refactors
-/forge-address-pr-feedback https://github.com/owner/repo/pull/123
+/forge-address-pr-feedback 123 -- prioritize security comments
 /forge-address-pr-feedback
 ```

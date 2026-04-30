@@ -54,11 +54,7 @@ Evaluate if this should be one Issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-When splitting, slice **vertically** — each Issue is a thin end-to-end path through every layer the feature touches. See [vertical-slicing.md](references/vertical-slicing.md) for what makes a slice thin, common failure modes (horizontal slices in disguise, slices too thick to ship), and worked examples.
-
-Classify each Issue as **AFK** (away-from-keyboard, autonomous agent execution) or **HITL** (human-in-the-loop, requires judgment during execution). See [afk-vs-hitl.md](references/afk-vs-hitl.md) for the classification test ("if the human disappears, where does the agent stall?"), common mis-classifications, and the mode lock-in rule.
-
-Order Issues by dependency — earlier slices unblock later ones.
+When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing.md](references/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
 
 If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
 
