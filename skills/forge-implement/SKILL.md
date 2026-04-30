@@ -27,7 +27,7 @@ Use any additional context as execution guidance while still following the requi
 
 ### Step 1: Understand the Work
 
-Determine the input type and extract requirements. Detect the project's Issue tracker provider (see [CONTEXT.md](../../CONTEXT.md)).
+Determine the input type and extract requirements. Detect the project's Issue tracker provider: check AGENTS.md for a declaration, fall back to `plan/` directory if present, otherwise default to GitHub (see [CONTEXT.md](../../CONTEXT.md) for details).
 
 **Issue** (number or URL) — fetch from the project's Issue tracker:
 

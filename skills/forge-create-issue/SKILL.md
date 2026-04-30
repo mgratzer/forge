@@ -106,7 +106,7 @@ EOF
 )" \
   --label "<labels>"
 ```
-For epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
+For GitHub epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
 
 **Markdown** (`plan/` folder):
 Create the issue file following the [plan-folder-spec](references/plan-folder-spec.md) — determine the next ID, write `plan/issues/<ID>-<slug>.md` with frontmatter and body, and append a row to `plan/INDEX.md`. Commit the new files.
