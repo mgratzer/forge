@@ -31,24 +31,23 @@ Pocock's workshop validated nearly every existing forge primitive (vertical slic
 | [#34](https://github.com/mgratzer/forge/pull/34) | TDD discipline companions | Companions: `tdd-discipline.md`, `good-tests.md`, `when-tdd-is-wrong.md`; forge-implement Step 4 references them; RESHAPE.md gained *skills-vs-companions* principle |
 | [#36](https://github.com/mgratzer/forge/pull/36) | Push vs pull context loading | Design Decisions row in `architecture.md`; `forge-reflect` and `forge-ship` refactored to push review context into sub-agent initial prompts; `forge-reviewer` role updated to expect pushed context |
 | [#37](https://github.com/mgratzer/forge/pull/37) | Deep-modules companion | Companion: `deep-modules.md` covering Ousterhout's deep-vs-shallow philosophy, testability argument, "delegate implementation, design interfaces" insight, module-shape audit checklist; referenced from forge-implement Step 2 and forge-reflect's Code Reuse & Quality dimension |
+| [#38](https://github.com/mgratzer/forge/pull/38) | Verify-before-assume companion | Companion: `verify-before-assume.md` covering API hallucination (version drift, interpolation, flag invention), the verification discipline, and when verification isn't needed; referenced from forge-implement Step 4 |
 
 ## In progress
 
-- **This PR**: Verify-before-assume companion — `verify-before-assume.md` under `forge-implement/references/` covering why agents hallucinate APIs (version drift, interpolation, flag invention), the verification discipline (grep codebase, read type definitions, check `--help`), and when verification isn't needed (stdlib, already used in codebase, already verified this session). Referenced from forge-implement Step 4 (as you code). Prompted by recurring user experience of agents inventing API methods and CLI flags that don't exist.
+- **This PR**: Barrel-imports companion — `barrel-imports.md` under `forge-implement/references/` covering why agents default to barrel files, the real costs (circular deps, tree-shaking, obscured origin, merge conflicts), when barrels earn their cost (published API boundary, existing convention, framework requirement), and the discipline (check before creating). Referenced from forge-implement Step 4 ("as you code" — existing patterns bullet) and forge-reflect's Code Reuse & Quality dimension (new item 5). Resolves open decision on barrel-imports placement.
 
 ## Next
 
 Ordered by leverage. Each is its own PR.
 
-1. **Barrel-imports companion for forge-implement** — opinion crystallization the user has had to explain too many times. Likely a single short companion referenced from forge-implement's pre-flight or pattern-audit step. Originally drafted as `forge-barrel-imports` skill; reframed.
-2. **Issue tracker abstraction (Linear, markdown `plan/` folder)** — currently noted as roadmap in `CONTEXT.md`. Promote to implementation: user repos declare provider in their `AGENTS.md` or `CONTEXT.md`; forge skills speak abstractly ("the Issue tracker") and the LLM dispatches to the actual tool. Markdown variant gets first-class spec (`plan/INDEX.md` + `plan/issues/*.md` with frontmatter).
-3. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice does not surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
+1. **Issue tracker abstraction (Linear, markdown `plan/` folder)** — currently noted as roadmap in `CONTEXT.md`. Promote to implementation: user repos declare provider in their `AGENTS.md` or `CONTEXT.md`; forge skills speak abstractly ("the Issue tracker") and the LLM dispatches to the actual tool. Markdown variant gets first-class spec (`plan/INDEX.md` + `plan/issues/*.md` with frontmatter).
+2. **forge-shape grill-style further refinement** (optional) — if Step 2 in practice does not surface clear approaches, revisit whether Step 3's conditional approach-exploration earns its place or should always run.
 
 ## Open decisions
 
 - **Issue tracker abstraction shape**: refactor `forge-create-issue` or new skill? Lean: refactor existing — adding a parallel skill creates the same "which one do I use" problem we avoided with shape.
-- **Barrel-imports placement**: which existing skill does this companion attach to? `forge-implement` is the obvious home (pre-flight or pattern-audit step). Decide when the work starts.
-- **What other scattered craft frustrations** belong as companions? User mentioned deep modules, barrel imports, and API hallucination. The first and third are now addressed as companions. Capture more as they surface, default to companion-under-existing-skill before considering a new skill.
+- **What other scattered craft frustrations** belong as companions? User mentioned deep modules, barrel imports, and API hallucination. All three are now addressed as companions. Capture more as they surface, default to companion-under-existing-skill before considering a new skill.
 
 ## Anti-goals
 

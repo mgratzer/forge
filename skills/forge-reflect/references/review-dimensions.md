@@ -33,9 +33,10 @@ Four quality dimensions for parallel review. Each reviewer agent receives one di
 2. **Extraction opportunities** — repeated logic across the diff, or inline code that reimplements what a shared module already provides (string manipulation, path handling, type guards, environment checks)
 3. **Structural bloat** — functions growing beyond a screenful, parameter lists growing instead of restructuring, state that duplicates what's already tracked elsewhere
 4. **Module shape** — shallow modules whose interfaces mirror their internals, pass-through methods that relay without transforming, wrapper classes that add no simplification. See [deep-modules.md](../../forge-implement/references/deep-modules.md) for the audit checklist
-5. **Dead weight** — unused imports, unreachable branches, or variables introduced but never read
-6. **Misleading names** — only when a name will actively confuse the next reader, not style preferences
-7. **Comment noise** — comments that narrate what the code does or reference the ticket; keep only non-obvious "why" (hidden constraints, workarounds, subtle invariants)
+5. **Unnecessary indirection** — barrel files (index re-exports) introduced without a published-API boundary or existing project convention. See [barrel-imports.md](../../forge-implement/references/barrel-imports.md) for the costs and when barrels earn their place
+6. **Dead weight** — unused imports, unreachable branches, or variables introduced but never read
+7. **Misleading names** — only when a name will actively confuse the next reader, not style preferences
+8. **Comment noise** — comments that narrate what the code does or reference the ticket; keep only non-obvious "why" (hidden constraints, workarounds, subtle invariants)
 
 ## Agent 4 — Efficiency, Tests & Docs
 
