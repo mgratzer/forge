@@ -26,7 +26,7 @@ Flag for user input if: vague criteria, `discovery` label, scope too large, or d
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — data model, API contracts, module boundaries (see [deep-modules.md](references/deep-modules.md)).
+Identify **durable architectural decisions** — data model, API contracts, module boundaries (see [deep-modules.md](../_shared/deep-modules.md)).
 
 **For complex work**, delegate codebase research to a sub-agent for unbiased findings:
 
@@ -70,7 +70,7 @@ Read AGENTS.md first. Follow project conventions strictly.
 
 1. **Implement the phase** — code and tests together, end to end across all affected layers.
    - Test-first when behavior is specifiable — red/green/refactor for business logic, state transitions, parsers. See [tdd-discipline.md](references/tdd-discipline.md), [good-tests.md](references/good-tests.md), [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md).
-   - Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](references/barrel-imports.md))
+   - Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](../_shared/barrel-imports.md))
    - Verify unfamiliar APIs before using them (see [verify-before-assume.md](references/verify-before-assume.md))
 
 2. **Phase gate — verify before proceeding:**

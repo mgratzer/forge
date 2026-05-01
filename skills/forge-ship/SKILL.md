@@ -35,7 +35,7 @@ git diff origin/$DEFAULT_BRANCH...HEAD
 git diff --name-only origin/$DEFAULT_BRANCH...HEAD
 ```
 
-**Read and collect** (pushed, not referenced): [forge-reviewer](../forge-reflect/roles/forge-reviewer.md), [review dimensions](../forge-reflect/references/review-dimensions.md), [review rubric](../forge-reflect/references/review-rubric.md), `AGENTS.md`.
+**Read and collect** (pushed, not referenced): [forge-reviewer](../_shared/roles/forge-reviewer.md), [review dimensions](../_shared/review-dimensions.md), [review rubric](../_shared/review-rubric.md), `AGENTS.md`.
 
 Compose **four self-contained review tasks** — one per dimension — each embedding: role definition, one dimension checklist, rubric, `AGENTS.md`, full diff, changed file list, branch/PR info, any additional context.
 
@@ -60,14 +60,14 @@ Aggregate and deduplicate findings from all four review agents.
 - **Fix now** — small, low-effort changes that fit in this PR → apply fix, commit
 - **Defer** — larger changes that expand PR scope → create an Issue in the project's Issue tracker
 
-**In unattended mode:** auto-triage using severity from the [review rubric](../forge-reflect/references/review-rubric.md):
+**In unattended mode:** auto-triage using severity from the [review rubric](../_shared/review-rubric.md):
 
 - **P0–P1** → fix now, commit
 - **P2–P3** → defer, create an Issue in the project's Issue tracker
 
 For both modes, deferred items become Issues:
 - **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
-- **Markdown**: create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) and commit it
+- **Markdown**: create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) and commit it
 - **Other provider**: use the tool declared in AGENTS.md
 
 ### Step 5: Summary

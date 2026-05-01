@@ -68,11 +68,11 @@ file and answer each question following its rules.
 
 The role file defines the persona, behavior rules, and output format. The skill's blockquote provides only the task-specific checklist or instructions. Runtimes that support role-aware delegation compose both into the sub-agent's context; runtimes that don't can read the role file inline.
 
-Role files live inside the skill directory to ensure portable installation. If multiple skills need the same role, duplicate the file — self-containment beats DRY for distributed prompt files.
+Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit.
 
 ## Role File Format
 
-Role files define reusable sub-agent personas. Each lives inside the skill that uses it (under `roles/`).
+Role files define reusable sub-agent personas. Skill-specific roles live under the skill's `roles/` directory; cross-skill roles live in `_shared/roles/`.
 
 **YAML Frontmatter:**
 
@@ -109,7 +109,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for all deferred items found in reflection | reflect |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
-| Review severity | P0-P3 (see reflect/references/review-rubric.md) | reflect, ship |
+| Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
 | Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
@@ -118,7 +118,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Reusable roles | Co-located sub-agent personas under each skill's `roles/`; skills reference them instead of inlining persona blocks | implement (forge-scout), reflect (forge-reviewer) |
+| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship (forge-reviewer in _shared/) |
 | Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |

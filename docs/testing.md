@@ -27,7 +27,7 @@ gh pr create --help
 
 For GraphQL queries in `forge-address-pr-feedback`, verify the query structure against the [GitHub GraphQL API docs](https://docs.github.com/en/graphql).
 
-**Markdown provider path:** when modifying skills that use the `plan/` folder provider, verify that file operations match [plan-folder-spec.md](../skills/forge-create-issue/references/plan-folder-spec.md) — correct directory structure, frontmatter fields, and INDEX.md updates.
+**Markdown provider path:** when modifying skills that use the `plan/` folder provider, verify that file operations match [plan-folder-spec.md](../skills/_shared/plan-folder-spec.md) — correct directory structure, frontmatter fields, and INDEX.md updates.
 
 ### 3. End-to-End Manual Testing
 

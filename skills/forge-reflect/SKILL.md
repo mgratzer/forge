@@ -57,7 +57,7 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-**Before delegating, read and collect** (pushed, not referenced): [forge-reviewer](roles/forge-reviewer.md) role, [review dimensions](references/review-dimensions.md), [review rubric](references/review-rubric.md), `AGENTS.md`.
+**Before delegating, read and collect** (pushed, not referenced): [forge-reviewer](../_shared/roles/forge-reviewer.md) role, [review dimensions](../_shared/review-dimensions.md), [review rubric](../_shared/review-rubric.md), `AGENTS.md`.
 
 **Delegate to four parallel sub-agents**, each assigned one quality dimension. Fresh context eliminates self-review bias. If no sub-agent support, execute dimensions inline sequentially.
 
@@ -85,7 +85,7 @@ State your recommendation and let the user decide. Then:
 - **Fix now items:** apply the fix and commit it
 - **Deferred items:** create an Issue in the project's Issue tracker:
   - **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
-  - **Markdown**: create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) and commit it
+  - **Markdown**: create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) and commit it
   - **Other provider**: use the tool declared in AGENTS.md
 
 ## Output Format
@@ -115,7 +115,7 @@ State your recommendation and let the user decide. Then:
 - Created #<num>: <title>
 - (or: None identified)
 
-(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](references/review-rubric.md).)
+(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](../_shared/review-rubric.md).)
 ```
 
 ## Guidelines

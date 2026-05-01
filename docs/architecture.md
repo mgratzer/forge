@@ -13,17 +13,23 @@ forge/
 │   ├── forge-shape/                        # Optional: Shape ideas into plans before issue creation
 │   │   ├── SKILL.md
 │   │   └── references/shaping-methodology.md  # One-at-a-time questioning philosophy
+│   ├── _shared/                           # Cross-skill references (see coding-guidelines.md)
+│   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
+│   │   ├── review-rubric.md               # P0–P3 severity taxonomy
+│   │   ├── review-dimensions.md           # Four quality dimensions for parallel review
+│   │   ├── deep-modules.md                # Module depth audit checklist
+│   │   ├── barrel-imports.md              # Import structure discipline
+│   │   └── roles/forge-reviewer.md        # Review agent persona
 │   ├── forge-create-issue/
 │   │   ├── SKILL.md                       # Step 1: Plan and create Issues (provider-agnostic)
-│   │   └── references/                    # Slicing philosophy, AFK/HITL, plan-folder spec
+│   │   └── references/                    # Slicing philosophy, AFK/HITL
 │   ├── forge-implement/
 │   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
 │   │   ├── references/                    # Progressive disclosure: implementation craft companions
 │   │   └── roles/forge-scout.md           # Blind codebase research persona
 │   ├── forge-reflect/
 │   │   ├── SKILL.md                       # Step 3: Self-review changes (PR, branch, or uncommitted)
-│   │   ├── references/                    # Review dimensions and severity rubric
-│   │   └── roles/forge-reviewer.md        # Review agent persona
+│   │   └── references/                    # (shared references moved to _shared/)
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 │   └── forge-ship/SKILL.md                # Composite: implement + review in one invocation
 ├── docs/                                  # Project documentation
@@ -90,7 +96,7 @@ The instruction-budget figure (~150–200 instructions) is a related but distinc
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
 | Skill composition | Composite skills reference other skills by path | Keeps orchestrators lean; avoids duplicating step-level instructions across skills |
 | Tool-layer integration | Skills reference external tools by name, not by import | Extensions (e.g., [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents)) register tools; skills use them when available and fall back when not — zero coupling |
-| Reusable roles | `<skill>/roles/*.md` — co-located sub-agent personas | Delegation personas separated from skill body; co-located for portable installation |
+| Reusable roles | Skill-specific: `<skill>/roles/*.md`; cross-skill: `_shared/roles/*.md` | Delegation personas separated from skill body; single-use roles co-locate with the skill, shared roles live in `_shared/` |
 | Blind research delegation | Scout researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |

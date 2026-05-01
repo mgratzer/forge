@@ -104,7 +104,7 @@ gh issue create \
 Proposed solution: <what should be done>"
 ```
 
-**Markdown:** create a new issue file per the [plan-folder-spec](../forge-create-issue/references/plan-folder-spec.md) with the PR context in the body, and commit it.
+**Markdown:** create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) with the PR context in the body, and commit it.
 
 **Other provider:** use the tool declared in AGENTS.md.
 
