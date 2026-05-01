@@ -57,13 +57,9 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-**Before delegating, read and collect** (pushed, not referenced): [forge-reviewer](../_shared/roles/forge-reviewer.md) role, [review dimensions](../_shared/review-dimensions.md), [review rubric](../_shared/review-rubric.md), `AGENTS.md`.
+Follow the [review-delegation](../_shared/review-delegation.md) process: collect materials, compose four dimension-specific review tasks, delegate to parallel sub-agents (or execute inline as fallback), and aggregate findings.
 
-**Delegate to four parallel sub-agents**, each assigned one quality dimension. Fresh context eliminates self-review bias. If no sub-agent support, execute dimensions inline sequentially.
-
-Each sub-agent receives: role definition, one dimension checklist, rubric, `AGENTS.md`, full diff, changed file list, any additional context.
-
-**Expected output:** Findings per agent, grouped by file with severity tags (P0/P1/P2).
+**Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Quality Gates
 
@@ -118,7 +114,7 @@ State your recommendation and let the user decide. Then:
 ## Guidelines
 
 - **Pattern consistency is the highest-value check**
-- **Skip noise** — see [review rubric](references/review-rubric.md)
+- **Skip noise** — see [review rubric](../_shared/review-rubric.md)
 - **Triage deferred items with the user** — only create Issues for confirmed deferrals
 - **Aggregate and deduplicate** — merge overlapping findings, keep highest severity
 

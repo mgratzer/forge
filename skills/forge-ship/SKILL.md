@@ -24,36 +24,13 @@ Read [forge-implement](../forge-implement/SKILL.md) and execute its Steps 1 thro
 
 Do not produce the implementation summary yet — the review will inform the final report.
 
-### Step 2: Prepare Review Context
+### Step 2: Review (delegate)
 
-Collect the materials the reviewers need:
+Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, compose four dimension-specific review tasks, delegate to parallel sub-agents (or execute inline as fallback), and aggregate findings. Fresh context eliminates self-review bias — reviewers have no memory of implementation decisions.
 
-```bash
-git fetch origin
-DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git diff origin/$DEFAULT_BRANCH...HEAD
-git diff --name-only origin/$DEFAULT_BRANCH...HEAD
-```
+### Step 3: Triage Findings
 
-**Read and collect** (pushed, not referenced): [forge-reviewer](../_shared/roles/forge-reviewer.md), [review dimensions](../_shared/review-dimensions.md), [review rubric](../_shared/review-rubric.md), `AGENTS.md`.
-
-Compose **four self-contained review tasks** — one per dimension — each embedding: role definition, one dimension checklist, rubric, `AGENTS.md`, full diff, changed file list, branch/PR info, any additional context.
-
-### Step 3: Review (delegate)
-
-**Delegate to four parallel sub-agents for review.** Fresh context eliminates self-review bias — each reviewer has no memory of implementation decisions and focuses on one quality dimension.
-
-Use the first available delegation mechanism:
-
-1. **`subagent` tool** (e.g., Pi with [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents)): spawn four concurrent sub-agents with `agent: "forge-reviewer"`, one for each dimension task.
-2. **Runtime context forking** (e.g., Claude Code Task tool): delegate four fresh-context review tasks in parallel.
-3. **Inline fallback**: if no sub-agent mechanism is available, execute the four review dimensions sequentially in the current context using the role and checklists already collected in Step 2.
-
-Wait for **all four** review results before proceeding.
-
-### Step 4: Triage Findings
-
-Aggregate and deduplicate findings from all four review agents.
+Use the aggregated findings from the review delegation.
 
 **In attended mode (default):** present each finding to the user with a recommendation:
 
@@ -67,7 +44,7 @@ Aggregate and deduplicate findings from all four review agents.
 
 For both modes, deferred items become Issues — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
 
-### Step 5: Summary
+### Step 4: Summary
 
 Report implementation and review results together.
 
