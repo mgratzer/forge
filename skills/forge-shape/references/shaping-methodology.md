@@ -23,6 +23,17 @@ Risk: anchor too strong silences disagreement. Mitigate by phrasing as recommend
 
 Order questions so each is resolvable given prior answers. Patterns: decision → consequence, scope → detail, persona → flow. If unsure whether two questions are dependent, ask the simpler one first.
 
+## When to challenge
+
+Convergence without challenge produces polite alignment on bad plans. Push back when:
+
+- **Terminology conflicts with CONTEXT.md** — "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?" Pick one canonical term and list the other as an alias to avoid.
+- **Claims contradict the code** — "Your code does X, but you just said Y — which is right?" Don't let stated intent and actual behavior diverge silently.
+- **Vague or overloaded terms** — "You're saying 'account' — do you mean the Customer or the User? Those are different things." Propose a precise term.
+- **Fuzzy boundaries** — invent a concrete scenario that probes the edge case. "What happens when an order is partially shipped and the customer cancels? Does the cancellation apply to the whole order or just the unshipped items?" Force precision.
+
+The goal is still convergence — but convergence on something that survives contact with the codebase and the domain, not just convergence on what sounds good in conversation.
+
 ## When to stop
 
 - User accepted recommended answers for several consecutive questions

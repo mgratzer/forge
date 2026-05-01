@@ -33,14 +33,21 @@ Check for related Issues in the project's Issue tracker:
 
 ### Step 2: Shape the Problem
 
-Converge on a shared design concept through one-at-a-time structured questioning. See [shaping-methodology.md](references/shaping-methodology.md) for why one-at-a-time beats batching, how to provide recommended answers without over-anchoring, walking the dependency tree of decisions, and when to stop.
+Converge on a shared design concept through one-at-a-time structured questioning. See [shaping-methodology.md](references/shaping-methodology.md) for why one-at-a-time beats batching, how to provide recommended answers without over-anchoring, walking the dependency tree of decisions, when to challenge, and when to stop.
+
+If CONTEXT.md exists, read it — use its vocabulary when framing questions and challenging the user's language.
 
 Loop until the design concept is clear:
 
 1. Ground the next question in Step 1 findings — never ask what the codebase already answers
 2. Ask one question with your recommended answer (phrase as "I'd suggest X because Y", not as a decision)
 3. Wait for the user's response
-4. Adjust your understanding and pick the next question
+4. **Challenge when warranted** — if the answer conflicts with CONTEXT.md vocabulary, call it out. If it contradicts what the code does, surface it. If it uses vague or overloaded terms, propose a precise canonical term. Invent concrete scenarios to stress-test fuzzy boundaries.
+5. Adjust your understanding and pick the next question
+
+**Side effects during shaping** — as terms and decisions crystallize:
+- **Resolved term?** Update CONTEXT.md inline — don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
+- **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off — offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
 
 Stop when the user has accepted recommended answers for several consecutive questions, the remaining questions are taste-level (not decision-level), or the shared design concept is clear enough to summarize.
 
@@ -100,12 +107,18 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 ## Suggested Issue Breakdown
 - [ ] Issue 1: <type>(<scope>): <description>
 - [ ] Issue 2: <type>(<scope>): <description>
+
+## Side Effects
+- CONTEXT.md: <terms added or updated>
+- ADRs: <decisions recorded, if any>
 ```
 
 ## Guidelines
 
 - **One question at a time** — convergence comes from depth per answer, not breadth per prompt
 - **Always recommend an answer** — phrased as a recommendation, not a decision
+- **Challenge then converge** — push back on terminology conflicts, code contradictions, and vague boundaries before accepting an answer
+- **Use the project's language** — reference CONTEXT.md vocabulary; when new terms emerge, capture them immediately
 - **Problem over solution** — clarify what's wrong before proposing how to fix it
 - **Stay grounded** — reference specific code, files, and patterns, not abstractions
 - **Approach exploration is conditional** — skip Step 3 when shaping already surfaced the approach
