@@ -24,7 +24,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Inline fallback** — `(delegate)` step provides both sub-agent and in-context paths for runtime portability.
 
-**Self-containment** — duplicate files rather than cross-skill paths; skills install independently.
+**Self-containment** — single-use references stay with the skill; cross-skill references live in `skills/_shared/`. Within the shared layer, files have explicit consumers; outside it, skills are self-contained.
 
 **Smart zone / Dumb zone** — workable region (~first 100k tokens) vs degraded region of LLM context. See [architecture — Operating Constraints](docs/architecture.md#operating-constraints).
 
