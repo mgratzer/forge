@@ -104,14 +104,13 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, reflect |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Pre-flight validation | Verify external deps, config placement, generated types before feature code | implement |
-| Test as you go | Run tests after each commit, not just at the end | implement |
+| Phase execution | Pre-flight, per-phase TDD loop, phase gates — consolidated in implement/references/phase-execution.md | implement |
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for all deferred items found in reflection | reflect |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
-| Parallel review agents | `(delegate)` step with parallel sub-agents, each focused on a different review dimension (correctness, security, code quality, efficiency); inline fallback executes sequentially | reflect, ship |
+| Review delegation | Four parallel sub-agents per dimension, consolidated in `_shared/review-delegation.md`; inline fallback executes sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
 | Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |

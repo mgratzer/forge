@@ -60,26 +60,7 @@ When working from a plan file or free-text (no issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-**Pre-flight checks** — validate the foundation before feature code: codegen, config placement, external services, env vars, existing patterns. See [pre-flight.md](references/pre-flight.md).
-
-**Pre-flight gate:**
-- [ ] Foundation validated (codegen current, config verified, services reachable)
-- [ ] Existing patterns identified and recorded in plan
-
-**For each vertical phase in the structure outline:**
-
-1. **Implement the phase** — code and tests together, end to end across all affected layers.
-   - Test-first when behavior is specifiable — red/green/refactor for business logic, state transitions, parsers. See [tdd-discipline.md](references/tdd-discipline.md), [good-tests.md](references/good-tests.md), [when-tdd-is-wrong.md](references/when-tdd-is-wrong.md).
-   - Follow existing patterns and import style — no barrel files unless the project uses them (see [barrel-imports.md](../_shared/barrel-imports.md))
-   - Verify unfamiliar APIs before using them (see [verify-before-assume.md](references/verify-before-assume.md))
-
-2. **Phase gate — verify before proceeding:**
-   - [ ] Tests exist for new behavior in this phase
-   - [ ] All tests pass (not just new ones)
-   - [ ] No lint/type errors introduced
-   - [ ] Commit the phase — one logical change per commit, conventional format, `Refs #<ISSUE_NUMBER>` when applicable
-
-Use TodoWrite to track progress through phases.
+Execute vertical phases following [phase-execution](references/phase-execution.md) — pre-flight validation, per-phase implementation with testing discipline, and phase gates with commits.
 
 ### Step 5: Pattern Consistency Audit
 
