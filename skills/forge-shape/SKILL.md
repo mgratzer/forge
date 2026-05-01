@@ -26,10 +26,7 @@ Before asking any questions, explore the codebase for related context:
 - Identify integration points, dependencies, and architectural boundaries
 - Look for prior attempts or related work (git log, closed issues)
 
-Check for related Issues in the project's Issue tracker:
-- **GitHub**: `gh issue list --state all --search "<relevant keywords>"`
-- **Markdown**: grep `plan/INDEX.md` and `plan/issues/` for relevant keywords
-- **Other provider**: use the tool declared in AGENTS.md
+Check for related Issues in the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for search mechanics per provider.
 
 ### Step 2: Shape the Problem
 

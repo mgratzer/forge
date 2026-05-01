@@ -91,22 +91,7 @@ Reply format by category:
 
 ### Step 4: Create Follow-up Issues
 
-For valid out-of-scope improvements, create an Issue in the project's Issue tracker:
-
-**GitHub:**
-```bash
-gh issue create \
-  --title "<description>" \
-  --body "Identified during PR review of #<PR_NUMBER>.
-
-> <reviewer's comment>
-
-Proposed solution: <what should be done>"
-```
-
-**Markdown:** create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) with the PR context in the body, and commit it.
-
-**Other provider:** use the tool declared in AGENTS.md.
+For valid out-of-scope improvements, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
 
 ### Step 5: Push and Summarize
 

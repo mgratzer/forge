@@ -60,12 +60,6 @@ grep -rn "additional context\|-- <additional context>" \
   skills/forge-reflect \
   skills/forge-address-pr-feedback
 
-# Check provider-conditional blocks stay in sync across skills
-grep -rn "GitHub\|Markdown\|Other provider" \
-  skills/forge-create-issue/SKILL.md \
-  skills/forge-implement/SKILL.md \
-  skills/forge-reflect/SKILL.md \
-  skills/forge-ship/SKILL.md \
-  skills/forge-shape/SKILL.md \
-  skills/forge-address-pr-feedback/SKILL.md
+# Check all skills reference _shared/issue-operations.md (not inline conditionals)
+grep -rn "issue-operations" skills/*/SKILL.md
 ```

@@ -125,7 +125,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage uses severity (P0–P1 fix, P2–P3 defer) | ship, implement |
-| Issue tracker providers | Provider-conditional blocks for issue create/read/search/defer; GitHub default, markdown `plan/`, other via AGENTS.md | create-issue, implement, reflect, ship, shape, address-pr-feedback |
+| Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
 | Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
 ## Instruction Budget

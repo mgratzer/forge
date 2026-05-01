@@ -65,10 +65,7 @@ Aggregate and deduplicate findings from all four review agents.
 - **P0–P1** → fix now, commit
 - **P2–P3** → defer, create an Issue in the project's Issue tracker
 
-For both modes, deferred items become Issues:
-- **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
-- **Markdown**: create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) and commit it
-- **Other provider**: use the tool declared in AGENTS.md
+For both modes, deferred items become Issues — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
 
 ### Step 5: Summary
 

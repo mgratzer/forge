@@ -90,25 +90,9 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user. Iterate until satisfied. Then create the Issue in the project's Issue tracker:
+Present the draft to the user. Iterate until satisfied. Then create the Issue using the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
 
-**GitHub:**
-```bash
-gh issue create \
-  --title "<type>(<scope>): <description>" \
-  --body "$(cat <<'EOF'
-<issue body>
-EOF
-)" \
-  --label "<labels>"
-```
 For GitHub epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
-
-**Markdown** (`plan/` folder):
-Create the issue file following the [plan-folder-spec](../_shared/plan-folder-spec.md) — determine the next ID, write `plan/issues/<ID>-<slug>.md` with frontmatter and body, and append a row to `plan/INDEX.md`. Commit the new files.
-
-**Other provider:**
-Use the tool or CLI declared in the project's AGENTS.md to create the issue with the same title, body, and labels.
 
 Share the issue reference. Suggest using `forge-implement` to start implementation.
 

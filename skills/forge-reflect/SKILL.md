@@ -83,10 +83,7 @@ For each item, recommend one of:
 
 State your recommendation and let the user decide. Then:
 - **Fix now items:** apply the fix and commit it
-- **Deferred items:** create an Issue in the project's Issue tracker:
-  - **GitHub**: `gh issue create --title "<title>" --body "<context and proposed solution>"`
-  - **Markdown**: create a new issue file per the [plan-folder-spec](../_shared/plan-folder-spec.md) and commit it
-  - **Other provider**: use the tool declared in AGENTS.md
+- **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)) with context and proposed solution
 
 ## Output Format
 

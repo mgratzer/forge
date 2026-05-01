@@ -18,7 +18,7 @@ Primary input: an Issue number/URL, a plan file path, or free-text description. 
 
 Determine the input type and extract requirements. Detect the Issue tracker provider (see [CONTEXT.md](../../CONTEXT.md)).
 
-- **Issue** — fetch via `gh issue view` (GitHub), read `plan/issues/<ID>-*.md` (Markdown), or use the declared tool (Other). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing.
+- **Issue** — fetch using the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints. Ask clarifying questions if underspecified.
 
