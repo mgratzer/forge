@@ -48,7 +48,7 @@ No dependency installation required.
 
 ## Adding or Modifying Roles
 
-Roles are sub-agent persona definitions that live inside the skill directory that uses them (under `roles/`).
+Roles are sub-agent persona definitions. Skill-specific roles live under the skill's `roles/` directory; cross-skill roles live in `_shared/roles/`.
 
 ### Adding a New Role
 
@@ -66,7 +66,7 @@ Extract a persona into a role file when:
 
 **Don’t extract** trivial personas that are just a sentence or two — inline them in the skill’s blockquote.
 
-If multiple skills need the same role, duplicate the file into each skill. Self-containment beats DRY for distributed prompt files.
+If multiple skills need the same role, place it in `skills/_shared/roles/` rather than duplicating across skills.
 
 ### Modifying an Existing Role
 

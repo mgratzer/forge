@@ -58,10 +58,10 @@ npx skills add mgratzer/forge
 **Manual** — symlink into your agent's skills directory:
 
 ```bash
-ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
+ln -s /path/to/forge/skills/forge-* /path/to/forge/skills/_shared <your-agent-skills-dir>/
 ```
 
-Check your agent's docs for the correct skills directory path.
+Both `forge-*` skills and the `_shared/` directory are required — skills reference shared modules via `../_shared/` paths. Check your agent's docs for the correct skills directory path.
 
 ## Project Guidance
 
