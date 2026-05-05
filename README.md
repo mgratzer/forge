@@ -43,7 +43,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
                                                                         ╰──── forge-ship ────╯
 ```
 
-`forge-ship` composes implement + review into a single invocation. For fresh-context review in Pi, pair with [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents).
+`forge-ship` composes implement + review into a single invocation. Review stays lean by default — tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer, with a second pass only when risk justifies it. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
 
 ## Install
 

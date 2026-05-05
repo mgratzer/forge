@@ -68,6 +68,8 @@ file and answer each question following its rules.
 
 The role file defines the persona, behavior rules, and output format. The skill's blockquote provides only the task-specific checklist or instructions. Runtimes that support role-aware delegation compose both into the sub-agent's context; runtimes that don't can read the role file inline.
 
+**Important:** role files are **not** the same thing as runtime agent definitions. Do not assume a role file's `name:` can be passed as `agent: "<name>"` to a sub-agent tool. If the runtime separates prompt content from agent selection, push the role file body via the delegated task or `systemPrompt`. If selecting an agent also selects a model/provider, prefer leaving the agent unspecified so the sub-agent inherits the parent session configuration unless the user has explicitly configured a matching agent. Runtime-specific agent files, presets, or harness config are optional tuning layers — Forge must still work correctly without them.
+
 Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit.
 
 ## Role File Format
@@ -104,13 +106,13 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, reflect |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Phase execution | Pre-flight, per-phase TDD loop, phase gates — consolidated in implement/references/phase-execution.md | implement |
+| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — kept inline in implement so the default execution path does not need extra reference files | implement |
 | Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for all deferred items found in reflection | reflect |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
-| Review delegation | Four parallel sub-agents per dimension, consolidated in `_shared/review-delegation.md`; inline fallback executes sequentially | reflect, ship |
+| Review delegation | Tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
 | Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
@@ -123,7 +125,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
-| Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage uses severity (P0–P1 fix, P2–P3 defer) | ship, implement |
+| Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items | ship, implement |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
 | Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
 
@@ -133,6 +135,8 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 
 - **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
+- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
+- **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 
 ## Style Rules

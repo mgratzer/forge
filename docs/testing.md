@@ -37,6 +37,8 @@ The most reliable test is running the skill on a real project:
 2. Invoke the skill with `/forge-<skill-name>`
 3. Walk through the full process
 4. Verify all generated output (issues, branches, PRs, files) is correct
+5. If the skill delegates to sub-agents (for example `forge-reflect` or `forge-ship`), verify the delegated runs use either the parent session's model/provider or whatever compatible runtime-level model routing/configuration you intentionally set up
+6. For `forge-reflect` and `forge-ship`, verify review stays lean by default — tiny low-risk diffs stay inline, ordinary diffs use one reviewer, and a second pass appears only for clearly high-risk or broad changes
 
 ### 4. Cross-Skill Consistency Check
 

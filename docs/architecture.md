@@ -16,7 +16,7 @@ forge/
 │   ├── _shared/                           # Cross-skill references (see coding-guidelines.md)
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
-│   │   ├── review-dimensions.md           # Four quality dimensions for parallel review
+│   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
 │   │   └── roles/forge-reviewer.md        # Review agent persona
@@ -49,15 +49,15 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 `forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
-`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, delegating review to fresh-context reviewer sub-agents.
+`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, keeping review lean with inline review for tiny low-risk diffs and one fresh-context reviewer by default otherwise.
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning — challenging terminology against CONTEXT.md, cross-referencing claims against code, stress-testing with concrete scenarios — until a shared design concept emerges. Updates CONTEXT.md inline as terms are resolved. Optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates Issues in the project's Issue tracker (GitHub, markdown `plan/` folder, or user-configured provider)
-- **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases, and opens a PR
-- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) via four parallel reviewer agents (correctness, security, code quality, efficiency) using a P0-P3 severity rubric
+- **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases using inline guidance, and opens a PR
+- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** composes implement and reflect — implementation runs inline, review is delegated to fresh-context reviewer sub-agents, findings are triaged with the user
+- **forge-ship** composes implement and reflect — implementation runs inline, review stays inline for tiny low-risk diffs and otherwise uses one fresh-context reviewer by default, findings are triaged with the user
 
 ## Skill & Role File Format
 
@@ -74,7 +74,7 @@ Practitioners call the workable region the **smart zone** and the degraded regio
 | Mechanism | How it responds |
 |-----------|-----------------|
 | Sub-agent delegation (`(delegate)` steps) | Move work into fresh context windows when the parent is approaching the dumb zone |
-| Fresh-context review (`forge-reflect`, `forge-ship`) | Reviewer starts in smart zone; implementation memory does not bias review |
+| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs can stay inline; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
 | Progressive disclosure (`references/`) | Load companion philosophy on demand instead of always-loading every skill's full content |
 | Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; cold tier loads only when needed |
 | Instruction budget (~150–200 instructions per skill body) | Skills stay lean enough to compose without exceeding what frontier LLMs follow consistently |
@@ -95,7 +95,7 @@ The instruction-budget figure (~150–200 instructions) is a related but distinc
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
 | Skill composition | Composite skills reference other skills by path | Keeps orchestrators lean; avoids duplicating step-level instructions across skills |
-| Tool-layer integration | Skills reference external tools by name, not by import | Extensions (e.g., [pi-interactive-subagents](https://github.com/HazAT/pi-interactive-subagents)) register tools; skills use them when available and fall back when not — zero coupling |
+| Tool-layer integration | Skills reference external tools by name, not by import | Runtimes and extensions expose delegation/model-selection capabilities; skills use them when available and fall back when not — zero coupling. Runtime-specific agent files or presets are optional local tuning, not part of Forge. When a runtime couples agent names to model/provider selection, push role content, prefer inheriting the parent session configuration over hard-coded agent IDs, use cheap fast models for factual scouting, and prefer cheaper review-capable models for routine review work |
 | Reusable roles | Skill-specific: `<skill>/roles/*.md`; cross-skill: `_shared/roles/*.md` | Delegation personas separated from skill body; single-use roles co-locate with the skill, shared roles live in `_shared/` |
 | Blind research delegation | Scout researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
