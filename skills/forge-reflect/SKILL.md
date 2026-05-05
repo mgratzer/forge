@@ -1,6 +1,6 @@
 ---
 name: forge-reflect
-description: Review current changes for correctness, security, code reuse, quality, and efficiency using parallel review agents. Works on a PR, branch diff, or uncommitted changes. Use when the user wants to self-review before committing, pushing, or requesting peer review.
+description: Review current changes with a lean review flow. Works on a PR, branch diff, or uncommitted changes. Tiny low-risk diffs stay inline; larger or riskier changes use fresh-context review. Use when the user wants to self-review before committing, pushing, or requesting peer review.
 context: fork
 disable-model-invocation: true
 ---
@@ -57,7 +57,7 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-Follow the [review-delegation](../_shared/review-delegation.md) process: collect materials, compose four dimension-specific review tasks, delegate to parallel sub-agents (or execute inline as fallback), and aggregate findings.
+Follow the [review-delegation](../_shared/review-delegation.md) process: collect materials, prefer one inline review pass for tiny low-risk diffs, otherwise run one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings.
 
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
@@ -67,15 +67,17 @@ Run the project's lint, format, type check, and test commands. Fix issues and co
 
 ### Step 4: Report
 
-Aggregate findings from all four review agents (Step 2) with quality gate results (Step 3) into the summary format below. Deduplicate any findings flagged by multiple agents — keep the highest severity.
+Aggregate findings from all review passes (Step 2) with quality gate results (Step 3) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
 
 ### Step 5: Triage Deferred Items
 
 Present each deferred improvement to the user and ask whether to **fix now** or **defer as a follow-up issue**.
 
+Bias hard toward **fix now**. Recommend deferral only when the finding is truly out of scope, materially expands the PR, or needs separate design/review.
+
 For each item, recommend one of:
-- **Fix now** — small, low-effort changes that fit naturally in the current work (e.g., a missing test case, a stale doc reference, a duplicated line)
-- **Defer** — larger changes that would expand scope or require separate review (e.g., a cross-cutting refactor, a new feature suggestion)
+- **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
+- **Defer** — only for larger or truly out-of-scope changes (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
 State your recommendation and let the user decide. Then:
 - **Fix now items:** apply the fix and commit it
@@ -88,25 +90,20 @@ State your recommendation and let the user decide. Then:
 
 **Scope:** <PR #N | branch <name> vs <default> | uncommitted changes>
 
-### Correctness & Patterns
-- [P0/P1] <finding>
-
-### Security
-- [P0/P1] <finding>
-
-### Code Reuse & Quality
-- [P1/P2] <finding>
-
-### Efficiency
-- [P1/P2] <finding>
-
-### Tests & Documentation
-- [P2] <finding>
+### Findings
+#### <file>
+- [P0/P1/P2] <finding>
 
 ### Deferred Items
 - Fixed: <what was addressed>
 - Created #<num>: <title>
 - (or: None identified)
+
+### Quality Gates
+- Lint: ✓/✗
+- Format: ✓/✗
+- Types: ✓/✗
+- Tests: ✓/✗
 
 (Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](../_shared/review-rubric.md).)
 ```
@@ -114,8 +111,10 @@ State your recommendation and let the user decide. Then:
 ## Guidelines
 
 - **Pattern consistency is the highest-value check**
+- **Tiny low-risk diffs stay inline** — avoid fresh-context overhead when the change is obviously small
+- **Keep review lean** — one reviewer by default, second only when risk justifies it
 - **Skip noise** — see [review rubric](../_shared/review-rubric.md)
-- **Triage deferred items with the user** — only create Issues for confirmed deferrals
+- **Bias toward fixing in the same PR** — only create Issues for confirmed deferrals that are truly larger or out of scope
 - **Aggregate and deduplicate** — merge overlapping findings, keep highest severity
 
 ## Related Skills
