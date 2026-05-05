@@ -26,7 +26,7 @@ Flag for user input if: vague criteria, `discovery` label, scope too large, or d
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — data model, API contracts, module boundaries (see [deep-modules.md](../_shared/deep-modules.md)).
+Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals. Prefer interfaces that stay simpler than their implementations; avoid pass-through wrappers and shallow seams.
 
 **For complex work**, delegate codebase research to a sub-agent for unbiased findings:
 
@@ -37,9 +37,11 @@ Write 3–7 factual questions about existing systems, patterns, and integration 
 **Inputs:** Role: [forge-scout](roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
+If the runtime supports per-task model choice, prefer a **cheap fast model** for scout work — scouting is factual reconnaissance, not deep synthesis. Otherwise inherit the parent session model and keep the scout task narrow.
+
 From the research, create a plan:
 - Durable decisions
-- **Structure outline** — vertical phases, each spanning all affected layers with a verification step. See [vertical-phases.md](references/vertical-phases.md).
+- **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
 - Files to create or modify
 - Scope boundaries (what will NOT change)
 
@@ -60,7 +62,10 @@ When working from a plan file or free-text (no issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-Execute vertical phases following [phase-execution](references/phase-execution.md) — pre-flight validation, per-phase implementation with testing discipline, and phase gates with commits.
+Execute the work in vertical phases:
+- **Pre-flight before the first phase** — validate only the checks that matter for this change: codegen, config placement, required env vars, external dependencies, and existing code patterns.
+- **Per phase** — implement end to end across all needed layers, keep tests close to the behavior, and verify unfamiliar APIs before using them.
+- **Phase gate** — before moving on, run relevant tests/checks, confirm no new lint/type failures, and commit one logical change.
 
 ### Step 5: Pattern Consistency Audit
 
@@ -70,7 +75,7 @@ If you changed a pattern (error handling, component structure, API convention), 
 grep -rn "<pattern>" <search-root>/
 ```
 
-See [pattern-audit.md](references/pattern-audit.md) for what counts as "the pattern", how to scope the search, distinguishing missed updates from intentional drift, and worked examples.
+Audit the **pattern shape**, not just a literal string. Choose the right search scope, re-grep after updating, and note any intentional exceptions in the PR.
 
 ### Step 6: Update Documentation
 
