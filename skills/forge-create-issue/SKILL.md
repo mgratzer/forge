@@ -35,7 +35,9 @@ Verify external dependencies are accessible if relevant — flag broken ones bef
 
 ### Step 3: Present Alternative Approaches
 
-**Always present 2-4 different approaches.** Never jump to a single solution.
+**Skip this step** if the input already contains a chosen approach with rationale — the decision was already made through deliberate analysis. Proceed directly to Step 4.
+
+Otherwise, **always present 2-4 different approaches.** Never jump to a single solution.
 
 For each approach:
 - One-line summary
