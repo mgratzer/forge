@@ -45,14 +45,18 @@ Read AGENTS.md. Implement in vertical phases — each phase spans all affected l
 
 After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../forge-implement/references/pattern-audit.md)).
 
-#### 1e. Quality gate
+#### 1e. Update docs
+
+Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
+
+#### 1f. Quality gate
 
 - [ ] Lint — no violations
 - [ ] Format — no violations
 - [ ] Type check — no errors
 - [ ] All tests pass
 
-#### 1f. Push and create PR
+#### 1g. Push and create PR
 
 Push branch, create PR with conventional commit title. Include: summary (closing the issue), changes list, test plan, quality checklist. Add a `> [!WARNING]` block for manual deployment steps.
 
