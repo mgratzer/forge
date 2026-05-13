@@ -10,7 +10,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Plan** — structured proposal for implementing an Issue: durable decisions, vertical phases, verification steps.
 
-**Vertical slice** — end-to-end implementation crossing all layers for one narrow scenario, testable in isolation. See [vertical-slicing](skills/forge-create-issue/references/vertical-slicing.md).
+**Vertical slice** — end-to-end implementation crossing all layers for one narrow scenario, testable in isolation. See [vertical-slicing](skills/_shared/vertical-slicing.md).
 
 **AFK / HITL** — Issue execution mode. AFK: fully specified for autonomous execution. HITL: requires human judgment during implementation. Set at creation time. See [afk-vs-hitl](skills/forge-create-issue/references/afk-vs-hitl.md).
 

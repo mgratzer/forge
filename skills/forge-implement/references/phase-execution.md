@@ -28,31 +28,19 @@ For each vertical phase in the structure outline:
 
 Code and tests together, end to end across all affected layers.
 
-**Verify unfamiliar APIs before using them.** Agents guess APIs based on training data — when wrong, debugging is expensive.
-- Check the codebase: `grep -rn "<method-or-flag>" src/`
-- Check source or docs: read type definitions, `<tool> --help`, or probe the endpoint
-- Check the version: verify the API exists at the project's pinned version
-
-Skip verification for: standard library builtins, APIs already used in this codebase, and type-checked interfaces.
+**Verify unfamiliar APIs before using them** — grep the codebase, check type definitions or docs, confirm the API exists at the project's pinned version. Skip for: stdlib, APIs already used in this codebase, type-checked interfaces.
 
 **Follow existing patterns and import style.** No barrel files unless the project uses them (see [barrel-imports](../../_shared/barrel-imports.md)).
 
 ### 2. Test
 
-**Test-first when behavior is specifiable** — red/green/refactor for business logic, state transitions, parsers, validators.
+Test-first for business logic, state transitions, parsers, validators. Skip TDD for UI layout, spikes, migrations of well-tested code, one-shot scripts.
 
-The cycle:
-1. **Red** — write a test capturing one behavior. Run it. Confirm it fails because the behavior is missing.
-2. **Green** — write the minimum code to pass. Resist scope expansion.
-3. **Refactor** — improve structure with the test as a safety net. Re-run after every change.
-
-**What makes a good test:**
+Rules:
 - Test at module boundaries, not internal helpers
 - Mock only non-deterministic or external dependencies (clock, RNG, network, paid APIs)
-- Assert on outcomes (`expect(result)`), not call traces (`expect(handler).toHaveBeenCalled()`)
-- Prefer integration when forced to choose — integration tests catch seam bugs that unit tests miss
-
-**Skip TDD for:** UI/visual work (test state transitions, not layout), exploratory prototypes, spikes, migrations of well-tested code, one-shot scripts. These are verified by inspection or existing tests.
+- Assert outcomes, not call traces
+- Prefer integration tests when choosing between unit and integration
 
 ### 3. Phase Gate
 

@@ -12,15 +12,56 @@ Implement end to end — code it, review it, ship it. Implementation runs in the
 
 Same as `forge-implement`: Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
-**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity. Strip the flag before passing to forge-implement.
+**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
 ## Process
 
 ### Step 1: Implement
 
-Read [forge-implement](../forge-implement/SKILL.md) and execute its Steps 1 through 8 (Understand → Plan → Branch → Implement → Pattern Audit → Docs → Quality Gates → Push & Create PR).
+#### 1a. Understand
 
-**In unattended mode:** skip plan approval in forge-implement Step 2 — proceed with the plan without calling AskUserQuestion.
+Determine input type (Issue number/URL, plan file, or free-text). For Issues, fetch via the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse requirements and acceptance criteria. Flag if underspecified.
+
+#### 1b. Plan
+
+For complex work, write 3–7 research questions and delegate to a sub-agent with the [forge-scout](../forge-implement/roles/forge-scout.md) role for unbiased codebase research. Prefer a cheap fast model for scout work.
+
+From the research, create a plan: durable decisions, vertical phases (see [vertical-slicing](../_shared/vertical-slicing.md)), files to change, scope boundaries.
+
+Present the plan via AskUserQuestion. **In unattended mode:** skip approval and proceed.
+
+#### 1c. Branch
+
+```bash
+git fetch origin
+git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git pull
+git checkout -b <type>/<issue-number>-<brief-description>
+```
+
+When working from a plan file or free-text (no issue number), use `<type>/<brief-description>`.
+
+#### 1d. Execute
+
+Read AGENTS.md. Run pre-flight checks before the first phase (see [phase-execution](../forge-implement/references/phase-execution.md)). Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
+
+After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../forge-implement/references/pattern-audit.md)).
+
+#### 1e. Update docs
+
+Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
+
+#### 1f. Quality gate
+
+- [ ] Lint — no violations
+- [ ] Format — no violations
+- [ ] Type check — no errors
+- [ ] All tests pass
+- [ ] Test coverage ≥ 90% for new/modified code
+
+#### 1g. Push and create PR
+
+Push branch, create PR with conventional commit title. Include: summary (closing the issue), changes list, test plan, quality checklist. Add a `> [!WARNING]` block for manual deployment steps.
 
 Do not produce the implementation summary yet — the review will inform the final report.
 

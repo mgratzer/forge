@@ -35,7 +35,9 @@ Verify external dependencies are accessible if relevant — flag broken ones bef
 
 ### Step 3: Present Alternative Approaches
 
-**Always present 2-4 different approaches.** Never jump to a single solution.
+**Skip this step** if the input already contains a chosen approach with rationale — the decision was already made through deliberate analysis. Proceed directly to Step 4.
+
+Otherwise, **always present 2-4 different approaches.** Never jump to a single solution.
 
 For each approach:
 - One-line summary
@@ -54,7 +56,7 @@ Evaluate if this should be one Issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing.md](references/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
+When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](../_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
 
 If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
 
