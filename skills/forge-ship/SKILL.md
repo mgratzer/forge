@@ -39,9 +39,11 @@ git pull
 git checkout -b <type>/<issue-number>-<brief-description>
 ```
 
+When working from a plan file or free-text (no issue number), use `<type>/<brief-description>`.
+
 #### 1d. Execute
 
-Read AGENTS.md. Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
+Read AGENTS.md. Run pre-flight checks before the first phase (see [phase-execution](../forge-implement/references/phase-execution.md)). Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
 
 After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../forge-implement/references/pattern-audit.md)).
 
@@ -55,6 +57,7 @@ Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 - [ ] Format — no violations
 - [ ] Type check — no errors
 - [ ] All tests pass
+- [ ] Test coverage ≥ 90% for new/modified code
 
 #### 1g. Push and create PR
 

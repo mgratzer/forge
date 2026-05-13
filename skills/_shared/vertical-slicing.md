@@ -21,6 +21,7 @@ Each phase must:
 - [ ] Touch **all layers** the phase needs (no "just the backend for now")
 - [ ] Include a **verification step** — test passing, curl returning expected response, UI flow completing
 - [ ] Be **one PR-sized increment** — more than ~5 acceptance items = probably two phases
+- [ ] **Dependencies between slices are explicit and ordered** — don't discover ordering during implementation
 
 ## Common failure modes
 
