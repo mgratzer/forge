@@ -53,7 +53,7 @@ See [testing.md — Structural Review](testing.md#1-structural-review) for the c
 ```markdown
 ## Summary
 
-<1-2 sentences: what changed and why>
+<1-2 sentences: why this change was needed, then the approach taken>
 
 Closes #<issue-number>
 
