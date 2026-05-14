@@ -61,7 +61,7 @@ Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 
 #### 1g. Push and create PR
 
-Push branch, create PR with conventional commit title. Include: summary (closing the issue), changes list, test plan, quality checklist. Add a `> [!WARNING]` block for manual deployment steps.
+Push branch, create PR with conventional commit title. Lead the summary with **why** the change was needed — pull the motivation from the linked issue's problem statement; if no issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
 
 Do not produce the implementation summary yet — the review will inform the final report.
 

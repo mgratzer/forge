@@ -102,7 +102,7 @@ Fix issues and commit fixes.
 git push -u origin <branch-name>
 ```
 
-Create PR with conventional commit title format. Include: summary of what was built (closing the issue when one exists), list of changes, test plan checklist, and quality checklist.
+Create PR with conventional commit title format. Lead the summary with **why** the change was needed — pull the motivation from the linked issue's problem statement; if no issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: list of changes, test plan checklist, and quality checklist. Close the issue when one exists.
 
 If the implementation requires manual deployment steps (env vars, infra changes, container/runtime config, migrations), add a prominent `> [!WARNING]` block at the top of the PR body.
 
