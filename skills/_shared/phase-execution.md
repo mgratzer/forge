@@ -30,7 +30,7 @@ Code and tests together, end to end across all affected layers.
 
 **Verify unfamiliar APIs before using them** — grep the codebase, check type definitions or docs, confirm the API exists at the project's pinned version. Skip for: stdlib, APIs already used in this codebase, type-checked interfaces.
 
-**Follow existing patterns and import style.** No barrel files unless the project uses them (see [barrel-imports](../../_shared/barrel-imports.md)).
+**Follow existing patterns and import style.** No barrel files unless the project uses them (see [barrel-imports](barrel-imports.md)).
 
 ### 2. Test
 
@@ -49,6 +49,6 @@ Verify before proceeding to the next phase:
 - [ ] Tests exist for new behavior in this phase
 - [ ] All tests pass (not just new ones)
 - [ ] No lint/type errors introduced
-- [ ] Commit the phase — one logical change per commit, conventional format, `Refs #<ISSUE_NUMBER>` when applicable
+- [ ] Commit the phase — one logical change per commit, conventional format
 
 Use TodoWrite to track progress through phases.

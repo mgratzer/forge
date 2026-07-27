@@ -24,7 +24,10 @@ Determine input type (Issue number/URL, plan file, or free-text). For Issues, fe
 
 #### 1b. Plan
 
-For complex work, write 3–7 research questions and delegate to a sub-agent with the [forge-scout](../forge-implement/roles/forge-scout.md) role for unbiased codebase research. Prefer a cheap fast model for scout work.
+For complex work, write 3–7 research questions and delegate to a sub-agent with the [forge-scout](../_shared/roles/forge-scout.md) role for unbiased codebase research. Prefer a cheap fast model for scout work. If the runtime does not support sub-agents, read the role file and answer the questions inline following its rules.
+
+**Inputs provided to sub-agent:** Role: [forge-scout](../_shared/roles/forge-scout.md), the research questions, codebase access.
+**Expected output:** One factual answer per question, with file paths and code references.
 
 From the research, create a plan: durable decisions, vertical phases (see [vertical-slicing](../_shared/vertical-slicing.md)), files to change, scope boundaries.
 
@@ -43,9 +46,9 @@ When working from a plan file or free-text (no issue number), use `<type>/<brief
 
 #### 1d. Execute
 
-Read AGENTS.md. Run pre-flight checks before the first phase (see [phase-execution](../forge-implement/references/phase-execution.md)). Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
+Read AGENTS.md. Run pre-flight checks before the first phase (see [phase-execution](../_shared/phase-execution.md)). Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
 
-After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../forge-implement/references/pattern-audit.md)).
+After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../_shared/pattern-audit.md)).
 
 #### 1e. Update docs
 

@@ -28,7 +28,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Smart zone / Dumb zone** — workable region (~first 100k tokens) vs degraded region of LLM context. See [architecture — Operating Constraints](docs/architecture.md#operating-constraints).
 
-**Pattern audit** — when a pattern changes, grep ALL files using the old pattern and update. See [pattern-audit](skills/forge-implement/references/pattern-audit.md).
+**Pattern audit** — when a pattern changes, grep ALL files using the old pattern and update. See [pattern-audit](skills/_shared/pattern-audit.md).
 
 **Quality gates** — lint, format, type check, tests. Run before commit, PR push, and reflection.
 
