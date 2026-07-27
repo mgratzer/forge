@@ -49,18 +49,13 @@ After modifying any shared convention, grep across all relevant skills to ensure
 grep -rn "type.*scope.*description" skills/
 
 # Check workflow order
-grep -rn "forge-create-issue\|forge-implement\|forge-reflect\|forge-address-pr-feedback\|forge-setup-project" skills/
+grep -rn "forge-setup-project\|forge-shape\|forge-create-issue\|forge-implement\|forge-reflect\|forge-address-pr-feedback\|forge-ship" skills/
 
 # Check guidance file references
 grep -rn "AGENTS.md\|CLAUDE.md" skills/
 
-# Check trailing context syntax in structured-input skills
-grep -rn "additional context\|-- <additional context>" \
-  skills/forge-setup-project \
-  skills/forge-shape \
-  skills/forge-implement \
-  skills/forge-reflect \
-  skills/forge-address-pr-feedback
+# Check trailing context syntax (all skills support it)
+grep -rn "additional context\|-- <additional context>" skills/
 
 # Check all skills reference _shared/issue-operations.md (not inline conditionals)
 grep -rn "issue-operations" skills/*/SKILL.md

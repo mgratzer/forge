@@ -35,12 +35,7 @@ No dependency installation required.
    grep -r "conventional commit" skills/
    grep -r "branch naming" skills/
    grep -r "AGENTS.md\|CLAUDE.md" skills/
-   grep -r "additional context\|-- <additional context>" \
-     skills/forge-setup-project \
-     skills/forge-shape \
-     skills/forge-implement \
-     skills/forge-reflect \
-     skills/forge-address-pr-feedback
+   grep -r "additional context\|-- <additional context>" skills/
    ```
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
 5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are self-contained (or composed from a role reference + task instructions) and the skill works correctly when executed inline
