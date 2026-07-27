@@ -63,7 +63,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 See [coding-guidelines.md](coding-guidelines.md) for the complete reference: YAML frontmatter fields, section order, delegate step conventions, and role file format.
 
-Skills use **progressive disclosure**: `SKILL.md` contains core instructions, while templates and detailed reference material live in `references/` and load only when needed. Skills with structured primary input may accept `-- <additional context>` as the final segment.
+Skills use **progressive disclosure**: `SKILL.md` contains core instructions, while templates and detailed reference material live in `references/` and load only when needed. Every skill accepts `-- <additional context>` as the final segment.
 
 ## Operating Constraints
 
@@ -94,7 +94,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `(delegate)` step pattern; `context: fork` frontmatter available for whole-skill forking | Fresh context for unbiased review; `(delegate)` works across runtimes, `context: fork` is Claude Code's native whole-skill mechanism — unsuitable for skills with interactive steps |
-| Skill composition | Composite skills reference other skills by path | Keeps orchestrators lean; avoids duplicating step-level instructions across skills |
+| Skill composition | Composite skills reuse component processes and shared `_shared/` modules | Keeps orchestrators lean; shared modules prevent duplicated step-level instructions from drifting |
 | Tool-layer integration | Skills reference external tools by name, not by import | Runtimes and extensions expose delegation/model-selection capabilities; skills use them when available and fall back when not — zero coupling. Runtime-specific agent files or presets are optional local tuning, not part of Forge. When a runtime couples agent names to model/provider selection, push role content, prefer inheriting the parent session configuration over hard-coded agent IDs, use cheap fast models for factual scouting, and prefer cheaper review-capable models for routine review work |
 | Reusable roles | Skill-specific: `<skill>/roles/*.md`; cross-skill: `_shared/roles/*.md` | Delegation personas separated from skill body; single-use roles co-locate with the skill, shared roles live in `_shared/` |
 | Blind research delegation | Scout researches codebase without seeing the Issue | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |

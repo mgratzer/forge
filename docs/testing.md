@@ -57,6 +57,6 @@ grep -rn "AGENTS.md\|CLAUDE.md" skills/
 # Check trailing context syntax (all skills support it)
 grep -rn "additional context\|-- <additional context>" skills/
 
-# Check all skills reference _shared/issue-operations.md (not inline conditionals)
+# Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
 ```

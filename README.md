@@ -32,7 +32,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation** |
 
-Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
+All skills accept optional trailing execution guidance using `-- <additional context>`.
 
 ## Workflow
 

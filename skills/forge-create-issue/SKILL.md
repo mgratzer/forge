@@ -1,6 +1,6 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured Issues through interactive discussion. Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague. Supports GitHub, markdown plan/ folder, and other providers.
+description: Collaboratively plan and create well-structured Issues through interactive discussion (GitHub, markdown plan/ folder, or other providers). Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague.
 disable-model-invocation: true
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
@@ -74,7 +74,7 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 ## Summary
 [1-2 sentences]
 
-**Execution mode:** [AFK | HITL]
+**Execution mode:** [AFK | HITL] <!-- markdown provider: use the `mode` frontmatter field instead -->
 
 ## Problem / Motivation
 [Why this needs to exist]

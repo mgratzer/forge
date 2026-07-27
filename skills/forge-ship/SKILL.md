@@ -1,6 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation. Implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
@@ -22,7 +22,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 Determine input type (Issue number/URL, plan file, or free-text). For Issues, fetch via the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse requirements and acceptance criteria. Flag if underspecified.
 
-#### 1b. Plan
+#### 1b. Plan (delegate)
 
 For complex work, write 3–7 research questions and delegate to a sub-agent with the [forge-scout](../_shared/roles/forge-scout.md) role for unbiased codebase research. Prefer a cheap fast model for scout work. If the runtime does not support sub-agents, read the role file and answer the questions inline following its rules.
 
@@ -70,13 +70,16 @@ git push -u origin <BRANCH_NAME>
 gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body "<PR_BODY>"
 ```
 
-Lead the summary with **why** the change was needed — pull the motivation from the linked Issue's problem statement; if no Issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the Issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
+The PR title uses conventional commit format. Lead the summary with **why** the change was needed — pull the motivation from the linked Issue's problem statement; if no Issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the Issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
 
 Do not produce the implementation summary yet — the review will inform the final report.
 
 ### Step 2: Review (delegate)
 
 Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, prefer one inline review pass for tiny low-risk diffs, otherwise use one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings. Fresh context eliminates self-review bias when delegated review is used — reviewers have no memory of implementation decisions.
+
+**Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
+**Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Triage Findings
 

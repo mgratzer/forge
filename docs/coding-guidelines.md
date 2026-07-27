@@ -22,6 +22,7 @@ Every skill follows the same section order:
 - `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
 - `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
 - `allowed-tools`: comma-separated list of tools the skill may use. Omit to allow all tools.
+- `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
 ## Writing Process Steps
 
@@ -56,12 +57,12 @@ When a delegation step benefits from a separated persona, extract it into a **ro
 ```markdown
 #### Research (delegate)
 
-Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only
+Delegate to a [forge-scout](../_shared/roles/forge-scout.md) sub-agent that receives only
 the questions. If the runtime does not support sub-agents, read the role
 file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
-- Role: [forge-scout](roles/forge-scout.md)
+- Role: [forge-scout](../_shared/roles/forge-scout.md)
 - The research questions
 
 **Expected output:** One factual answer per question.
@@ -108,9 +109,9 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, ship |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — inline in implement; ship references `_shared/phase-execution.md` | implement, ship |
-| Pattern audit | When changing a pattern, update ALL files using it | implement, ship |
-| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for items deferred during triage | reflect, ship, address-pr-feedback |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | All skills |
+| Pattern audit | When changing a pattern, update ALL files using it | implement, ship, reflect |
+| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship |
 | Review delegation | Tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
@@ -119,7 +120,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
-| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue, ship |
+| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
 | Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement + ship (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
 | Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement, ship |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |

@@ -62,13 +62,9 @@ Follow the [review-delegation](../_shared/review-delegation.md) process: collect
 
 ### Step 3: Run Quality Gates
 
-Run the project's lint, format, type check, and test commands. Fix issues and commit fixes.
+Run the project's lint, format, type check, and test commands (and coverage where configured). Fix issues and commit fixes.
 
-### Step 4: Report
-
-Aggregate findings from all review passes (Step 2) with quality gate results (Step 3) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
-
-### Step 5: Triage Findings
+### Step 4: Triage Findings
 
 Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
 
@@ -81,6 +77,10 @@ For each Finding, recommend one of:
 State your recommendation and let the user decide. Then:
 - **Fix now:** apply the fix and commit it
 - **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)) with context and proposed solution
+
+### Step 5: Report
+
+Aggregate findings from all review passes (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
 
 ## Output Format
 

@@ -1,6 +1,6 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug. Stops after opening the PR — use forge-ship to also run review.
+description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug — stops after opening the PR (use forge-ship to also run review).
 disable-model-invocation: true
 ---
 
