@@ -103,8 +103,6 @@ Share the Issue reference. Suggest using `forge-implement` to start implementati
 ## Guidelines
 
 - **Be curious** — challenge assumptions, ask "why" and "what if"
-- **Explore first** — always research the codebase before proposing solutions
-- **Never skip alternatives** — even if one approach seems obvious
 - **Don't over-specify** — leave room for implementer judgment
 - **No time estimates**
 

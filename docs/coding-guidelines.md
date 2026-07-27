@@ -30,7 +30,6 @@ Every skill follows the same section order:
 - Include bash examples for any CLI operations (especially `gh` and `git` commands)
 - Use `AskUserQuestion` for user decisions — never assume
 - Steps should be numbered sequentially and named with action verbs: "Create", "Fetch", "Analyze", "Generate"
-- Composite skills may subdivide a wrapping step into lettered sub-steps (`#### 1a. <Action>`) when inlining a component skill's flow
 
 ## Writing Delegate Steps
 
@@ -105,11 +104,11 @@ Conventions shared across skills. When modifying any, update every skill that re
 
 | Convention | Format | Referenced In |
 |------------|--------|---------------|
-| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, ship, address-pr-feedback |
-| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, ship |
+| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — inline in implement; ship references `_shared/phase-execution.md` | implement, ship |
-| Pattern audit | When changing a pattern, update ALL files using it | implement, ship, reflect |
+| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
+| Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
@@ -121,8 +120,8 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement + ship (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
-| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement, ship |
+| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
+| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
@@ -137,6 +136,7 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 
 - **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
+- **Count composites per invocation.** A composite skill loads its component's instructions too — keep the composite's own body thin so the combined load stays reasonable.
 - **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
 - **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.

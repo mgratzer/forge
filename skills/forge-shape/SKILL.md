@@ -114,13 +114,8 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 
 ## Guidelines
 
-- **One question at a time** — convergence comes from depth per answer, not breadth per prompt
-- **Always recommend an answer** — phrased as a recommendation, not a decision
-- **Challenge then converge** — push back on terminology conflicts, code contradictions, and vague boundaries before accepting an answer
-- **Use the project's language** — reference CONTEXT.md vocabulary; when new terms emerge, capture them immediately
 - **Problem over solution** — clarify what's wrong before proposing how to fix it
 - **Stay grounded** — reference specific code, files, and patterns, not abstractions
-- **Approach exploration is conditional** — skip Step 3 when shaping already surfaced the approach
 
 ## Related Skills
 

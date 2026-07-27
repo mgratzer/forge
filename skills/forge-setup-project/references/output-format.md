@@ -1,8 +1,8 @@
 # Setup Summary Output Format
 
-Use the appropriate format based on mode.
+Use the format matching the work performed.
 
-## Setup Mode
+## Fresh Setup
 
 ```text
 ## Setup Complete
@@ -39,7 +39,7 @@ Use the appropriate format based on mode.
 4. Use /forge-create-issue to plan your first piece of work — or /forge-shape if the idea is still rough
 ```
 
-## Audit / Legacy Migration Mode
+## Audit / Update of Existing Guidance
 
 ```text
 ## Audit Complete

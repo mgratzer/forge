@@ -24,11 +24,11 @@ Determine the input type and extract requirements. Detect the Issue tracker prov
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints. Ask clarifying questions if underspecified.
 
-Flag for user input if: vague criteria, `discovery` label, scope too large, or dependencies incomplete.
+Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals. Prefer interfaces that stay simpler than their implementations; avoid pass-through wrappers and shallow seams.
+Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](../_shared/deep-modules.md)).
 
 **For complex work**, delegate codebase research to a sub-agent for unbiased answers:
 
@@ -39,7 +39,7 @@ Write 3–7 factual questions about existing systems, patterns, and integration 
 **Inputs provided to sub-agent:** Role: [forge-scout](../_shared/roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
-If the runtime supports per-task model choice, prefer a **cheap fast model** for scout work — scouting is factual reconnaissance, not deep synthesis. Otherwise inherit the parent session model and keep the scout task narrow.
+Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
 
 From the research, create a plan:
 - Durable decisions
@@ -65,27 +65,15 @@ When working from a plan file or free-text (no Issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-Execute the work in vertical phases:
-- **Pre-flight before the first phase** — validate only the checks that matter for this change: codegen, config placement, required env vars, external dependencies, and existing code patterns.
-- **Per phase** — implement end to end across all needed layers, keep tests close to the behavior, and verify unfamiliar APIs before using them.
-- **Phase gate** — before moving on, run relevant tests/checks, confirm no new lint/type failures, and commit one logical change.
+Execute the work in vertical phases following [phase-execution](../_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 
 ### Step 5: Audit Pattern Consistency
 
-If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too:
-
-```bash
-grep -rn "<PATTERN>" <SEARCH_ROOT>/
-```
-
-Audit the **pattern shape**, not just a literal string. Choose the right search scope, re-grep after updating, and note any intentional exceptions in the PR.
+If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](../_shared/pattern-audit.md).
 
 ### Step 6: Update Documentation
 
-If behavior changed, update:
-- `docs/*.md` — architecture, API, development guides
-- `AGENTS.md` — if conventions or patterns changed
-- Code comments — only where logic isn't self-evident
+Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 
 ### Step 7: Run Final Quality Gate
 
@@ -105,9 +93,7 @@ Fix issues and commit fixes.
 git push -u origin <BRANCH_NAME>
 ```
 
-Create PR with conventional commit title format. Lead the summary with **why** the change was needed — pull the motivation from the linked Issue's problem statement; if no Issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: list of changes, test plan checklist, and quality checklist. Close the Issue when one exists.
-
-If the implementation requires manual deployment steps (env vars, infra changes, container/runtime config, migrations), add a prominent `> [!WARNING]` block at the top of the PR body.
+Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked), then the approach, changes list, test plan, and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
 
 ### Step 9: Summarize
 

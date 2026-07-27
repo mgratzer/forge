@@ -24,7 +24,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Deferred item** — a Finding or review-feedback item not addressed in the current PR; becomes a new Issue.
 
-**Composite skill** — combines other skills' processes into a single invocation (currently only `forge-ship`, composing implement and reflect).
+**Composite skill** — combines other skills' processes into a single invocation (currently only `forge-ship`, composing implement with the review flow shared with reflect).
 
 **Inline fallback** — `(delegate)` step provides both sub-agent and in-context paths for runtime portability.
 
