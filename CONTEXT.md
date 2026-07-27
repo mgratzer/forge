@@ -18,7 +18,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Reflection** — self-review of current changes before peer review: tiny diffs review inline, otherwise one fresh-context review pass by default, deepened only when risk justifies it. Produces Findings.
 
-**Tiny diff** — roughly ≤2 files and ≤100 changed lines with low risk; reviewed inline without delegation. See [review-delegation](skills/_shared/review-delegation.md).
+**Tiny diff** — roughly ≤2 files and ≤100 changed lines with low risk; reviewed inline only when the session didn't author the changes. See [review-delegation](skills/_shared/review-delegation.md).
 
 **Finding** — one issue surfaced by reflection, severity-tagged P0–P3. P3 not flagged.
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; tiny low-risk diffs review inline, otherwise review uses one fresh-context reviewer by default and deepens only when risk justifies it.
+Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context — this session authored the diff, so even tiny diffs get an unbiased reviewer — and deepens only when risk justifies it.
 
 ## Input
 
@@ -76,7 +76,7 @@ Do not produce the implementation summary yet — the review will inform the fin
 
 ### Step 2: Review (delegate)
 
-Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, prefer one inline review pass for tiny low-risk diffs, otherwise use one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings. Fresh context eliminates self-review bias when delegated review is used — reviewers have no memory of implementation decisions.
+Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings. Fresh context eliminates self-review bias when delegated review is used — reviewers have no memory of implementation decisions.
 
 **Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
@@ -130,7 +130,7 @@ Report implementation and review results together.
 
 ## Guidelines
 
-- **Tiny low-risk diffs stay inline** — do not pay sub-agent overhead when the change is obviously small
+- **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
 - **Delegated review runs in fresh context** — reviewers have no implementation memory
 - **Keep review lean** — one reviewer by default, second only when risk justifies it
 - **Don't skip the review** — even if implementation felt clean

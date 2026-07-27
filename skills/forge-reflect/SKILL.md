@@ -110,7 +110,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 ## Guidelines
 
 - **Pattern consistency is the highest-value check**
-- **Tiny low-risk diffs stay inline** — avoid fresh-context overhead when the change is obviously small
+- **Tiny low-risk diffs stay inline** — avoid fresh-context overhead when the change is obviously small and this session didn't author it
 - **Keep review lean** — one reviewer by default, second only when risk justifies it
 - **Skip noise** — see [review rubric](../_shared/review-rubric.md)
 - **Bias toward fixing in the same PR** — only create Issues for confirmed deferrals that are truly larger or out of scope

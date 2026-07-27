@@ -49,15 +49,15 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 `forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
-`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, keeping review lean with inline review for tiny low-risk diffs and one fresh-context reviewer by default otherwise.
+`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, keeping review lean with one fresh-context reviewer by default (its session authors the diff, so review always delegates).
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning — challenging terminology against CONTEXT.md, cross-referencing claims against code, stress-testing with concrete scenarios — until a shared design concept emerges. Updates CONTEXT.md inline as terms are resolved. Optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates Issues in the project's Issue tracker (GitHub, markdown `plan/` folder, or user-configured provider)
 - **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases using inline guidance, and opens a PR
-- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
+- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** composes implement and reflect — implementation runs inline, review stays inline for tiny low-risk diffs and otherwise uses one fresh-context reviewer by default, findings are triaged with the user
+- **forge-ship** composes implement and reflect — implementation runs inline, review always delegates to one fresh-context reviewer by default (the session authored the diff), findings are triaged with the user
 
 ## Skill & Role File Format
 
@@ -74,7 +74,7 @@ Practitioners call the workable region the **smart zone** and the degraded regio
 | Mechanism | How it responds |
 |-----------|-----------------|
 | Sub-agent delegation (`(delegate)` steps) | Move work into fresh context windows when the parent is approaching the dumb zone |
-| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs can stay inline; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
+| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs stay inline only when the session didn't author them; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
 | Progressive disclosure (`references/`) | Load companion philosophy on demand instead of always-loading every skill's full content |
 | Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; cold tier loads only when needed |
 | Instruction budget (under ~35 instructions per skill body) | Skills stay lean enough to compose without exceeding the ~150–200 instructions frontier LLMs follow consistently |

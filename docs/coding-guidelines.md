@@ -114,7 +114,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
 | Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship |
-| Review delegation | Tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
+| Review delegation | Tiny low-risk diffs stay inline when the session didn't author them; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
 | Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
@@ -137,7 +137,7 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 
 - **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
-- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
+- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
 - **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 

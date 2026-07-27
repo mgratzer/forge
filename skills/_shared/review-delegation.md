@@ -19,7 +19,7 @@ Before reviewing, collect:
 
 Use the smallest review shape that still gives trustworthy signal:
 
-1. **Tiny diff: inline review** — only if the change is small and low-risk (roughly `<=2` files and `<=100` changed lines), with **no** risky signals such as auth/authz, secrets, payments, migrations, concurrency, jobs, caches, public API/protocol changes, or infrastructure/config changes. Review inline in the current context using the default combined checklist.
+1. **Tiny diff: inline review** — only if the change is small and low-risk (roughly `<=2` files and `<=100` changed lines), with **no** risky signals such as auth/authz, secrets, payments, migrations, concurrency, jobs, caches, public API/protocol changes, or infrastructure/config changes, **and the current session did not implement the changes**. A session reviewing its own diff has self-review bias — delegate even tiny diffs then. Review inline in the current context using the default combined checklist.
 2. **Default: one reviewer** — for everything else, use one fresh-context reviewer running the combined checklist.
 3. **Mandatory second reviewer for risky changes** — add a second focused pass whenever the diff touches:
    - auth, authorization, secrets, payments, or other security-sensitive code
