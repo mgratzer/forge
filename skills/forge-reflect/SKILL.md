@@ -1,11 +1,10 @@
 ---
 name: forge-reflect
-description: Review current changes with a lean review flow. Works on a PR, branch diff, or uncommitted changes. Tiny low-risk diffs stay inline; larger or riskier changes use fresh-context review. Use when the user wants to self-review before committing, pushing, or requesting peer review.
-context: fork
+description: Self-review current changes — a PR, branch diff, or uncommitted work. Use when the user wants a code review of their changes, a self-review before committing or pushing, or a final check before requesting peer review.
 disable-model-invocation: true
 ---
 
-# Reflect
+# Reflect on Changes
 
 Self-review current changes before committing, pushing, or requesting peer review.
 
@@ -61,7 +60,7 @@ Follow the [review-delegation](../_shared/review-delegation.md) process: collect
 
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
-### Step 3: Quality Gates
+### Step 3: Run Quality Gates
 
 Run the project's lint, format, type check, and test commands. Fix issues and commit fixes.
 
@@ -69,18 +68,18 @@ Run the project's lint, format, type check, and test commands. Fix issues and co
 
 Aggregate findings from all review passes (Step 2) with quality gate results (Step 3) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
 
-### Step 5: Triage Deferred Items
+### Step 5: Triage Findings
 
-Present each deferred improvement to the user and ask whether to **fix now** or **defer as a follow-up issue**.
+Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
 
-Bias hard toward **fix now**. Recommend deferral only when the finding is truly out of scope, materially expands the PR, or needs separate design/review.
+Bias hard toward **fix now**. Recommend deferral only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review.
 
-For each item, recommend one of:
+For each Finding, recommend one of:
 - **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
 - **Defer** — only for larger or truly out-of-scope changes (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
 State your recommendation and let the user decide. Then:
-- **Fix now items:** apply the fix and commit it
+- **Fix now:** apply the fix and commit it
 - **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)) with context and proposed solution
 
 ## Output Format
@@ -94,9 +93,9 @@ State your recommendation and let the user decide. Then:
 #### <file>
 - [P0/P1/P2] <finding>
 
-### Deferred Items
+### Finding Triage
 - Fixed: <what was addressed>
-- Created #<num>: <title>
+- Deferred #<num>: <title>
 - (or: None identified)
 
 ### Quality Gates

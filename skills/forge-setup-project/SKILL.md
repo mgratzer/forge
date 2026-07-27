@@ -21,7 +21,7 @@ Set up or update a project's context infrastructure for agentic engineering. Con
 
 ## Input
 
-Optional project root path (defaults to cwd). Optional: `-- <additional context>` for execution guidance.
+Optional project root path (`$ARGUMENTS`; defaults to cwd). Optional: `-- <additional context>` for execution guidance.
 
 ## Process
 
@@ -103,9 +103,10 @@ Only create docs with actual content. An empty doc wastes context.
 
 All Tier 2 docs must pass the undiscoverability test. Use tables for structured data. Include actual file paths.
 
-### Step 7: Compatibility Symlink and .gitignore
+### Step 7: Create Compatibility Symlink and Update .gitignore
 
 ```bash
+# Replace any legacy CLAUDE.md with a symlink to the canonical AGENTS.md
 rm -f CLAUDE.md
 ln -sf AGENTS.md CLAUDE.md
 ```
@@ -114,11 +115,11 @@ If the platform doesn't support symlinks, stop and tell the user.
 
 Create or update `.gitignore` with entries matching the detected stack. Never overwrite an existing `.gitignore` — append only missing entries.
 
-### Step 8: Human-Facing Files
+### Step 8: Create Human-Facing Files
 
 Create if it doesn't exist (this is for humans, not agent context):
 
-- **README.md** — project description, quick start, docs links. If one exists, ask: replace, merge, or keep?
+- **README.md** — project description, quick start, docs links. If one exists, ask via AskUserQuestion: replace, merge, or keep?
 
 ### Step 9: Commit
 
@@ -128,7 +129,7 @@ Stage and commit all new/modified files:
 
 Do not commit if: dry run requested, unrelated staged changes exist, or generated files have unresolved questions.
 
-### Step 10: Summary
+### Step 10: Summarize
 
 Report what was created/changed. See [output-format.md](references/output-format.md) for the structure. Include tier status with line counts, agent readiness assessment, and next steps.
 

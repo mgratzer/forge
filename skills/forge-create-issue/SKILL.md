@@ -1,19 +1,21 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured Issues through interactive discussion. Use when the user wants to create an Issue, plan a feature, report a bug, or scope out work for implementation. Supports GitHub, markdown plan/ folder, and other providers.
+description: Collaboratively plan and create well-structured Issues through interactive discussion. Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague. Supports GitHub, markdown plan/ folder, and other providers.
 disable-model-invocation: true
-allowed-tools: Read, Bash, Grep, Glob, WebSearch
+allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 
 # Create Issue
 
-Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [CONTEXT.md](../../CONTEXT.md) for provider detection.
+Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider detection.
 
 ## Input
 
-The issue idea or problem description: $ARGUMENTS
+The Issue idea or problem description: $ARGUMENTS
 
-If no argument is provided, ask the user what they'd like to create an issue for.
+Optional: `-- <additional context>` for execution guidance.
+
+If no argument is provided, ask the user what they'd like to create an Issue for.
 
 ## Process
 
@@ -46,7 +48,7 @@ For each approach:
 - Relative complexity (Low / Medium / High)
 - Key files affected
 
-Let the user choose or combine approaches.
+Let the user choose or combine approaches via AskUserQuestion.
 
 ### Step 4: Assess Scope
 
@@ -64,13 +66,15 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 **Title:** Use conventional commit format — `<type>(<scope>): <description>`
 
-**Labels:** When using GitHub, discover available labels with `gh label list`. When using the markdown provider, choose labels freely — there is no predefined set. Apply at least one type label and relevant area labels.
+**Labels:** Discover what labels exist before applying any — see [issue-operations](../_shared/issue-operations.md). Apply at least one type label and relevant area labels.
 
 **Body structure:**
 
 ```markdown
 ## Summary
 [1-2 sentences]
+
+**Execution mode:** [AFK | HITL]
 
 ## Problem / Motivation
 [Why this needs to exist]
@@ -92,11 +96,9 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user. Iterate until satisfied. Then create the Issue using the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
+Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues.
 
-For GitHub epics, create the parent issue first, then sub-issues with `--parent <PARENT_NUMBER>`.
-
-Share the issue reference. Suggest using `forge-implement` to start implementation.
+Share the Issue reference. Suggest using `forge-implement` to start implementation.
 
 ## Guidelines
 
@@ -108,11 +110,12 @@ Share the issue reference. Suggest using `forge-implement` to start implementati
 
 ## Related Skills
 
-**Next step:** Use `forge-implement` to implement the issue.
+**Next step:** Use `forge-implement` to implement the Issue.
 
 ## Example Usage
 
 ```
 /forge-create-issue add dark mode support
+/forge-create-issue add dark mode support -- keep it to a single Issue
 /forge-create-issue
 ```

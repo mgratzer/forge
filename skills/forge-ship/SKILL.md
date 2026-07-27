@@ -4,13 +4,13 @@ description: End-to-end implementation and self-review in a single invocation. I
 disable-model-invocation: true
 ---
 
-# Ship
+# Ship a Change
 
 Implement end to end — code it, review it, ship it. Implementation runs in the current session; tiny low-risk diffs review inline, otherwise review uses one fresh-context reviewer by default and deepens only when risk justifies it.
 
 ## Input
 
-Same as `forge-implement`: Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
+Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
@@ -36,13 +36,14 @@ Present the plan via AskUserQuestion. **In unattended mode:** skip approval and 
 #### 1c. Branch
 
 ```bash
+# Sync the default branch, then branch off it
 git fetch origin
 git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 git pull
-git checkout -b <type>/<issue-number>-<brief-description>
+git checkout -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION>
 ```
 
-When working from a plan file or free-text (no issue number), use `<type>/<brief-description>`.
+When working from a plan file or free-text (no Issue number), use `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 #### 1d. Execute
 
@@ -60,11 +61,16 @@ Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 - [ ] Format — no violations
 - [ ] Type check — no errors
 - [ ] All tests pass
-- [ ] Test coverage ≥ 90% for new/modified code
+- [ ] Test coverage ≥ 90% for new/modified code — if coverage tooling is not configured, flag this to the user and offer to set it up
 
 #### 1g. Push and create PR
 
-Push branch, create PR with conventional commit title. Lead the summary with **why** the change was needed — pull the motivation from the linked issue's problem statement; if no issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
+```bash
+git push -u origin <BRANCH_NAME>
+gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body "<PR_BODY>"
+```
+
+Lead the summary with **why** the change was needed — pull the motivation from the linked Issue's problem statement; if no Issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the Issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
 
 Do not produce the implementation summary yet — the review will inform the final report.
 
@@ -90,7 +96,7 @@ Bias hard toward **fix now**:
 
 For both modes, deferred items become Issues — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
 
-### Step 4: Summary
+### Step 4: Summarize
 
 Report implementation and review results together.
 
@@ -113,8 +119,10 @@ Report implementation and review results together.
 
 ### Quality Gates
 - Lint: ✓/✗
+- Format: ✓/✗
 - Types: ✓/✗
 - Tests: ✓/✗
+- Coverage: ✓/✗/not configured
 ```
 
 ## Guidelines

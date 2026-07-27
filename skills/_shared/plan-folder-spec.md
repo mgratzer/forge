@@ -43,7 +43,7 @@ created: 2026-04-30
 | `mode` | No | `AFK` or `HITL` (defaults to `HITL`) |
 | `created` | Yes | ISO date |
 
-The body below the frontmatter uses the same structure as any forge issue: Summary, Problem / Motivation, Proposed Solution, Acceptance Criteria.
+The body below the frontmatter uses the same structure as any forge Issue: Summary, Problem / Motivation, Proposed Solution (with Alternatives Considered and Implementation Constraints when applicable), Acceptance Criteria.
 
 ## INDEX.md format
 

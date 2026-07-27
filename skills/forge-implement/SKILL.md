@@ -1,24 +1,26 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, fix a bug, or build from a plan or roadmap.
+description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug. Stops after opening the PR — use forge-ship to also run review.
 disable-model-invocation: true
 ---
 
-# Implement
+# Implement a Change
 
 Implement a feature or fix following project standards.
 
 ## Input
 
-Primary input: an Issue number/URL, a plan file path, or free-text description. Optional: `-- <additional context>` for execution guidance.
+Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-text description. Optional: `-- <additional context>` for execution guidance.
+
+**Unattended mode:** `--unattended` skips plan approval and proceeds without confirmation prompts.
 
 ## Process
 
 ### Step 1: Understand the Work
 
-Determine the input type and extract requirements. Detect the Issue tracker provider (see [CONTEXT.md](../../CONTEXT.md)).
+Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](../_shared/issue-operations.md)).
 
-- **Issue** — fetch using the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing.
+- **Issue** — fetch using the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints. Ask clarifying questions if underspecified.
 
@@ -28,7 +30,7 @@ Flag for user input if: vague criteria, `discovery` label, scope too large, or d
 
 Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals. Prefer interfaces that stay simpler than their implementations; avoid pass-through wrappers and shallow seams.
 
-**For complex work**, delegate codebase research to a sub-agent for unbiased findings:
+**For complex work**, delegate codebase research to a sub-agent for unbiased answers:
 
 #### Research (delegate)
 
@@ -50,13 +52,14 @@ Present the plan via AskUserQuestion. Get user confirmation before coding. **In 
 ### Step 3: Create Feature Branch
 
 ```bash
+# Sync the default branch, then branch off it
 git fetch origin
 git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 git pull
-git checkout -b <type>/<issue-number>-<brief-description>
+git checkout -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION>
 ```
 
-When working from a plan file or free-text (no issue number), use a descriptive slug: `<type>/<brief-description>`.
+When working from a plan file or free-text (no Issue number), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 ### Step 4: Implement
 
@@ -67,12 +70,12 @@ Execute the work in vertical phases:
 - **Per phase** — implement end to end across all needed layers, keep tests close to the behavior, and verify unfamiliar APIs before using them.
 - **Phase gate** — before moving on, run relevant tests/checks, confirm no new lint/type failures, and commit one logical change.
 
-### Step 5: Pattern Consistency Audit
+### Step 5: Audit Pattern Consistency
 
 If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too:
 
 ```bash
-grep -rn "<pattern>" <search-root>/
+grep -rn "<PATTERN>" <SEARCH_ROOT>/
 ```
 
 Audit the **pattern shape**, not just a literal string. Choose the right search scope, re-grep after updating, and note any intentional exceptions in the PR.
@@ -84,7 +87,7 @@ If behavior changed, update:
 - `AGENTS.md` — if conventions or patterns changed
 - Code comments — only where logic isn't self-evident
 
-### Step 7: Final Quality Gate
+### Step 7: Run Final Quality Gate
 
 Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts):
 
@@ -99,26 +102,22 @@ Fix issues and commit fixes.
 ### Step 8: Push and Create PR
 
 ```bash
-git push -u origin <branch-name>
+git push -u origin <BRANCH_NAME>
 ```
 
-Create PR with conventional commit title format. Lead the summary with **why** the change was needed — pull the motivation from the linked issue's problem statement; if no issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: list of changes, test plan checklist, and quality checklist. Close the issue when one exists.
+Create PR with conventional commit title format. Lead the summary with **why** the change was needed — pull the motivation from the linked Issue's problem statement; if no Issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: list of changes, test plan checklist, and quality checklist. Close the Issue when one exists.
 
 If the implementation requires manual deployment steps (env vars, infra changes, container/runtime config, migrations), add a prominent `> [!WARNING]` block at the top of the PR body.
 
-### Step 9: Summary
+### Step 9: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, follow-up items.
+Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items.
 
 ## Guidelines
 
 - **Explore before coding** — research the codebase before committing to an approach
 - **Ask when unsure** — better to clarify than implement wrong
 - **Don't scope creep** — implement what was asked, nothing more
-
-## Sub-Issue Handling
-
-When working from an Issue with sub-issues, treat each as a separate task. Close sub-issues as you complete them.
 
 ## Related Skills
 
@@ -130,6 +129,7 @@ When working from an Issue with sub-issues, treat each as a separate task. Close
 ```
 /forge-implement 123
 /forge-implement 123 -- keep the diff minimal and prefer existing UI patterns
+/forge-implement --unattended 123
 /forge-implement docs/roadmap.md
 /forge-implement add a dark mode toggle to the settings page
 ```
