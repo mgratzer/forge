@@ -34,7 +34,7 @@ ISSUE_EOF
 **GitHub:** discover available labels before applying any, and add missing ones to an existing Issue:
 
 ```bash
-gh label list
+gh label list --limit 100   # defaults to 30 — raise it so discovery is exhaustive
 gh issue edit <ISSUE_NUMBER> --add-label "<LABEL>"
 ```
 
