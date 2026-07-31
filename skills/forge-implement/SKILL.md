@@ -95,6 +95,14 @@ git push -u origin <BRANCH_NAME>
 
 Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked), then the approach, changes list, test plan, and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
 
+Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
+
+```bash
+gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'
+<PR body>
+PR_EOF
+```
+
 ### Step 9: Summarize
 
 Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items.
