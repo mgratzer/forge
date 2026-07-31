@@ -51,7 +51,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 
 ### Using Roles in Delegate Steps
 
-When a delegation step benefits from a separated persona, extract it into a **role file** under the skill's `roles/` directory (see [Architecture — Skill & Role File Format](architecture.md#skill--role-file-format)). The skill then references the role and provides only task-specific instructions:
+When a delegation step benefits from a separated persona, extract it into a **role file** (see [Architecture — Skill & Role File Format](architecture.md#skill--role-file-format)). A role used by one skill lives in that skill's `roles/` directory; a role shared across skills lives in `skills/_shared/roles/`. The skill then references the role and provides only task-specific instructions:
 
 ```markdown
 #### Research (delegate)
