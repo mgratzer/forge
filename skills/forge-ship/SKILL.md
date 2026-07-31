@@ -1,16 +1,16 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation. Implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
-# Ship
+# Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; tiny low-risk diffs review inline, otherwise review uses one fresh-context reviewer by default and deepens only when risk justifies it.
+Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context — this session authored the diff, so even tiny diffs get an unbiased reviewer — and deepens only when risk justifies it.
 
 ## Input
 
-Same as `forge-implement`: Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
+Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
@@ -18,76 +18,24 @@ Same as `forge-implement`: Issue number/URL, plan file path, or free-text. Optio
 
 ### Step 1: Implement
 
-#### 1a. Understand
-
-Determine input type (Issue number/URL, plan file, or free-text). For Issues, fetch via the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse requirements and acceptance criteria. Flag if underspecified.
-
-#### 1b. Plan
-
-For complex work, write 3–7 research questions and delegate to a sub-agent with the [forge-scout](../forge-implement/roles/forge-scout.md) role for unbiased codebase research. Prefer a cheap fast model for scout work.
-
-From the research, create a plan: durable decisions, vertical phases (see [vertical-slicing](../_shared/vertical-slicing.md)), files to change, scope boundaries.
-
-Present the plan via AskUserQuestion. **In unattended mode:** skip approval and proceed.
-
-#### 1c. Branch
-
-```bash
-git fetch origin
-git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git pull
-git checkout -b <type>/<issue-number>-<brief-description>
-```
-
-When working from a plan file or free-text (no issue number), use `<type>/<brief-description>`.
-
-#### 1d. Execute
-
-Read AGENTS.md. Run pre-flight checks before the first phase (see [phase-execution](../forge-implement/references/phase-execution.md)). Implement in vertical phases — each phase spans all affected layers, includes tests, and ends with a commit. Run lint/types/tests at each phase gate.
-
-After changing a pattern, grep for the old pattern across the appropriate scope and update all instances (see [pattern-audit](../forge-implement/references/pattern-audit.md)).
-
-#### 1e. Update docs
-
-Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
-
-#### 1f. Quality gate
-
-- [ ] Lint — no violations
-- [ ] Format — no violations
-- [ ] Type check — no errors
-- [ ] All tests pass
-- [ ] Test coverage ≥ 90% for new/modified code
-
-#### 1g. Push and create PR
-
-Push branch, create PR with conventional commit title. Lead the summary with **why** the change was needed — pull the motivation from the linked issue's problem statement; if no issue is linked, derive it from the branch's commit history. Then briefly describe the approach taken. Include: changes list, test plan, quality checklist. Close the issue when one exists. Add a `> [!WARNING]` block for manual deployment steps.
-
-Do not produce the implementation summary yet — the review will inform the final report.
+Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary** — the review below informs the single final report.
 
 ### Step 2: Review (delegate)
 
-Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, prefer one inline review pass for tiny low-risk diffs, otherwise use one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings. Fresh context eliminates self-review bias when delegated review is used — reviewers have no memory of implementation decisions.
+Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+
+**Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
+**Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Triage Findings
 
-Use the aggregated findings from the review delegation.
+**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now** — defer only changes that materially expand PR scope or are truly out of scope.
 
-**In attended mode (default):** present each finding to the user with a recommendation.
+**In unattended mode:** auto-triage by severity plus scope from the [review rubric](../_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Bias hard toward **fix now**:
-- **Fix now** — default for in-scope findings and small-to-moderate changes that still fit this PR → apply fix, commit
-- **Defer** — only for larger changes that materially expand PR scope or are truly out of scope → create an Issue in the project's Issue tracker
+Fixed findings are committed; deferred items become Issues — see [issue-operations](../_shared/issue-operations.md).
 
-**In unattended mode:** auto-triage using severity plus scope from the [review rubric](../_shared/review-rubric.md):
-
-- **P0–P2, if in scope and reasonably sized** → fix now, commit
-- **P1–P2, if truly out of scope or materially larger than the current PR** → defer, create an Issue in the project's Issue tracker
-- **P3** → ignore
-
-For both modes, deferred items become Issues — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics.
-
-### Step 4: Summary
+### Step 4: Summarize
 
 Report implementation and review results together.
 
@@ -110,23 +58,21 @@ Report implementation and review results together.
 
 ### Quality Gates
 - Lint: ✓/✗
+- Format: ✓/✗
 - Types: ✓/✗
 - Tests: ✓/✗
+- Coverage: ✓/✗/not configured
 ```
 
 ## Guidelines
 
-- **Tiny low-risk diffs stay inline** — do not pay sub-agent overhead when the change is obviously small
-- **Delegated review runs in fresh context** — reviewers have no implementation memory
-- **Keep review lean** — one reviewer by default, second only when risk justifies it
+- **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
 - **Don't skip the review** — even if implementation felt clean
 - **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
-- **Triage with the user** — unless `--unattended` (default to fixing in-scope findings)
-- **Graceful degradation** — works inline if no sub-agent support
 
 ## Related Skills
 
-**Components:** Composes `forge-implement` and `forge-reflect`.
+**Components:** Composes `forge-implement` and the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`).
 **After peer review:** Use `forge-address-pr-feedback` to address reviewer comments.
 
 ## Example Usage

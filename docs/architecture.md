@@ -14,22 +14,22 @@ forge/
 │   │   ├── SKILL.md
 │   │   └── references/shaping-methodology.md  # One-at-a-time questioning philosophy
 │   ├── _shared/                           # Cross-skill references (see coding-guidelines.md)
+│   │   ├── issue-operations.md            # Provider detection and Issue CRUD
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
+│   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
+│   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
+│   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
+│   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
-│   │   └── roles/forge-reviewer.md        # Review agent persona
+│   │   └── roles/                         # Cross-skill personas: forge-reviewer, forge-scout
 │   ├── forge-create-issue/
 │   │   ├── SKILL.md                       # Step 1: Plan and create Issues (provider-agnostic)
-│   │   └── references/                    # Slicing philosophy, AFK/HITL
-│   ├── forge-implement/
-│   │   ├── SKILL.md                       # Step 2: Implement from issue, plan, or description
-│   │   ├── references/                    # Progressive disclosure: implementation craft companions
-│   │   └── roles/forge-scout.md           # Blind codebase research persona
-│   ├── forge-reflect/
-│   │   ├── SKILL.md                       # Step 3: Self-review changes (PR, branch, or uncommitted)
-│   │   └── references/                    # (shared references moved to _shared/)
+│   │   └── references/                    # AFK/HITL classification
+│   ├── forge-implement/SKILL.md           # Step 2: Implement from Issue, plan, or description
+│   ├── forge-reflect/SKILL.md             # Step 3: Self-review changes (PR, branch, or uncommitted)
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
 │   └── forge-ship/SKILL.md                # Composite: implement + review in one invocation
 ├── docs/                                  # Project documentation
@@ -49,21 +49,21 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 `forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
-`forge-ship` is a **composite skill** — it composes implement and reflect into a single invocation, keeping review lean with inline review for tiny low-risk diffs and one fresh-context reviewer by default otherwise.
+`forge-ship` is a **composite skill** — it executes implement's process and the review flow shared with reflect in a single invocation, with one fresh-context reviewer by default (its session authors the diff, so review always delegates).
 
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning — challenging terminology against CONTEXT.md, cross-referencing claims against code, stress-testing with concrete scenarios — until a shared design concept emerges. Updates CONTEXT.md inline as terms are resolved. Optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates Issues in the project's Issue tracker (GitHub, markdown `plan/` folder, or user-configured provider)
-- **forge-implement** reads an issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases using inline guidance, and opens a PR
-- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
+- **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a PR
+- **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** composes implement and reflect — implementation runs inline, review stays inline for tiny low-risk diffs and otherwise uses one fresh-context reviewer by default, findings are triaged with the user
+- **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user
 
 ## Skill & Role File Format
 
 See [coding-guidelines.md](coding-guidelines.md) for the complete reference: YAML frontmatter fields, section order, delegate step conventions, and role file format.
 
-Skills use **progressive disclosure**: `SKILL.md` contains core instructions, while templates and detailed reference material live in `references/` and load only when needed. Skills with structured primary input may accept `-- <additional context>` as the final segment.
+Skills use **progressive disclosure**: `SKILL.md` contains core instructions, while templates and detailed reference material live in `references/` and load only when needed. Every skill accepts `-- <additional context>` as the final segment.
 
 ## Operating Constraints
 
@@ -74,15 +74,15 @@ Practitioners call the workable region the **smart zone** and the degraded regio
 | Mechanism | How it responds |
 |-----------|-----------------|
 | Sub-agent delegation (`(delegate)` steps) | Move work into fresh context windows when the parent is approaching the dumb zone |
-| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs can stay inline; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
+| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs stay inline only when the session didn't author them; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
 | Progressive disclosure (`references/`) | Load companion philosophy on demand instead of always-loading every skill's full content |
 | Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; cold tier loads only when needed |
-| Instruction budget (~150–200 instructions per skill body) | Skills stay lean enough to compose without exceeding what frontier LLMs follow consistently |
+| Instruction budget (under ~35 instructions per skill body) | Skills stay lean enough to compose without exceeding the ~150–200 instructions frontier LLMs follow consistently |
 | Role files (`roles/*.md`) | Sub-agents start with focused persona context, not the parent's accumulated history |
 
 The smart-zone constraint is approximate, model-dependent, and changing — but treating it as a real boundary tends to produce more reliable workflows than assuming the advertised context size is the working size. When a skill's design feels like it has too many moving parts to fit in one head, that is also approximately when it has too many tokens to fit in the smart zone.
 
-The instruction-budget figure (~150–200 instructions) is a related but distinct constraint covered in [coding-guidelines.md](coding-guidelines.md#instruction-budget) — it concerns how many discrete instructions an LLM follows reliably, separately from how many tokens fit in the smart zone.
+The instruction-budget figures (~150–200 followed reliably overall, under ~35 per skill) are a related but distinct constraint covered in [coding-guidelines.md](coding-guidelines.md#instruction-budget) — they concern how many discrete instructions an LLM follows reliably, separately from how many tokens fit in the smart zone.
 
 ## Design Decisions
 
@@ -93,11 +93,11 @@ The instruction-budget figure (~150–200 instructions) is a related but distinc
 | GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step pattern | Fresh context for unbiased review; `context: fork` is the native mechanism in Claude Code, `(delegate)` is the cross-runtime fallback |
-| Skill composition | Composite skills reference other skills by path | Keeps orchestrators lean; avoids duplicating step-level instructions across skills |
+| Sub-agent delegation | `(delegate)` step pattern; `context: fork` frontmatter available for whole-skill forking | Fresh context for unbiased review; `(delegate)` works across runtimes, `context: fork` is Claude Code's native whole-skill mechanism — unsuitable for skills with interactive steps |
+| Skill composition | Composite skills reuse component processes and shared `_shared/` modules | Keeps orchestrators lean; shared modules prevent duplicated step-level instructions from drifting |
 | Tool-layer integration | Skills reference external tools by name, not by import | Runtimes and extensions expose delegation/model-selection capabilities; skills use them when available and fall back when not — zero coupling. Runtime-specific agent files or presets are optional local tuning, not part of Forge. When a runtime couples agent names to model/provider selection, push role content, prefer inheriting the parent session configuration over hard-coded agent IDs, use cheap fast models for factual scouting, and prefer cheaper review-capable models for routine review work |
 | Reusable roles | Skill-specific: `<skill>/roles/*.md`; cross-skill: `_shared/roles/*.md` | Delegation personas separated from skill body; single-use roles co-locate with the skill, shared roles live in `_shared/` |
-| Blind research delegation | Scout researches codebase without seeing the ticket | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
+| Blind research delegation | Scout researches codebase without seeing the Issue | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |

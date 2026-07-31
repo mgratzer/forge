@@ -1,8 +1,8 @@
 # Setup Summary Output Format
 
-Use the appropriate format based on mode.
+Use the format matching the work performed.
 
-## Setup Mode
+## Fresh Setup
 
 ```text
 ## Setup Complete
@@ -36,10 +36,10 @@ Use the appropriate format based on mode.
 1. Fill any <!-- TODO --> markers
 2. Add failure modes as you encounter agent mistakes
 3. Re-run /forge-setup-project periodically
-4. Use /forge-create-issue to plan your first piece of work
+4. Use /forge-create-issue to plan your first piece of work — or /forge-shape if the idea is still rough
 ```
 
-## Audit / Legacy Migration Mode
+## Audit / Update of Existing Guidance
 
 ```text
 ## Audit Complete
@@ -56,11 +56,11 @@ Use the appropriate format based on mode.
 | App legibility | <status> | <action> |
 | Known risks | <risks> | <where documented> |
 
-### Recommendations Deferred
+### Recommendations Not Applied
 <items the user chose not to apply>
 
 ### Next Steps
 1. Review changes and verify accuracy
-2. Revisit deferred recommendations
+2. Revisit recommendations not applied
 3. Re-run /forge-setup-project periodically
 ```

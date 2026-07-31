@@ -2,10 +2,10 @@
 name: forge-shape
 description: Shape a vague idea into a clear plan through codebase investigation and convergent one-at-a-time questioning. Use when the user has a rough idea or problem that needs specifying before issue creation.
 disable-model-invocation: true
-allowed-tools: Read, Bash, Grep, Glob, WebSearch, AskUserQuestion
+allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 
-# Shape
+# Shape a Problem
 
 Shape a problem and converge on a plan before creating issues.
 
@@ -13,7 +13,7 @@ Shape a problem and converge on a plan before creating issues.
 
 The idea or problem to shape: $ARGUMENTS
 
-Optional last parameter: `-- <additional context>`
+Optional: `-- <additional context>` for execution guidance.
 
 If no argument is provided, ask the user what they'd like to shape.
 
@@ -36,7 +36,7 @@ If CONTEXT.md exists, read it — use its vocabulary when framing questions and 
 
 Loop until the design concept is clear:
 
-1. Ground the next question in Step 1 findings — never ask what the codebase already answers
+1. Ground the next question in Step 1 facts — never ask what the codebase already answers
 2. Ask one question with your recommended answer (phrase as "I'd suggest X because Y", not as a decision)
 3. Wait for the user's response
 4. **Challenge when warranted** — if the answer conflicts with CONTEXT.md vocabulary, call it out. If it contradicts what the code does, surface it. If it uses vague or overloaded terms, propose a precise canonical term. Invent concrete scenarios to stress-test fuzzy boundaries.
@@ -50,7 +50,9 @@ Stop when the user has accepted recommended answers for several consecutive ques
 
 **Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt — that defeats the methodology.
 
-### Step 3: Explore Approaches (delegate, optional)
+### Step 3: Explore Approaches (delegate)
+
+**This step is optional.**
 
 If shaping in Step 2 surfaced a clear approach, skip this step and go to Step 4.
 
@@ -74,7 +76,7 @@ Assign each sub-agent one constraint lens (adapt to the problem):
 > - Risk factors
 
 **Inputs provided to each sub-agent:**
-- Codebase findings from Step 1
+- Codebase facts from Step 1
 - Shaped design concept from Step 2
 - The specific constraint lens to apply
 
@@ -112,13 +114,8 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 
 ## Guidelines
 
-- **One question at a time** — convergence comes from depth per answer, not breadth per prompt
-- **Always recommend an answer** — phrased as a recommendation, not a decision
-- **Challenge then converge** — push back on terminology conflicts, code contradictions, and vague boundaries before accepting an answer
-- **Use the project's language** — reference CONTEXT.md vocabulary; when new terms emerge, capture them immediately
 - **Problem over solution** — clarify what's wrong before proposing how to fix it
 - **Stay grounded** — reference specific code, files, and patterns, not abstractions
-- **Approach exploration is conditional** — skip Step 3 when shaping already surfaced the approach
 
 ## Related Skills
 

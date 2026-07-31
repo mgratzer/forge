@@ -19,9 +19,10 @@ Every skill follows the same section order:
 ## Frontmatter Conventions
 
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
-- `description`: one sentence describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
+- `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
 - `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
 - `allowed-tools`: comma-separated list of tools the skill may use. Omit to allow all tools.
+- `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
 ## Writing Process Steps
 
@@ -50,17 +51,17 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 
 ### Using Roles in Delegate Steps
 
-When a delegation step benefits from a separated persona, extract it into a **role file** under the skill's `roles/` directory (see [Architecture — Role File Format](architecture.md#role-file-format)). The skill then references the role and provides only task-specific instructions:
+When a delegation step benefits from a separated persona, extract it into a **role file** (see [Architecture — Skill & Role File Format](architecture.md#skill--role-file-format)). A role used by one skill lives in that skill's `roles/` directory; a role shared across skills lives in `skills/_shared/roles/`. The skill then references the role and provides only task-specific instructions:
 
 ```markdown
 #### Research (delegate)
 
-Delegate to a [forge-scout](roles/forge-scout.md) sub-agent that receives only
+Delegate to a [forge-scout](../_shared/roles/forge-scout.md) sub-agent that receives only
 the questions. If the runtime does not support sub-agents, read the role
 file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
-- Role: [forge-scout](roles/forge-scout.md)
+- Role: [forge-scout](../_shared/roles/forge-scout.md)
 - The research questions
 
 **Expected output:** One factual answer per question.
@@ -103,27 +104,27 @@ Conventions shared across skills. When modifying any, update every skill that re
 
 | Convention | Format | Referenced In |
 |------------|--------|---------------|
-| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, implement, address-pr-feedback |
-| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement, reflect |
+| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
+| Canonical guidance file | `AGENTS.md` canonical; `CLAUDE.md` compatibility symlink | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — kept inline in implement so the default execution path does not need extra reference files | implement |
-| Pattern audit | When changing a pattern, update ALL files using it | implement, reflect |
-| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for all deferred items found in reflection | reflect |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment for skills with structured primary input | setup-project, shape, implement, reflect, address-pr-feedback |
+| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
+| Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
+| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback |
+| Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
-| Sub-agent delegation | `context: fork` frontmatter + `(delegate)` step marker with role reference or self-contained instructions and inline fallback | shape, implement, reflect |
-| Review delegation | Tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
+| Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship |
+| Review delegation | Tiny low-risk diffs stay inline when the session didn't author them; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
 | Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
 | Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
-| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship (forge-reviewer in _shared/) |
-| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the ticket; inline fallback answers factually without suggesting implementations | implement |
+| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
+| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
-| Skill composition | Composite skills reference other skills by path; orchestrators stay lean | ship |
+| Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items | ship, implement |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
@@ -135,7 +136,8 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 
 - **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
-- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
+- **Count composites per invocation.** A composite skill loads its component's instructions too — keep the composite's own body thin so the combined load stays reasonable.
+- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
 - **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 

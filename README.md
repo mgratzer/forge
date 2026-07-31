@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Six skills. From idea to review-ready code.
+  One workflow. Seven skills. From idea to review-ready code.
 </p>
 
 <p align="center">
@@ -32,7 +32,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation** |
 
-Skills with structured primary input also accept optional trailing execution guidance using `-- <additional context>`.
+All skills accept optional trailing execution guidance using `-- <additional context>`.
 
 ## Workflow
 
@@ -43,7 +43,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
                                                                         ╰──── forge-ship ────╯
 ```
 
-`forge-ship` composes implement + review into a single invocation. Review stays lean by default — tiny low-risk diffs stay inline; otherwise use one fresh-context reviewer, with a second pass only when risk justifies it. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
+`forge-ship` composes implement + review into a single invocation; its review always delegates to a fresh-context reviewer (the session authored the diff), adding a second pass only when risk justifies it. Standalone `forge-reflect` keeps tiny diffs inline when the session didn't author them. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
 
 ## Install
 

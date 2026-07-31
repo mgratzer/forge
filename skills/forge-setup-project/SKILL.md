@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 
 # Set Up or Update Project Context Infrastructure
 
-Set up or update a project's context infrastructure for agentic engineering. Context is organized in three tiers:
+Context is organized in three tiers:
 
 | Tier | File(s) | Role |
 |------|---------|------|
@@ -21,31 +21,23 @@ Set up or update a project's context infrastructure for agentic engineering. Con
 
 ## Input
 
-Optional project root path (defaults to cwd). Optional: `-- <additional context>` for execution guidance.
+Optional project root path (`$ARGUMENTS`; defaults to cwd). Optional: `-- <additional context>` for execution guidance.
 
 ## Process
 
-### Step 1: Determine Mode
+### Step 1: Assess What Exists
 
-Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`.
-
-| Mode | Trigger | Behavior |
-|------|---------|----------|
-| **Setup** | Neither `AGENTS.md` nor `CLAUDE.md` exists | Generate tiered context from scratch |
-| **Audit & Update** | `AGENTS.md` exists | Score existing guidance, identify improvements, apply changes |
-| **Legacy Migration** | `CLAUDE.md` exists but `AGENTS.md` does not | Migrate `CLAUDE.md` to `AGENTS.md`, then update |
+Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`. The file state determines the work: nothing exists → generate from scratch; legacy `CLAUDE.md` without `AGENTS.md` → migrate it to `AGENTS.md`, then update; `AGENTS.md` exists → audit and update.
 
 ### Step 2: Explore the Codebase
 
-Skip for greenfield projects (no code exists).
+Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Classify each finding as **discoverable** (agents can find it themselves) or **requires documentation** (decisions, conventions, failure modes) — only the second category belongs in context files.
 
-Explore thoroughly: structure, language/runtime, scripts, CI/CD, lint/format/test config, docs. Classify each finding as **discoverable** (agents can find it) or **requires documentation** (decisions, conventions, failure modes). Only the second category belongs in context files.
+Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks.
 
-Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure (entry points, boundaries), app legibility (bootable locally?), known risks.
+### Step 3: Audit Existing Guidance
 
-### Step 3: Audit Existing Guidance (Audit & Legacy Migration modes only)
-
-Read all existing guidance files. Score each section:
+When guidance files already exist, score each section:
 
 | Criterion | Test |
 |-----------|------|
@@ -54,83 +46,41 @@ Read all existing guidance files. Score each section:
 | **Currency** | Does this match the current codebase? Verify commands, paths, patterns. |
 | **Signal density** | Ratio of actionable information to total words? |
 
-Present an audit report. Group recommendations into quick wins, high-value additions, and structural changes. Get user confirmation via AskUserQuestion before applying.
+Present an audit report grouped by impact and get user confirmation via AskUserQuestion before applying changes.
 
 ### Step 4: Gather Project Information
 
-Use AskUserQuestion to collect what cannot be determined from code.
-Incorporate any optional additional context when deciding what to ask, audit, or prioritize.
-
-**Always ask:**
-
-1. **Core principles** — "What 3-5 rules should always guide development?" Offer examples from what you observed.
-2. **Failure modes** — "What mistakes do agents or new developers repeat? What breaks?" Each entry must trace to an observed mistake.
-3. **Domain invariants** — "What rules must never be violated? What causes silent bugs?"
-
-**Ask only if ambiguous from code:**
-
-4. Conventions with enforcement mechanisms
-5. Confirm detected commands if multiple options exist
-6. How to handle existing meta files (if found without `AGENTS.md`)
-
-**Never ask** what's discoverable from code — language, framework, test runner, scripts, directory structure.
-
-For Audit/Migration modes, ask about gaps found in Step 3.
+Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration and gaps surfaced by the Step 3 audit. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
 
 ### Step 5: Generate or Update AGENTS.md
 
-Create or update `AGENTS.md`. Target **~150-200 lines**. Every line must pass the undiscoverability test.
-
-See [agents-md-template.md](references/agents-md-template.md) for the template structure.
-
-For **Legacy Migration**: migrate accepted content into `AGENTS.md`, fold duplicates, replace legacy file with symlink in Step 7.
+Create or update `AGENTS.md`. Target **~150-200 lines**; every line must pass the undiscoverability test. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and replace the old file with a symlink in Step 7.
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
-Only create docs with actual content. An empty doc wastes context.
+Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process); offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test — an empty doc wastes context.
 
-**Always created:**
-
-- `docs/architecture.md` — design decisions, data flow, module responsibilities. Not directory listings.
-- `docs/pr-workflow.md` — branch naming, PR checklist, review process. Reference AGENTS.md for commit format.
-
-**Created only when warranted** (offer via AskUserQuestion based on detection):
-
-- `docs/development.md` — when setup has gotchas or multi-step requirements
-- `docs/coding-guidelines.md` — when project has specific patterns worth codifying
-- `docs/testing.md` — when test patterns are non-obvious
-- Additional domain-specific docs as needed
-
-All Tier 2 docs must pass the undiscoverability test. Use tables for structured data. Include actual file paths.
-
-### Step 7: Compatibility Symlink and .gitignore
+### Step 7: Create Compatibility Symlink and Update .gitignore
 
 ```bash
+# Replace any legacy CLAUDE.md with a symlink to the canonical AGENTS.md
 rm -f CLAUDE.md
 ln -sf AGENTS.md CLAUDE.md
 ```
 
-If the platform doesn't support symlinks, stop and tell the user.
+If the platform doesn't support symlinks, stop and tell the user. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
 
-Create or update `.gitignore` with entries matching the detected stack. Never overwrite an existing `.gitignore` — append only missing entries.
+### Step 8: Create Human-Facing Files
 
-### Step 8: Human-Facing Files
-
-Create if it doesn't exist (this is for humans, not agent context):
-
-- **README.md** — project description, quick start, docs links. If one exists, ask: replace, merge, or keep?
+Create `README.md` if it doesn't exist (project description, quick start, docs links — for humans, not agent context). If one exists, ask via AskUserQuestion: replace, merge, or keep?
 
 ### Step 9: Commit
 
-Stage and commit all new/modified files:
-- Setup mode: `docs: set up agentic context infrastructure`
-- Audit/Migration: `docs: update context infrastructure`
+Stage and commit the new/modified files: `docs: set up agentic context infrastructure` (or `docs: update context infrastructure` when updating). Skip the commit if unrelated staged changes exist or generated files have unresolved questions.
 
-Do not commit if: dry run requested, unrelated staged changes exist, or generated files have unresolved questions.
+### Step 10: Summarize
 
-### Step 10: Summary
-
-Report what was created/changed. See [output-format.md](references/output-format.md) for the structure. Include tier status with line counts, agent readiness assessment, and next steps.
+Report what was created/changed — see [output-format.md](references/output-format.md). Include tier status with line counts, agent readiness assessment, and next steps.
 
 ## Guidelines
 

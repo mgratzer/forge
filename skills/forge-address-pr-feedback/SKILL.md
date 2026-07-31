@@ -2,7 +2,7 @@
 name: forge-address-pr-feedback
 description: Analyze and address unresolved feedback on a GitHub pull request. Use when the user has received PR review comments and wants to systematically address each piece of feedback, or when the user mentions PR feedback, review comments, or addressing reviewer concerns.
 disable-model-invocation: true
-allowed-tools: Read, Edit, Write, Bash, Grep, Glob
+allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 ---
 
 # Address PR Feedback
@@ -11,7 +11,7 @@ Systematically address unresolved review feedback on a pull request.
 
 ## Input
 
-PR number or URL (auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
+PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
 
 ## Process
 
@@ -56,7 +56,9 @@ For each unresolved thread, read the file and surrounding context, then categori
 - **Discussion** — assess if change improves code
 - **Already addressed** — thread not resolved but change was made
 - **Won't fix** — current approach is preferred
-- **Follow-up** — valid but out of scope — create linked issue
+- **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
+
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming.
 
 ### Step 3: Address and Reply Individually
 
@@ -87,11 +89,11 @@ Reply format by category:
 - **Discussion**: "<decision and reasoning>"
 - **Already addressed**: "Addressed in `<sha>`."
 - **Won't fix**: "Keeping current approach because <reason>."
-- **Follow-up**: "Created #<num> to track this."
+- **Deferred**: "Created #<num> to track this."
 
-### Step 4: Create Follow-up Issues
+### Step 4: Create Issues for Deferred Items
 
-For valid out-of-scope improvements, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
+For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
 
 ### Step 5: Push and Summarize
 
@@ -99,7 +101,7 @@ For valid out-of-scope improvements, create an Issue in the project's Issue trac
 git push
 ```
 
-Report: feedback items addressed, commits created, follow-up issues created, items needing human decision.
+Report: threads addressed, commits created, Deferred items created, items needing human decision.
 
 ## Guidelines
 

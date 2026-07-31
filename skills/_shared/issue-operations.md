@@ -29,6 +29,35 @@ ISSUE_EOF
 
 **Other provider:** use the tool or CLI declared in AGENTS.md with the same title, body, and labels.
 
+## Discover and Update Labels
+
+**GitHub:** discover available labels before applying any, and add missing ones to an existing Issue:
+
+```bash
+gh label list --limit 100   # defaults to 30 — raise it so discovery is exhaustive
+gh issue edit <ISSUE_NUMBER> --add-label "<LABEL>"
+```
+
+**Markdown:** choose labels freely — there is no predefined set; edit the issue file's `labels` frontmatter.
+
+**Other provider:** use the declared tool's label operations.
+
+## Create Epic with Sub-Issues
+
+Create the parent Issue first, then the sub-issues.
+
+**GitHub:** link sub-issues from the parent body with a task list — this works on every `gh` version:
+
+```markdown
+- [ ] #<SUB_ISSUE_NUMBER>
+```
+
+Newer `gh` versions also support `gh issue create --parent <PARENT_NUMBER>` for native sub-issues; verify the flag exists before relying on it.
+
+**Markdown:** list sub-issue IDs in the parent issue file's body.
+
+**Other provider:** use the declared tool's hierarchy mechanism, or fall back to referencing sub-issue IDs in the parent body.
+
 ## Read Issue
 
 Given an issue ID:

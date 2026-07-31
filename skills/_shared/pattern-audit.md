@@ -13,8 +13,8 @@ When a pattern changes in a diff, find every other place using the old pattern a
 
 ## When to audit
 
-1. **During implementation** (Step 5) — the moment you change a pattern
-2. **During reflection** (Correctness & Patterns dimension) — catch what the implementer missed
+1. **During implementation** — the moment you change a pattern
+2. **During reflection** — the review pass checks pattern consistency to catch what the implementer missed
 
 ## Common failure modes
 
