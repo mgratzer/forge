@@ -22,7 +22,7 @@ Determine the input type and extract requirements. Detect the Issue tracker prov
 
 - **Issue** — fetch using the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
-- **Free-text** — parse scope and constraints. Ask clarifying questions if underspecified.
+- **Free-text** — parse scope and constraints.
 
 Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
 
@@ -110,7 +110,7 @@ Report: branch name, PR link, commits made, files changed, tests added, docs upd
 ## Guidelines
 
 - **Explore before coding** — research the codebase before committing to an approach
-- **Ask when unsure** — better to clarify than implement wrong
+- **Ask when unsure** — better to clarify than implement wrong; unattended runs state their assumptions and proceed
 - **Don't scope creep** — implement what was asked, nothing more
 
 ## Related Skills

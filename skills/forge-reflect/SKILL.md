@@ -68,11 +68,9 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 
 Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
 
-Bias hard toward **fix now**. Recommend deferral only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review.
-
-For each Finding, recommend one of:
+For each Finding, recommend one of (bias toward fix now):
 - **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
-- **Defer** — only for larger or truly out-of-scope changes (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
+- **Defer** — only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
 State your recommendation and let the user decide. Then:
 - **Fix now:** apply the fix and commit it

@@ -30,7 +30,7 @@ Use the smallest review shape that still gives trustworthy signal:
 
 When using inline review, keep it to a single pass — do not escalate to sub-agents unless the diff is no longer tiny or new risk appears.
 
-When adding a second reviewer, assign it only the **highest-risk deep pass** from [review-dimensions](review-dimensions.md) — do not split the same diff into many overlapping reviewers.
+When adding a second reviewer, assign it only the **highest-risk deep pass** from [review-dimensions](review-dimensions.md).
 
 ## Compose Review Tasks
 

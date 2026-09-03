@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context — this session authored the diff, so even tiny diffs get an unbiased reviewer — and deepens only when risk justifies it.
+Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context and deepens only when risk justifies it.
 
 ## Input
 
