@@ -20,10 +20,16 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 **Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads.
 
 ```bash
-gh api graphql -f query='
-query {
-  repository(owner: "<OWNER>", name: "<REPO>") {
-    pullRequest(number: <PR_NUMBER>) {
+# Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted
+PR_ARG=""
+OWNER=$(gh repo view --json owner --jq .owner.login)
+REPO=$(gh repo view --json name --jq .name)
+PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
+
+gh api graphql -F owner="$OWNER" -F repo="$REPO" -F pr="$PR_NUMBER" -f query='
+query($owner: String!, $repo: String!, $pr: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
       reviewThreads(first: 100) {
         nodes {
           isResolved
@@ -32,21 +38,14 @@ query {
           line
           id
           comments(first: 10) {
-            nodes {
-              id
-              body
-              author { login }
-              url
-            }
+            nodes { id body author { login } url }
           }
         }
       }
     }
   }
-}'
+}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)'
 ```
-
-Filter for unresolved threads: `select(.isResolved == false)`.
 
 ### Step 2: Process Each Thread
 
@@ -62,7 +61,7 @@ For **Discussion** threads where the decision is genuinely the user's to make, a
 
 ### Step 3: Address and Reply Individually
 
-**Address each thread immediately, then reply before moving to the next.** Do not batch.
+Address each thread and reply before moving to the next, so every reply can cite the commit that resolved it.
 
 For each thread:
 

@@ -50,5 +50,3 @@ Verify before proceeding to the next phase:
 - [ ] All tests pass (not just new ones)
 - [ ] No lint/type errors introduced
 - [ ] Commit the phase — one logical change per commit, conventional format
-
-Use TodoWrite to track progress through phases.
