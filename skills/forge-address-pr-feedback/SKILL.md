@@ -20,10 +20,11 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 **Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads.
 
 ```bash
-# Derive owner/repo from the checkout and the PR from the branch (or the number/URL given in $ARGUMENTS)
+# Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted
+PR_ARG=""
 OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
-PR_NUMBER=$(gh pr view <PR_NUMBER_OR_URL_IF_GIVEN> --json number --jq .number)
+PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
 
 gh api graphql -F owner="$OWNER" -F repo="$REPO" -F pr="$PR_NUMBER" -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
