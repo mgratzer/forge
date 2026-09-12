@@ -13,7 +13,7 @@
 #   --repo <path>     repository root (default: the git toplevel of the current directory)
 #   --base <branch>   branch to fork worktrees from (default: origin's default branch)
 #   --no-guard        run forge-ship --unattended without --guard
-#   --focus           focus the last workspace created
+#   --no-focus        leave the view where it is (default: focus the first workspace created)
 #   --dry-run         print every command instead of running it
 #
 # Environment:
@@ -24,12 +24,13 @@
 #                        single-quoted for the shell (default: claude --dangerously-skip-permissions
 #                        --name {issue} {prompt})
 set -euo pipefail
+export CMUX_QUIET=1   # silence the legacy-verb notice
 
 here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"   # survives a symlink on PATH
 repo=""
 base=""
 guard="--guard"
-focus=false
+focus=true
 dry_run=false
 issues=()
 trailing=""
@@ -39,7 +40,7 @@ while [ $# -gt 0 ]; do
     --repo) repo="$2"; shift ;;
     --base) base="$2"; shift ;;
     --no-guard) guard="--unattended" ;;
-    --focus) focus=true ;;
+    --no-focus) focus=false ;;
     --dry-run) dry_run=true ;;
     --) shift; trailing="$*"; break ;;
     -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -61,6 +62,7 @@ agent_template="${FORGE_AGENT:-}"
 [ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions --name {issue} {prompt}'
 bootstrap="${FORGE_BOOTSTRAP:-}"
 [ -n "$bootstrap" ] || [ ! -x "$repo/scripts/bootstrap-worktree.sh" ] || bootstrap="scripts/bootstrap-worktree.sh"
+[ -n "$bootstrap" ] || echo "warning: no scripts/bootstrap-worktree.sh and FORGE_BOOTSTRAP unset — worktrees start bare, so tests may not run" >&2
 
 run() {
   if [ "$dry_run" = true ]; then
@@ -111,6 +113,7 @@ for issue in "${issues[@]}"; do
     --env "FORGE_ISSUE=$issue" \
     --focus "$focus" \
     --command "$command"
+  focus=false   # only the first workspace takes the view
   echo
 done
 
