@@ -28,4 +28,4 @@ A launcher needs to do four things:
 3. Start the agent with the prompt `/forge-ship --guard <issue>` and `FORGE_STATUS_CMD` pointing at a script that accepts `<state> "<detail>"`
 4. Make the session findable — a tab name, a window title, a tmux session name
 
-Keep it under a hundred lines; anything smarter belongs in a skill.
+Keep it small — the reference launcher is about 130 lines; anything smarter belongs in a skill.

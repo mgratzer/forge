@@ -19,8 +19,9 @@
 #   FORGE_WORKTREE_ROOT  where worktrees go (default: ~/.forge/worktrees/<repo-name>)
 #   FORGE_BOOTSTRAP      command run inside each new worktree; default: scripts/bootstrap-worktree.sh
 #                        when the repo has one, otherwise nothing
-#   FORGE_AGENT          agent command; "{issue}" and "{prompt}" are substituted
-#                        (default: claude --dangerously-skip-permissions --name '#{issue}' '{prompt}')
+#   FORGE_AGENT          agent command; "{issue}" and "{prompt}" are substituted, already
+#                        single-quoted for the shell (default: claude --dangerously-skip-permissions
+#                        --name {issue} {prompt})
 set -euo pipefail
 
 here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"   # survives a symlink on PATH
@@ -40,7 +41,7 @@ while [ $# -gt 0 ]; do
     --focus) focus=true ;;
     --dry-run) dry_run=true ;;
     --) shift; trailing="$*"; break ;;
-    -h|--help) sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "unknown option: $1" >&2; exit 1 ;;
     *) issues+=("$1") ;;
   esac
@@ -55,7 +56,11 @@ repo="${repo:-$(git rev-parse --show-toplevel)}"
 repo_name="$(basename "$repo")"
 worktree_root="${FORGE_WORKTREE_ROOT:-$HOME/.forge/worktrees/$repo_name}"
 status_cmd="$here/cmux-status.sh"
-agent_template="${FORGE_AGENT:-claude --dangerously-skip-permissions --name '#{issue}' '{prompt}'}"
+agent_template="${FORGE_AGENT:-}"
+[ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions --name {issue} {prompt}'
+
+# Single-quote a value for the shell that receives the workspace command.
+sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
 
 run() {
   if [ "$dry_run" = true ]; then
@@ -101,7 +106,7 @@ for issue in "${issues[@]}"; do
     if git -C "$repo" show-ref --verify --quiet "refs/heads/$branch"; then
       run git -C "$repo" worktree add "$worktree" "$branch"
     else
-      run git -C "$repo" worktree add -b "$branch" "$worktree" "origin/$base"
+      run git -C "$repo" worktree add --no-track -b "$branch" "$worktree" "origin/$base"
     fi
     if [ -n "$bootstrap" ]; then
       echo "  bootstrap $bootstrap"
@@ -115,8 +120,8 @@ for issue in "${issues[@]}"; do
 
   prompt="/forge-ship $guard $issue"
   [ -n "$trailing" ] && prompt="$prompt -- $trailing"
-  agent="${agent_template//\{issue\}/$issue}"
-  agent="${agent//\{prompt\}/$prompt}"
+  agent="${agent_template//\{issue\}/$(sq "#$issue")}"
+  agent="${agent//\{prompt\}/$(sq "$prompt")}"
 
   run cmux new-workspace \
     --name "#$issue $(printf '%s' "$title" | cut -c1-48)" \

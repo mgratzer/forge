@@ -109,10 +109,10 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
-| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback |
+| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
-| Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship |
-| Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship |
+| Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
+| Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship, guard, batch |
 | Review delegation | Tiny low-risk diffs stay inline when the session didn't author them; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
 | Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
@@ -130,7 +130,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | ship, guard |
 | Unattended configuration | Read the `## Unattended Shipping` section of `AGENTS.md` — see `_shared/unattended-config.md`; defaults when absent | guard, batch |
 | Guard never merges | Terminal states are `review-ready` and `needs-human`; no merge, force-push, or close | guard, ship |
-| Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
+| Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 
 ## Instruction Budget

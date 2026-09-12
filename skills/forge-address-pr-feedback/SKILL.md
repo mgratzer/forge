@@ -39,7 +39,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
           path
           line
           id
-          comments(first: 10) {
+          comments(last: 20) {
             nodes { id body author { login } url }
           }
         }
@@ -61,7 +61,7 @@ For each unresolved thread, read the file and surrounding context, then categori
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did; otherwise treat it as Deferred and open the Issue with both options laid out.
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> — <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
 
 ### Step 3: Address and Reply Individually
 

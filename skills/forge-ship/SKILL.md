@@ -41,7 +41,7 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 ### Step 4: Guard (only with `--guard`)
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `review-ready` here — the PR is pushed and self-reviewed, and the human takes it from there.
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` here — the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 5: Summarize
 
@@ -54,7 +54,7 @@ Report implementation, review, and guard results together.
 
 **PR:** #<number> — <title>
 **Branch:** <branch-name>
-**Result:** review-ready | needs-human — <reason>   (guard mode only)
+**Result:** pushed | review-ready | needs-human — <reason>
 
 ### Implementation
 - <N> commits, <M> files changed

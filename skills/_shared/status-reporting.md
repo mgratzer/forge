@@ -23,6 +23,7 @@ The command is provided by a launcher (see `contrib/launchers/`), never by a ski
 | `reviewing` | Self-review and quality passes running | no |
 | `waiting` | Blocked on an external signal (CI, peer review) | no |
 | `addressing` | Reacting to CI failures or review feedback | no |
+| `pushed` | PR open and self-reviewed; no guard ran | yes |
 | `review-ready` | CI green, peer review present, every thread addressed — the human can look now | yes |
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |

@@ -11,7 +11,7 @@ Decide which Issues can ship side by side, and in what order.
 
 ## Input
 
-A scope (`$ARGUMENTS`): a milestone name, a label, an epic Issue number, or a list of Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together.
+A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or two or more Issue numbers (a single bare number is read as an epic). Optional: `-- <additional context>` such as a wave size cap or Issues to pin together.
 
 **Unattended mode:** `--unattended` skips the approval step and prints the batch directly.
 
@@ -89,7 +89,7 @@ launch: <launcher> 123 124 ...
 ```
 /forge-batch milestone:v1.1.0
 /forge-batch label:ready
-/forge-batch 601
+/forge-batch epic:601
 /forge-batch 610 611 612 613 -- cap waves at 4
 /forge-batch --unattended label:ready
 ```

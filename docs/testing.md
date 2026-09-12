@@ -42,14 +42,6 @@ The most reliable test is running the skill on a real project:
 7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`
 8. For a launcher, run it with `--dry-run` first and check the branch names, worktree paths, and the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
 
-### 5. Launcher Validation
-
-```bash
-bash -n contrib/launchers/*.sh                      # syntax
-contrib/launchers/cmux-claude.sh --dry-run <issue>  # what it would do
-FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam end to end
-```
-
 ### 4. Cross-Skill Consistency Check
 
 After modifying any shared convention, grep across all relevant skills to ensure consistency:
@@ -69,4 +61,12 @@ grep -rn "additional context\|-- <additional context>" skills/
 
 # Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
+```
+
+### 5. Launcher Validation
+
+```bash
+bash -n contrib/launchers/*.sh                      # syntax
+contrib/launchers/cmux-claude.sh --dry-run <issue>  # what it would do
+FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam end to end
 ```

@@ -24,6 +24,7 @@ The skill is unattended by nature: it decides on evidence, replies on threads, a
 PR=$(gh pr view $PR_ARG --json number --jq .number)
 BRANCH=$(gh pr view "$PR" --json headRefName --jq .headRefName)
 ME=$(gh api user --jq .login)
+[ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
 Read the project's `## Unattended Shipping` section per [unattended-config](../_shared/unattended-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](../_shared/status-reporting.md).
@@ -44,51 +45,49 @@ After each pass that changed code: run the project quality gates, commit with a 
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Two signals gate the PR:
+Report `waiting`. Two signals gate the PR; both waits are capped.
 
-**CI** — block until checks finish; a repository with no checks counts as green:
+**CI** — `gh pr checks` exits 0 when green, 8 while pending, and 1 on failure *or* when no checks are reported yet:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30 --fail-fast   # exit 0 = green, non-zero = failed or pending
+gh pr checks "$PR" --watch --interval 30 --fail-fast
 ```
 
-Bash calls have a timeout in most runtimes — re-run while the exit code reports pending, and prefer the runtime's own scheduling or wait facility for long waits when it has one. Never poll faster than every 30 seconds.
+"no checks reported" right after a push usually means the run has not registered yet — re-probe every 30 seconds for up to 3 minutes before concluding the repository has no CI (`ls .github/workflows` empty). Bash calls have a timeout in most runtimes, so re-run while pending, and prefer the runtime's own scheduling or wait facility for long waits when it has one. Cap the total CI wait at 60 minutes.
 
 **Peer review** — a review submitted after the latest push by someone other than `$ME`:
 
 ```bash
-LAST_PUSH=$(TZ=UTC git log -1 --format=%cd --date=format-local:%Y-%m-%dT%H:%M:%SZ)
+LAST_PUSH=$(gh pr view "$PR" --json commits --jq '.commits[-1].committedDate')
 gh pr view "$PR" --json reviews \
   --jq "[.reviews[] | select(.submittedAt >= \"$LAST_PUSH\" and .author.login != \"$ME\")] | length"
 ```
 
-On the first round wait up to 15 minutes for the peer review. On later rounds re-request it once and wait up to 10 minutes — many bot reviewers review a PR only once unless asked again:
+When the count is zero and a peer reviewer is configured, request the review once per round (round 1 included — Step 2 may have pushed after the reviewer's first look), then wait up to 15 minutes:
 
 ```bash
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-When no peer reviewer is configured, or the wait expires with the review already present from an earlier round, the review signal is satisfied.
+The review signal is satisfied when a post-push review exists, when no peer reviewer is configured, or when the wait expires but the PR already carries at least one review by someone other than `$ME` — bot reviewers often review once and stay silent afterwards. Note the fallback in the summary.
 
-### Step 4: React
+### Step 4: Decide, then React
 
-**CI failed** — report `addressing`, read the failed logs, fix, run the quality gates, commit, push, and go back to Step 3:
+Check the terminal conditions first, on every round:
+
+- **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, and no decision threads
+- **`needs-human`** — CI green and review satisfied but decision threads remain; the round limit is reached; the same check fails twice with the same error; a reviewer repeats a point already answered; the CI wait cap expires; or the peer reviewer never reviewed the PR at all within the wait
+
+When neither applies, react and go back to Step 3. Each reaction is one **round**.
+
+**CI failed** — report `addressing`, read the failed logs, fix, run the quality gates, commit, push:
 
 ```bash
 RUN=$(gh run list --branch "$BRANCH" --status failure --limit 1 --json databaseId --jq '.[0].databaseId')
 gh run view "$RUN" --log-failed
 ```
 
-**Unaddressed threads** — an unresolved thread whose last comment is not by `$ME`. When any exist, report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended` on this PR, then go back to Step 3.
-
-Each trip through Step 4 is one **round**.
-
-### Step 5: Decide
-
-Stop at the first terminal state that applies:
-
-- **`review-ready`** — CI green, review signal satisfied, and no unaddressed threads
-- **`needs-human`** — the round limit is reached, the same check fails twice with the same error, a reviewer repeats a point already answered, or a thread needs a decision that is genuinely the user's (see the Discussion rule in address-pr-feedback)
+**Unaddressed threads** — unresolved threads whose last comment is not by `$ME`. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended` on this PR. Threads it reports as *needing a human decision* become **decision threads**: they no longer block the wait, but they turn the outcome into `needs-human`.
 
 Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
 
@@ -106,17 +105,17 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds
-1. CI <green/failed → fixed>, review <present/timed out>, threads <n addressed, m deferred>
+1. CI <green/failed → fixed>, review <present/re-requested, fell back to earlier review>, threads <n addressed, m deferred>
 
 ### Open for the human
-- <thread url> — <why it needs a decision>
+- <thread url> — <the decision, with both options>
 - Deferred: #<issue> — <title>
 ```
 
 ## Guidelines
 
 - **Evidence over questions** — nothing in this skill asks the user; every judgment call is written into a thread reply or an Issue
-- **Bounded everything** — rounds, waits, and polling intervals all have limits; a stuck guard ends in `needs-human`, not in a loop
+- **Bounded everything** — rounds, waits, and polling intervals all have caps; a stuck guard ends in `needs-human`, not in a loop
 - **Merging is the human's call** — `review-ready` is the last state, on purpose
 
 ## Related Skills
