@@ -52,12 +52,14 @@ Present the plan via AskUserQuestion. Get user confirmation before coding. **In 
 ### Step 3: Create Feature Branch
 
 ```bash
-# Sync the default branch, then branch off it
+# Branch off the freshly fetched default branch without switching to it — this also works
+# inside a worktree, where the default branch is checked out elsewhere
 git fetch origin
-git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git pull
-git checkout -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION>
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git checkout -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
 ```
+
+**Reuse a prepared branch:** if the session already sits on a non-default branch with no commits ahead of the default branch (a launcher or worktree created it for this work), keep it instead of creating another.
 
 When working from a plan file or free-text (no Issue number), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
 

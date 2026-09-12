@@ -1,0 +1,95 @@
+---
+name: forge-batch
+description: Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other — estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Use when the user has several prepared Issues and wants to know which can run in parallel unattended.
+disable-model-invocation: true
+allowed-tools: Read, Bash, Grep, Glob, AskUserQuestion
+---
+
+# Batch Issues into Waves
+
+Decide which Issues can ship side by side, and in what order.
+
+## Input
+
+A scope (`$ARGUMENTS`): a milestone name, a label, an epic Issue number, or a list of Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together.
+
+**Unattended mode:** `--unattended` skips the approval step and prints the batch directly.
+
+## Process
+
+### Step 1: Collect Candidates
+
+Resolve the scope through the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)):
+
+```bash
+gh issue list --milestone "<MILESTONE>" --state open --limit 100 --json number,title,labels,body
+gh issue list --label "<LABEL>" --state open --limit 100 --json number,title,labels,body
+gh issue view <EPIC> --json body --jq .body | grep -oE '#[0-9]+'    # task-list sub-issues
+```
+
+Exclude, with a stated reason each: HITL Issues (execution mode in the body or `mode` frontmatter), Issues labeled `blocked`, Issues that already have an open PR (`gh pr list --search "<number>"`), and Issues that depend on an open Issue outside the scope. Everything left is AFK and free to start.
+
+### Step 2: Estimate Touch Sets (delegate)
+
+For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. Delegate one task per Issue in parallel when the runtime supports it, on a cheap fast model; otherwise estimate inline.
+
+> Read the Issue. List every path it names explicitly. Grep the codebase for the concepts it names (routes, tables, components, message keys) and add the files that define them. Flag whether the work needs a schema migration, a dependency change, generated files, or translation messages. Return paths only — no implementation advice.
+
+**Inputs provided to sub-agent:** the Issue body, codebase access, the project's serialized resources from [unattended-config](../_shared/unattended-config.md).
+**Expected output:** `#<number>: <paths...> | serialized: <migration|lockfile|generated|messages|none>`
+
+### Step 3: Build Waves
+
+Two Issues **conflict** when their touch sets share a file, or both need the same serialized resource. Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+
+Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
+
+### Step 4: Confirm
+
+Present the batch via AskUserQuestion: approve, move an Issue, or exclude one. **In unattended mode:** skip and print.
+
+### Step 5: Print the Batch
+
+Use the output format below. When `AGENTS.md` declares a launcher (see unattended-config), the launch line names it; otherwise it lists the numbers for whatever the user starts by hand.
+
+## Output Format
+
+```text
+## Batch: <scope>
+
+### Wave 1 — <n> Issues
+| # | Title | Touch set | Notes |
+|---|-------|-----------|-------|
+| 123 | feat(api): ... | src/api/x.ts, src/api/x.test.ts | |
+| 124 | fix(ui): ... | src/ui/y.tsx | adjacent to #125 |
+
+launch: <launcher> 123 124 ...
+
+### Wave 2 — <n> Issues (after Wave 1 merges)
+...
+
+### Excluded
+- #130 — HITL
+- #131 — open PR #400 already
+```
+
+## Guidelines
+
+- **Touch sets are estimates** — say so; a Wave is a bet the human approves, not a proof
+- **Serialized resources trump everything** — two migrations in one Wave is a merge conflict by construction
+- **Later Waves are provisional** — re-run after a Wave merges; touch sets shift as code lands
+
+## Related Skills
+
+**Before:** `forge-create-issue` classifies Issues as AFK or HITL — only AFK Issues enter a Wave.
+**After:** start a Wave with a launcher from `contrib/launchers/`, which runs `forge-ship --guard` per Issue.
+
+## Example Usage
+
+```
+/forge-batch milestone:v1.1.0
+/forge-batch label:ready
+/forge-batch 601
+/forge-batch 610 611 612 613 -- cap waves at 4
+/forge-batch --unattended label:ready
+```

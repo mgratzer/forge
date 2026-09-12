@@ -13,6 +13,8 @@ Systematically address unresolved review feedback on a pull request.
 
 PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
 
+**Unattended mode:** `--unattended` never asks — Discussion threads are decided on evidence or deferred, and threads with a concrete outcome are resolved so a guard can tell what is still open.
+
 ## Process
 
 ### Step 1: Fetch Unresolved Threads
@@ -47,6 +49,8 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 }' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)'
 ```
 
+In unattended mode, skip threads whose last comment is already by the current user (`gh api user --jq .login`) — they were answered in an earlier round.
+
 ### Step 2: Process Each Thread
 
 For each unresolved thread, read the file and surrounding context, then categorize:
@@ -57,7 +61,7 @@ For each unresolved thread, read the file and surrounding context, then categori
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming.
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did; otherwise treat it as Deferred and open the Issue with both options laid out.
 
 ### Step 3: Address and Reply Individually
 
@@ -90,6 +94,13 @@ Reply format by category:
 - **Won't fix**: "Keeping current approach because <reason>."
 - **Deferred**: "Created #<num> to track this."
 
+5. **Resolve the thread** (unattended mode only) when the outcome is concrete — Actionable, Already addressed, or Deferred. Leave Question, Discussion, and Won't fix open so the human sees the reasoning:
+
+```bash
+gh api graphql -f query='
+mutation { resolveReviewThread(input: { threadId: "<THREAD_ID>" }) { thread { isResolved } } }'
+```
+
 ### Step 4: Create Issues for Deferred Items
 
 For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
@@ -108,15 +119,18 @@ Report: threads addressed, commits created, Deferred items created, items needin
 - **Address, reply, then next** — don't batch
 - **Be specific** — reference commits, line numbers, and code
 - **Test changes** — run checks before committing
+- **A reply is the audit trail** — in unattended mode every thread gets one, even when the answer is "no"
 
 ## Related Skills
 
 **If the feedback required substantial changes:** Use `forge-reflect` for one more self-review before re-requesting review.
+**Composed by:** `forge-guard` runs this process in unattended mode for each feedback round.
 
 ## Example Usage
 
 ```
 /forge-address-pr-feedback 123
 /forge-address-pr-feedback 123 -- prioritize security comments
+/forge-address-pr-feedback --unattended 123
 /forge-address-pr-feedback
 ```
