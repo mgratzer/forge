@@ -10,6 +10,10 @@
 # Usage:
 #   cmux-claude.sh [options] <issue>... [-- <trailing context for forge-ship>]
 #
+# <issue> is anything forge-ship accepts: a GitHub number or URL, a provider key or URL
+# such as ENG-123 or https://linear.app/…/ENG-123/…, or a plan file path. Titles come from
+# gh for GitHub Issues and from the first heading for plan files; other providers show the key.
+#
 # Options:
 #   --repo <path>     repository root (default: the git toplevel of the current directory)
 #   --no-guard        run forge-ship --unattended without --guard
@@ -98,33 +102,51 @@ fi
 
 origin_url="$(git -C "$repo" remote get-url origin)"
 for issue in "${issues[@]}"; do
+  label=""
+  # Derive what the workspace shows (label, title) and the worktree/session name (slug).
   case "$issue" in
-    *[!0-9]*) echo "not an issue number: $issue" >&2; exit 1 ;;
+    *[!0-9]*)
+      case "$issue" in
+        https://github.com/*/issues/*) slug="${issue##*/}"; label="#$slug" ;;
+        http*) slug="$(printf '%s' "$issue" | grep -oE '[A-Za-z]+-[0-9]+' | head -n 1)"; slug="${slug:-${issue##*/}}" ;;
+        *) [ -f "$issue" ] && slug="$(basename "${issue%.*}")" || slug="$issue" ;;
+      esac
+      slug="$(printf '%s' "$slug" | tr -c 'A-Za-z0-9._-' '-' | sed -E 's/-+$//')"
+      if [ -f "$issue" ]; then
+        title="$(sed -n 's/^# //p' "$issue" | head -n 1)"; title="${title:-$issue}"
+      elif [ "$slug" != "$issue" ] && [ "${slug//[0-9]/}" = "" ]; then
+        title="$(gh issue view "$slug" -R "$origin_url" --json title --jq .title)"
+      else
+        title="$slug"
+      fi
+      label="${label:-$slug}" ;;
+    *)
+      slug="$issue"; label="#$issue"
+      title="$(gh issue view "$issue" -R "$origin_url" --json title --jq .title)" ;;
   esac
-  title="$(gh issue view "$issue" -R "$origin_url" --json title --jq .title)"
-  echo "#$issue  $title"
+  echo "$label  $title"
 
   prompt="/forge-ship $guard $issue"
   [ -n "$trailing" ] && prompt="$prompt -- $trailing"
   cwd="$repo"
   if [ "$launcher_makes_worktree" = true ]; then
     if [ "$dry_run" = true ]; then
-      echo "  \$ printf '{\"cwd\":\"%s\",\"name\":\"%s\"}' $(sq "$repo") $issue | $here/../worktree/create.sh"; cwd="<worktree>"
+      echo "  \$ printf '{\"cwd\":\"%s\",\"name\":\"%s\"}' $(sq "$repo") $slug | $here/../worktree/create.sh"; cwd="<worktree>"
     else
-      cwd="$(printf '{"cwd":"%s","name":"%s"}' "$repo" "$issue" | "$here/../worktree/create.sh")"
+      cwd="$(printf '{"cwd":"%s","name":"%s"}' "$repo" "$slug" | "$here/../worktree/create.sh")"
     fi
   fi
-  agent="${agent_template//\{issue\}/$issue}"
-  agent="${agent//\{label\}/$(sq "#$issue")}"
+  agent="${agent_template//\{issue\}/$slug}"
+  agent="${agent//\{label\}/$(sq "$label")}"
   agent="${agent//\{prompt\}/$(sq "$prompt")}"
   agent="${agent//\{worktree\}/$(sq "$cwd")}"
 
   run cmux new-workspace \
-    --name "#$issue $(printf '%s' "$title" | cut -c1-48)" \
+    --name "$label $(printf '%s' "$title" | cut -c1-48)" \
     --description "$title" \
     --cwd "$cwd" \
     --env "FORGE_STATUS_CMD=$status_cmd" \
-    --env "FORGE_ISSUE=$issue" \
+    --env "FORGE_ISSUE=$slug" \
     --focus "$focus" \
     ${group_args[@]+"${group_args[@]}"} \
     --command "$agent"

@@ -15,7 +15,7 @@ contrib/launchers/cmux-claude.sh --dry-run 123          # print, don't run
 contrib/launchers/cmux-claude.sh 123 -- keep the diff minimal
 ```
 
-Per Issue it opens a cmux workspace named `#<issue> <title>` under a collapsible sidebar group `<repo> agents` (created on first use; `--group <name>` or `--no-group` to change that), so each session keeps its own pills and progress while the batch stays one block. The first workspace takes focus; `--no-focus` leaves the view alone.
+An Issue is anything `forge-ship` accepts — a GitHub number or URL, a provider key or URL such as `ENG-123`, or a plan file path — and several can be given at once. Per Issue it opens a cmux workspace named `#<issue> <title>` under a collapsible sidebar group `<repo> agents` (created on first use; `--group <name>` or `--no-group` to change that), so each session keeps its own pills and progress while the batch stays one block. The first workspace takes focus; `--no-focus` leaves the view alone.
 
 With Claude Code the workspace runs `claude -w <issue> --name '#<issue>' '/forge-ship --guard <issue>'` and the [worktree hooks](../worktree/) create and clean up the checkout. For another agent set `FORGE_AGENT` with a `{worktree}` placeholder and the launcher creates the checkout through `create.sh` first:
 
