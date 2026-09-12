@@ -54,12 +54,22 @@ while [ $# -gt 0 ]; do
     --) shift; trailing="$*"; break ;;
     -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "unknown option: $1" >&2; exit 1 ;;
-    *) issues+=("$1") ;;
+    *)
+      # Accept pasted lists too: "#782, #783 #784" → 782 783 784 (a bare # only survives inside quotes)
+      for token in $(printf '%s' "$1" | tr ',' ' '); do
+        token="${token#\#}"
+        [ -z "$token" ] || issues+=("$token")
+      done ;;
   esac
   shift
 done
 
-[ ${#issues[@]} -gt 0 ] || { echo "no issues given" >&2; exit 1; }
+if [ ${#issues[@]} -eq 0 ]; then
+  echo "no issues given" >&2
+  echo "hint: an unquoted # starts a shell comment, so \`forge-launch #782, #783\` reaches the launcher empty —" >&2
+  echo "      write \`forge-launch 782 783\` or quote the list: \`forge-launch '#782, #783'\`" >&2
+  exit 1
+fi
 for tool in cmux gh jq claude; do command -v "$tool" > /dev/null || { echo "$tool not on PATH" >&2; exit 1; }; done
 
 repo="${repo:-$(git rev-parse --show-toplevel)}"
