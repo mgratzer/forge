@@ -17,6 +17,8 @@ contrib/launchers/cmux-claude.sh 123 -- keep the diff minimal
 
 Per Issue it creates a detached worktree under `~/.forge/worktrees/<repo>/<issue>` (forge-implement names the branch), opens a cmux workspace named `#<issue> <title>`, and sends one command that runs `scripts/bootstrap-worktree.sh` when the repo has one and then the agent — so ten bootstraps overlap and the launcher returns at once. [`cmux-status.sh`](cmux-status.sh) turns each state into a sidebar pill and progress bar, and posts a notification on `review-ready`, `needs-human`, and `failed`.
 
+Workspaces are filed under a collapsible sidebar group named `<repo> agents` (created on first use; `--group <name>` or `--no-group` to change that), so each session keeps its own pills and progress while the batch stays one block in the sidebar.
+
 Environment overrides: `FORGE_WORKTREE_ROOT`, `FORGE_BOOTSTRAP`, `FORGE_AGENT` — documented at the top of the script.
 
 ## Writing One for Another Terminal

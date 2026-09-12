@@ -14,6 +14,9 @@
 #   --base <branch>   branch to fork worktrees from (default: origin's default branch)
 #   --no-guard        run forge-ship --unattended without --guard
 #   --no-focus        leave the view where it is (default: focus the first workspace created)
+#   --group <name>    sidebar group to file the workspaces under (default: "<repo-name> agents";
+#                     created when missing, collapsible, keeps each workspace's pills visible)
+#   --no-group        leave the workspaces ungrouped
 #   --dry-run         print every command instead of running it
 #
 # Environment:
@@ -31,6 +34,8 @@ repo=""
 base=""
 guard="--guard"
 focus=true
+group=""
+no_group=false
 dry_run=false
 issues=()
 trailing=""
@@ -41,6 +46,8 @@ while [ $# -gt 0 ]; do
     --base) base="$2"; shift ;;
     --no-guard) guard="--unattended" ;;
     --no-focus) focus=false ;;
+    --group) group="$2"; shift ;;
+    --no-group) no_group=true ;;
     --dry-run) dry_run=true ;;
     --) shift; trailing="$*"; break ;;
     -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -74,6 +81,21 @@ run() {
 
 # Single-quote a value for the shell that receives the workspace command.
 sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
+
+# Find or create the sidebar group; the anchor workspace is its header, like a manual Cmd+Shift+G group.
+group_args=()
+if [ "$no_group" = false ]; then
+  group="${group:-$repo_name agents}"
+  group_ref="$(cmux workspace-group list --json | jq -r --arg n "$group" '.groups[] | select(.name == $n) | .ref' | head -n 1)"
+  if [ -z "$group_ref" ]; then
+    if [ "$dry_run" = true ]; then
+      echo "  \$ cmux workspace-group create --name $(sq "$group") --cwd $(sq "$repo")"; group_ref="workspace_group:?"
+    else
+      group_ref="$(cmux workspace-group create --name "$group" --cwd "$repo" --json | jq -r '.group.ref // .ref')"
+    fi
+  fi
+  group_args=(--group "$group_ref" --group-placement end)
+fi
 
 run git -C "$repo" fetch origin --quiet
 if [ -z "$base" ]; then
@@ -112,6 +134,7 @@ for issue in "${issues[@]}"; do
     --env "FORGE_STATUS_CMD=$status_cmd" \
     --env "FORGE_ISSUE=$issue" \
     --focus "$focus" \
+    ${group_args[@]+"${group_args[@]}"} \
     --command "$command"
   focus=false   # only the first workspace takes the view
   echo
