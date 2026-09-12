@@ -40,7 +40,8 @@ The most reliable test is running the skill on a real project:
 5. If the skill delegates to sub-agents (for example `forge-reflect` or `forge-ship`), verify the delegated runs use either the parent session's model/provider or whatever compatible runtime-level model routing/configuration you intentionally set up
 6. For `forge-reflect` and `forge-ship`, verify review stays lean by default — tiny low-risk diffs stay inline, ordinary diffs use one reviewer, and a second pass appears only for clearly high-risk or broad changes
 7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`
-8. For a launcher, run it with `--dry-run` first and check the branch names, worktree paths, and the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
+8. For a launcher, run it with `--dry-run` first and check the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
+9. For the worktree scripts, pipe the JSON by hand (below), then run one `claude -w probe -p 'run pwd'` and check the printed path is the hook's, not `.claude/worktrees/`
 
 ### 4. Cross-Skill Consistency Check
 
@@ -69,4 +70,6 @@ grep -rn "issue-operations" skills/*/SKILL.md
 bash -n contrib/launchers/*.sh                      # syntax
 contrib/launchers/cmux-claude.sh --dry-run <issue>  # what it would do
 FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam end to end
+wt=$(printf '{"cwd":"%s","name":"probe"}' "$PWD" | contrib/worktree/create.sh)      # in a target repo
+printf '{"worktree_path":"%s"}' "$wt" | contrib/worktree/remove.sh
 ```

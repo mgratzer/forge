@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # Forge launcher for cmux + Claude Code.
 #
-# Starts one guarded, unattended `forge-ship` per Issue, each in its own detached git
-# worktree and its own named cmux workspace. The workspace command bootstraps the
-# worktree and then starts the agent, so the launcher returns immediately. Skills
-# report progress through FORGE_STATUS_CMD, which points at cmux-status.sh next to it.
+# One cmux workspace per Issue, filed under a sidebar group, each running the agent on
+# `/forge-ship --guard <issue>`. With Claude Code, `-w <issue>` plus the hooks in ../worktree
+# create and clean up the worktree; for an agent template containing {worktree}, the
+# launcher creates it through ../worktree/create.sh itself. Skills report progress through
+# FORGE_STATUS_CMD → cmux-status.sh.
 #
 # Usage:
 #   cmux-claude.sh [options] <issue>... [-- <trailing context for forge-ship>]
 #
 # Options:
 #   --repo <path>     repository root (default: the git toplevel of the current directory)
-#   --base <branch>   branch to fork worktrees from (default: origin's default branch)
 #   --no-guard        run forge-ship --unattended without --guard
 #   --no-focus        leave the view where it is (default: focus the first workspace created)
 #   --group <name>    sidebar group to file the workspaces under (default: "<repo-name> agents";
@@ -20,18 +20,17 @@
 #   --dry-run         print every command instead of running it
 #
 # Environment:
-#   FORGE_WORKTREE_ROOT  where worktrees go (default: ~/.forge/worktrees/<repo-name>)
-#   FORGE_BOOTSTRAP      command run inside each new worktree; default: scripts/bootstrap-worktree.sh
-#                        when the repo has one, otherwise nothing
-#   FORGE_AGENT          agent command; "{issue}" and "{prompt}" are substituted, already
-#                        single-quoted for the shell (default: claude --dangerously-skip-permissions
-#                        --name {issue} {prompt})
+#   FORGE_AGENT       agent command template. Placeholders: {issue} bare number, {label} quoted
+#                     '#<issue>', {prompt} quoted prompt, {worktree} quoted path (created by the
+#                     launcher when present). Default:
+#                       claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}
+#                     Example for another agent:
+#                       FORGE_AGENT='codex -C {worktree} {prompt}'
 set -euo pipefail
 export CMUX_QUIET=1   # silence the legacy-verb notice
 
 here="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"   # survives a symlink on PATH
 repo=""
-base=""
 guard="--guard"
 focus=true
 group=""
@@ -43,7 +42,6 @@ trailing=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --repo) repo="$2"; shift ;;
-    --base) base="$2"; shift ;;
     --no-guard) guard="--unattended" ;;
     --no-focus) focus=false ;;
     --group) group="$2"; shift ;;
@@ -58,18 +56,15 @@ while [ $# -gt 0 ]; do
 done
 
 [ ${#issues[@]} -gt 0 ] || { echo "no issues given" >&2; exit 1; }
-command -v cmux > /dev/null || { echo "cmux not on PATH" >&2; exit 1; }
-command -v gh > /dev/null || { echo "gh not on PATH" >&2; exit 1; }
+for tool in cmux gh jq claude; do command -v "$tool" > /dev/null || { echo "$tool not on PATH" >&2; exit 1; }; done
 
 repo="${repo:-$(git rev-parse --show-toplevel)}"
 repo_name="$(basename "$repo")"
-worktree_root="${FORGE_WORKTREE_ROOT:-$HOME/.forge/worktrees/$repo_name}"
 status_cmd="$here/cmux-status.sh"
 agent_template="${FORGE_AGENT:-}"
-[ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions --name {issue} {prompt}'
-bootstrap="${FORGE_BOOTSTRAP:-}"
-[ -n "$bootstrap" ] || [ ! -x "$repo/scripts/bootstrap-worktree.sh" ] || bootstrap="scripts/bootstrap-worktree.sh"
-[ -n "$bootstrap" ] || echo "warning: no scripts/bootstrap-worktree.sh and FORGE_BOOTSTRAP unset — worktrees start bare, so tests may not run" >&2
+[ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}'
+launcher_makes_worktree=false
+case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 
 run() {
   if [ "$dry_run" = true ]; then
@@ -97,48 +92,45 @@ if [ "$no_group" = false ]; then
   group_args=(--group "$group_ref" --group-placement end)
 fi
 
-run git -C "$repo" fetch origin --quiet
-if [ -z "$base" ]; then
-  base="$(git -C "$repo" symbolic-ref refs/remotes/origin/HEAD 2> /dev/null | sed 's@^refs/remotes/origin/@@')"
-  base="${base:-main}"
+if [ "$launcher_makes_worktree" = false ] && ! grep -q '"WorktreeCreate"' "$HOME/.claude/settings.json" 2> /dev/null; then
+  echo "warning: no WorktreeCreate hook in ~/.claude/settings.json — worktrees will land in .claude/worktrees and start bare (see contrib/worktree)" >&2
 fi
 
+origin_url="$(git -C "$repo" remote get-url origin)"
 for issue in "${issues[@]}"; do
   case "$issue" in
     *[!0-9]*) echo "not an issue number: $issue" >&2; exit 1 ;;
   esac
-
-  title="$(gh issue view "$issue" -R "$(git -C "$repo" remote get-url origin)" --json title --jq .title)"
-  worktree="$worktree_root/$issue"
+  title="$(gh issue view "$issue" -R "$origin_url" --json title --jq .title)"
   echo "#$issue  $title"
-  echo "  worktree  $worktree"
-
-  if [ -d "$worktree" ]; then
-    echo "  worktree exists — reusing"
-  else
-    run mkdir -p "$worktree_root"
-    run git -C "$repo" worktree add --detach "$worktree" "origin/$base"
-  fi
 
   prompt="/forge-ship $guard $issue"
   [ -n "$trailing" ] && prompt="$prompt -- $trailing"
-  agent="${agent_template//\{issue\}/$(sq "#$issue")}"
+  cwd="$repo"
+  if [ "$launcher_makes_worktree" = true ]; then
+    if [ "$dry_run" = true ]; then
+      echo "  \$ printf '{\"cwd\":\"%s\",\"name\":\"%s\"}' $(sq "$repo") $issue | $here/../worktree/create.sh"; cwd="<worktree>"
+    else
+      cwd="$(printf '{"cwd":"%s","name":"%s"}' "$repo" "$issue" | "$here/../worktree/create.sh")"
+    fi
+  fi
+  agent="${agent_template//\{issue\}/$issue}"
+  agent="${agent//\{label\}/$(sq "#$issue")}"
   agent="${agent//\{prompt\}/$(sq "$prompt")}"
-  command="$agent"
-  [ -z "$bootstrap" ] || command="$bootstrap && $agent"
+  agent="${agent//\{worktree\}/$(sq "$cwd")}"
 
   run cmux new-workspace \
     --name "#$issue $(printf '%s' "$title" | cut -c1-48)" \
     --description "$title" \
-    --cwd "$worktree" \
+    --cwd "$cwd" \
     --env "FORGE_STATUS_CMD=$status_cmd" \
     --env "FORGE_ISSUE=$issue" \
     --focus "$focus" \
     ${group_args[@]+"${group_args[@]}"} \
-    --command "$command"
+    --command "$agent"
   focus=false   # only the first workspace takes the view
-  echo
 done
 
-echo "${#issues[@]} session(s) started. Worktrees live under $worktree_root."
-echo "Clean up a finished one with: git -C $repo worktree remove $worktree_root/<issue>"
+echo "${#issues[@]} session(s) started. Worktrees live under ${FORGE_WORKTREE_ROOT:-$HOME/.forge/worktrees/$repo_name}."
+[ "$launcher_makes_worktree" = true ] && echo "Remove one when done: printf '{\"worktree_path\":\"%s\"}' <path> | $here/../worktree/remove.sh" || echo "Claude offers to remove each worktree when its session exits."
+exit 0

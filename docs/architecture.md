@@ -36,7 +36,8 @@ forge/
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
 │   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
-├── contrib/launchers/                     # Runtime-specific launchers (cmux + Claude Code first)
+├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
+├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink

@@ -28,5 +28,6 @@ The section is already in context when the runtime auto-loads `AGENTS.md`; other
 
 ## Conventions Launchers Rely On
 
-- `scripts/bootstrap-worktree.sh`, when present and executable, prepares a fresh checkout to run the tests (dependencies, generated code, a database). Launchers run it once per worktree; `FORGE_BOOTSTRAP` overrides the command.
+- `scripts/bootstrap-worktree.sh`, when present and executable, prepares a fresh checkout to run the tests (dependencies, generated code, a database). `contrib/worktree/create.sh` runs it once per worktree; `FORGE_BOOTSTRAP` overrides the command.
+- `scripts/teardown-worktree.sh`, when present and executable, releases what the bootstrap allocated (a database container, a port). `contrib/worktree/remove.sh` runs it before the worktree goes.
 - `FORGE_LAUNCHER` names the launcher in `forge-batch`'s launch lines. Which terminal starts a session is per-developer state, so it lives in the environment, not in `AGENTS.md`.

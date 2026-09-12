@@ -16,10 +16,10 @@ The guard's steps are the process in [forge-guard](../skills/forge-guard/SKILL.m
 
 ## One Issue or Ten
 
-One: `/forge-ship --guard 123` in any session, or `contrib/launchers/cmux-claude.sh 123`.
+One: `/forge-ship --guard 123` in any session, `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout (with the [worktree hooks](../contrib/worktree/) installed), or `contrib/launchers/cmux-claude.sh 123` for a named tab.
 
 Ten: `/forge-batch <scope>` prints Waves; paste a Wave's launch line into the launcher. Re-run `forge-batch` after a Wave merges — later Waves are provisional.
 
 ## Project Setup
 
-Add the `## Unattended Shipping` section to `AGENTS.md` — see [unattended-config](../skills/_shared/unattended-config.md) — and provide `scripts/bootstrap-worktree.sh` when a fresh checkout needs more than a clone to run the tests.
+Add the `## Unattended Shipping` section to `AGENTS.md` — see [unattended-config](../skills/_shared/unattended-config.md) — and provide `scripts/bootstrap-worktree.sh` (and `scripts/teardown-worktree.sh`) when a fresh checkout needs more than a clone to run the tests. Per user, install the [worktree hooks](../contrib/worktree/) once.
