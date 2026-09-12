@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Forge launcher for cmux + Claude Code.
 #
-# Starts one guarded, unattended `forge-ship` per Issue, each in its own git worktree
-# and its own named cmux workspace. Skills report progress through FORGE_STATUS_CMD,
-# which this launcher points at cmux-status.sh next to it.
+# Starts one guarded, unattended `forge-ship` per Issue, each in its own detached git
+# worktree and its own named cmux workspace. The workspace command bootstraps the
+# worktree and then starts the agent, so the launcher returns immediately. Skills
+# report progress through FORGE_STATUS_CMD, which points at cmux-status.sh next to it.
 #
 # Usage:
 #   cmux-claude.sh [options] <issue>... [-- <trailing context for forge-ship>]
@@ -58,9 +59,8 @@ worktree_root="${FORGE_WORKTREE_ROOT:-$HOME/.forge/worktrees/$repo_name}"
 status_cmd="$here/cmux-status.sh"
 agent_template="${FORGE_AGENT:-}"
 [ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions --name {issue} {prompt}'
-
-# Single-quote a value for the shell that receives the workspace command.
-sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
+bootstrap="${FORGE_BOOTSTRAP:-}"
+[ -n "$bootstrap" ] || [ ! -x "$repo/scripts/bootstrap-worktree.sh" ] || bootstrap="scripts/bootstrap-worktree.sh"
 
 run() {
   if [ "$dry_run" = true ]; then
@@ -70,15 +70,13 @@ run() {
   fi
 }
 
+# Single-quote a value for the shell that receives the workspace command.
+sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
+
 run git -C "$repo" fetch origin --quiet
 if [ -z "$base" ]; then
   base="$(git -C "$repo" symbolic-ref refs/remotes/origin/HEAD 2> /dev/null | sed 's@^refs/remotes/origin/@@')"
   base="${base:-main}"
-fi
-
-bootstrap="${FORGE_BOOTSTRAP:-}"
-if [ -z "$bootstrap" ] && [ -x "$repo/scripts/bootstrap-worktree.sh" ]; then
-  bootstrap="scripts/bootstrap-worktree.sh"
 fi
 
 for issue in "${issues[@]}"; do
@@ -87,41 +85,23 @@ for issue in "${issues[@]}"; do
   esac
 
   title="$(gh issue view "$issue" -R "$(git -C "$repo" remote get-url origin)" --json title --jq .title)"
-  # feat(scope): description → type "feat", slug "description"
-  type="$(printf '%s' "$title" | sed -nE 's/^([a-z]+)(\([^)]*\))?!?:.*/\1/p')"
-  type="${type:-feat}"
-  slug="$(printf '%s' "$title" | sed -E 's/^[a-z]+(\([^)]*\))?!?:[[:space:]]*//' \
-    | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')"
-  branch="$type/$issue-$slug"
   worktree="$worktree_root/$issue"
-
   echo "#$issue  $title"
-  echo "  branch    $branch"
   echo "  worktree  $worktree"
 
   if [ -d "$worktree" ]; then
     echo "  worktree exists — reusing"
   else
     run mkdir -p "$worktree_root"
-    if git -C "$repo" show-ref --verify --quiet "refs/heads/$branch"; then
-      run git -C "$repo" worktree add "$worktree" "$branch"
-    else
-      run git -C "$repo" worktree add --no-track -b "$branch" "$worktree" "origin/$base"
-    fi
-    if [ -n "$bootstrap" ]; then
-      echo "  bootstrap $bootstrap"
-      if [ "$dry_run" = true ]; then
-        echo "  $ (cd $worktree && $bootstrap)"
-      else
-        (cd "$worktree" && eval "$bootstrap")
-      fi
-    fi
+    run git -C "$repo" worktree add --detach "$worktree" "origin/$base"
   fi
 
   prompt="/forge-ship $guard $issue"
   [ -n "$trailing" ] && prompt="$prompt -- $trailing"
   agent="${agent_template//\{issue\}/$(sq "#$issue")}"
   agent="${agent//\{prompt\}/$(sq "$prompt")}"
+  command="$agent"
+  [ -z "$bootstrap" ] || command="$bootstrap && $agent"
 
   run cmux new-workspace \
     --name "#$issue $(printf '%s' "$title" | cut -c1-48)" \
@@ -130,7 +110,7 @@ for issue in "${issues[@]}"; do
     --env "FORGE_STATUS_CMD=$status_cmd" \
     --env "FORGE_ISSUE=$issue" \
     --focus "$focus" \
-    --command "$agent"
+    --command "$command"
   echo
 done
 

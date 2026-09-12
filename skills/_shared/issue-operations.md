@@ -68,6 +68,22 @@ Given an issue ID:
 
 **Other provider:** use the declared tool to fetch the issue by ID.
 
+## List Issues by Scope
+
+Given a milestone, a label, or an epic — keep the listing light (number, title, labels, execution mode, dependency references) and read bodies per Issue later:
+
+**GitHub:**
+```bash
+gh issue list --milestone "<MILESTONE>" --state open --limit 100 --json number,title,labels,body \
+  --jq '.[] | {number, title, labels: [.labels[].name], mode: ((.body | capture("(?i)execution mode:\\W*(?<m>\\w+)") | .m) // null), deps: [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0]]}'
+gh issue list --label "<LABEL>" --state open --limit 100 --json number,title,labels,body --jq '<same filter>'
+gh issue view <EPIC> --json body --jq '.body | scan("- \\[ \\] #(\\d+)") | .[0]'   # task-list sub-issues, then view each
+```
+
+**Markdown:** filter `plan/INDEX.md` rows by label or parent; `mode` is frontmatter.
+
+**Other provider:** use the declared tool's list or filter operation.
+
 ## Search Issues
 
 Given keywords:

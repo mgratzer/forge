@@ -34,15 +34,11 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
-**Touch set** — the files an Issue's implementation is expected to change, estimated by `forge-batch`.
-
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
 
-**Wave** — a set of AFK Issues whose touch sets and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
+**Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 
-**Launcher** — a runtime-specific script that starts one guarded ship per Issue in an isolated checkout. Lives in `contrib/launchers/`, never in a skill.
-
-**Status seam** — the `FORGE_STATUS_CMD` environment variable through which skills report state transitions to a launcher. See [status-reporting](skills/_shared/status-reporting.md).
+**Launcher** — a runtime-specific script that starts one guarded ship per Issue in an isolated checkout. Lives in `contrib/launchers/`, never in a skill; skills report to it through `FORGE_STATUS_CMD` (see [status-reporting](skills/_shared/status-reporting.md)).
 
 **Inline fallback** — `(delegate)` step provides both sub-agent and in-context paths for runtime portability.
 

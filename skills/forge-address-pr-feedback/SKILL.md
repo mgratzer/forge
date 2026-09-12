@@ -13,13 +13,13 @@ Systematically address unresolved review feedback on a pull request.
 
 PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
 
-**Unattended mode:** `--unattended` never asks — Discussion threads are decided on evidence or deferred, and threads with a concrete outcome are resolved so a guard can tell what is still open.
+**Unattended mode:** `--unattended` never asks; Steps 2–3 say what happens instead.
 
 ## Process
 
-### Step 1: Fetch Unresolved Threads
+### Step 1: Fetch Unaddressed Threads
 
-**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads.
+**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode (see *Addressed thread* in CONTEXT.md). When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
 ```bash
 # Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted
@@ -27,6 +27,7 @@ PR_ARG=""
 OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
 PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
+ME=$(gh api user --jq .login)
 
 gh api graphql -F owner="$OWNER" -F repo="$REPO" -F pr="$PR_NUMBER" -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
@@ -46,14 +47,12 @@ query($owner: String!, $repo: String!, $pr: Int!) {
       }
     }
   }
-}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)'
+}' --jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")"
 ```
-
-In unattended mode, skip threads whose last comment is already by the current user (`gh api user --jq .login`) — they were answered in an earlier round.
 
 ### Step 2: Process Each Thread
 
-For each unresolved thread, read the file and surrounding context, then categorize:
+For each unaddressed thread, read the file and surrounding context, then categorize:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
@@ -72,7 +71,7 @@ For each thread:
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
 3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
-4. **Reply to the thread**:
+4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both:
 
 ```bash
 gh api graphql -f query='
@@ -82,6 +81,9 @@ mutation {
     body: "<response>"
   }) {
     comment { id }
+  }
+  resolveReviewThread(input: { threadId: "<THREAD_ID>" }) {   # omit for Question, Discussion, Won't fix
+    thread { isResolved }
   }
 }'
 ```
@@ -94,13 +96,6 @@ Reply format by category:
 - **Won't fix**: "Keeping current approach because <reason>."
 - **Deferred**: "Created #<num> to track this."
 
-5. **Resolve the thread** (unattended mode only) when the outcome is concrete — Actionable, Already addressed, or Deferred. Leave Question, Discussion, and Won't fix open so the human sees the reasoning:
-
-```bash
-gh api graphql -f query='
-mutation { resolveReviewThread(input: { threadId: "<THREAD_ID>" }) { thread { isResolved } } }'
-```
-
 ### Step 4: Create Issues for Deferred Items
 
 For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
@@ -111,7 +106,7 @@ For each Deferred item, create an Issue in the project's Issue tracker (see [iss
 git push
 ```
 
-Report: threads addressed, commits created, Deferred items created, items needing human decision.
+Report: threads addressed, commits created, Deferred items created, threads needing a human decision.
 
 ## Guidelines
 
@@ -119,7 +114,6 @@ Report: threads addressed, commits created, Deferred items created, items needin
 - **Address, reply, then next** — don't batch
 - **Be specific** — reference commits, line numbers, and code
 - **Test changes** — run checks before committing
-- **A reply is the audit trail** — in unattended mode every thread gets one, even when the answer is "no"
 
 ## Related Skills
 

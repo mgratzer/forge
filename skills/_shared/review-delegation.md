@@ -56,7 +56,7 @@ Each task is fully self-contained. Do not make the task depend on a runtime-spec
 
 ## Execute Review
 
-Use the chosen review shape:
+Report `reviewing` via [status-reporting](status-reporting.md), then use the chosen review shape:
 
 1. **Inline tiny-diff path** — run one combined checklist pass in the current context
 2. **Sub-agent tool or task runtime**: spawn **one** reviewer by default, and a second reviewer when required by the rules above. Push the [forge-reviewer](roles/forge-reviewer.md) role into the delegated prompt or `systemPrompt`. Prefer inheriting the parent session's model/provider when the runtime supports that. If the runtime supports per-task model choice, prefer a cheaper review-capable model over the strongest implementation model.

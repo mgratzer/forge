@@ -115,6 +115,5 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
-| One status seam | `FORGE_STATUS_CMD` environment variable | Skills stay ignorant of terminals; a launcher maps states to pills, notifications, or logs |
-| Launchers outside the skill layer | `contrib/launchers/<terminal>-<agent>.sh` | The only runtime-specific code in Forge; skills must work without any launcher |
+| One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

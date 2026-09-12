@@ -18,8 +18,6 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 ## Process
 
-Report each step transition via [status-reporting](../_shared/status-reporting.md): `implementing` at Step 1, `reviewing` at Step 2, then whatever the guard reports.
-
 ### Step 1: Implement
 
 Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary** — the review below informs the single final report.
@@ -41,7 +39,7 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 ### Step 4: Guard (only with `--guard`)
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` here — the PR is open and self-reviewed, and the human takes it from there.
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](../_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 5: Summarize
 
@@ -65,7 +63,7 @@ Report implementation, review, and guard results together.
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> — <title> (or "none")
 
-### Guard   (guard mode only — the Guard Summary from forge-guard)
+### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -80,7 +78,6 @@ Report implementation, review, and guard results together.
 - **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
 - **Don't skip the review** — even if implementation felt clean
 - **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
-- **Guard never merges** — `review-ready` means the human looks next, not that the work is done
 
 ## Related Skills
 

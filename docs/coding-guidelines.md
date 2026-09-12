@@ -127,9 +127,8 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
 | Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or deferred | ship, implement, address-pr-feedback, batch; guard is always unattended |
-| Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | ship, guard |
+| Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | implement, review-delegation, guard, ship |
 | Unattended configuration | Read the `## Unattended Shipping` section of `AGENTS.md` — see `_shared/unattended-config.md`; defaults when absent | guard, batch |
-| Guard never merges | Terminal states are `review-ready` and `needs-human`; no merge, force-push, or close | guard, ship |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 
