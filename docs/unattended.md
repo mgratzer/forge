@@ -1,8 +1,6 @@
 # Unattended Shipping
 
-How a prepared Issue becomes a review-ready PR with nobody watching, and how ten of them run at once.
-
-## The Pieces
+How a prepared Issue becomes a review-ready PR while you do something else, and how ten of them run at once.
 
 ```
 forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-human
@@ -10,16 +8,16 @@ forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-h
   in parallel)      per Issue)
 ```
 
-Everything but the launcher is a portable skill. Progress flows out through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)); project settings flow in through the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
 
-The guard's steps are the process in [forge-guard](../skills/forge-guard/SKILL.md). It never merges: the human's job starts at `review-ready`, and the guard's summary lists the threads left open on purpose.
+The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` and leaves merging to you; its summary lists the threads it left open.
 
-## One Issue or Ten
+## One Issue or ten
 
-One: `/forge-ship --guard 123` in any session, `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout (with the [worktree hooks](../contrib/worktree/) installed), or `contrib/launchers/cmux-claude.sh 123` for a named tab.
+One Issue: `/forge-ship --guard 123` in any session, `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout (needs the [worktree hooks](../contrib/worktree/)), or `contrib/launchers/cmux-claude.sh 123` for a named tab.
 
-Ten: `/forge-batch <scope>` prints Waves; paste a Wave's launch line into the launcher. Re-run `forge-batch` after a Wave merges — later Waves are provisional.
+Ten: `/forge-batch <scope>` prints Waves. Paste a Wave's launch line into the launcher. Re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
 
-## Project Setup
+## Project setup
 
-Add the `## Unattended Shipping` section to `AGENTS.md` — see [unattended-config](../skills/_shared/unattended-config.md) — and provide `scripts/bootstrap-worktree.sh` (and `scripts/teardown-worktree.sh`) when a fresh checkout needs more than a clone to run the tests. Per user, install the [worktree hooks](../contrib/worktree/) once.
+Add the `## Unattended Shipping` section to `AGENTS.md` (see [unattended-config](../skills/_shared/unattended-config.md)). Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests. Install the [worktree hooks](../contrib/worktree/) once per user.

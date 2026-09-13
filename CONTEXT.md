@@ -38,7 +38,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 
-**Launcher** — a runtime-specific script that starts one guarded ship per Issue in an isolated checkout. Lives in `contrib/launchers/`, never in a skill; skills report to it through `FORGE_STATUS_CMD` (see [status-reporting](skills/_shared/status-reporting.md)).
+**Launcher** — a terminal-specific script that starts one guarded ship per Issue in an isolated checkout. Lives in `contrib/launchers/`, never in a skill. Skills report to it through `FORGE_STATUS_CMD` (see [status-reporting](skills/_shared/status-reporting.md)).
 
 **Inline fallback** — `(delegate)` step provides both sub-agent and in-context paths for runtime portability.
 

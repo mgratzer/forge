@@ -1,6 +1,6 @@
 # Unattended Configuration
 
-Project-level settings the unattended skills (`forge-guard`, `forge-batch`, `forge-ship --guard`) read from `AGENTS.md`. All optional — defaults apply when the section or a line is absent.
+Project settings the unattended skills (`forge-guard`, `forge-batch`, `forge-ship --guard`) read from `AGENTS.md`. All optional; defaults apply when the section or a line is absent.
 
 ## Declaration
 
@@ -30,4 +30,4 @@ The section is already in context when the runtime auto-loads `AGENTS.md`; other
 
 - `scripts/bootstrap-worktree.sh`, when present and executable, prepares a fresh checkout to run the tests (dependencies, generated code, a database). `contrib/worktree/create.sh` runs it once per worktree; `FORGE_BOOTSTRAP` overrides the command.
 - `scripts/teardown-worktree.sh`, when present and executable, releases what the bootstrap allocated (a database container, a port). `contrib/worktree/remove.sh` runs it before the worktree goes.
-- `FORGE_LAUNCHER` names the launcher in `forge-batch`'s launch lines. Which terminal starts a session is per-developer state, so it lives in the environment, not in `AGENTS.md`.
+- `FORGE_LAUNCHER` names the launcher in `forge-batch`'s launch lines. Which terminal starts a session is per developer, so it lives in the environment rather than in `AGENTS.md`.
