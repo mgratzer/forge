@@ -22,7 +22,7 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 ### Step 2: Review (delegate)
 
-Follow the [review-delegation](../_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+Follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
 
 **Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
@@ -31,9 +31,9 @@ Follow the [review-delegation](../_shared/review-delegation.md) process: collect
 
 **In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now** — defer only changes that materially expand PR scope or are truly out of scope.
 
-**In unattended mode:** auto-triage by severity plus scope from the [review rubric](../_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
+**In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Fixed findings are committed; deferred items become Issues — see [issue-operations](../_shared/issue-operations.md).
+Fixed findings are committed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
 ### Step 4: Summarize
 

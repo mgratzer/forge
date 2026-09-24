@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 
 # Create Issue
 
-Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider detection.
+Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider detection.
 
 ## Input
 
@@ -58,7 +58,7 @@ Evaluate if this should be one Issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](../_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
+When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
 
 If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
 
@@ -66,7 +66,7 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 **Title:** Use conventional commit format — `<type>(<scope>): <description>`
 
-**Labels:** Discover what labels exist before applying any — see [issue-operations](../_shared/issue-operations.md). Apply at least one type label and relevant area labels.
+**Labels:** Discover what labels exist before applying any — see [issue-operations](_shared/issue-operations.md). Apply at least one type label and relevant area labels.
 
 **Body structure:**
 
@@ -96,7 +96,7 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](../_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues.
+Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues.
 
 Share the Issue reference. Suggest using `forge-implement` to start implementation.
 
