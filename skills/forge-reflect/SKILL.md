@@ -56,7 +56,7 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-Follow the [review-delegation](../_shared/review-delegation.md) process: collect materials, prefer one inline review pass for tiny low-risk diffs, otherwise run one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings.
+Follow the [review-delegation](_shared/review-delegation.md) process: collect materials, prefer one inline review pass for tiny low-risk diffs, otherwise run one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings.
 
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
@@ -74,7 +74,7 @@ For each Finding, recommend one of (bias toward fix now):
 
 State your recommendation and let the user decide. Then:
 - **Fix now:** apply the fix and commit it
-- **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)) with context and proposed solution
+- **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)) with context and proposed solution
 
 ### Step 5: Report
 
@@ -102,7 +102,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Types: ✓/✗
 - Tests: ✓/✗
 
-(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](../_shared/review-rubric.md).)
+(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](_shared/review-rubric.md).)
 ```
 
 ## Guidelines
