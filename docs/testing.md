@@ -62,6 +62,10 @@ grep -rn "additional context\|-- <additional context>" skills/
 
 # Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
+
+# Check every skill bundles the shared layer and no sibling-relative links remain (both should print nothing)
+for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"; done
+grep -rn "\.\./_shared" skills/
 ```
 
 ### 5. Launcher Validation

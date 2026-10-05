@@ -20,7 +20,7 @@ No dependency installation required.
 ## Adding a New Skill
 
 1. Create a directory under `skills/` named `forge-<skill-name>/`
-2. Create a `SKILL.md` file inside it
+2. Create a `SKILL.md` file inside it, plus the shared-layer symlink: `ln -s ../_shared skills/forge-<skill-name>/_shared`
 3. Add YAML frontmatter with `name` and `description` (see [Architecture](architecture.md) for field reference)
 4. Write the structured prompt body following the section order: Title → Input → Process → Guidelines → Related Skills → Example Usage
 5. Update workflow references in relevant skills' "Related Skills" sections

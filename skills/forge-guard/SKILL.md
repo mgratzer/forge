@@ -24,11 +24,11 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the project's `## Unattended Shipping` section per [unattended-config](../_shared/unattended-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](../_shared/status-reporting.md).
+Read the project's `## Unattended Shipping` section per [unattended-config](_shared/unattended-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
 ### Step 2: Run Quality Passes
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](../_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](../_shared/review-dimensions.md).
+**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md).
 
 **Security pass** — run when the PR carries a `security` label or `gh pr diff "$PR" --name-only` matches a security-sensitive path. If the runtime provides a security review skill (Claude Code: `/security-review`), invoke it; otherwise follow review-delegation with the **Security & Correctness** deep pass.
 

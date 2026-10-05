@@ -18,9 +18,9 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 ### Step 1: Understand the Work
 
-Report `implementing` via [status-reporting](../_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](../_shared/issue-operations.md)).
+Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
 
-- **Issue** — fetch using the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
+- **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints.
 
@@ -28,15 +28,15 @@ Ask for clarification when requirements are too vague or dependencies too incomp
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](../_shared/deep-modules.md)).
+Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](_shared/deep-modules.md)).
 
 **For complex work**, delegate codebase research to a sub-agent for unbiased answers:
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](../_shared/roles/forge-scout.md) sub-agent that receives only the questions — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
 
-**Inputs provided to sub-agent:** Role: [forge-scout](../_shared/roles/forge-scout.md), the research questions, codebase access.
+**Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
 Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
@@ -69,11 +69,11 @@ When working from a plan file or free-text (no Issue number), use a descriptive 
 
 Read AGENTS.md first. Follow project conventions strictly.
 
-Execute the work in vertical phases following [phase-execution](../_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
+Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 
 ### Step 5: Audit Pattern Consistency
 
-If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](../_shared/pattern-audit.md).
+If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
 
 ### Step 6: Update Documentation
 

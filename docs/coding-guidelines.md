@@ -56,12 +56,12 @@ When a delegation step benefits from a separated persona, extract it into a **ro
 ```markdown
 #### Research (delegate)
 
-Delegate to a [forge-scout](../_shared/roles/forge-scout.md) sub-agent that receives only
+Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only
 the questions. If the runtime does not support sub-agents, read the role
 file and answer each question following its rules.
 
 **Inputs provided to sub-agent:**
-- Role: [forge-scout](../_shared/roles/forge-scout.md)
+- Role: [forge-scout](_shared/roles/forge-scout.md)
 - The research questions
 
 **Expected output:** One factual answer per question.
@@ -71,7 +71,7 @@ The role file defines the persona, behavior rules, and output format. The skill'
 
 **Important:** role files are **not** the same thing as runtime agent definitions. Do not assume a role file's `name:` can be passed as `agent: "<name>"` to a sub-agent tool. If the runtime separates prompt content from agent selection, push the role file body via the delegated task or `systemPrompt`. If selecting an agent also selects a model/provider, prefer leaving the agent unspecified so the sub-agent inherits the parent session configuration unless the user has explicitly configured a matching agent. Runtime-specific agent files, presets, or harness config are optional tuning layers — Forge must still work correctly without them.
 
-Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit.
+Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit. Skills link shared files as `_shared/<file>.md` through their own `_shared` symlink — never `../_shared/`, which breaks once skills are installed individually.
 
 ## Role File Format
 

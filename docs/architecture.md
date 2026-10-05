@@ -13,7 +13,7 @@ forge/
 │   ├── forge-shape/                        # Optional: Shape ideas into plans before issue creation
 │   │   ├── SKILL.md
 │   │   └── references/shaping-methodology.md  # One-at-a-time questioning philosophy
-│   ├── _shared/                           # Cross-skill references (see coding-guidelines.md)
+│   ├── _shared/                           # Cross-skill references; each skill links it as <skill>/_shared
 │   │   ├── issue-operations.md            # Provider detection and Issue CRUD
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
@@ -112,6 +112,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Three-tier context model | Hot (`AGENTS.md`) / Warm (`docs/`) / Cold (specs) | Generic context hurts agent performance — tiered model ensures each doc earns its token cost |
 | Compatibility layer | `CLAUDE.md` symlink to `AGENTS.md` | Preserve compatibility without making vendor-specific filenames canonical |
 | Push vs pull context loading | Push = embed content in initial prompt; Pull = read on demand via file references | Push when reliability matters more than token economy (review rubric, role definitions); pull for optional philosophy and templates that the agent may not need. Progressive disclosure (`references/`) is pull by default; delegation prompts should push critical instructions so sub-agents don't skip or misread them |
+| Bundled shared layer | Each skill contains a `_shared -> ../_shared` symlink; skills link `_shared/<file>.md`, never `../_shared/` | Installers such as `npx skills add` copy only directories with a `SKILL.md`, one at a time, and dereference symlinks — the symlink ships a real copy of the shared layer inside every installed skill. Agents also resolve `..` lexically from the install path, so sibling links break under symlinked installs |
 | Issue tracker abstraction | Provider operations in `_shared/issue-operations.md`; skills reference it | Concentrates provider detection and CRUD in one module; skills say "create an Issue" without re-deriving the three-way conditional |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |

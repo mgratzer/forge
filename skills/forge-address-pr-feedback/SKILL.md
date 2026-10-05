@@ -98,7 +98,7 @@ Reply format by category:
 
 ### Step 4: Create Issues for Deferred Items
 
-For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](../_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
+For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
 
 ### Step 5: Push and Summarize
 

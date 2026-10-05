@@ -62,10 +62,10 @@ npx skills add mgratzer/forge
 **Manual** — symlink into your agent's skills directory:
 
 ```bash
-ln -s /path/to/forge/skills/forge-* /path/to/forge/skills/_shared <your-agent-skills-dir>/
+ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
-Both `forge-*` skills and the `_shared/` directory are required — skills reference shared modules via `../_shared/` paths. Check your agent's docs for the correct skills directory path.
+Check your agent's docs for the correct skills directory path. Each skill reaches the shared modules through its own `_shared` symlink, so no separate `_shared/` install is needed with either method.
 
 For unattended runs in fresh checkouts, install the [worktree hooks](contrib/worktree/) once and put a [launcher](contrib/launchers/) on your PATH.
 

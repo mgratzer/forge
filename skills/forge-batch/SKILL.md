@@ -17,7 +17,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 ### Step 1: Collect Candidates
 
-List the scope's Issues with *List Issues by Scope* in [issue-operations](../_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
+List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
 
 ```bash
 gh pr list --state open --limit 100 --json number,title,headRefName,body
@@ -27,7 +27,7 @@ Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issue
 
 ### Step 2: Estimate Touch Sets (delegate)
 
-For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](../_shared/roles/forge-scout.md) sub-agents in parallel on a cheap fast model, about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here — the touch set is about them.
+For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](_shared/roles/forge-scout.md) sub-agents in parallel on a cheap fast model, about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here — the touch set is about them.
 
 > For each Issue: list every path it names explicitly, then grep for the concepts it names (routes, tables, components, message keys) and add the files that define them. Return paths only.
 
@@ -36,7 +36,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [unattended-config](../_shared/unattended-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [unattended-config](_shared/unattended-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 
