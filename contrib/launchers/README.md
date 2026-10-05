@@ -30,7 +30,7 @@ Placeholders: `{issue}` bare number, `{label}` quoted `#<issue>`, `{prompt}` quo
 
 ### Permissions
 
-By default each Claude session keeps its normal permission prompts, so a session waits in its workspace until you approve. To run fully unattended, opt in explicitly:
+By default each Claude session starts in the `permissions.defaultMode` from your Claude Code settings — a fresh process, so it does not inherit the mode of the session you launched from. Set `"defaultMode": "auto"` in `~/.claude/settings.json` to let sessions approve routine actions themselves; user-level settings apply in every worktree, while the repository's gitignored `.claude/settings.local.json` does not travel into them. Whatever the mode still asks about waits in the session's workspace until you approve. To skip every prompt, opt in explicitly:
 
 ```bash
 contrib/launchers/cmux-claude.sh --yes-skip-permissions 123 124
