@@ -29,7 +29,7 @@ Install once in `~/.claude/settings.json`. `claude --worktree <name>` then creat
 A create hook replaces Claude's default, so `.worktreeinclude` is not processed. Copy local config in the project bootstrap instead. One Issue is then one command from the repository:
 
 ```bash
-claude --dangerously-skip-permissions -w 760 --name '#760' '/forge-ship --guard 760'
+claude -w 760 --name '#760' '/forge-ship --guard 760'
 ```
 
 ## Other agents

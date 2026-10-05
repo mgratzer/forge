@@ -21,13 +21,17 @@
 #   --group <name>    sidebar group to file the workspaces under (default: "<repo-name> agents";
 #                     created when missing, collapsible, keeps each workspace's pills visible)
 #   --no-group        leave the workspaces ungrouped
+#   --yes-skip-permissions
+#                     run Claude with --dangerously-skip-permissions so sessions never stop at
+#                     a permission prompt. Agents then act on Issue text unchecked — use only for
+#                     Issues you trust, ideally in a sandbox. Not valid with FORGE_AGENT.
 #   --dry-run         print every command instead of running it
 #
 # Environment:
 #   FORGE_AGENT       agent command template. Placeholders: {issue} bare number, {label} quoted
 #                     '#<issue>', {prompt} quoted prompt, {worktree} quoted path (created by the
 #                     launcher when present). Default:
-#                       claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}
+#                       claude -w {issue} --name {label} {prompt}
 #                     Example for another agent:
 #                       FORGE_AGENT='codex -C {worktree} {prompt}'
 set -euo pipefail
@@ -40,6 +44,7 @@ focus=true
 group=""
 no_group=false
 dry_run=false
+skip_permissions=false
 issues=()
 trailing=""
 
@@ -51,6 +56,7 @@ while [ $# -gt 0 ]; do
     --group) group="$2"; shift ;;
     --no-group) no_group=true ;;
     --dry-run) dry_run=true ;;
+    --yes-skip-permissions) skip_permissions=true ;;
     --) shift; trailing="$*"; break ;;
     -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) echo "unknown option: $1" >&2; exit 1 ;;
@@ -76,7 +82,13 @@ repo="${repo:-$(git rev-parse --show-toplevel)}"
 repo_name="$(basename "$repo")"
 status_cmd="$here/cmux-status.sh"
 agent_template="${FORGE_AGENT:-}"
-[ -n "$agent_template" ] || agent_template='claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}'
+if [ -n "$agent_template" ]; then
+  [ "$skip_permissions" = false ] || { echo "--yes-skip-permissions applies only to the default Claude template; put the agent's own flag in FORGE_AGENT" >&2; exit 1; }
+elif [ "$skip_permissions" = true ]; then
+  agent_template='claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}'
+else
+  agent_template='claude -w {issue} --name {label} {prompt}'
+fi
 launcher_makes_worktree=false
 case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 

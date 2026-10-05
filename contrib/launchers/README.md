@@ -28,6 +28,16 @@ FORGE_AGENT='codex -C {worktree} {prompt}' contrib/launchers/cmux-claude.sh 123
 
 Placeholders: `{issue}` bare number, `{label}` quoted `#<issue>`, `{prompt}` quoted prompt, `{worktree}` quoted path. [`cmux-status.sh`](cmux-status.sh) maps each state to a sidebar pill and progress bar and notifies on terminal states.
 
+### Permissions
+
+By default each Claude session keeps its normal permission prompts, so a session waits in its workspace until you approve. To run fully unattended, opt in explicitly:
+
+```bash
+contrib/launchers/cmux-claude.sh --yes-skip-permissions 123 124
+```
+
+This adds `--dangerously-skip-permissions`. The agent then runs commands and edits files without asking, steered by the Issue text — someone who can write an Issue can direct it. Use it only for Issues you trust, ideally inside a sandbox or container. With `FORGE_AGENT`, the template runs as written; put the agent's own permission flags there.
+
 ## Writing one for another terminal
 
 1. Get an isolated checkout per Issue. With Claude Code, use `-w <issue>` and the worktree hooks. Otherwise pipe `{"cwd", "name"}` into `contrib/worktree/create.sh` and use the path it prints.
