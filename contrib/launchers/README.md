@@ -14,6 +14,7 @@ contrib/launchers/cmux-claude.sh 123 124 125
 contrib/launchers/cmux-claude.sh '#123, #124'            # pasted lists work when quoted
 contrib/launchers/cmux-claude.sh --dry-run 123          # print, don't run
 contrib/launchers/cmux-claude.sh 123 -- keep the diff minimal
+contrib/launchers/cmux-claude.sh --model sonnet 123     # pick the Claude model
 ```
 
 An Issue is anything `forge-ship` accepts: a GitHub number or URL, a provider key or URL such as `ENG-123`, or a plan file path.
@@ -36,7 +37,7 @@ By default each Claude session starts in the `permissions.defaultMode` from your
 contrib/launchers/cmux-claude.sh --yes-skip-permissions 123 124
 ```
 
-This adds `--dangerously-skip-permissions`. The agent then runs commands and edits files without asking, steered by the Issue text — someone who can write an Issue can direct it. Use it only for Issues you trust, ideally inside a sandbox or container. With `FORGE_AGENT`, the template runs as written; put the agent's own permission flags there.
+This adds `--dangerously-skip-permissions`. The agent then runs commands and edits files without asking, steered by the Issue text — someone who can write an Issue can direct it. Use it only for Issues you trust, ideally inside a sandbox or container. With `FORGE_AGENT`, the template runs as written; put the agent's own permission and model flags there — `--model` and `--yes-skip-permissions` apply only to the default Claude command.
 
 ## Writing one for another terminal
 

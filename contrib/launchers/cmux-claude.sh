@@ -21,6 +21,8 @@
 #   --group <name>    sidebar group to file the workspaces under (default: "<repo-name> agents";
 #                     created when missing, collapsible, keeps each workspace's pills visible)
 #   --no-group        leave the workspaces ungrouped
+#   --model <name>    Claude model for every session: an alias such as opus or sonnet, or a full
+#                     model name (default: your Claude Code settings). Not valid with FORGE_AGENT.
 #   --yes-skip-permissions
 #                     run Claude with --dangerously-skip-permissions so sessions never stop at
 #                     a permission prompt. Agents then act on Issue text unchecked — use only for
@@ -45,6 +47,7 @@ group=""
 no_group=false
 dry_run=false
 skip_permissions=false
+model=""
 issues=()
 trailing=""
 
@@ -56,6 +59,7 @@ while [ $# -gt 0 ]; do
     --group) group="$2"; shift ;;
     --no-group) no_group=true ;;
     --dry-run) dry_run=true ;;
+    --model) model="$2"; shift ;;
     --yes-skip-permissions) skip_permissions=true ;;
     --) shift; trailing="$*"; break ;;
     -h|--help) sed -n '2,/^set /{/^set /!p;}' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
@@ -81,16 +85,6 @@ for tool in cmux gh jq claude; do command -v "$tool" > /dev/null || { echo "$too
 repo="${repo:-$(git rev-parse --show-toplevel)}"
 repo_name="$(basename "$repo")"
 status_cmd="$here/cmux-status.sh"
-agent_template="${FORGE_AGENT:-}"
-if [ -n "$agent_template" ]; then
-  [ "$skip_permissions" = false ] || { echo "--yes-skip-permissions applies only to the default Claude template; put the agent's own flag in FORGE_AGENT" >&2; exit 1; }
-elif [ "$skip_permissions" = true ]; then
-  agent_template='claude --dangerously-skip-permissions -w {issue} --name {label} {prompt}'
-else
-  agent_template='claude -w {issue} --name {label} {prompt}'
-fi
-launcher_makes_worktree=false
-case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 
 run() {
   if [ "$dry_run" = true ]; then
@@ -102,6 +96,18 @@ run() {
 
 # Single-quote a value for the shell that receives the workspace command.
 sq() { printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"; }
+
+agent_template="${FORGE_AGENT:-}"
+if [ -n "$agent_template" ]; then
+  [ "$skip_permissions" = false ] && [ -z "$model" ] || { echo "--model and --yes-skip-permissions apply only to the default Claude template; put the agent's own flags in FORGE_AGENT" >&2; exit 1; }
+else
+  agent_template="claude"
+  [ "$skip_permissions" = false ] || agent_template="$agent_template --dangerously-skip-permissions"
+  [ -z "$model" ] || agent_template="$agent_template --model $(sq "$model")"
+  agent_template="$agent_template -w {issue} --name {label} {prompt}"
+fi
+launcher_makes_worktree=false
+case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 
 # Find or create the sidebar group; the anchor workspace is its header, like a manual Cmd+Shift+G group.
 group_args=()
