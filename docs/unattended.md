@@ -18,6 +18,16 @@ One Issue: `/forge-ship --guard 123` in any session, `claude -w 123 '/forge-ship
 
 Ten: `/forge-batch <scope>` prints Waves. Paste a Wave's launch line into the launcher. Re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
 
-## Project setup
+## Setup
 
-Add the `## Unattended Shipping` section to `AGENTS.md` (see [unattended-config](../skills/_shared/unattended-config.md)). Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests. Install the [worktree hooks](../contrib/worktree/) once per user.
+Once per user:
+
+- [ ] Install the [worktree hooks](../contrib/worktree/) in `~/.claude/settings.json`, so every session gets its own bootstrapped checkout
+- [ ] Put a launcher on your `PATH`, e.g. `ln -s /path/to/forge/contrib/launchers/cmux-claude.sh ~/bin/forge-launch`
+- [ ] Set `FORGE_LAUNCHER=forge-launch` so `forge-batch` prints launch lines you can paste as is
+- [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or `--yes-skip-permissions` per launch for Issues you trust — see [launcher permissions](../contrib/launchers/README.md#permissions). Without either, each session waits at its first prompt
+
+Once per project:
+
+- [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
+- [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests

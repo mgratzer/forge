@@ -19,7 +19,7 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 ### Step 1: Fetch Unaddressed Threads
 
-**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode (see *Addressed thread* in CONTEXT.md). When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
+**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
 ```bash
 # Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted

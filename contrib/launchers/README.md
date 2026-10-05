@@ -45,4 +45,4 @@ This adds `--dangerously-skip-permissions`. The agent then runs commands and edi
 2. Start the agent with the prompt `/forge-ship --guard <issue>` and `FORGE_STATUS_CMD` pointing at a script that accepts `<state> "<detail>"`.
 3. Make the session findable: a tab name, a window title, a tmux session name.
 
-The cmux launcher is about a hundred lines. Anything smarter belongs in a skill.
+Keep a launcher to starting sessions. Anything smarter belongs in a skill.
