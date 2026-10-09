@@ -21,8 +21,8 @@ No dependency installation required.
 
 1. Create a directory under `skills/` named `forge-<skill-name>/`
 2. Create a `SKILL.md` file inside it, plus the shared-layer symlink: `ln -s ../_shared skills/forge-<skill-name>/_shared`
-3. Add YAML frontmatter with `name` and `description` (see [Architecture](architecture.md) for field reference)
-4. Write the structured prompt body following the section order: Title → Input → Process → Guidelines → Related Skills → Example Usage
+3. Add YAML frontmatter with `name` and `description` (see [Coding Guidelines — Frontmatter Conventions](coding-guidelines.md#frontmatter-conventions) for field reference)
+4. Write the structured prompt body following the section order in [Coding Guidelines — Skill Structure](coding-guidelines.md#skill-structure)
 5. Update workflow references in relevant skills' "Related Skills" sections
 6. Update the docs table in `AGENTS.md` and `README.md` if a new doc category is needed
 
@@ -68,7 +68,7 @@ If multiple skills need the same role, place it in `skills/_shared/roles/` rathe
 1. Read the role file and the skill that uses it
 2. Make targeted changes
 3. Verify the skill’s delegation step still works with the updated role
-4. If the same role is duplicated across skills, update all copies
+4. For a shared role in `_shared/roles/`, repeat step 3 for every skill that delegates to it
 
 ## Quality Gates
 

@@ -9,7 +9,7 @@ Every skill follows the same section order:
 1. YAML frontmatter (`---` delimited)
 2. Title (`# <Action Verb> <Object>`)
 3. Description paragraph (optional — omit if the title is self-explanatory)
-4. `## Input` — document `$ARGUMENTS`, default behavior, and, for skills with structured primary input, the shared trailing context syntax (`-- <additional context>`)
+4. `## Input` — document `$ARGUMENTS`, default behavior, and the shared trailing context syntax (`-- <additional context>`)
 5. `## Process` — numbered `### Step N: <Action>` sections
 6. `## Output Format` (optional) — template for structured output
 7. `## Guidelines` — brief behavioral rules as a list
@@ -21,7 +21,7 @@ Every skill follows the same section order:
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
 - `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
 - `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
-- `allowed-tools`: comma-separated list of tools the skill may use. Omit to allow all tools.
+- `allowed-tools`: tools pre-approved to run while the skill is active (space-separated in the Agent Skills spec, where the field is experimental and support varies by agent). It pre-approves; it does not restrict other tools.
 - `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
 ## Writing Process Steps
@@ -33,12 +33,9 @@ Every skill follows the same section order:
 
 ## Writing Delegate Steps
 
-When a skill benefits from fresh context (e.g., unbiased review), use two complementary mechanisms:
+When a step benefits from fresh context (e.g., unbiased review), mark it with the **`(delegate)` step annotation** — it works on any runtime with sub-agent support and falls back to inline execution elsewhere.
 
-1. **`context: fork` frontmatter** — Claude Code's native mechanism. Forks the entire skill into a sub-agent. Ignored by runtimes that don't support it.
-2. **`(delegate)` step annotation** — cross-runtime fallback. Instructs any runtime with sub-agent support to delegate a specific step.
-
-Both can coexist in the same skill — `context: fork` handles Claude Code, `(delegate)` hints to other runtimes.
+**`context: fork` frontmatter** is Claude Code's mechanism for forking the *entire* skill into a sub-agent. It suits only skills with no interactive steps, so skills that triage with the user (reflect, ship) use `(delegate)` instead; the two can coexist in a skill that qualifies.
 
 **Writing `(delegate)` steps:**
 
@@ -51,7 +48,7 @@ Both can coexist in the same skill — `context: fork` handles Claude Code, `(de
 
 ### Using Roles in Delegate Steps
 
-When a delegation step benefits from a separated persona, extract it into a **role file** (see [Architecture — Skill & Role File Format](architecture.md#skill--role-file-format)). A role used by one skill lives in that skill's `roles/` directory; a role shared across skills lives in `skills/_shared/roles/`. The skill then references the role and provides only task-specific instructions:
+When a delegation step benefits from a separated persona, extract it into a **role file** (see [Role File Format](#role-file-format) below). A role used by one skill lives in that skill's `roles/` directory; a role shared across skills lives in `skills/_shared/roles/`. The skill then references the role and provides only task-specific instructions:
 
 ```markdown
 #### Research (delegate)
@@ -125,7 +122,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
-| Tool-layer integration | Reference external tools (e.g., `subagent`) by name with inline fallback | ship |
+| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name — consolidated in `_shared/review-delegation.md` | implement, reflect, ship |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items | ship, implement |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
 | Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
