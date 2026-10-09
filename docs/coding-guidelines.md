@@ -21,7 +21,7 @@ Every skill follows the same section order:
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
 - `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
 - `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
-- `allowed-tools`: tools pre-approved to run while the skill is active (space-separated in the Agent Skills spec, where the field is experimental and support varies by agent). It pre-approves; it does not restrict other tools.
+- `allowed-tools`: tools pre-approved to run while the skill is active. It pre-approves; it does not restrict other tools. Forge skills write it comma-separated; the Agent Skills spec's form is space-separated, and the field is experimental there, so support varies by agent.
 - `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
 ## Writing Process Steps
@@ -122,7 +122,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
-| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name — consolidated in `_shared/review-delegation.md` | implement, reflect, ship |
+| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items | ship, implement |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback |
 | Workflow order | setup → [shape →] create → implement → reflect → address; ship composes implement + reflect | All skills |
