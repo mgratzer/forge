@@ -68,18 +68,17 @@ For each thread:
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
 3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
-4. **Reply to the thread**:
+4. **Reply to the thread**, passing the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
 
 ```bash
-gh api graphql -f query='
-mutation {
-  addPullRequestReviewThreadReply(input: {
-    pullRequestReviewThreadId: "<THREAD_ID>"
-    body: "<response>"
-  }) {
+gh api graphql -f threadId="<THREAD_ID>" -F body=@- -f query='
+mutation($threadId: ID!, $body: String!) {
+  addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $threadId, body: $body}) {
     comment { id }
   }
-}'
+}' <<'REPLY_EOF'
+<response>
+REPLY_EOF
 ```
 
 Reply format by category:

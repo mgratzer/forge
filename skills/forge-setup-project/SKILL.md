@@ -54,7 +54,7 @@ Use AskUserQuestion for what code cannot reveal: core principles, repeated failu
 
 ### Step 5: Generate or Update AGENTS.md
 
-Create or update `AGENTS.md`. Target **~150-200 lines**; every line must pass the undiscoverability test. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and replace the old file with a symlink in Step 7.
+Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and replace the old file with a symlink in Step 7.
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
@@ -86,7 +86,7 @@ Report what was created/changed — see [output-format.md](references/output-for
 
 - **Undiscoverability test** — "Would an agent find this by exploring?" If yes, don't write it.
 - **Signal over volume** — tables beat paragraphs; omit empty sections.
-- **Tier discipline** — AGENTS.md targets 150-200 lines. Past 200, move to Tier 2.
+- **Tier discipline** — AGENTS.md stays under ~200 lines. Past 200, move to Tier 2.
 - **Edge cases** — monorepos: suggest per-package AGENTS.md. No tests/CI: mention as next steps.
 
 ## Related Skills
