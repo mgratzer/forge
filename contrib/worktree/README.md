@@ -13,6 +13,8 @@ Two scripts that create a project-ready checkout for an agent session and remove
 
 Install once in `~/.claude/settings.json`. `claude --worktree <name>` then creates through `create.sh` and cleans up through `remove.sh`. The create timeout has to cover a bootstrap.
 
+The hooks run for every `claude --worktree` in every repository, so point them at a forge checkout that stays on `main` — a separate clone such as `~/.forge/src`, updated with `git pull` — not the checkout you develop forge in. Switching that checkout to a branch without these scripts breaks worktree creation everywhere, and Claude Code may report the failed hook as a misleading `Workspace trust not yet accepted`. The launcher checks the hook path before starting anything.
+
 ```json
 {
   "hooks": {

@@ -109,6 +109,23 @@ fi
 launcher_makes_worktree=false
 case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 
+# Fail here, not once per workspace: `claude -w` refuses an untrusted repository (trust is inherited
+# from a trusted parent directory), and a WorktreeCreate hook whose script is gone fails every session.
+if [ "$launcher_makes_worktree" = false ]; then
+  dir="$repo"
+  until jq -e --arg d "$dir" '.projects[$d].hasTrustDialogAccepted == true' "$HOME/.claude.json" > /dev/null 2>&1; do
+    [ "$dir" != / ] || { echo "Claude Code does not trust $repo yet — run \`claude\` there once and accept the trust dialog" >&2; exit 1; }
+    dir="$(dirname "$dir")"
+  done
+  hook="$(jq -r '.hooks.WorktreeCreate[0].hooks[0].command // empty' "$HOME/.claude/settings.json" 2> /dev/null)"
+  if [ -z "$hook" ]; then
+    echo "warning: no WorktreeCreate hook in ~/.claude/settings.json — worktrees will land in .claude/worktrees and start bare (see contrib/worktree)" >&2
+  elif ! command -v "${hook%% *}" > /dev/null; then
+    echo "the WorktreeCreate hook runs ${hook%% *}, which does not exist — point it at a forge checkout that stays on main (see contrib/worktree)" >&2
+    exit 1
+  fi
+fi
+
 # Find or create the sidebar group; the anchor workspace is its header, like a manual Cmd+Shift+G group.
 group_args=()
 if [ "$no_group" = false ]; then
@@ -122,10 +139,6 @@ if [ "$no_group" = false ]; then
     fi
   fi
   group_args=(--group "$group_ref" --group-placement end)
-fi
-
-if [ "$launcher_makes_worktree" = false ] && ! grep -q '"WorktreeCreate"' "$HOME/.claude/settings.json" 2> /dev/null; then
-  echo "warning: no WorktreeCreate hook in ~/.claude/settings.json — worktrees will land in .claude/worktrees and start bare (see contrib/worktree)" >&2
 fi
 
 origin_url="$(git -C "$repo" remote get-url origin)"

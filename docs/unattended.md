@@ -22,12 +22,13 @@ Ten: `/forge-batch <scope>` prints Waves. Paste a Wave's launch line into the la
 
 Once per user:
 
-- [ ] Install the [worktree hooks](../contrib/worktree/) in `~/.claude/settings.json`, so every session gets its own bootstrapped checkout
+- [ ] Install the [worktree hooks](../contrib/worktree/) in `~/.claude/settings.json`, so every session gets its own bootstrapped checkout. Point them at a forge clone that stays on `main`, not the one you develop in
 - [ ] Put a launcher on your `PATH`, e.g. `ln -s /path/to/forge/contrib/launchers/cmux-claude.sh ~/bin/forge-launch`
 - [ ] Set `FORGE_LAUNCHER=forge-launch` so `forge-batch` prints launch lines you can paste as is
 - [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or `--yes-skip-permissions` per launch for Issues you trust — see [launcher permissions](../contrib/launchers/README.md#permissions). Without either, each session waits at its first prompt
 
 Once per project:
 
+- [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests
