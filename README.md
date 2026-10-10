@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Seven skills. From idea to review-ready code.
+  One workflow. Nine skills. From idea to review-ready code.
 </p>
 
 <p align="center">
@@ -30,7 +30,9 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description |
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
-| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation** |
+| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready** |
+| Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds — never merges |
+| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
 
 All skills accept optional trailing execution guidance using `-- <additional context>`.
 
@@ -39,9 +41,11 @@ All skills accept optional trailing execution guidance using `-- <additional con
 The skills form a simple workflow — each step feeds into the next:
 
 ```
-forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
-                                                                        ╰──── forge-ship ────╯
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard
+                                                                        ╰──── forge-ship ────╯╰──── forge-ship --guard ────╯
 ```
+
+For many Issues at once, `forge-batch` groups them into Waves and a launcher from [`contrib/launchers/`](contrib/launchers/) starts one guarded ship per Issue. See [Unattended Shipping](docs/unattended.md).
 
 `forge-ship` composes implement + review into a single invocation; its review always delegates to a fresh-context reviewer (the session authored the diff), adding a second pass only when risk justifies it. Standalone `forge-reflect` keeps tiny diffs inline when the session didn't author them. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
 
@@ -63,6 +67,8 @@ ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 
 Check your agent's docs for the correct skills directory path. Each skill reaches the shared modules through its own `_shared` symlink, so no separate `_shared/` install is needed with either method.
 
+For unattended runs in fresh checkouts, install the [worktree hooks](contrib/worktree/) once and put a [launcher](contrib/launchers/) on your PATH.
+
 ## Project Guidance
 
 - [`AGENTS.md`](AGENTS.md) is the canonical project guidance file
@@ -78,6 +84,7 @@ Check your agent's docs for the correct skills directory path. Each skill reache
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
+| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
 
 ## Contributors
 

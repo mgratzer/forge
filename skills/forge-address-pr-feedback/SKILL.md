@@ -13,11 +13,13 @@ Systematically address unresolved review feedback on a pull request.
 
 PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Optional: `-- <additional context>` for prioritization guidance.
 
+**Unattended mode:** `--unattended` never asks; Steps 2–3 say what happens instead.
+
 ## Process
 
-### Step 1: Fetch Unresolved Threads
+### Step 1: Fetch Unaddressed Threads
 
-**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads.
+**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
 ```bash
 # Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted
@@ -25,6 +27,7 @@ PR_ARG=""
 OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
 PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
+ME=$(gh api user --jq .login)
 
 gh api graphql -F owner="$OWNER" -F repo="$REPO" -F pr="$PR_NUMBER" -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
@@ -37,19 +40,19 @@ query($owner: String!, $repo: String!, $pr: Int!) {
           path
           line
           id
-          comments(first: 10) {
+          comments(last: 20) {
             nodes { id body author { login } url }
           }
         }
       }
     }
   }
-}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)'
+}' --jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")"
 ```
 
 ### Step 2: Process Each Thread
 
-For each unresolved thread, read the file and surrounding context, then categorize:
+For each unaddressed thread, read the file and surrounding context, then categorize:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
@@ -57,7 +60,7 @@ For each unresolved thread, read the file and surrounding context, then categori
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming.
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> — <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
 
 ### Step 3: Address and Reply Individually
 
@@ -68,13 +71,16 @@ For each thread:
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
 3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
-4. **Reply to the thread**, passing the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
+4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
 
 ```bash
 gh api graphql -f threadId="<THREAD_ID>" -F body=@- -f query='
 mutation($threadId: ID!, $body: String!) {
   addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $threadId, body: $body}) {
     comment { id }
+  }
+  resolveReviewThread(input: {threadId: $threadId}) {
+    thread { isResolved }
   }
 }' <<'REPLY_EOF'
 <response>
@@ -99,7 +105,7 @@ For each Deferred item, create an Issue in the project's Issue tracker (see [iss
 git push
 ```
 
-Report: threads addressed, commits created, Deferred items created, items needing human decision.
+Report: threads addressed, commits created, Deferred items created, threads needing a human decision.
 
 ## Guidelines
 
@@ -111,11 +117,13 @@ Report: threads addressed, commits created, Deferred items created, items needin
 ## Related Skills
 
 **If the feedback required substantial changes:** Use `forge-reflect` for one more self-review before re-requesting review.
+**Composed by:** `forge-guard` runs this process in unattended mode for each feedback round.
 
 ## Example Usage
 
 ```
 /forge-address-pr-feedback 123
 /forge-address-pr-feedback 123 -- prioritize security comments
+/forge-address-pr-feedback --unattended 123
 /forge-address-pr-feedback
 ```

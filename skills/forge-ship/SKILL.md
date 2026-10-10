@@ -1,6 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
@@ -13,6 +13,8 @@ Implement end to end — code it, review it, ship it. Implementation runs in the
 Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
+
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -33,11 +35,15 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Fixed findings are committed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
+Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
-### Step 4: Summarize
+### Step 4: Guard (only with `--guard`)
 
-Report implementation and review results together.
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+
+### Step 5: Summarize
+
+Report implementation, review, and guard results together.
 
 ## Output Format
 
@@ -46,6 +52,7 @@ Report implementation and review results together.
 
 **PR:** #<number> — <title>
 **Branch:** <branch-name>
+**Result:** pushed | review-ready | needs-human — <reason>
 
 ### Implementation
 - <N> commits, <M> files changed
@@ -55,6 +62,8 @@ Report implementation and review results together.
 ### Review Findings
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> — <title> (or "none")
+
+### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -72,8 +81,9 @@ Report implementation and review results together.
 
 ## Related Skills
 
-**Components:** Composes `forge-implement` and the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`).
-**After peer review:** Use `forge-address-pr-feedback` to address reviewer comments.
+**Components:** Composes `forge-implement`, the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`), and `forge-guard` when `--guard` is set.
+**After peer review:** Use `forge-address-pr-feedback` to address reviewer comments (guard mode does this for you).
+**Many Issues at once:** Use `forge-batch` to group Issues into Waves, then a launcher from `contrib/launchers/` to start one guarded ship per Issue.
 
 ## Example Usage
 
@@ -82,4 +92,5 @@ Report implementation and review results together.
 /forge-ship 42 -- keep the diff minimal
 /forge-ship docs/roadmap.md
 /forge-ship --unattended 42
+/forge-ship --guard 42
 ```

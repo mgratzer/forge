@@ -6,7 +6,7 @@ Forge is a collection of agent skills that define a structured development workf
 
 ## Commands
 
-There is no application code, build system, or test framework. The repository contains only Markdown: skill prompts (`SKILL.md`, shared modules, roles, references) and docs.
+There is no application code, build system, or test framework. The repository contains Markdown — skill prompts (`SKILL.md`, shared modules, roles, references) and docs — plus the shell scripts in `contrib/` (launchers, worktree hooks), the one place runtime-specific code is allowed.
 
 ```bash
 git status                          # check working tree state
@@ -25,6 +25,7 @@ gh pr list                          # list open pull requests
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
+| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
 
 **Update docs when you change skill conventions or add new skills.**
 

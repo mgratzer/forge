@@ -17,6 +17,8 @@ forge/
 │   │   ├── issue-operations.md            # Provider detection and Issue CRUD
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
+│   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
+│   │   ├── unattended-config.md           # AGENTS.md settings read by guard and batch
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
@@ -30,8 +32,12 @@ forge/
 │   │   └── references/                    # AFK/HITL classification
 │   ├── forge-implement/SKILL.md           # Step 2: Implement from Issue, plan, or description
 │   ├── forge-reflect/SKILL.md             # Step 3: Self-review changes (PR, branch, or uncommitted)
-│   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments
-│   └── forge-ship/SKILL.md                # Composite: implement + review in one invocation
+│   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments (--unattended for guards)
+│   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
+│   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
+│   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
+├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
+├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 ├── CLAUDE.md → AGENTS.md                  # Compatibility symlink
@@ -43,9 +49,11 @@ forge/
 The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback
-                                                                        ╰──── forge-ship ────╯
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard
+                                                                        ╰──── forge-ship ────╯╰──── forge-ship --guard ────╯
 ```
+
+`forge-batch` sits beside the line: it groups prepared Issues into Waves, and a launcher runs the line once per Issue (see [unattended.md](unattended.md)).
 
 `forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
@@ -57,7 +65,9 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user
+- **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process
+- **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
+- **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
 ## Skill & Role File Format
 
@@ -105,4 +115,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Bundled shared layer | Each skill contains a `_shared -> ../_shared` symlink; skills link `_shared/<file>.md`, never `../_shared/` | Installers such as `npx skills add` copy only directories with a `SKILL.md`, one at a time, and dereference symlinks — the symlink ships a real copy of the shared layer inside every installed skill. Agents also resolve `..` lexically from the install path, so sibling links break under symlinked installs |
 | Issue tracker abstraction | Provider operations in `_shared/issue-operations.md`; skills reference it | Concentrates provider detection and CRUD in one module; skills say "create an Issue" without re-deriving the three-way conditional |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
+| Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
+| Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
+| One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

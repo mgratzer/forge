@@ -18,7 +18,7 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 ### Step 1: Understand the Work
 
-Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
+Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
 
 - **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
@@ -52,11 +52,15 @@ Present the plan via AskUserQuestion. Get user confirmation before coding. **In 
 ### Step 3: Create Feature Branch
 
 ```bash
-# Sync the default branch, then branch off it
 git fetch origin
-git checkout $(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
-git pull
-git checkout -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION>
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+git rev-list --count origin/$DEFAULT_BRANCH..HEAD   # 0 on a non-default branch → a worktree tool prepared it; stay on it
+```
+
+Otherwise branch off the fetched default branch without switching to it — this also works inside a worktree, where the default branch is checked out elsewhere:
+
+```bash
+git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
 ```
 
 When working from a plan file or free-text (no Issue number), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
