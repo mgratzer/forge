@@ -71,21 +71,20 @@ For each thread:
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
 3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
-4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both:
+4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
 
 ```bash
-gh api graphql -f query='
-mutation {
-  addPullRequestReviewThreadReply(input: {
-    pullRequestReviewThreadId: "<THREAD_ID>"
-    body: "<response>"
-  }) {
+gh api graphql -f threadId="<THREAD_ID>" -F body=@- -f query='
+mutation($threadId: ID!, $body: String!) {
+  addPullRequestReviewThreadReply(input: {pullRequestReviewThreadId: $threadId, body: $body}) {
     comment { id }
   }
-  resolveReviewThread(input: { threadId: "<THREAD_ID>" }) {   # omit for Question, Discussion, Won't fix
+  resolveReviewThread(input: {threadId: $threadId}) {
     thread { isResolved }
   }
-}'
+}' <<'REPLY_EOF'
+<response>
+REPLY_EOF
 ```
 
 Reply format by category:

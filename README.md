@@ -79,9 +79,9 @@ For unattended runs in fresh checkouts, install the [worktree hooks](contrib/wor
 | Document | Purpose |
 |----------|---------|
 | [Context](CONTEXT.md) | Shared vocabulary used across forge skills |
-| [Architecture](docs/architecture.md) | Skill workflow, file format, design decisions |
+| [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
 | [Development](docs/development.md) | How to create and modify skills |
-| [Coding Guidelines](docs/coding-guidelines.md) | Skill authoring conventions and style rules |
+| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |

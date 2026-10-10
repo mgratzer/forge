@@ -1,6 +1,6 @@
 # AGENTS.md Template
 
-Use this template when creating or updating AGENTS.md. Target ~150-200 lines. Every line must pass the undiscoverability test — if an agent can find it by exploring, it doesn't belong here.
+Use this template when creating or updating AGENTS.md. Keep it under ~200 lines. Every line must pass the undiscoverability test — if an agent can find it by exploring, it doesn't belong here.
 
 ````markdown
 # <Project Name>
