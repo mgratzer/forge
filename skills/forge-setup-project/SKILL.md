@@ -17,7 +17,7 @@ Context is organized in three tiers:
 
 **Central principle: context must earn its token cost.** Only include knowledge that agents cannot discover by exploring the codebase with Grep, Glob, and Read.
 
-`CLAUDE.md` is a compatibility symlink to `AGENTS.md`, never a separate source of truth.
+`AGENTS.md` is the only guidance file. Don't create a `CLAUDE.md`: Claude Code reads `AGENTS.md` natively when no `CLAUDE.md` or `CLAUDE.local.md` is present, so a symlink or copy only adds a second name. A `CLAUDE.md` is justified only for Claude-specific content the user wants kept — then it is `@AGENTS.md` followed by that content, never a copy.
 
 ## Input
 
@@ -27,7 +27,7 @@ Optional project root path (`$ARGUMENTS`; defaults to cwd). Optional: `-- <addit
 
 ### Step 1: Assess What Exists
 
-Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`. The file state determines the work: nothing exists → generate from scratch; legacy `CLAUDE.md` without `AGENTS.md` → migrate it to `AGENTS.md`, then update; `AGENTS.md` exists → audit and update.
+Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`. The file state determines the work: nothing exists → generate from scratch; legacy `CLAUDE.md` without `AGENTS.md` → migrate it to `AGENTS.md`, then update; `AGENTS.md` exists → audit and update. A `CLAUDE.md` that is a symlink to or copy of `AGENTS.md` is removed in Step 7.
 
 ### Step 2: Explore the Codebase
 
@@ -54,21 +54,15 @@ Use AskUserQuestion for what code cannot reveal: core principles, repeated failu
 
 ### Step 5: Generate or Update AGENTS.md
 
-Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and replace the old file with a symlink in Step 7.
+Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and remove the old file in Step 7.
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
 Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process); offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test — an empty doc wastes context.
 
-### Step 7: Create Compatibility Symlink and Update .gitignore
+### Step 7: Remove Redundant CLAUDE.md and Update .gitignore
 
-```bash
-# Replace any legacy CLAUDE.md with a symlink to the canonical AGENTS.md
-rm -f CLAUDE.md
-ln -sf AGENTS.md CLAUDE.md
-```
-
-If the platform doesn't support symlinks, stop and tell the user. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
+Delete a `CLAUDE.md` that is a symlink to `AGENTS.md`, a copy of it, or legacy content now migrated into it (`git rm` when tracked). If it still holds content that isn't in `AGENTS.md`, ask the user via AskUserQuestion before deleting it. If it holds Claude-specific content the user wants to keep, reduce it to `@AGENTS.md` plus that content instead. If a `CLAUDE.local.md` exists, tell the user: Claude Code skips `AGENTS.md` while one is present. When you remove a `CLAUDE.md`, mention that Claude Code sessions older than v2.1.281 on Bedrock or with telemetry disabled read only `CLAUDE.md`; for those, the fix is a `CLAUDE.md` containing `@AGENTS.md`. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
 
 ### Step 8: Create Human-Facing Files
 
