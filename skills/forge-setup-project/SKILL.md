@@ -62,7 +62,7 @@ Create `docs/architecture.md` (design decisions, data flow, module responsibilit
 
 ### Step 7: Remove Redundant CLAUDE.md and Update .gitignore
 
-Delete a `CLAUDE.md` that is a symlink to `AGENTS.md`, a copy of it, or legacy content now migrated into it (`git rm` when tracked). If it holds Claude-specific content the user wants to keep, reduce it to `@AGENTS.md` plus that content instead. If a `CLAUDE.local.md` exists, tell the user: Claude Code skips `AGENTS.md` while one is present. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
+Delete a `CLAUDE.md` that is a symlink to `AGENTS.md`, a copy of it, or legacy content now migrated into it (`git rm` when tracked). If it still holds content that isn't in `AGENTS.md`, ask the user via AskUserQuestion before deleting it. If it holds Claude-specific content the user wants to keep, reduce it to `@AGENTS.md` plus that content instead. If a `CLAUDE.local.md` exists, tell the user: Claude Code skips `AGENTS.md` while one is present. When you remove a `CLAUDE.md`, mention that Claude Code sessions older than v2.1.281 on Bedrock or with telemetry disabled read only `CLAUDE.md`; for those, the fix is a `CLAUDE.md` containing `@AGENTS.md`. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
 
 ### Step 8: Create Human-Facing Files
 
