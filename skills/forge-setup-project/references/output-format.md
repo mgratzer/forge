@@ -29,7 +29,7 @@ Use the format matching the work performed.
 | Known risks | <risks> | <where documented> |
 
 ### Supporting Files
-- CLAUDE.md → AGENTS.md (compatibility symlink)
+<CLAUDE.md removed, or reduced to an @AGENTS.md import — only when one existed>
 - .gitignore
 
 ### Next Steps

@@ -71,8 +71,7 @@ For unattended runs in fresh checkouts, install the [worktree hooks](contrib/wor
 
 ## Project Guidance
 
-- [`AGENTS.md`](AGENTS.md) is the canonical project guidance file
-- [`CLAUDE.md`](CLAUDE.md) is a compatibility symlink for tools that still look for that filename
+- [`AGENTS.md`](AGENTS.md) is the only project guidance file — no `CLAUDE.md`; Claude Code reads `AGENTS.md` natively
 
 ## Documentation
 
