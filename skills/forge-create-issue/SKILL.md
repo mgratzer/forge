@@ -1,13 +1,13 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured Issues through interactive discussion (GitHub, markdown plan/ folder, or other providers). Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague.
+description: Collaboratively plan and create well-structured Issues through interactive discussion (GitHub, markdown plan/ folder, or other providers). Use when the user wants to create an Issue, report a bug, or scope out work that is already understood; use forge-shape first when the idea is still vague.
 disable-model-invocation: true
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 
 # Create Issue
 
-Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider detection.
+Collaboratively plan and create well-structured Issues through interactive discussion. The Issue is created in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md) for provider detection).
 
 ## Input
 
@@ -22,9 +22,9 @@ If no argument is provided, ask the user what they'd like to create an Issue for
 ### Step 1: Understand and Clarify
 
 Parse the user's input, then use AskUserQuestion to gather:
-- **Problem context** — what triggered this, who's affected, current vs desired behavior
-- **Success criteria** — how will we know this is done
-- **Constraints** — technical limitations, dependencies
+- **Problem context:** what triggered this, who's affected, current vs desired behavior
+- **Success criteria:** how will we know this is done
+- **Constraints:** technical limitations, dependencies
 
 ### Step 2: Research the Codebase
 
@@ -33,13 +33,13 @@ Before proposing solutions, explore relevant code:
 - Identify integration points and potential reuse
 - Look for similar past implementations
 
-Verify external dependencies are accessible if relevant — flag broken ones before proceeding.
+Verify external dependencies are accessible if relevant; flag broken ones before proceeding.
 
 ### Step 3: Present Alternative Approaches
 
-**Skip this step** if the input already contains a chosen approach with rationale — the decision was already made through deliberate analysis. Proceed directly to Step 4.
+**Skip this step** if the input already contains a chosen approach with rationale; the decision was already made through deliberate analysis. Proceed directly to Step 4.
 
-Otherwise, present the structurally distinct approaches you found — usually two to four — rather than a single recommendation; the choice belongs to the user.
+Otherwise, present the structurally distinct approaches you found (usually two to four) rather than a single recommendation; the choice belongs to the user.
 
 For each approach:
 - One-line summary
@@ -58,15 +58,15 @@ Evaluate if this should be one Issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
+When splitting, slice **vertically**: each Issue is a thin end-to-end path (see [vertical-slicing](_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
 
 If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
 
 ### Step 5: Draft the Issue
 
-**Title:** Use conventional commit format — `<type>(<scope>): <description>`
+**Title:** Use conventional commit format: `<type>(<scope>): <description>`
 
-**Labels:** Discover what labels exist before applying any — see [issue-operations](_shared/issue-operations.md). Apply at least one type label and relevant area labels.
+**Labels:** Discover what labels exist before applying any (see [issue-operations](_shared/issue-operations.md)). Apply at least one type label and relevant area labels.
 
 **Body structure:**
 
@@ -96,15 +96,15 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues.
+Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues).
 
 Share the Issue reference. Suggest using `forge-implement` to start implementation.
 
 ## Guidelines
 
-- **Be curious** — challenge assumptions, ask "why" and "what if"
-- **Settle decisions, not code** — an AFK Issue carries the chosen approach and every decision an implementer would stall on (see [afk-vs-hitl.md](references/afk-vs-hitl.md)); taste-neutral implementation choices stay open
-- **No time estimates in the Issue** — the Step 4 effort heuristic is for deciding splits, not for the Issue body
+- **Be curious:** challenge assumptions, ask "why" and "what if"
+- **Settle decisions, not code:** an AFK Issue carries the chosen approach and every decision an implementer would stall on (see [afk-vs-hitl.md](references/afk-vs-hitl.md)); taste-neutral implementation choices stay open
+- **No time estimates in the Issue:** the Step 4 effort heuristic is for deciding splits, not for the Issue body
 - **Write the Issue for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills

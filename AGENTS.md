@@ -6,7 +6,7 @@ Forge is a collection of agent skills that define a structured development workf
 
 ## Commands
 
-There is no application code, build system, or test framework. The repository contains Markdown — skill prompts (`SKILL.md`, shared modules, roles, references) and docs — plus the shell scripts in `contrib/` (launchers, worktree hooks), the one place runtime-specific code is allowed.
+There is no application code, build system, or test framework. The repository contains Markdown, both skill prompts (`SKILL.md`, shared modules, roles, references) and docs, plus the shell scripts in `contrib/` (launchers, worktree hooks), the one place runtime-specific code is allowed.
 
 ```bash
 git status                          # check working tree state
@@ -31,14 +31,14 @@ gh pr list                          # list open pull requests
 
 ## Core Principles
 
-1. **Skills are prompts, not code** — every SKILL.md is a reusable prompt template with YAML frontmatter and step-by-step instructions
-2. **Explore-first, ask-second** — skills should always analyze the codebase before asking the user questions
-3. **Never invent content** — use `<!-- TODO -->` markers rather than generating generic boilerplate
-4. **Conventional commits everywhere** — every skill enforces the same commit, branch, issue, and PR naming format
-5. **Standards first, compatibility second** — prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility lightweight
-6. **One invocation convention** — every skill supports optional trailing execution context via `-- <additional context>` when additional guidance is useful
-7. **Plan before code** — for complex work, research the codebase objectively and align on architecture before writing implementation; delegate research to sub-agents for unbiased answers
-8. **Mind the instruction budget** — keep skills under ~35 instructions; delegate to sub-agents when complexity grows
+1. **Skills are prompts, not code:** every SKILL.md is a reusable prompt template with YAML frontmatter and step-by-step instructions
+2. **Explore-first, ask-second:** skills should always analyze the codebase before asking the user questions
+3. **Never invent content:** use `<!-- TODO -->` markers rather than generating generic boilerplate
+4. **Conventional commits everywhere:** every skill enforces the same commit, branch, issue, and PR naming format
+5. **Standards first, compatibility second:** prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility lightweight
+6. **One invocation convention:** every skill supports optional trailing execution context via `-- <additional context>` when additional guidance is useful
+7. **Plan before code:** for complex work, research the codebase objectively and align on architecture before writing implementation; delegate research to sub-agents for unbiased answers
+8. **Mind the instruction budget:** keep skills under ~35 instructions; delegate to sub-agents when complexity grows
 
 ## Commits
 

@@ -1,23 +1,23 @@
 # AGENTS.md Template
 
-Use this template when creating or updating AGENTS.md. Keep it under ~200 lines. Every line must pass the undiscoverability test — if an agent can find it by exploring, it doesn't belong here.
+Use this template when creating or updating AGENTS.md. Keep it under ~200 lines. Every line must pass the undiscoverability test: if an agent can find it by exploring, it doesn't belong here.
 
 ````markdown
 # <Project Name>
 
-<one-line description — derive from exploration, confirm with user for greenfield>
+<one-line description; derive from exploration, confirm with user for greenfield>
 
 ## Commands
 
 ```bash
-<all verified commands — install, dev, build, test, lint, format, typecheck>
+<all verified commands: install, dev, build, test, lint, format, typecheck>
 ```
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-<only rows for docs that actually exist — this is the agent's Tier 2 entry point>
+<only rows for docs that actually exist; this is the agent's Tier 2 entry point>
 
 ## Context Discovery
 
@@ -28,15 +28,15 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 
 ## Core Principles
 
-<3-5 numbered rules from user input — never invented>
+<3-5 numbered rules from user input, never invented>
 
 ## Conventions
 
 <project-specific naming, imports, preferred libraries, patterns>
 <organize by constraint level, stated plainly with the reason beside each rule:>
-<invariants — rules whose violation causes bugs or security issues; name the failure each prevents>
-<preferences — team choices where multiple valid approaches exist>
-<for each rule, note enforcement mechanism — linter, CI, script, or manual>
+<invariants: rules whose violation causes bugs or security issues; name the failure each prevents>
+<preferences: team choices where multiple valid approaches exist>
+<for each rule, note enforcement mechanism: linter, CI, script, or manual>
 
 ## Commits
 
@@ -50,9 +50,9 @@ Types: feat, fix, docs, refactor, test, chore, perf
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-<each entry traces to an agent mistake seen more than once — omit section entirely if none>
+<each entry traces to an agent mistake seen more than once; omit section entirely if none>
 
 ## Domain Invariants
 
-<numbered must-always-hold rules — omit section entirely if none provided>
+<numbered must-always-hold rules; omit section entirely if none provided>
 ````

@@ -25,7 +25,7 @@
 #                     model name (default: your Claude Code settings). Not valid with FORGE_AGENT.
 #   --yes-skip-permissions
 #                     run Claude with --dangerously-skip-permissions so sessions never stop at
-#                     a permission prompt. Agents then act on Issue text unchecked — use only for
+#                     a permission prompt. Agents then act on Issue text unchecked; use only for
 #                     Issues you trust, ideally in a sandbox. Not valid with FORGE_AGENT.
 #   --dry-run         print every command instead of running it
 #
@@ -76,7 +76,7 @@ done
 
 if [ ${#issues[@]} -eq 0 ]; then
   echo "no issues given" >&2
-  echo "hint: an unquoted # starts a shell comment, so \`forge-launch #782, #783\` reaches the launcher empty —" >&2
+  echo "hint: an unquoted # starts a shell comment, so \`forge-launch #782, #783\` reaches the launcher empty;" >&2
   echo "      write \`forge-launch 782 783\` or quote the list: \`forge-launch '#782, #783'\`" >&2
   exit 1
 fi
@@ -114,14 +114,14 @@ case "$agent_template" in *"{worktree}"*) launcher_makes_worktree=true ;; esac
 if [ "$launcher_makes_worktree" = false ]; then
   dir="$repo"
   until jq -e --arg d "$dir" '.projects[$d].hasTrustDialogAccepted == true' "$HOME/.claude.json" > /dev/null 2>&1; do
-    [ "$dir" != / ] || { echo "Claude Code does not trust $repo yet — run \`claude\` there once and accept the trust dialog" >&2; exit 1; }
+    [ "$dir" != / ] || { echo "Claude Code does not trust $repo yet; run \`claude\` there once and accept the trust dialog" >&2; exit 1; }
     dir="$(dirname "$dir")"
   done
   hook="$(jq -r '.hooks.WorktreeCreate[0].hooks[0].command // empty' "$HOME/.claude/settings.json" 2> /dev/null)"
   if [ -z "$hook" ]; then
-    echo "warning: no WorktreeCreate hook in ~/.claude/settings.json — worktrees will land in .claude/worktrees and start bare (see contrib/worktree)" >&2
+    echo "warning: no WorktreeCreate hook in ~/.claude/settings.json; worktrees will land in .claude/worktrees and start bare (see contrib/worktree)" >&2
   elif ! command -v "${hook%% *}" > /dev/null; then
-    echo "the WorktreeCreate hook runs ${hook%% *}, which does not exist — point it at a forge checkout that stays on main (see contrib/worktree)" >&2
+    echo "the WorktreeCreate hook runs ${hook%% *}, which does not exist; point it at a forge checkout that stays on main (see contrib/worktree)" >&2
     exit 1
   fi
 fi

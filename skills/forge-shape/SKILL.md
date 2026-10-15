@@ -26,29 +26,29 @@ Before asking any questions, explore the codebase for related context:
 - Identify integration points, dependencies, and architectural boundaries
 - Look for prior attempts or related work (git log, closed issues)
 
-Check for related Issues in the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for search mechanics per provider.
+Check for related Issues in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md) for search mechanics per provider).
 
 ### Step 2: Shape the Problem
 
 Converge on a shared design concept through one-at-a-time structured questioning. See [shaping-methodology.md](references/shaping-methodology.md) for why one-at-a-time beats batching, how to provide recommended answers without over-anchoring, walking the dependency tree of decisions, when to challenge, and when to stop.
 
-If CONTEXT.md exists, read it — use its vocabulary when framing questions and challenging the user's language.
+If CONTEXT.md exists, read it; use its vocabulary when framing questions and challenging the user's language.
 
 Loop until the design concept is clear:
 
-1. Ground the next question in Step 1 facts — never ask what the codebase already answers
+1. Ground the next question in Step 1 facts; never ask what the codebase already answers
 2. Ask one question with your recommended answer (phrase as "I'd suggest X because Y", not as a decision)
 3. Wait for the user's response
-4. **Challenge when warranted** — if the answer conflicts with CONTEXT.md vocabulary, call it out. If it contradicts what the code does, surface it. If it uses vague or overloaded terms, propose a precise canonical term. Invent concrete scenarios to stress-test fuzzy boundaries.
+4. **Challenge when warranted:** if the answer conflicts with CONTEXT.md vocabulary, call it out. If it contradicts what the code does, surface it. If it uses vague or overloaded terms, propose a precise canonical term. Invent concrete scenarios to stress-test fuzzy boundaries.
 5. Adjust your understanding and pick the next question
 
-**Side effects during shaping** — as terms and decisions crystallize:
-- **Resolved term?** Update CONTEXT.md inline — don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
-- **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off — offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
+**Side effects during shaping**, as terms and decisions crystallize:
+- **Resolved term?** Update CONTEXT.md inline; don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
+- **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off, offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
 
 Stop when the user has accepted recommended answers for several consecutive questions, the remaining questions are taste-level (not decision-level), or the shared design concept is clear enough to summarize.
 
-**Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt — that defeats the methodology.
+**Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt; that defeats the methodology.
 
 ### Step 3: Explore Approaches (delegate)
 
@@ -56,17 +56,17 @@ Stop when the user has accepted recommended answers for several consecutive ques
 
 If shaping in Step 2 surfaced a clear approach, skip this step and go to Step 4.
 
-If multiple plausible approaches remain after shaping (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
+If multiple plausible approaches remain after shaping (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast**: approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
 
 Assign each sub-agent one constraint lens (adapt to the problem):
-- **Minimal** — smallest change that addresses the core problem
-- **Reuse-first** — maximize use of existing patterns and code
-- **Extensibility-first** — optimize for future flexibility
-- **Performance-first** — optimize for speed or resource efficiency
+- **Minimal:** smallest change that addresses the core problem
+- **Reuse-first:** maximize use of existing patterns and code
+- **Extensibility-first:** optimize for future flexibility
+- **Performance-first:** optimize for speed or resource efficiency
 
 **Sub-agent instructions:**
 
-> You are designing one approach to a problem, constrained by a specific design lens. Follow your assigned constraint strictly — do not hedge toward a balanced middle ground.
+> You are designing one approach to a problem, constrained by a specific design lens. Follow your assigned constraint strictly; do not hedge toward a balanced middle ground.
 >
 > Given the codebase findings and shaped design concept provided as input, propose one approach:
 > - One-line summary
@@ -114,8 +114,8 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 
 ## Guidelines
 
-- **Problem over solution** — clarify what's wrong before proposing how to fix it
-- **Stay grounded** — reference specific code, files, and patterns, not abstractions
+- **Problem over solution:** clarify what's wrong before proposing how to fix it
+- **Stay grounded:** reference specific code, files, and patterns, not abstractions
 
 ## Related Skills
 

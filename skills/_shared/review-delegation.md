@@ -6,31 +6,31 @@ How to set up, delegate, and aggregate a **lean fresh-context review**. Used by 
 
 Before reviewing, collect:
 
-1. **Review scope** — exact commands the reviewer can run to regenerate the diff and changed file list
-2. **Changed file list** — from the selected scope
-3. **Diff size metadata** — changed file count and approximate changed line count
+1. **Review scope:** exact commands the reviewer can run to regenerate the diff and changed file list
+2. **Changed file list:** from the selected scope
+3. **Diff size metadata:** changed file count and approximate changed line count
 4. **Relevant project conventions**: the relevant parts of `AGENTS.md`, plus the `Backward compatibility` Shipping setting resolved per [project-config](project-config.md); do not blindly paste the whole file if only a small subset matters
 5. **The task**, when the caller has it: one sentence on what the change is for and what it is not building, from the plan or the Issue (forge-reflect can use the PR title and body)
-6. **Review materials** — read and collect (pushed, not referenced):
+6. **Review materials:** read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
-   - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
-   - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
+   - [review-dimensions](review-dimensions.md): default checklist plus optional deep-pass checklists
+   - [review-rubric](review-rubric.md): P0–P3 severity taxonomy
 
 ## Choose Review Shape
 
 Use the smallest review shape that still gives trustworthy signal:
 
-1. **Tiny diff: inline review** — only if the change is small and low-risk (roughly `<=2` files and `<=100` changed lines), with **no** risky signals such as auth/authz, secrets, payments, migrations, concurrency, jobs, caches, public API/protocol changes, or infrastructure/config changes, **and the current session did not implement the changes**. A session reviewing its own diff has self-review bias — delegate even tiny diffs then. Review inline in the current context using the default combined checklist.
-2. **Default: one reviewer** — for everything else, use one fresh-context reviewer running the combined checklist.
-3. **Mandatory second reviewer for risky changes** — add a second focused pass whenever the diff touches:
+1. **Tiny diff, inline review:** only if the change is small and low-risk (roughly `<=2` files and `<=100` changed lines), with **no** risky signals such as auth/authz, secrets, payments, migrations, concurrency, jobs, caches, public API/protocol changes, or infrastructure/config changes, **and the current session did not implement the changes**. A session reviewing its own diff has self-review bias, so delegate even tiny diffs then. Review inline in the current context using the default combined checklist.
+2. **Default, one reviewer:** for everything else, use one fresh-context reviewer running the combined checklist.
+3. **Mandatory second reviewer for risky changes:** add a second focused pass whenever the diff touches:
    - auth, authorization, secrets, payments, or other security-sensitive code
    - schema or migration changes
    - concurrency, synchronization, background jobs, caches, or distributed behavior
    - public API, protocol, or contract changes
    When the caller also runs [quality-passes](quality-passes.md) (`forge-ship`, `forge-guard`), the security pass owns the first bullet: add no second reviewer for it. The other bullets still add one.
-4. **Optional second reviewer for broad diffs** — add a second pass for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
+4. **Optional second reviewer for broad diffs:** add a second pass for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
 
-When using inline review, keep it to a single pass — do not escalate to sub-agents unless the diff is no longer tiny or new risk appears.
+When using inline review, keep it to a single pass; do not escalate to sub-agents unless the diff is no longer tiny or new risk appears.
 
 When adding a second reviewer, assign it only the **highest-risk deep pass** from [review-dimensions](review-dimensions.md).
 
@@ -61,16 +61,16 @@ Each task is fully self-contained. Do not make the task depend on a runtime-spec
 
 Report `reviewing` via [status-reporting](status-reporting.md), then use the chosen review shape:
 
-1. **Inline tiny-diff path** — run one combined checklist pass in the current context
-2. **Sub-agent tool or task runtime**: spawn **one** reviewer by default, and a second reviewer when required by the rules above. Push the [forge-reviewer](roles/forge-reviewer.md) role into the delegated prompt or `systemPrompt`. Prefer inheriting the parent session's model/provider when the runtime supports that. If the runtime supports per-task settings, run routine review at lower effort or on a cheaper review-capable model — try lower effort first.
-3. **Inline fallback** — if no sub-agent mechanism is available, execute the same number of passes sequentially in the current context.
+1. **Inline tiny-diff path:** run one combined checklist pass in the current context
+2. **Sub-agent tool or task runtime**: spawn **one** reviewer by default, and a second reviewer when required by the rules above. Push the [forge-reviewer](roles/forge-reviewer.md) role into the delegated prompt or `systemPrompt`. Prefer inheriting the parent session's model/provider when the runtime supports that. If the runtime supports per-task settings, run routine review at lower effort or on a cheaper review-capable model; try lower effort first.
+3. **Inline fallback:** if no sub-agent mechanism is available, execute the same number of passes sequentially in the current context.
 
 Wait for **all planned review passes** before proceeding.
 
 ## Aggregate Findings
 
 1. Collect findings from all review passes
-2. Deduplicate — if multiple passes flag the same issue, keep the highest severity
+2. Deduplicate: if multiple passes flag the same issue, keep the highest severity
 3. Group by file, then by severity (P0 → P1 → P2)
 4. Drop P3 findings entirely (per the rubric)
 

@@ -5,11 +5,11 @@ description: Reviews code changes using a supplied checklist and severity-tagged
 
 # Reviewer
 
-You are a code reviewer analyzing a PR diff using the **review checklist assigned in your task**. You have fresh context — no memory of implementation decisions.
+You are a code reviewer analyzing a PR diff using the **review checklist assigned in your task**. You have fresh context, with no memory of implementation decisions.
 
 ## Setup
 
-Your initial prompt contains everything you need — the review rubric, your assigned checklist, scope metadata, and relevant project conventions from `AGENTS.md`. Do not read external files for those unless your task explicitly tells you to.
+Your initial prompt contains everything you need: the review rubric, your assigned checklist, scope metadata, and relevant project conventions from `AGENTS.md`. Do not read external files for those unless your task explicitly tells you to.
 
 ## Severity
 

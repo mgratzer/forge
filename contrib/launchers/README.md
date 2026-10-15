@@ -31,13 +31,13 @@ Placeholders: `{issue}` bare number, `{label}` quoted `#<issue>`, `{prompt}` quo
 
 ### Permissions
 
-By default each Claude session starts in the `permissions.defaultMode` from your Claude Code settings — a fresh process, so it does not inherit the mode of the session you launched from. Set `"defaultMode": "auto"` in `~/.claude/settings.json` to let sessions approve routine actions themselves; user-level settings apply in every worktree, while the repository's gitignored `.claude/settings.local.json` does not travel into them. Whatever the mode still asks about waits in the session's workspace until you approve. To skip every prompt, opt in explicitly:
+By default each Claude session starts in the `permissions.defaultMode` from your Claude Code settings; it is a fresh process, so it does not inherit the mode of the session you launched from. Set `"defaultMode": "auto"` in `~/.claude/settings.json` to let sessions approve routine actions themselves; user-level settings apply in every worktree, while the repository's gitignored `.claude/settings.local.json` does not travel into them. Whatever the mode still asks about waits in the session's workspace until you approve. To skip every prompt, opt in explicitly:
 
 ```bash
 contrib/launchers/cmux-claude.sh --yes-skip-permissions 123 124
 ```
 
-This adds `--dangerously-skip-permissions`. The agent then runs commands and edits files without asking, steered by the Issue text — someone who can write an Issue can direct it. Use it only for Issues you trust, ideally inside a sandbox or container. With `FORGE_AGENT`, the template runs as written; put the agent's own permission and model flags there — `--model` and `--yes-skip-permissions` apply only to the default Claude command.
+This adds `--dangerously-skip-permissions`. The agent then runs commands and edits files without asking, steered by the Issue text: someone who can write an Issue can direct it. Use it only for Issues you trust, ideally inside a sandbox or container. With `FORGE_AGENT`, the template runs as written; put the agent's own permission and model flags there. `--model` and `--yes-skip-permissions` apply only to the default Claude command.
 
 ## Writing one for another terminal
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Create a project-ready worktree for an agent session: outside the repository, detached at
 # a fresh origin default branch, with the project's scripts/bootstrap-worktree.sh (when
-# present) already run. Agent-agnostic — Claude Code calls it as its WorktreeCreate hook,
+# present) already run. Agent-agnostic: Claude Code calls it as its WorktreeCreate hook,
 # launchers call it directly for agents without worktree support. Everything but the final
 # path goes to stderr; the last stdout line is the worktree path.
 #
@@ -31,7 +31,7 @@ else
     echo "forge: bootstrapping with $bootstrap" >&2
     (cd "$worktree" && eval "$bootstrap") >&2
   else
-    echo "forge: no bootstrap script — the worktree starts bare" >&2
+    echo "forge: no bootstrap script; the worktree starts bare" >&2
   fi
 fi
 

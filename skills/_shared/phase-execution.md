@@ -8,11 +8,11 @@ Validate the foundation before the first line of feature code. Foundation failur
 
 Run all applicable checks:
 
-- [ ] **Code generators** — run codegen, verify output is current (`git diff --stat -- generated/`). Stale artifacts make the type system lie.
-- [ ] **Config placement** — grep for where similar config is consumed before placing a new value. Config defined but never read is a silent failure.
-- [ ] **External services** — verify dependencies are reachable and authenticated (health check or known-good request). Don't wire against vapor.
-- [ ] **Env vars / secrets** — confirm required variables exist without printing them (`: "${VAR:?not set}"`).
-- [ ] **Existing patterns** — grep for similar implementations before writing new code.
+- [ ] **Code generators:** run codegen, verify output is current (`git diff --stat -- generated/`). Stale artifacts make the type system lie.
+- [ ] **Config placement:** grep for where similar config is consumed before placing a new value. Config defined but never read is a silent failure.
+- [ ] **External services:** verify dependencies are reachable and authenticated (health check or known-good request). Don't wire against vapor.
+- [ ] **Env vars / secrets:** confirm required variables exist without printing them (`: "${VAR:?not set}"`).
+- [ ] **Existing patterns:** grep for similar implementations before writing new code.
 
 Skip a check only when its failure mode is impossible for this specific work (no new config → skip config placement; no external dependency → skip service health).
 
@@ -28,7 +28,7 @@ For each vertical phase in the structure outline:
 
 Code and tests together, end to end across all affected layers.
 
-**Verify unfamiliar APIs before using them** — grep the codebase, check type definitions or docs, confirm the API exists at the project's pinned version. Skip for: stdlib, APIs already used in this codebase, type-checked interfaces.
+**Verify unfamiliar APIs before using them:** grep the codebase, check type definitions or docs, confirm the API exists at the project's pinned version. Skip for: stdlib, APIs already used in this codebase, type-checked interfaces.
 
 **Follow existing patterns and import style.** No barrel files unless the project uses them (see [barrel-imports](barrel-imports.md)).
 
@@ -49,4 +49,4 @@ Verify before proceeding to the next phase:
 - [ ] Tests exist for new behavior in this phase
 - [ ] All tests pass (not just new ones)
 - [ ] No lint/type errors introduced
-- [ ] Commit the phase — one logical change per commit, conventional format
+- [ ] Commit the phase: one logical change per commit, conventional format
