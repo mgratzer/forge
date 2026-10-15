@@ -27,7 +27,7 @@ Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issue
 
 ### Step 2: Estimate Touch Sets (delegate)
 
-For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](_shared/roles/forge-scout.md) sub-agents in parallel on a cheap fast model, about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here — the touch set is about them.
+For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](_shared/roles/forge-scout.md) sub-agents in parallel at lower effort or on a cheaper model, about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here — the touch set is about them.
 
 > For each Issue: list every path it names explicitly, then grep for the concepts it names (routes, tables, components, message keys) and add the files that define them. Return paths only.
 

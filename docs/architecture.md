@@ -82,22 +82,19 @@ Skills use **progressive disclosure**: `SKILL.md` contains core instructions, wh
 
 ## Operating Constraints
 
-LLMs degrade past approximately 100k tokens regardless of the advertised context window. Attention relationships scale quadratically with token count; the further past 100k a session goes, the worse its instruction-following, recall, and reasoning become. The boundary is not a hard threshold — it is a gradual degradation that becomes pronounced enough to act on.
+Current models hold a million-token context, so the window itself is rarely the limit. Forge's mechanisms answer the constraints that remain: a session that did the work is biased about it, every token a skill loads is paid on every load, and skills have to compose.
 
-Practitioners call the workable region the **smart zone** and the degraded region the **dumb zone**. Forge's design choices respond to this constraint:
+| Mechanism | Why it stays |
+|-----------|--------------|
+| Fresh-context review (`forge-reflect`, `forge-ship`) | A session that wrote the diff reviews its own reasoning rather than the code. A reviewer that starts with only the diff and the rubric reads what the human will read. Tiny low-risk diffs stay inline only when the session didn't author them; one reviewer is the default and depth is added only when risk justifies it |
+| Blind delegation (scout, PR body drafter) | Knowing the goal leaks opinions into research; knowing the journey leaks it into the PR body |
+| Sub-agent delegation (`(delegate)` steps) | Bulky, self-contained work runs elsewhere, so its output doesn't ride along on every later turn of the parent |
+| Progressive disclosure (`references/`) | A skill body is paid for on every load; detail only some runs need loads on demand |
+| Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; the cold tier loads only when needed |
+| Lean skill bodies (under ~35 instructions) | Composite skills load their components' instructions too, and every instruction competes with the task for attention. The figure is a composability heuristic, not a model limit — see [coding-guidelines.md](coding-guidelines.md#instruction-budget) |
+| Role files (`roles/*.md`) | Sub-agents start with a focused persona, not the parent's accumulated history |
 
-| Mechanism | How it responds |
-|-----------|-----------------|
-| Sub-agent delegation (`(delegate)` steps) | Move work into fresh context windows when the parent is approaching the dumb zone |
-| Fresh-context review (`forge-reflect`, `forge-ship`) | Tiny low-risk diffs stay inline only when the session didn't author them; otherwise one reviewer starts in smart zone by default, and depth is added only when risk justifies it |
-| Progressive disclosure (`references/`) | Load companion philosophy on demand instead of always-loading every skill's full content |
-| Three-tier context model (`AGENTS.md` / `docs/` / specs) | Each tier earns its always-loaded cost; cold tier loads only when needed |
-| Instruction budget (under ~35 instructions per skill body) | Skills stay lean enough to compose without exceeding the ~150–200 instructions frontier LLMs follow consistently |
-| Role files (`roles/*.md`) | Sub-agents start with focused persona context, not the parent's accumulated history |
-
-The smart-zone constraint is approximate, model-dependent, and changing — but treating it as a real boundary tends to produce more reliable workflows than assuming the advertised context size is the working size. When a skill's design feels like it has too many moving parts to fit in one head, that is also approximately when it has too many tokens to fit in the smart zone.
-
-The instruction-budget figures (~150–200 followed reliably overall, under ~35 per skill) are a related but distinct constraint covered in [coding-guidelines.md](coding-guidelines.md#instruction-budget) — they concern how many discrete instructions an LLM follows reliably, separately from how many tokens fit in the smart zone.
+Long sessions still cost: each turn re-reads the context, so accumulated history adds money and latency, and stale history — abandoned approaches, old tool output — biases later decisions. Keeping skills lean and delegating bulky work stays the cheaper and more reliable default even when everything would fit. Removing one of these mechanisms because the window got bigger trades a real bias for a saving that isn't there.
 
 ## Design Decisions
 
@@ -110,7 +107,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `(delegate)` step pattern; `context: fork` frontmatter available for whole-skill forking | Fresh context for unbiased review; `(delegate)` works across runtimes, `context: fork` is Claude Code's native whole-skill mechanism — unsuitable for skills with interactive steps |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules | Keeps orchestrators lean; shared modules prevent duplicated step-level instructions from drifting |
-| Tool-layer integration | Skills use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never a runtime-specific agent name | Runtimes and extensions expose delegation/model-selection capabilities; skills use them when available and fall back when not — zero coupling. Runtime-specific agent files or presets are optional local tuning, not part of Forge. When a runtime couples agent names to model/provider selection, push role content, prefer inheriting the parent session configuration over hard-coded agent IDs, use cheap fast models for factual scouting, and prefer cheaper review-capable models for routine review work |
+| Tool-layer integration | Skills use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never a runtime-specific agent name | Runtimes and extensions expose delegation/model-selection capabilities; skills use them when available and fall back when not — zero coupling. Runtime-specific agent files or presets are optional local tuning, not part of Forge. When a runtime couples agent names to model/provider selection, push role content, prefer inheriting the parent session configuration over hard-coded agent IDs, and run factual scouting and routine review at lower effort or on a cheaper model — try the same model at lower effort first |
 | Reusable roles | Skill-specific: `<skill>/roles/*.md`; cross-skill: `_shared/roles/*.md` | Delegation personas separated from skill body; single-use roles co-locate with the skill, shared roles live in `_shared/` |
 | Blind research delegation | Scout researches codebase without seeing the Issue | Knowing the goal causes opinions to leak into research — objective facts lead to better planning |
 | Vertical implementation phases | Each phase is a thin end-to-end slice, not a horizontal layer | Horizontal plans (all DB, then all services, then all API) produce untestable intermediate states |
@@ -122,6 +119,6 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | PRs open as drafts | `gh pr create --draft` unless the project declares `Pull requests: ready`; no skill runs `gh pr ready` | The draft flag tells people an agent may still push; clearing it is the human's signal that review can start. Projects run CI and the peer reviewer on drafts — see [unattended](unattended.md#setup) |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
-| Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
+| Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output re-enters the context on every later turn and buys nothing; a blocked shell call costs nothing |
 | One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

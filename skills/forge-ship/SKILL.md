@@ -88,12 +88,7 @@ Report implementation, review, and guard results together.
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
-### Quality Gates
-- Lint: ✓/✗
-- Format: ✓/✗
-- Types: ✓/✗
-- Tests: ✓/✗
-- Coverage: ✓/✗/not configured
+**Quality gates:** passed | <gate> failed — <one line>   (one line; name coverage only when not configured)
 ```
 
 ## Guidelines

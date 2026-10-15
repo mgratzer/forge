@@ -39,7 +39,7 @@ Write 3–7 factual questions about existing systems, patterns, and integration 
 **Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
-Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
+Run the scout at lower effort or on a cheaper model when the runtime allows per-task settings — try lower effort first.
 
 From the research, create a plan:
 - Durable decisions

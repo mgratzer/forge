@@ -96,11 +96,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Deferred #<num>: <title>
 - (or: None identified)
 
-### Quality Gates
-- Lint: ✓/✗
-- Format: ✓/✗
-- Types: ✓/✗
-- Tests: ✓/✗
+**Quality gates:** passed | <gate> failed — <one line>   (one line; name coverage only when not configured)
 
 (Use severity tags: P0, P1, P2. Omit P3; see the [review rubric](_shared/review-rubric.md).)
 ```
