@@ -30,7 +30,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Round** — one trip through the guard's react step: a CI fix or a feedback pass, followed by a fresh wait. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
+**Draft PR** — the state every PR a forge skill opens starts in, unless the project declares `Pull requests: ready`. Marking it ready for review is always a human action, never a skill's. _Avoid_: "WIP PR".
+
+**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone, "ready for review" (GitHub's non-draft state).
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
@@ -60,7 +62,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 - A **Plan** implements one **Issue** through ordered **Vertical phases**.
 - A **Reflection** produces zero or more **Findings**; each is fixed or becomes a **Deferred item**.
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
-- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.
+- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**; it works on a **Draft PR** and never marks it ready.
 - A **Batch** orders **Waves**; a **Launcher** starts one **Guard**-ed ship per Issue in a Wave.
 
 ## Flagged Ambiguities

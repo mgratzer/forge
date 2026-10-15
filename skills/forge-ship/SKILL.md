@@ -57,6 +57,7 @@ Report implementation, review, and guard results together.
 **PR:** #<number> — <title>
 **Branch:** <branch-name>
 **Result:** pushed | review-ready | needs-human — <reason>
+**Next:** <the human's next step for the result, per status-reporting>
 
 ### Implementation
 - <N> commits, <M> files changed

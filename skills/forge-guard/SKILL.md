@@ -1,6 +1,6 @@
 ---
 name: forge-guard
-description: Drive an open pull request to review-ready without a human watching — run simplification and security passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
+description: Drive an open pull request to review-ready without a human watching — run simplification and security passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -42,7 +42,7 @@ Report `waiting`. Request the peer review first so it overlaps the CI wait — b
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-**CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI:
+**CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI — unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
 ```bash
 gh pr checks "$PR" --watch --interval 30 --fail-fast
@@ -89,6 +89,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **PR:** #<number> — <title>
 **Result:** review-ready | needs-human — <reason>
 **Rounds:** <n> of <max>
+**Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
 - Simplify: applied <n> findings | skipped
