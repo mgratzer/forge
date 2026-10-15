@@ -112,7 +112,7 @@ gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIG
 PR_EOF
 ```
 
-When the work comes from an Issue, run **Link PR** and **Mark in Review** from [issue-operations](_shared/issue-operations.md) once the PR is open — never mark the Issue done; completion belongs to the merge.
+When the work comes from an Issue, follow **Link PR** in [issue-operations](_shared/issue-operations.md): its first half before the push and the draft (closing references for the drafter, and the markdown provider's closing commit), its second half and **Mark in Review** once the PR is open. Never mark the Issue done — completion belongs to the merge.
 
 ### Step 9: Summarize
 

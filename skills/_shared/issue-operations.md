@@ -111,30 +111,24 @@ Given keywords:
 
 ## Link PR
 
-Given an Issue ID and the PR:
+Given an Issue ID and its sub-issues. Two halves:
 
-**GitHub:** `Closes #<ID>` as the last line of the PR body — the merge closes the Issue.
+**Before the PR opens** — the closing references go to the PR body drafter, one line per Issue and sub-issue:
 
-**Markdown:** `Closes <ID>` in the PR body, and the PR URL in the issue file's `pr` frontmatter.
+- **GitHub:** `Closes #<ID>` — the merge closes it.
+- **Markdown:** `Closes <ID>`; and on the branch, before the push, commit `status: closed` in each issue file and its INDEX.md row — the change lands with the merge, so the merge is what completes the Issue.
+- **Other provider:** the tracker's ID in the form its PR integration recognizes.
 
-**Other provider:** the tracker's ID in the PR body in the form its PR integration recognizes, plus the declared tool's link or attachment operation.
+**After the PR opens** — other provider only: the declared tool's link or attachment operation with the PR URL. Nothing for GitHub and markdown.
 
 ## Mark in Review
 
 Given an Issue ID, once its PR is open:
 
-**GitHub:** nothing to do — the linked open PR shows it.
-
-**Markdown:** set `status: in-review` in the issue file and its INDEX.md row.
+**GitHub and markdown:** nothing to do — the open PR shows it.
 
 **Other provider:** move the Issue to the tracker's in-review state with the declared tool. Never to done.
 
 ## Close Issue
 
-Given an issue ID:
-
-**GitHub:** the PR's `Closes #<ID>` reference handles this automatically.
-
-**Markdown:** update the issue file's `status` frontmatter to `closed` and update the corresponding INDEX.md row.
-
-**Other provider:** use the declared tool to close the issue.
+Completion belongs to the merge, so no skill closes an Issue directly: GitHub closes it through `Closes #<ID>`, the markdown provider through the closing commit from **Link PR**, and other providers through their PR integration or the human.

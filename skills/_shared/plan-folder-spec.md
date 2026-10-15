@@ -38,8 +38,7 @@ created: 2026-04-30
 |-------|----------|--------|
 | `id` | Yes | Positive integer, unique across the project |
 | `title` | Yes | Conventional commit format |
-| `status` | Yes | `open`, `in-progress`, `in-review`, `closed` |
-| `pr` | No | URL of the PR implementing the issue |
+| `status` | Yes | `open`, `in-progress`, `closed` |
 | `labels` | No | List of label strings |
 | `mode` | No | `AFK` or `HITL` (defaults to `HITL`) |
 | `created` | Yes | ISO date |
@@ -76,6 +75,8 @@ Read `plan/issues/<ID>-*.md` (glob on the ID prefix). Parse YAML frontmatter for
 Grep INDEX.md for keywords, or scan `plan/issues/` filenames and frontmatter.
 
 ## Closing an issue
+
+Forge closes an issue on the branch that implements it, so the change lands with the merge (see *Link PR* in [issue-operations](issue-operations.md)):
 
 1. Update the issue file's `status` frontmatter to `closed`.
 2. Update the corresponding INDEX.md row's Status column to `closed`.

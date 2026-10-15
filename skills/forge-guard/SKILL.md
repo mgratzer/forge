@@ -70,15 +70,17 @@ When neither applies, react and go back to Step 3. Each reaction is one **round*
 
 ```bash
 gh pr checks "$PR" --json name,bucket,workflow,link --jq '.[] | select(.bucket == "fail")'
-BASE_RUN=$(gh run list --branch "$BASE" --workflow "<WORKFLOW>" --limit 1 --json databaseId --jq '.[0].databaseId')
-gh run view "$BASE_RUN" --json jobs --jq '.jobs[] | select(.name == "<CHECK>") | .conclusion'   # the same check on the base branch
+BASE_RUN=$(gh run list --branch "$BASE" --workflow "<WORKFLOW>" --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+[ -n "$BASE_RUN" ] && gh run view "$BASE_RUN" --json jobs --jq '.jobs[] | select(.name == "<CHECK>") | .conclusion'   # the same check on the base branch
 RUN=<run id from the check's link>
+gh run view "$RUN" --json attempt --jq .attempt
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
 
-- **Pre-existing** — the same check fails on the base branch's latest run. Leave it; it is not this PR's to fix.
-- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner) and the check passes on base. Rerun it once with `gh run rerun "$RUN" --failed`; if it fails again, leave it for the human.
+- **Pre-existing** — the same check fails on the base branch's latest completed run. Leave it; it is not this PR's to fix. With no completed base run (a stacked base, a workflow that runs only on pull requests), this can't be shown — sort on the log alone.
+- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun it with `gh run rerun "$RUN" --failed` only while the run's `attempt` is 1; a later attempt that is still red is left for the human.
 - **Caused** — everything else: fix it, run the quality gates, commit, push (after the record, when one is declared). Only this kind is a round.
+- **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: read its description and link, fix it only when it points at the diff, otherwise leave it for the human with the reason.
 
 Failures the branch didn't cause never start a round; keep waiting for the review signal and addressing threads.
 

@@ -22,5 +22,5 @@ With neither, skip and report `not exercised — no recipe`. Never guess how to 
 ## Outcomes
 
 - **Behaves as intended** — the evidence goes to the PR body drafter and the summary.
-- **Behaves wrong** — treat it as a P1 finding: fix, run the quality gates, commit, and exercise once more.
+- **Behaves wrong** — treat it as a P1 finding: fix, run the quality gates, commit, and exercise once more. The fix lands after the review, so give its commit one fresh-context review per [review-delegation](../_shared/review-delegation.md) before a review record is written.
 - **Can't start or reach the app** — report `not exercised — <why>` and continue; never present partial runs as evidence.
