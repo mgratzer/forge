@@ -24,7 +24,7 @@ git diff --name-only origin/<BASE>...HEAD   # match against Security-sensitive p
 A project appends its own passes in the `## Shipping` section:
 
 ```markdown
-- Extra passes: /risk-eval, /team-review (covers: security)
+- Extra passes: /threat-model, /team-review (covers: security)
 ```
 
 Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.

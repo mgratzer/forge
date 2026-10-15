@@ -15,7 +15,7 @@ Projects declare the section in `AGENTS.md`:
 - After create: /risk-eval
 - Peer reviewer: copilot-pull-request-reviewer[bot]
 - Security-sensitive paths: src/auth/**, src/webhooks/**, src/middleware/**
-- Extra passes: /risk-eval, /team-review (covers: security)
+- Extra passes: /threat-model, /team-review (covers: security)
 - Review record: docs/review-process.md#sign-off
 - Serialized resources: db/migrations/**, bun.lock, messages/**
 - Max guard rounds: 3
