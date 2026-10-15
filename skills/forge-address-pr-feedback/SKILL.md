@@ -122,6 +122,8 @@ For each Deferred item, create an Issue in the project's Issue tracker (see [iss
 
 ### Step 5: Push and Summarize
 
+When the Shipping settings declare a review record and this run changed code, write a fresh record first per [review-record](_shared/review-record.md), unless forge-guard composed this run (it records itself).
+
 ```bash
 git push
 ```
