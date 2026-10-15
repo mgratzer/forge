@@ -65,7 +65,7 @@ grep -rn "issue-operations" skills/*/SKILL.md
 
 # Check every skill bundles the shared layer and no sibling-relative links remain (both should print nothing)
 for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"; done
-grep -rn "\.\./_shared" skills/
+grep -rn "\.\./_shared" skills/*/SKILL.md   # references/ files may link ../_shared — that is the skill's own copy
 ```
 
 ### 5. Launcher Validation
