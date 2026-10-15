@@ -17,6 +17,8 @@ The value points at the format spec — a path in the repository, a URL, or a se
 
 Map them onto the spec's fields. For a field forge has no fact for, follow the spec's rule for unknowns, or leave it out and name it in the summary. Write the record the way the spec says — typically an empty commit (`git commit --allow-empty -F <message-file>`).
 
+Check the record before it leaves the machine: every field the spec requires is present, the tree equals `git rev-parse 'HEAD^{tree}'`, and the range resolves (`git rev-list --count <range>` succeeds). A record that fails is fixed while it is still unpushed, by amending its commit where the spec allows; once pushed, a corrected record goes on top and the summary names the broken one.
+
 ## When
 
 - **forge-ship** — after triage and the quality passes, as the last commit before the PR opens.
