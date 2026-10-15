@@ -41,7 +41,7 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 **CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI — unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30 --fail-fast
+gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
 **Peer review** — a review by someone other than `$ME` after the latest push. Wait for it in one bounded shell loop, not by polling from the model:
@@ -62,16 +62,25 @@ The review signal is satisfied when a post-push review exists, when no peer revi
 Check the terminal conditions first, on every round:
 
 - **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
-- **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
+- **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
-**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push (after the record, when one is declared):
+**CI failed** — report `addressing`, then sort each failed check before touching anything:
 
 ```bash
-RUN=$(gh run list --branch "$BRANCH" --status failure --limit 1 --json databaseId --jq '.[0].databaseId')
+gh pr checks "$PR" --json name,bucket,workflow,link --jq '.[] | select(.bucket == "fail")'
+BASE_RUN=$(gh run list --branch "$BASE" --workflow "<WORKFLOW>" --limit 1 --json databaseId --jq '.[0].databaseId')
+gh run view "$BASE_RUN" --json jobs --jq '.jobs[] | select(.name == "<CHECK>") | .conclusion'   # the same check on the base branch
+RUN=<run id from the check's link>
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
+
+- **Pre-existing** — the same check fails on the base branch's latest run. Leave it; it is not this PR's to fix.
+- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner) and the check passes on base. Rerun it once with `gh run rerun "$RUN" --failed`; if it fails again, leave it for the human.
+- **Caused** — everything else: fix it, run the quality gates, commit, push (after the record, when one is declared). Only this kind is a round.
+
+Failures the branch didn't cause never start a round; keep waiting for the review signal and addressing threads.
 
 **Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
@@ -93,7 +102,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 - Extra: <pass> applied <n> | not available   (one line per declared pass)
 
 ### Rounds
-1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
+1. CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
 
 ### Review record
 - <sha> covering <range>, written in round <n> | not declared | none needed (no code change)
