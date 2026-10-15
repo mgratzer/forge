@@ -15,9 +15,13 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 **Unattended mode:** `--unattended` never asks; Steps 2–3 say what happens instead.
 
+**Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, with no code changes and nothing posted.
+
+**Wait mode:** `--wait` derives `PR_NUMBER` (Step 1's first lines), requests the configured peer reviewers who haven't reviewed the latest commit, and waits for them per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER`; then it addresses what they left.
+
 ## Process
 
-### Step 1: Fetch Unaddressed Threads
+### Step 1: Fetch Unaddressed Feedback
 
 **Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
@@ -28,6 +32,7 @@ OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
 PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
 ME=$(gh api user --jq .login)
+FEEDBACK=$(mktemp)
 
 gh api graphql -F owner="$OWNER" -F repo="$REPO" -F pr="$PR_NUMBER" -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
@@ -41,18 +46,32 @@ query($owner: String!, $repo: String!, $pr: Int!) {
           line
           id
           comments(last: 20) {
-            nodes { id body author { login } url }
+            nodes { id body author { login __typename } url }
           }
         }
       }
+      reviews(last: 50) { nodes { body state submittedAt url author { login __typename } } }
+      comments(last: 50) { nodes { body createdAt lastEditedAt url author { login __typename } } }
     }
   }
-}' --jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")"
+}' > "$FEEDBACK"
+jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")" "$FEEDBACK"
 ```
 
-### Step 2: Process Each Thread
+**Top-level feedback counts too**, when it contains findings: review bodies and PR comments by others since our last PR comment, including bot summaries edited in place since then. Skip overviews and walkthroughs with no findings, and anything that only repeats an inline thread:
 
-For each unaddressed thread, read the file and surrounding context, then categorize:
+```bash
+jq --arg me "$ME" '.data.repository.pullRequest
+  | ([.comments.nodes[] | select(.author.login == $me) | .createdAt] | max // "") as $since
+  | [(.reviews.nodes[] | select(.author.login != $me and .body != "" and .submittedAt > $since)),
+     (.comments.nodes[] | select(.author.login != $me and ((.lastEditedAt // .createdAt) > $since)))]' "$FEEDBACK"
+```
+
+**Who wrote it decides how we answer:** an author whose `__typename` is `Bot`, or whose `Peer reviewers` entry carries a `[bot]` suffix, is a bot reviewer; everyone else, including a person listed in `Peer reviewers`, is a human colleague.
+
+### Step 2: Process Each Item
+
+For each unaddressed thread or top-level item, read the file and surrounding context, then categorize:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
@@ -64,7 +83,9 @@ For **Discussion** threads where the decision is genuinely the user's to make, a
 
 ### Step 3: Address and Reply Individually
 
-Address each thread and reply before moving to the next, so every reply can cite the commit that resolved it.
+Address each item and reply before moving to the next, so every reply can cite the commit that resolved it.
+
+**Bot reviewers, and everyone in unattended mode:** post the reply as below. **Human colleagues in attended mode:** make the change and commit as usual, but don't post or resolve anything: write a ready-to-paste Markdown reply for the summary, with the thread URL, and ask via AskUserQuestion when a claim isn't actionable or is unclear. Top-level items get one PR comment that answers each in turn, or one drafted comment for a human.
 
 For each thread:
 
@@ -101,11 +122,13 @@ For each Deferred item, create an Issue in the project's Issue tracker (see [iss
 
 ### Step 5: Push and Summarize
 
+When the Shipping settings declare a review record and this run changed code, write a fresh record first per [review-record](_shared/review-record.md), unless forge-guard composed this run (it records itself).
+
 ```bash
 git push
 ```
 
-Report: threads addressed, commits created, Deferred items created, threads needing a human decision.
+Report: threads addressed, commits created, Deferred items created, threads needing a human decision, and under **Replies to post** each drafted reply for a human colleague with its thread URL.
 
 ## Guidelines
 
@@ -126,5 +149,7 @@ Report: threads addressed, commits created, Deferred items created, threads need
 /forge-address-pr-feedback 123
 /forge-address-pr-feedback 123 -- prioritize security comments
 /forge-address-pr-feedback --unattended 123
+/forge-address-pr-feedback --assess 123
+/forge-address-pr-feedback --wait 123
 /forge-address-pr-feedback
 ```

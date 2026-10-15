@@ -32,9 +32,11 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Draft PR** — the state every PR a forge skill opens starts in, unless the project declares `Pull requests: ready`. Marking it ready for review is always a human action, never a skill's. _Avoid_: "WIP PR".
 
-**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone, "ready for review" (GitHub's non-draft state).
+**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, all feedback addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone, "ready for review" (GitHub's non-draft state).
 
-**Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
+**Bot reviewer / human colleague** — who left a piece of review feedback. Bot reviewers (a `Bot` author, or a login listed in `Peer reviewers`) get replies posted automatically; a human colleague's threads get drafted replies in attended mode, so the conversation between people stays theirs.
+
+**Addressed feedback**: an unresolved review thread whose last comment is ours, a thread we resolved, or a top-level review or comment we answered after it was posted. Unaddressed feedback blocks review-ready. _Avoid_: "addressed thread" for top-level items.
 
 **Shipping settings** — every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
 

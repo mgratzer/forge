@@ -20,6 +20,7 @@ forge/
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
 │   │   ├── quality-passes.md              # Simplify, security, and extra passes — one owner per dimension
 │   │   ├── review-record.md               # Optional project-declared review attestation commit
+│   │   ├── peer-review-wait.md            # Request and wait for the configured peer reviewers
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults
@@ -71,7 +72,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 - **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, runs the quality passes, exercises the changed path when the project says how to run it, and only then publishes (rebase, push, PR) so its blind-drafted body describes the final diff and carries the evidence; in local mode it stops before publishing and `--publish` finishes later; with `--guard` it continues with forge-guard's process
-- **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
+- **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewers, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
 ## Skill & Role File Format
@@ -117,7 +118,7 @@ Long sessions still cost: each turn re-reads the context, so accumulated history
 | Bundled shared layer | Each skill contains a `_shared -> ../_shared` symlink; skills link `_shared/<file>.md`, never `../_shared/` | Installers such as `npx skills add` copy only directories with a `SKILL.md`, one at a time, and dereference symlinks — the symlink ships a real copy of the shared layer inside every installed skill. Agents also resolve `..` lexically from the install path, so sibling links break under symlinked installs |
 | Issue tracker abstraction | Provider operations in `_shared/issue-operations.md`; skills reference it | Concentrates provider detection and CRUD in one module; skills say "create an Issue" without re-deriving the three-way conditional |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
-| PRs open as drafts | `gh pr create --draft` unless the project declares `Pull requests: ready`; no skill runs `gh pr ready` | The draft flag tells people an agent may still push; clearing it is the human's signal that review can start. Projects run CI and the peer reviewer on drafts — see [unattended](unattended.md#setup) |
+| PRs open as drafts | `gh pr create --draft` unless the project declares `Pull requests: ready`; no skill runs `gh pr ready` | The draft flag tells people an agent may still push; clearing it is the human's signal that review can start. Projects run CI and the peer reviewers on drafts — see [unattended](unattended.md#setup) |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output re-enters the context on every later turn and buys nothing; a blocked shell call costs nothing |
 | One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
