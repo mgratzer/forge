@@ -1,12 +1,12 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review and the quality passes. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
 # Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context and deepens only when risk justifies it.
+Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context, and each quality dimension has one owner.
 
 ## Input
 
@@ -14,7 +14,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — CI, peer review, feedback rounds; ship has already run the quality passes — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -37,15 +37,19 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
-### Step 4: Open the PR
+### Step 4: Run Quality Passes
 
-Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
+Run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
 
-### Step 5: Guard (only with `--guard`)
+### Step 5: Open the PR
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR opened above. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
 
-### Step 6: Summarize
+### Step 6: Guard (only with `--guard`)
+
+Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes — *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+
+### Step 7: Summarize
 
 Report implementation, review, and guard results together.
 
@@ -68,6 +72,8 @@ Report implementation, review, and guard results together.
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
+- Record: <sha> covering <range> | not declared
+- Passes: simplify <n> applied | covered by <pass>; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 

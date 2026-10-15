@@ -38,6 +38,8 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Shipping settings** — every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
 
+**Quality pass** — a focused pass after the fresh-context review that owns one dimension: simplify, security, or a project-declared extra pass. Each dimension has exactly one owner per run; an extra pass marked `covers: <dimension>` replaces forge's own pass for it. See [quality-passes](skills/_shared/quality-passes.md).
+
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [project-config](skills/_shared/project-config.md).
 
 **Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.

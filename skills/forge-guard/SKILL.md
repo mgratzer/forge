@@ -1,6 +1,6 @@
 ---
 name: forge-guard
-description: Drive an open pull request to review-ready without a human watching — run simplification and security passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
+description: Drive an open pull request to review-ready without a human watching — run the quality passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -24,15 +24,11 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
+Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, extra passes, review record, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
 ### Step 2: Run Quality Passes
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md).
-
-**Security pass** — run when the PR carries a `security` label or `gh pr diff "$PR" --name-only` matches a security-sensitive path. If the runtime provides a security review skill (Claude Code: `/security-review`), invoke it; otherwise follow review-delegation with the **Security & Correctness** deep pass.
-
-Triage findings from both passes with `forge-ship`'s unattended rule, then run the project quality gates once, commit, and push — one push, so CI and the peer reviewer see one revision.
+Skip this step when `forge-ship --guard` composed the guard — ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — with unattended triage, write the review record when the project declares one, and push once.
 
 ### Step 3: Wait for Signals
 
@@ -68,16 +64,16 @@ Check the terminal conditions first, on every round:
 - **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
 
-When neither applies, react and go back to Step 3. Each reaction is one **round**.
+When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
-**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push:
+**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push (after the record, when one is declared):
 
 ```bash
 RUN=$(gh run list --branch "$BRANCH" --status failure --limit 1 --json databaseId --jq '.[0].databaseId')
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
 
-**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
+**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
@@ -92,11 +88,15 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
-- Simplify: applied <n> findings | skipped
-- Security: applied <n> findings | not triggered | skipped
+- Simplify: applied <n> findings | covered by <extra pass> | skipped | ran in forge-ship
+- Security: applied <n> findings | not triggered | covered by <extra pass> | ran in forge-ship
+- Extra: <pass> applied <n> | not available   (one line per declared pass)
 
 ### Rounds
 1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
+
+### Review record
+- <sha> covering <range>, written in round <n> | not declared | none needed (no code change)
 
 ### Open for the human
 - <thread url>: <the decision, with both options>
