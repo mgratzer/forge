@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Git
-- [GitHub CLI](https://cli.github.com/) (`gh`) — used by skills for GitHub issue and PR operations (only required when GitHub is the issue tracker provider)
+- [GitHub CLI](https://cli.github.com/) (`gh`): used by skills for GitHub issue and PR operations (only required when GitHub is the issue tracker provider)
 - A compatible coding agent that supports Agent Skills slash commands
 
 No language runtime, package manager, or build tools are needed. The repository contains only Markdown files.
@@ -21,15 +21,15 @@ No dependency installation required.
 
 1. Create a directory under `skills/` named `forge-<skill-name>/`
 2. Create a `SKILL.md` file inside it, plus the shared-layer symlink: `ln -s ../_shared skills/forge-<skill-name>/_shared`
-3. Add YAML frontmatter with `name` and `description` (see [Coding Guidelines — Frontmatter Conventions](coding-guidelines.md#frontmatter-conventions) for field reference)
-4. Write the structured prompt body following the section order in [Coding Guidelines — Skill Structure](coding-guidelines.md#skill-structure)
+3. Add YAML frontmatter with `name` and `description` (see [Coding Guidelines: Frontmatter Conventions](coding-guidelines.md#frontmatter-conventions) for field reference)
+4. Write the structured prompt body following the section order in [Coding Guidelines: Skill Structure](coding-guidelines.md#skill-structure)
 5. Update workflow references in relevant skills' "Related Skills" sections
 6. Update the docs table in `AGENTS.md` and `README.md` if a new doc category is needed
 
 ## Modifying an Existing Skill
 
 1. Read the full SKILL.md to understand the current flow
-2. Make targeted changes — avoid rewriting entire skills when a small edit suffices
+2. Make targeted changes; avoid rewriting entire skills when a small edit suffices
 3. If changing conventions (commit format, branch naming, guidance filenames, structured-input syntax, etc.), grep across all relevant skills to update consistently:
    ```bash
    grep -r "conventional commit" skills/
@@ -59,7 +59,7 @@ Extract a persona into a role file when:
 - The persona has calibration rules or behavior that benefits from separation (severity rubrics, research methodology)
 - The skill body is approaching the instruction budget and the persona can be loaded on demand
 
-**Don’t extract** trivial personas that are just a sentence or two — inline them in the skill’s blockquote.
+**Don’t extract** trivial personas that are just a sentence or two; inline them in the skill’s blockquote.
 
 If multiple skills need the same role, place it in `skills/_shared/roles/` rather than duplicating across skills.
 
@@ -72,4 +72,4 @@ If multiple skills need the same role, place it in `skills/_shared/roles/` rathe
 
 ## Quality Gates
 
-See [testing.md — Structural Review](testing.md#1-structural-review) for the pre-commit checklist.
+See [testing.md: Structural Review](testing.md#1-structural-review) for the pre-commit checklist.

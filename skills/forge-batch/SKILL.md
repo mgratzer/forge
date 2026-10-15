@@ -1,6 +1,6 @@
 ---
 name: forge-batch
-description: Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other — estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Use when the user has several prepared Issues and wants to know which can run in parallel unattended.
+description: Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other. Estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Use when the user has several prepared Issues and wants to know which can run in parallel unattended.
 disable-model-invocation: true
 allowed-tools: Read, Bash, Grep, Glob, AskUserQuestion
 ---
@@ -17,7 +17,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 ### Step 1: Collect Candidates
 
-List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
+List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references; bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
 
 ```bash
 gh pr list --state open --limit 100 --json number,title,headRefName,body
@@ -27,7 +27,7 @@ Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issue
 
 ### Step 2: Estimate Touch Sets (delegate)
 
-For each candidate, produce its **touch set** — the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](_shared/roles/forge-scout.md) sub-agents in parallel at lower effort or on a cheaper model (try lower effort first), about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here — the touch set is about them.
+For each candidate, produce its **touch set**: the files and directories the implementation will most likely change. When the scope has more than five Issues, delegate to [forge-scout](_shared/roles/forge-scout.md) sub-agents in parallel at lower effort or on a cheaper model (try lower effort first), about five Issues per scout so shared greps run once; otherwise estimate inline. Unlike implement's blind research, the scout receives the Issues here; the touch set is about them.
 
 > You receive the Issues on purpose here, so the role's blind-questions rule doesn't apply. For each Issue: list every path it names explicitly, then grep for the concepts it names (routes, tables, components, message keys) and add the files that define them. Answer as `#<number>: <paths...>` lines instead of the role's Q&A format.
 
@@ -71,13 +71,13 @@ launch: <launcher> 123 124 ...
 
 ## Guidelines
 
-- **Touch sets are estimates** — say so; a Wave is a bet the human approves, not a proof
-- **Serialized resources trump everything** — two migrations in one Wave is a merge conflict by construction
-- **Later Waves are provisional** — re-run after a Wave merges; touch sets shift as code lands
+- **Touch sets are estimates:** say so; a Wave is a bet the human approves, not a proof
+- **Serialized resources trump everything:** two migrations in one Wave is a merge conflict by construction
+- **Later Waves are provisional:** re-run after a Wave merges; touch sets shift as code lands
 
 ## Related Skills
 
-**Before:** `forge-create-issue` classifies Issues as AFK or HITL — only AFK Issues enter a Wave.
+**Before:** `forge-create-issue` classifies Issues as AFK or HITL; only AFK Issues enter a Wave.
 **After:** start a Wave with a launcher from `contrib/launchers/`, which runs `forge-ship --guard` per Issue.
 
 ## Example Usage

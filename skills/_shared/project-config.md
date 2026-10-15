@@ -50,16 +50,16 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 
 | Setting | Used by | Default | Meaning |
 |---------|---------|---------|---------|
-| Issue tracker | every skill that touches Issues | `plan/` folder if present, else GitHub | `skill /<name>` or `mcp <server>` hands every Issue operation to that skill or MCP server — see [issue-operations](issue-operations.md#delegated-providers) |
+| Issue tracker | every skill that touches Issues | `plan/` folder if present, else GitHub | `skill /<name>` or `mcp <server>` hands every Issue operation to that skill or MCP server (see [issue-operations](issue-operations.md#delegated-providers)) |
 | Publish | implement, ship | push | `push` publishes at the end of a run; `local` stops before the push for a local review, and `forge-ship --publish` publishes later. `--guard` always pushes |
-| Pull requests | implement, ship | draft | `draft` or `ready` — the state a new PR opens in. Forge never marks a draft ready; that is the human's signal |
+| Pull requests | implement, ship | draft | `draft` or `ready`: the state a new PR opens in. Forge never marks a draft ready; that is the human's signal |
 | Assignee | implement, ship | none | Passed to `gh pr create --assignee`; `@me` assigns the author |
 | Labels | implement, ship | none | Comma-separated labels for `gh pr create --label`. A label the repository doesn't have (`gh label list`) is left out and named in the summary, because `gh pr create` fails on it |
 | After create | implement, ship | none | A runtime skill run once the PR exists, e.g. one that posts a risk assessment and sets a label; skipped and named in the summary when the runtime doesn't provide it |
 | Peer reviewers | guard, address-pr-feedback | none | Logins to request and wait for after each push, as the review-request API spells them (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`); comma-separated. Feedback from the `[bot]` entries is answered automatically; a person listed here still gets drafted replies. `Peer reviewer` (singular) is read the same way |
 | Security-sensitive paths | ship, guard | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them |
-| Extra passes | ship, guard | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass — see [quality-passes](quality-passes.md) |
-| Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format — see [review-record](review-record.md) |
+| Extra passes | ship, guard | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass (see [quality-passes](quality-passes.md)) |
+| Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format (see [review-record](review-record.md)) |
 | Exercise | ship | the runtime's run skill (Claude Code: `/run`), else none | How to start the app and reach the changed path: a command, or a pointer to an AGENTS.md section or doc with Start, Exercise, Needs a human, and Stop. Ship drives the change once and puts the result in the PR body |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
 | Split threshold | implement, ship | 600 | Changed lines past which the plan proposes stacked branches and ship offers a split before review |

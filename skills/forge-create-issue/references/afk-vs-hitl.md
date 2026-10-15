@@ -6,13 +6,13 @@ Classify whether an Issue can be implemented autonomously (AFK) or requires huma
 
 > *If the human disappears the moment the agent picks up this Issue, where does it get stuck?*
 
-**AFK** = "nowhere — finishes, opens PR, waits for review."
+**AFK** = "nowhere: finishes, opens PR, waits for review."
 **HITL** = "stalls at decision X because X depends on context the Issue doesn't capture."
 
 ## AFK requirements
 
 All must hold:
-- [ ] Acceptance criteria are testable (commands, outputs, flows — not "does this feel right?")
+- [ ] Acceptance criteria are testable (commands, outputs, flows, not "does this feel right?")
 - [ ] Chosen approach is in the Issue (not just the problem)
 - [ ] Scope is contained (no "and any related issues you find")
 - [ ] No external blockers
@@ -29,9 +29,9 @@ All must hold:
 
 ## Common mis-classifications
 
-- **"It's small, so AFK"** — smallness ≠ specifiability. Two-line change with hidden ambiguity is HITL.
-- **"The implementer can decide"** — sometimes true for taste-neutral choices; false for "break the public API?"
-- **"We'll figure it out as we go"** — this is HITL with a friendlier name.
+- **"It's small, so AFK":** smallness ≠ specifiability. Two-line change with hidden ambiguity is HITL.
+- **"The implementer can decide":** sometimes true for taste-neutral choices; false for "break the public API?"
+- **"We'll figure it out as we go":** this is HITL with a friendlier name.
 
 ## Mode lock-in
 

@@ -36,7 +36,7 @@ docs/56-update-architecture-docs
 
 ## Pre-Commit Checks
 
-See [testing.md — Structural Review](testing.md#1-structural-review) for the canonical checklist.
+See [testing.md: Structural Review](testing.md#1-structural-review) for the canonical checklist.
 
 ## PR Checklist
 
@@ -54,7 +54,7 @@ Forge's own PRs follow the spec forge-implement drafts against, [pr-body](../ski
 
 ## Review Process
 
-Skills are prompt templates — review focuses on:
+Skills are prompt templates, so review focuses on:
 
 1. **Correctness**: Do the bash examples work? Are `gh` commands valid?
 2. **Consistency**: Do shared conventions match across all skills?

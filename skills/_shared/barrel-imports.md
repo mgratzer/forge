@@ -12,11 +12,11 @@ Barrel files (index re-exports) look clean, but the costs usually outweigh the b
 
 ## Costs of barrels
 
-- **Circular dependency risk** — barrel pulls entire directory into one module; cross-directory barrels create silent import failures
-- **Unnecessary loading** — bundlers/runtimes load all re-exports even when caller needs one symbol
-- **Obscured origin** — `import { X } from './lib'` doesn't show where X is defined
-- **Merge conflict magnet** — every new export touches the barrel file
-- **IDE friction** — auto-import resolves to barrel path; "go to definition" requires double-jump
+- **Circular dependency risk:** barrel pulls entire directory into one module; cross-directory barrels create silent import failures
+- **Unnecessary loading:** bundlers/runtimes load all re-exports even when caller needs one symbol
+- **Obscured origin:** `import { X } from './lib'` doesn't show where X is defined
+- **Merge conflict magnet:** every new export touches the barrel file
+- **IDE friction:** auto-import resolves to barrel path; "go to definition" requires double-jump
 
 ## When barrels earn their cost
 
@@ -26,7 +26,7 @@ Barrel files (index re-exports) look clean, but the costs usually outweigh the b
 
 ## Common failure modes
 
-- **Barrel-per-directory by default** — an index file in every directory because the shape looks tidy, not because a caller needs it
-- **Re-exporting everything** — mirrors internals instead of curating an API
-- **Importing from own barrel** — file within a directory imports from its own index → circular dependency
-- **Adding barrels during refactoring** — introduces new dependency structure as a side effect
+- **Barrel-per-directory by default:** an index file in every directory because the shape looks tidy, not because a caller needs it
+- **Re-exporting everything:** mirrors internals instead of curating an API
+- **Importing from own barrel:** file within a directory imports from its own index → circular dependency
+- **Adding barrels during refactoring:** introduces new dependency structure as a side effect

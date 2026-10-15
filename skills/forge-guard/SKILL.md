@@ -1,6 +1,6 @@
 ---
 name: forge-guard
-description: Drive an open pull request to review-ready without a human watching — run the quality passes, wait for CI and the peer reviewers, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
+description: Drive an open pull request to review-ready without a human watching. Run the quality passes, wait for CI and the peer reviewers, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -29,13 +29,13 @@ Read the Shipping settings per [project-config](_shared/project-config.md): peer
 
 ### Step 2: Run Quality Passes
 
-Skip this step when `forge-ship --guard` composed the guard — ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — with unattended triage, write the review record when the project declares one, and push once.
+Skip this step when `forge-ship --guard` composed the guard; ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes) with unattended triage, write the review record when the project declares one, and push once.
 
 ### Step 3: Wait for Signals
 
 Report `waiting`. Request the peer reviewers first so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
 
-**CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI — unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
+**CI**: block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI, unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
 ```bash
 gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
@@ -47,12 +47,12 @@ gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every 
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — CI green, review signal satisfied, no unaddressed feedback (threads or top-level items, per forge-address-pr-feedback Step 1), nothing needing a human decision
-- **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
+- **`review-ready`:** CI green, review signal satisfied, no unaddressed feedback (threads or top-level items, per forge-address-pr-feedback Step 1), nothing needing a human decision
+- **`needs-human`:** anything that stops progress: a wait cap expires without its signal (on a draft PR, say so; some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
-**CI failed** — report `addressing`, then sort each failed check before touching anything:
+**CI failed**: report `addressing`, then sort each failed check before touching anything:
 
 ```bash
 gh pr checks "$PR" --json name,bucket,workflow,link --jq '.[] | select(.bucket == "fail")'
@@ -63,14 +63,14 @@ gh run view "$RUN" --json attempt --jq .attempt
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
 
-- **Pre-existing** — the same check fails on the base branch's latest completed run. Leave it; it is not this PR's to fix. With no completed base run (a stacked base, a workflow that runs only on pull requests), this can't be shown — sort on the log alone.
-- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun it with `gh run rerun "$RUN" --failed` only while the run's `attempt` is 1; a later attempt that is still red is left for the human.
-- **Caused** — everything else: fix it, run the quality gates, commit, push (after the record, when one is declared). Only this kind is a round.
-- **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: read its description and link, fix it only when it points at the diff, otherwise leave it for the human with the reason.
+- **Pre-existing:** the same check fails on the base branch's latest completed run. Leave it; it is not this PR's to fix. With no completed base run (a stacked base, a workflow that runs only on pull requests), this can't be shown, so sort on the log alone.
+- **Flaky:** the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun it with `gh run rerun "$RUN" --failed` only while the run's `attempt` is 1; a later attempt that is still red is left for the human.
+- **Caused:** everything else. Fix it, run the quality gates, commit, push (after the record, when one is declared). Only this kind is a round.
+- **Not an Actions job:** a failed check with no `workflow` (an external status or app) can't be compared or rerun: read its description and link, fix it only when it points at the diff, otherwise leave it for the human with the reason.
 
 Failures the branch didn't cause never start a round; keep waiting for the review signal and addressing threads.
 
-**Unaddressed feedback**: unresolved threads whose last comment is not `$ME`'s, and top-level items per forge-address-pr-feedback Step 1. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered feedback itself. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
+**Unaddressed feedback**: unresolved threads whose last comment is not `$ME`'s, and top-level items per forge-address-pr-feedback Step 1. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`, without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered feedback itself. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
@@ -102,8 +102,8 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 
 ## Guidelines
 
-- **Evidence over questions** — nothing in this skill asks the user; every judgment call is written into a thread reply or an Issue
-- **Bounded everything** — rounds, waits, and polling intervals all have caps; a stuck guard ends in `needs-human`, not in a loop
+- **Evidence over questions:** nothing in this skill asks the user; every judgment call is written into a thread reply or an Issue
+- **Bounded everything:** rounds, waits, and polling intervals all have caps; a stuck guard ends in `needs-human`, not in a loop
 
 ## Related Skills
 

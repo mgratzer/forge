@@ -25,12 +25,12 @@ Once per user:
 - [ ] Install the [worktree hooks](../contrib/worktree/) in `~/.claude/settings.json`, so every session gets its own bootstrapped checkout. Point them at a forge clone that stays on `main`, not the one you develop in
 - [ ] Put a launcher on your `PATH`, e.g. `ln -s /path/to/forge/contrib/launchers/cmux-claude.sh ~/bin/forge-launch`
 - [ ] Set `FORGE_LAUNCHER=forge-launch` so `forge-batch` prints launch lines you can paste as is
-- [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or `--yes-skip-permissions` per launch for Issues you trust — see [launcher permissions](../contrib/launchers/README.md#permissions). Without either, each session waits at its first prompt
+- [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or `--yes-skip-permissions` per launch for Issues you trust; see [launcher permissions](../contrib/launchers/README.md#permissions). Without either, each session waits at its first prompt
 
 Once per project:
 
-- [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
-- [ ] Make sure CI and the peer reviewers run on draft PRs — skills never mark a PR ready, so a workflow gated on `draft == false` or a bot that skips drafts leaves the guard waiting until `needs-human`. Otherwise declare `Pull requests: ready`
+- [ ] Run `claude` in the repository once and accept the trust dialog: `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
+- [ ] Make sure CI and the peer reviewers run on draft PRs: skills never mark a PR ready, so a workflow gated on `draft == false` or a bot that skips drafts leaves the guard waiting until `needs-human`. Otherwise declare `Pull requests: ready`
 - [ ] Put personal settings (assignee, labels, `After create`) in `~/.config/forge/shipping.md`, scoped per remote where they differ
-- [ ] Add the `## Shipping` section to `AGENTS.md` — PR state (forge opens drafts by default), peer reviewers, security-sensitive paths, serialized resources, max rounds, and optionally extra passes ([quality-passes](../skills/_shared/quality-passes.md)) and a review record ([review-record](../skills/_shared/review-record.md)) — see [project-config](../skills/_shared/project-config.md). An existing `## Unattended Shipping` section keeps working
+- [ ] Add the `## Shipping` section to `AGENTS.md`: PR state (forge opens drafts by default), peer reviewers, security-sensitive paths, serialized resources, max rounds, and optionally extra passes ([quality-passes](../skills/_shared/quality-passes.md)) and a review record ([review-record](../skills/_shared/review-record.md)); see [project-config](../skills/_shared/project-config.md). An existing `## Unattended Shipping` section keeps working
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests

@@ -1,12 +1,12 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review and the quality passes. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation; implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review and the quality passes. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
 # Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context, and each quality dimension has one owner.
+Implement end to end: code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context, and each quality dimension has one owner.
 
 ## Input
 
@@ -16,7 +16,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 **Local mode:** `--local`, or `Publish: local` in the Shipping settings (see [project-config](_shared/project-config.md)), stops before anything leaves the machine: no push, no PR. `--publish` later publishes the current branch. `--guard` always publishes.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — CI, peer review, feedback rounds; ship has already run the quality passes — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process (CI, peer review, feedback rounds; ship has already run the quality passes) and ends at `review-ready` or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -35,15 +35,15 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 ### Step 3: Triage Findings
 
-**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now** — defer only changes that materially expand PR scope or are truly out of scope.
+**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now**: defer only changes that materially expand PR scope or are truly out of scope.
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Fixed findings are committed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
+Fixed findings are committed; deferred items become Issues (see [issue-operations](_shared/issue-operations.md)).
 
 ### Step 4: Run Quality Passes
 
-Run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
+Run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes), triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
 
 ### Step 5: Exercise the Change (delegate)
 
@@ -76,7 +76,7 @@ Report `ready-for-local-review` via [status-reporting](_shared/status-reporting.
 
 ### Step 8: Guard (only with `--guard`)
 
-Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes — *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes; *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md): the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 9: Summarize
 
@@ -115,9 +115,9 @@ Report implementation, review, and guard results together.
 
 ## Guidelines
 
-- **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
-- **Don't skip the review** — even if implementation felt clean
-- **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
+- **Even tiny diffs delegate here:** this session authored the changes, so inline review would be self-review
+- **Don't skip the review:** even if implementation felt clean
+- **Bias toward fixing in the same PR:** unless a finding is truly larger or out of scope
 - **Write the summary for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills

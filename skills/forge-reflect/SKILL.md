@@ -1,6 +1,6 @@
 ---
 name: forge-reflect
-description: Self-review current changes — a PR, branch diff, or uncommitted work. Use when the user wants a code review of their changes, a self-review before committing or pushing, or a final check before requesting peer review.
+description: Self-review current changes (a PR, branch diff, or uncommitted work). Use when the user wants a code review of their changes, a self-review before committing or pushing, or a final check before requesting peer review.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ Self-review current changes before committing, pushing, or requesting peer revie
 
 ## Input
 
-No primary argument required — automatically detects what to review. Optional: `-- <additional context>` for review focus guidance.
+No primary argument required; automatically detects what to review. Optional: `-- <additional context>` for review focus guidance.
 
 ## Process
 
@@ -69,8 +69,8 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
 
 For each Finding, recommend one of (bias toward fix now):
-- **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
-- **Defer** — only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
+- **Fix now:** default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
+- **Defer:** only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
 State your recommendation and let the user decide. Then:
 - **Fix now:** apply the fix and commit it
@@ -78,7 +78,7 @@ State your recommendation and let the user decide. Then:
 
 ### Step 5: Report
 
-Aggregate findings from all review passes (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
+Aggregate findings from all review passes (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) into the summary format below. Deduplicate any findings flagged by multiple passes; keep the highest severity.
 
 ## Output Format
 
@@ -103,7 +103,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 
 ## Guidelines
 
-- **Bias toward fixing in the same PR** — only create Issues for confirmed deferrals that are truly larger or out of scope
+- **Bias toward fixing in the same PR:** only create Issues for confirmed deferrals that are truly larger or out of scope
 
 ## Related Skills
 

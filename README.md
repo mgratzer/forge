@@ -14,7 +14,7 @@
 
 ---
 
-A forge is where raw material meets intention. You bring the codebase — these skills shape the workflow from issue to implementation to review.
+A forge is where raw material meets intention. You bring the codebase. These skills shape the workflow from issue to implementation to review.
 
 ---
 
@@ -31,14 +31,14 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready** |
-| Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds — never merges |
+| Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds; never merges |
 | Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
 
 All skills accept optional trailing execution guidance using `-- <additional context>`.
 
 ## Workflow
 
-The skills form a simple workflow — each step feeds into the next:
+The skills form a simple workflow; each step feeds into the next:
 
 ```
 forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard
@@ -53,13 +53,13 @@ For many Issues at once, `forge-batch` groups them into Waves and a launcher fro
 
 Forge skills follow the [Agent Skills](https://agentskills.io) open standard and work with any compatible agent.
 
-**Via [npx skills](https://skills.sh)** — auto-detects your agents and installs to all of them:
+**Via [npx skills](https://skills.sh):** auto-detects your agents and installs to all of them:
 
 ```bash
 npx skills add mgratzer/forge
 ```
 
-**Manual** — symlink into your agent's skills directory:
+**Manual:** symlink into your agent's skills directory:
 
 ```bash
 ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
@@ -71,7 +71,7 @@ For unattended runs in fresh checkouts, install the [worktree hooks](contrib/wor
 
 ## Project Guidance
 
-- [`AGENTS.md`](AGENTS.md) is the only project guidance file — no `CLAUDE.md`; Claude Code reads `AGENTS.md` natively
+- [`AGENTS.md`](AGENTS.md) is the only project guidance file (no `CLAUDE.md`); Claude Code reads `AGENTS.md` natively
 
 ## Documentation
 
@@ -87,7 +87,7 @@ For unattended runs in fresh checkouts, install the [worktree hooks](contrib/wor
 
 ## Contributors
 
-- [@denrase](https://github.com/denrase) — configurable git workflow idea ([#7](https://github.com/mgratzer/forge/pull/7))
+- [@denrase](https://github.com/denrase): configurable git workflow idea ([#7](https://github.com/mgratzer/forge/pull/7))
 
 ## Contributing
 

@@ -23,7 +23,7 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 ### Step 1: Fetch Unaddressed Feedback
 
-**Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
+**Use GraphQL:** the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
 ```bash
 # Derive owner/repo from the checkout
@@ -72,14 +72,14 @@ jq --arg me "$ME" '.data.repository.pullRequest
 ### Step 2: Process Each Item
 
 For each unaddressed thread or top-level item, read the file and surrounding context, then categorize:
-- **Actionable** — code change needed
-- **Question** — respond with explanation
-- **Discussion** — assess if change improves code
-- **Already addressed** — thread not resolved but change was made
-- **Won't fix** — current approach is preferred
-- **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
+- **Actionable:** code change needed
+- **Question:** respond with explanation
+- **Discussion:** assess if change improves code
+- **Already addressed:** thread not resolved but change was made
+- **Won't fix:** current approach is preferred
+- **Deferred:** valid but out of scope; becomes a Deferred item (new Issue)
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> — <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> (<what each costs>)", leave the thread open, and list it under *needing a human decision* in the summary. Never resolve it or hide it in an Issue.
 
 ### Step 3: Address and Reply Individually
 
@@ -91,8 +91,8 @@ For each thread:
 
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
-3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
-4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
+3. **Commit**: `git commit -m "fix: address PR feedback (<brief description>)"`
+4. **Reply, and resolve when the outcome is concrete**: Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin, because interpolating it into the query breaks on quotes and newlines:
 
 ```bash
 gh api graphql -f threadId="<THREAD_ID>" -F body=@- -f query='
@@ -132,10 +132,10 @@ Report: threads addressed, commits created, Deferred items created, threads need
 
 ## Guidelines
 
-- **GraphQL for discovery** — REST API doesn't show resolution status
-- **Address, reply, then next** — don't batch
-- **Be specific** — reference commits, line numbers, and code
-- **Test changes** — run checks before committing
+- **GraphQL for discovery:** REST API doesn't show resolution status
+- **Address, reply, then next:** don't batch
+- **Be specific:** reference commits, line numbers, and code
+- **Test changes:** run checks before committing
 - **Write replies for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
