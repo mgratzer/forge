@@ -16,6 +16,7 @@ Projects declare the section in `AGENTS.md`:
 - Peer reviewer: copilot-pull-request-reviewer[bot]
 - Security-sensitive paths: src/auth/**, src/webhooks/**, src/middleware/**
 - Extra passes: /risk-eval, /team-review (covers: security)
+- Review record: docs/review-process.md#sign-off
 - Serialized resources: db/migrations/**, bun.lock, messages/**
 - Max guard rounds: 3
 ```
@@ -51,6 +52,7 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 | Peer reviewer | guard | none | Login the guard re-requests after each push, as the review-request API spells it (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`) |
 | Security-sensitive paths | ship, guard | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them |
 | Extra passes | ship, guard | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass — see [quality-passes](quality-passes.md) |
+| Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format — see [review-record](review-record.md) |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |
 

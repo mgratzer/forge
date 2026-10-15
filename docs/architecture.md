@@ -19,6 +19,7 @@ forge/
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
 │   │   ├── quality-passes.md              # Simplify, security, and extra passes — one owner per dimension
+│   │   ├── review-record.md               # Optional project-declared review attestation commit
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults

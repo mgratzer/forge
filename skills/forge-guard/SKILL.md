@@ -28,7 +28,7 @@ Read the Shipping settings per [project-config](_shared/project-config.md): peer
 
 ### Step 2: Run Quality Passes
 
-Skip this step when `forge-ship --guard` composed the guard — ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — with unattended triage, and push once.
+Skip this step when `forge-ship --guard` composed the guard — ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — with unattended triage, write the review record when the project declares one, and push once.
 
 ### Step 3: Wait for Signals
 
@@ -75,6 +75,8 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 
 **Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
+When the project declares a review record, every push that changes code ends with a fresh one — review the commits since the latest record first, per [review-record](_shared/review-record.md).
+
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
 ## Output Format
@@ -94,6 +96,9 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 
 ### Rounds
 1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
+
+### Review record
+- <sha> covering <range>, written in round <n> | not declared | none needed (no code change)
 
 ### Open for the human
 - <thread url>: <the decision, with both options>

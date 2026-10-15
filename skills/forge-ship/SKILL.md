@@ -43,7 +43,7 @@ Run the [quality-passes](_shared/quality-passes.md) — simplify always, securit
 
 ### Step 5: Open the PR
 
-Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
+When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
 
 ### Step 6: Guard (only with `--guard`)
 
@@ -72,6 +72,7 @@ Report implementation, review, and guard results together.
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
+- Record: <sha> covering <range> | not declared
 - Passes: simplify <n> applied; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
