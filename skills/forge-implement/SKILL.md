@@ -14,7 +14,7 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 **Unattended mode:** `--unattended` skips plan approval and proceeds without confirmation prompts.
 
-**Local mode:** `--local`, or `Publish: local` in the project's settings, stops after Step 7 with the work committed on the branch and reports `ready-for-local-review`; `forge-ship --publish` publishes it later.
+**Local mode:** `--local`, or `Publish: local` in the Shipping settings, stops after Step 7 and **Link PR**'s first half, with the work committed on the branch, and reports `ready-for-local-review`. Nothing has reviewed it yet: `forge-ship --publish` reviews, then publishes.
 
 ## Process
 

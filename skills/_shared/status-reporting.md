@@ -21,7 +21,7 @@ Prepend the guarded line above to the command that starts the stage (`<guarded l
 | `reviewing` | Self-review and quality passes running | no |
 | `waiting` | Blocked on an external signal (CI, peer review) | no |
 | `addressing` | Reacting to CI failures or review feedback | no |
-| `ready-for-local-review` | Work committed on a local branch and self-reviewed; nothing pushed | yes |
+| `ready-for-local-review` | Work committed on a local branch, nothing pushed; self-reviewed when forge-ship stopped there | yes |
 | `pushed` | PR open (a draft by default) and self-reviewed; no guard ran | yes |
 | `review-ready` | CI green, peer review present, every thread addressed. The human can look now | yes |
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
