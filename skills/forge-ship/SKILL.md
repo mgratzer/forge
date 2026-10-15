@@ -41,15 +41,19 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 Run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
 
-### Step 5: Open the PR
+### Step 5: Exercise the Change
 
-When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
+When the diff changes runtime behavior and the project declares an `Exercise:` recipe or the runtime has a run skill, start the app, drive the changed path once plus one failure case, and keep the observations as evidence — see [exercise](references/exercise.md). Otherwise report `not exercised` with the reason; never guess how to start the app.
 
-### Step 6: Guard (only with `--guard`)
+### Step 6: Open the PR
+
+When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups and Step 5's evidence.
+
+### Step 7: Guard (only with `--guard`)
 
 Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes — *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
 
-### Step 7: Summarize
+### Step 8: Summarize
 
 Report implementation, review, and guard results together.
 
@@ -66,6 +70,7 @@ Report implementation, review, and guard results together.
 ### Implementation
 - <N> commits, <M> files changed
 - Tests: <added/modified/none>
+- Exercised: <what, one line> | not exercised — <reason>
 - Docs: <updated/none>
 
 ### Review Findings
