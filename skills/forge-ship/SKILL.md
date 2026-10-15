@@ -20,7 +20,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 ### Step 1: Implement
 
-Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary** — the review below informs the single final report.
+Execute the [forge-implement](../forge-implement/SKILL.md) process through the push in its Step 8, with two modifications: **don't create the PR yet** — Step 4 opens it once the diff is final, so the body describes what the reviewer will read — and **don't produce implement's summary**; the review below informs the single final report.
 
 ### Step 2: Review (delegate)
 
@@ -37,11 +37,15 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
-### Step 4: Guard (only with `--guard`)
+### Step 4: Open the PR
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the project says otherwise — from the final diff.
 
-### Step 5: Summarize
+### Step 5: Guard (only with `--guard`)
+
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 4. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+
+### Step 6: Summarize
 
 Report implementation, review, and guard results together.
 
