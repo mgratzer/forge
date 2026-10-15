@@ -31,4 +31,4 @@ Run the built-in passes that are still owned by forge first, then each extra pas
 
 ## Triage and Push
 
-Triage findings from all passes with the caller's rule — forge-ship's attended or unattended triage, guard's unattended triage. Then run the project quality gates once and commit. Guard pushes once, so CI and the peer reviewer see one revision; forge-ship leaves the push to its Publish step.
+Triage findings from all passes with the caller's rule — forge-ship's attended or unattended triage, guard's unattended triage. Then run the project quality gates once and commit. Guard pushes once, so CI and the peer reviewers see one revision; forge-ship leaves the push to its Publish step.

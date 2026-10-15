@@ -1,6 +1,6 @@
 ---
 name: forge-guard
-description: Drive an open pull request to review-ready without a human watching — run the quality passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
+description: Drive an open pull request to review-ready without a human watching — run the quality passes, wait for CI and the peer reviewers, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -25,7 +25,7 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, extra passes, review record, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
+Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewers, security-sensitive paths, extra passes, review record, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
 ### Step 2: Run Quality Passes
 
@@ -33,11 +33,7 @@ Skip this step when `forge-ship --guard` composed the guard — ship already ran
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Request the peer review first so it overlaps the CI wait — bot reviewers review a PR once and stay silent afterwards unless asked, and Step 2 just pushed past their first look:
-
-```bash
-gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
-```
+Report `waiting`. Request the peer reviewers first so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
 
 **CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI — unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
@@ -45,18 +41,7 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
-**Peer review** — a review by someone other than `$ME` after the latest push. Wait for it in one bounded shell loop, not by polling from the model:
-
-```bash
-for _ in $(seq 1 30); do   # 15 minutes
-  n=$(gh pr view "$PR" --json commits,reviews \
-        --jq ".commits[-1].committedDate as \$push | [.reviews[] | select(.submittedAt >= \$push and .author.login != \"$ME\")] | length")
-  [ "$n" -gt 0 ] && break
-  sleep 30
-done
-```
-
-The review signal is satisfied when a post-push review exists, when no peer reviewer is configured, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push. Note the fallback in the summary.
+**Peer review** — wait for every listed reviewer per [peer-review-wait](_shared/peer-review-wait.md), after the CI wait. With no reviewer configured, the signal is satisfied by a review from anyone other than `$ME` after the latest push, or before it when the wait expires. Note any fallback in the summary.
 
 ### Step 4: Decide, then React
 
