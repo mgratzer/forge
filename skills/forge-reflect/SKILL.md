@@ -29,7 +29,7 @@ If a PR exists, note its number and URL for the report.
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 CURRENT_BRANCH=$(git branch --show-current)
 ```
-If on a branch different from default with commits ahead, use `$DEFAULT_BRANCH...HEAD`.
+If on a branch different from default with commits ahead, use `origin/$DEFAULT_BRANCH...HEAD`.
 
 **3. Uncommitted changes (staged + unstaged):**
 ```bash
@@ -96,14 +96,13 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Deferred #<num>: <title>
 - (or: None identified)
 
-**Quality gates:** passed | <gate> failed — <one line>   (one line; name coverage only when not configured)
+**Quality gates:** passed | failed: <gate>[, <gate>] — <one line each>   (e.g. `passed (coverage not configured)`)
 
 (Use severity tags: P0, P1, P2. Omit P3; see the [review rubric](_shared/review-rubric.md).)
 ```
 
 ## Guidelines
 
-- **Pattern consistency is the highest-value check**
 - **Bias toward fixing in the same PR** — only create Issues for confirmed deferrals that are truly larger or out of scope
 
 ## Related Skills

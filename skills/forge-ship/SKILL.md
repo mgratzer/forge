@@ -88,7 +88,7 @@ Report implementation, review, and guard results together.
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
-**Quality gates:** passed | <gate> failed — <one line>   (one line; name coverage only when not configured)
+**Quality gates:** passed | failed: <gate>[, <gate>] — <one line each>   (e.g. `passed (coverage not configured)`)
 ```
 
 ## Guidelines

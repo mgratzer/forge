@@ -50,7 +50,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Self-containment** — single-use references stay with the skill; cross-skill references live in `skills/_shared/`. Within the shared layer, files have explicit consumers (skills or other shared files); outside it, skills are self-contained.
 
-**Pattern audit** — when a pattern changes, grep ALL files using the old pattern and update. See [pattern-audit](skills/_shared/pattern-audit.md).
+**Pattern audit** — when a pattern changes, find every other place using its old shape and update it. See [pattern-audit](skills/_shared/pattern-audit.md).
 
 **Quality gates** — lint, format, type check, tests, and coverage (≥90% on new/modified code where tooling exists). Run at phase gates, before commit, PR push, and reflection.
 

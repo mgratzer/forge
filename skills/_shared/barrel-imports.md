@@ -1,6 +1,6 @@
 # Barrel Imports
 
-Agents reflexively create barrel files (index re-exports) because the shape looks clean. The costs usually outweigh the benefits.
+Barrel files (index re-exports) look clean, but the costs usually outweigh the benefits.
 
 ## Decision tree
 
@@ -26,7 +26,7 @@ Agents reflexively create barrel files (index re-exports) because the shape look
 
 ## Common failure modes
 
-- **Barrel-per-directory by default** — agent creates index files reflexively
+- **Barrel-per-directory by default** — an index file in every directory because the shape looks tidy, not because a caller needs it
 - **Re-exporting everything** — mirrors internals instead of curating an API
 - **Importing from own barrel** — file within a directory imports from its own index → circular dependency
 - **Adding barrels during refactoring** — introduces new dependency structure as a side effect

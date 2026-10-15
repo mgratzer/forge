@@ -2,7 +2,7 @@
 
 Design modules whose interfaces are simpler than their implementations. A deep module hides significant complexity behind a simple interface; a shallow module exposes an interface nearly as complex as its implementation.
 
-Agents default to shallow modules — one function per concept, interfaces mirroring internals. The cost surfaces when the next reader must understand internals to use the module correctly.
+Shallow modules — one function per concept, interfaces mirroring internals — push their cost onto the next reader, who must understand internals to use the module correctly.
 
 ## Module-shape checklist
 
@@ -16,7 +16,6 @@ Agents default to shallow modules — one function per concept, interfaces mirro
 
 - **Define interface first** — function signature, type shape, API contract — before implementing
 - **Evaluate interface in isolation** — can a caller use this without reading the body?
-- **Let the agent fill in the body** — implementation is where agents excel; interface design is where they need guidance
 
 ## When depth doesn't apply
 

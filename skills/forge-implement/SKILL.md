@@ -18,13 +18,13 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 ### Step 1: Understand the Work
 
-Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
+Report `implementing` via [status-reporting](_shared/status-reporting.md). Read AGENTS.md if the runtime hasn't loaded it — its conventions shape the plan. Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
 
 - **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and reference each in the PR so the merge closes them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints.
 
-Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
+Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead and hand them to the PR body drafter as known limitations — unless the ambiguity would change what the Issue asks for: then stop with `needs-human`.
 
 ### Step 2: Plan Approach
 
@@ -66,8 +66,6 @@ git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEF
 Use the tracker's identifier verbatim when it isn't a GitHub number (`feat/ABC-60-note-summary`). When working from a plan file or free-text (no Issue), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 ### Step 4: Implement
-
-Read AGENTS.md first. Follow project conventions strictly.
 
 Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 

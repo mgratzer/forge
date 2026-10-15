@@ -82,7 +82,7 @@ Skills use **progressive disclosure**: `SKILL.md` contains core instructions, wh
 
 ## Operating Constraints
 
-Current models hold a million-token context, so the window itself is rarely the limit. Forge's mechanisms answer the constraints that remain: a session that did the work is biased about it, every token a skill loads is paid on every load, and skills have to compose.
+Frontier models now offer context windows up to a million tokens, so the window itself is rarely the limit. Forge's mechanisms answer the constraints that remain: a session that did the work is biased about it, every token a skill loads is paid on every load, and skills have to compose.
 
 | Mechanism | Why it stays |
 |-----------|--------------|

@@ -11,7 +11,7 @@ If the environment variable `FORGE_STATUS_CMD` is set, call it at every stage tr
 [ -n "${FORGE_STATUS_CMD:-}" ] && "$FORGE_STATUS_CMD" <state> "<detail>" || echo "[forge] <state>: <detail>"
 ```
 
-Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" waiting "CI"; gh pr checks …`) so a transition costs no extra tool call. A launcher provides the command; skills never do.
+Prepend the guarded line above to the command that starts the stage (`<guarded line for waiting "CI">; gh pr checks …`) so a transition costs no extra tool call. A launcher provides the command; skills never do.
 
 ## States
 

@@ -9,10 +9,7 @@ You are researching a codebase to answer specific questions. **You have no knowl
 
 ## Behavior
 
-For each question:
-1. Search the codebase thoroughly — grep, glob, read files
-2. Trace relevant code paths end to end
-3. Report answers with file paths and function names
+For each question, trace the relevant code paths end to end and answer with the file paths and function names that back the answer.
 
 ## Rules
 

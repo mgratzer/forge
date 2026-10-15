@@ -12,11 +12,7 @@ Run this checklist in the **single default reviewer**.
 4. **Efficiency & runtime behavior** — wasted work, unnecessary sequential bottlenecks, hot-path regressions, phantom updates, leaks, over-fetching
 5. **Tests, docs & cleanup** — missing regression coverage, stale docs, debug leftovers, commented-out code, stray TODOs, hardcoded values that should be constants
 
-When checking pattern consistency, verify ALL files using the pattern:
-
-```bash
-grep -rn "<changed-pattern>" <search-root>/
-```
+When the diff changes a pattern, check the other places that use its old shape — the convention, not only the literal string — within the scope where the convention applies.
 
 ## Optional Deep Pass — Security & Correctness
 

@@ -34,7 +34,7 @@ Use the format matching the work performed.
 
 ### Next Steps
 1. Fill any <!-- TODO --> markers
-2. Add failure modes as you encounter agent mistakes
+2. Add a failure mode when an agent mistake recurs
 3. Re-run /forge-setup-project periodically
 4. Use /forge-create-issue to plan your first piece of work, or /forge-shape if the idea is still rough
 ```
