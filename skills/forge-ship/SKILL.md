@@ -54,9 +54,9 @@ Report implementation, review, and guard results together.
 ```text
 ## Ship Summary
 
-**PR:** #<number> — <title>
+**PR:** #<number> <title>
 **Branch:** <branch-name>
-**Result:** pushed | review-ready | needs-human — <reason>
+**Result:** pushed | review-ready | needs-human: <reason>
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Implementation
@@ -66,9 +66,9 @@ Report implementation, review, and guard results together.
 
 ### Review Findings
 - Fixed in PR: <list or "none">
-- Deferred: #<issue> — <title> (or "none")
+- Deferred: #<issue> <title> (or "none")
 
-### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
+### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -83,6 +83,7 @@ Report implementation, review, and guard results together.
 - **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
 - **Don't skip the review** — even if implementation felt clean
 - **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
+- **Write the summary for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
 

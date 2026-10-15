@@ -8,7 +8,7 @@ The drafter is a sub-agent that never saw the work. It receives only:
 
 - **The why** — the linked Issue's problem statement, quoted; with no Issue, the branch's commit messages
 - **The diff** — commands to regenerate it: `git diff origin/<BASE>...HEAD` and `git diff --stat origin/<BASE>...HEAD`
-- **This spec**, and the repository's PR template when one exists (below)
+- **This spec** and the [writing](writing.md) rule, and the repository's PR template when one exists (below)
 - **Manual deployment steps**, when the change needs any
 - **Known limitations and follow-ups**, when there are any — deliberate scope cuts, and deferred Issues with their one-line titles
 - **Exercise evidence**, when the caller ran the changed path — what was run and what it showed

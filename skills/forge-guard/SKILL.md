@@ -86,8 +86,8 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 ```text
 ## Guard Summary
 
-**PR:** #<number> — <title>
-**Result:** review-ready | needs-human — <reason>
+**PR:** #<number> <title>
+**Result:** review-ready | needs-human: <reason>
 **Rounds:** <n> of <max>
 **Next:** <the human's next step for the result, per status-reporting>
 
@@ -99,8 +99,8 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
 
 ### Open for the human
-- <thread url> — <the decision, with both options>
-- Deferred: #<issue> — <title>
+- <thread url>: <the decision, with both options>
+- Deferred: #<issue> <title>
 ```
 
 ## Guidelines

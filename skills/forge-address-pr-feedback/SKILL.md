@@ -113,6 +113,7 @@ Report: threads addressed, commits created, Deferred items created, threads need
 - **Address, reply, then next** — don't batch
 - **Be specific** — reference commits, line numbers, and code
 - **Test changes** — run checks before committing
+- **Write replies for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
 

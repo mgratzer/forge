@@ -105,6 +105,7 @@ Share the Issue reference. Suggest using `forge-implement` to start implementati
 - **Be curious** — challenge assumptions, ask "why" and "what if"
 - **Don't over-specify** — leave room for implementer judgment
 - **No time estimates in the Issue** — the Step 4 effort heuristic is for deciding splits, not for the Issue body
+- **Write the Issue for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
 

@@ -104,6 +104,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
+| Writing for humans | Plain, short, no em dashes, nothing the reader already has (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
@@ -148,4 +149,4 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- Use em dashes (`—`) not hyphens for parenthetical clauses in prose
+- No em dashes: use a comma, a colon, parentheses, or a new sentence. The model mirrors the prompt's register in what it writes for people (see `_shared/writing.md`)
