@@ -6,7 +6,7 @@ Provider-agnostic operations for working with Issues. Skills reference this modu
 
 Detect the Issue tracker provider once at the start of work. Check in order — first match wins:
 
-1. **AGENTS.md declaration** — the `Issue tracker:` line of the `## Shipping` section (see [project-config](project-config.md)), or a tool or CLI the project names elsewhere in AGENTS.md — see [Delegated Providers](#delegated-providers)
+1. **Declared tracker**: the `Issue tracker:` Shipping setting (see [project-config](project-config.md), so the user's file counts too), or a tool or CLI the project names elsewhere in AGENTS.md (see [Delegated Providers](#delegated-providers))
 2. **`plan/` directory** — markdown provider (see [plan-folder-spec](plan-folder-spec.md))
 3. **GitHub fallback** — use `gh` CLI
 

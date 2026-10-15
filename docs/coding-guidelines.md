@@ -44,7 +44,7 @@ When a step benefits from fresh context (e.g., unbiased review), mark it with th
 - Sub-agent instructions are either **fully self-contained in a blockquote** or **composed from a role reference plus task-specific instructions** (see [Using Roles in Delegate Steps](#using-roles-in-delegate-steps) below)
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
 - List **Expected output** — what the parent receives back
-- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape)
+- Only delegate when it provides a genuine quality improvement: fresh context for unbiased review (e.g., reflect), parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape), or keeping a noisy run's output (an app's logs during an exercise) out of the parent session
 
 ### Using Roles in Delegate Steps
 

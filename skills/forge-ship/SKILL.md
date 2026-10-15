@@ -43,14 +43,14 @@ Run the [quality-passes](_shared/quality-passes.md) — simplify always, securit
 
 ### Step 5: Exercise the Change (delegate)
 
-When the diff changes runtime behavior and the project declares an `Exercise:` recipe or the runtime has a run skill, delegate the run to a sub-agent following [exercise](references/exercise.md), so app output and logs stay out of this session. Ask the human for any blocked action first (attended mode only). If the runtime has no sub-agents, follow the same reference inline. With no recipe, report `not exercised` with the reason; never guess how to start the app.
+When the diff changes runtime behavior and the Shipping settings declare an `Exercise:` recipe or the runtime has a run skill, delegate the run to a sub-agent following [exercise](references/exercise.md), so app output and logs stay out of this session. In attended mode, ask the human for the blocked actions the recipe names before delegating; the sub-agent never asks. Act on its outcome as the reference says. If the runtime has no sub-agents, follow the same reference inline. With no recipe, report `not exercised` with the reason; never guess how to start the app.
 
-**Inputs provided to sub-agent:** the exercise reference, the recipe, the branch diff commands, the human actions already done or skipped.
-**Expected output:** evidence lines (command and observed result), what wasn't covered and why, and the commands a reviewer can run to try it.
+**Inputs provided to sub-agent:** the exercise reference, the recipe, the branch diff commands, the mode, and which human actions were done.
+**Expected output:** the outcome (`intended`, `wrong (<observed vs expected>)`, or `can't start (<why>)`), evidence lines, what wasn't covered and why, and the try-it commands.
 
 ### Step 6: Open the PR
 
-When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups and Step 5's evidence.
+When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups and Step 5's evidence and try-it commands.
 
 ### Step 7: Guard (only with `--guard`)
 
@@ -73,7 +73,7 @@ Report implementation, review, and guard results together.
 ### Implementation
 - <N> commits, <M> files changed
 - Tests: <added/modified/none>
-- Exercised: <what, one line> | not exercised: <reason>
+- Exercised: <what, one line>; not covered: <what and why> | not exercised: <reason>
 - Docs: <updated/none>
 
 ### Try It Yourself   (when Step 5 ran)
