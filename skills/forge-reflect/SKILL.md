@@ -96,7 +96,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Deferred #<num>: <title>
 - (or: None identified)
 
-**Quality gates:** passed | failed: <gate>[, <gate>] — <one line each>   (e.g. `passed (coverage not configured)`)
+**Quality gates:** passed | failed: <gate>[, <gate>]: <one line each>   (e.g. `passed (coverage not configured)`)
 
 (Use severity tags: P0, P1, P2. Omit P3; see the [review rubric](_shared/review-rubric.md).)
 ```
