@@ -76,6 +76,8 @@ Grep INDEX.md for keywords, or scan `plan/issues/` filenames and frontmatter.
 
 ## Closing an issue
 
+Forge closes an issue on the branch that implements it, so the change lands with the merge (see *Link PR* in [issue-operations](issue-operations.md)):
+
 1. Update the issue file's `status` frontmatter to `closed`.
 2. Update the corresponding INDEX.md row's Status column to `closed`.
 

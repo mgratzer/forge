@@ -6,9 +6,24 @@ Provider-agnostic operations for working with Issues. Skills reference this modu
 
 Detect the Issue tracker provider once at the start of work. Check in order — first match wins:
 
-1. **AGENTS.md declaration** — project declares a specific tool or CLI for issue tracking
+1. **Declared tracker**: the `Issue tracker:` Shipping setting (see [project-config](project-config.md), so the user's file counts too), or a tool or CLI the project names elsewhere in AGENTS.md (see [Delegated Providers](#delegated-providers))
 2. **`plan/` directory** — markdown provider (see [plan-folder-spec](plan-folder-spec.md))
 3. **GitHub fallback** — use `gh` CLI
+
+## Delegated Providers
+
+A project can hand its tracker to a skill or an MCP server:
+
+```markdown
+- Issue tracker: skill /team-tracker
+- Issue tracker: mcp tracker
+```
+
+**Skill** — invoke the named skill for each operation below, passing the operation and its arguments ("read ABC-123", "mark ABC-123 in review, PR <url>"). Prefer this form: the project's skill knows its tracker's states and fields, and switching trackers stays a one-line change.
+
+**MCP** — map each operation to the server's tools: list them once, then use its search, get, create, update, and comment or attachment tools. Read the tracker's workflow states before changing one, and pick the state that means "in review" by name.
+
+Either way, **completion belongs to the merge**: forge moves an Issue to in review, never to done — the tracker's own PR integration or the human closes it.
 
 ## Create Issue
 
@@ -94,12 +109,26 @@ Given keywords:
 
 **Other provider:** use the declared tool to search.
 
+## Link PR
+
+Given an Issue ID and its sub-issues. Two halves:
+
+**Before the PR opens** — the closing references go to the PR body drafter, one line per Issue and sub-issue:
+
+- **GitHub:** `Closes #<ID>` — the merge closes it.
+- **Markdown:** `Closes <ID>`; and on the branch, before the push, commit `status: closed` in each issue file and its INDEX.md row — the change lands with the merge, so the merge is what completes the Issue.
+- **Other provider:** the tracker's ID in the form its PR integration recognizes.
+
+**After the PR opens** — other provider only: the declared tool's link or attachment operation with the PR URL. Nothing for GitHub and markdown.
+
+## Mark in Review
+
+Given an Issue ID, once its PR is open:
+
+**GitHub and markdown:** nothing to do — the open PR shows it.
+
+**Other provider:** move the Issue to the tracker's in-review state with the declared tool. Never to done.
+
 ## Close Issue
 
-Given an issue ID:
-
-**GitHub:** the PR's `Closes #<ID>` reference handles this automatically.
-
-**Markdown:** update the issue file's `status` frontmatter to `closed` and update the corresponding INDEX.md row.
-
-**Other provider:** use the declared tool to close the issue.
+Completion belongs to the merge, so no skill closes an Issue directly: GitHub closes it through `Closes #<ID>`, the markdown provider through the closing commit from **Link PR**, and other providers through their PR integration or the human.

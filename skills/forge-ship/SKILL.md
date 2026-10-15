@@ -41,15 +41,22 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 Run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
 
-### Step 5: Open the PR
+### Step 5: Exercise the Change (delegate)
 
-When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
+When the diff changes runtime behavior and the Shipping settings declare an `Exercise:` recipe or the runtime has a run skill, delegate the run to a sub-agent following [exercise](references/exercise.md), so app output and logs stay out of this session. In attended mode, ask the human for the blocked actions the recipe names before delegating; the sub-agent never asks. Act on its outcome as the reference says. If the runtime has no sub-agents, follow the same reference inline. With no recipe, report `not exercised` with the reason; never guess how to start the app.
 
-### Step 6: Guard (only with `--guard`)
+**Inputs provided to sub-agent:** the exercise reference, the recipe, the branch diff commands, the mode, and which human actions were done.
+**Expected output:** the outcome (`intended`, `wrong (<observed vs expected>)`, or `can't start (<why>)`), evidence lines, what wasn't covered and why, and the try-it commands.
+
+### Step 6: Open the PR
+
+When the project declares a review record, write it first per [review-record](_shared/review-record.md) — the last commit before the PR opens. Then create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups and Step 5's evidence and try-it commands.
+
+### Step 7: Guard (only with `--guard`)
 
 Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes — *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
 
-### Step 7: Summarize
+### Step 8: Summarize
 
 Report implementation, review, and guard results together.
 
@@ -66,7 +73,11 @@ Report implementation, review, and guard results together.
 ### Implementation
 - <N> commits, <M> files changed
 - Tests: <added/modified/none>
+- Exercised: <what, one line>; not covered: <what and why> | not exercised: <reason>
 - Docs: <updated/none>
+
+### Try It Yourself   (when Step 5 ran)
+<the commands from the exercise, ready to paste>
 
 ### Review Findings
 - Fixed in PR: <list or "none">

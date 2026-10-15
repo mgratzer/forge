@@ -39,7 +39,9 @@ forge/
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments (--unattended for guards)
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
-│   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
+│   └── forge-ship/
+│       ├── SKILL.md                       # Composite: implement + review [+ guard] in one invocation
+│       └── references/exercise.md         # Driving the changed path once in the running app
 ├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
 ├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
@@ -68,7 +70,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a draft PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, runs the quality passes, and only then opens the PR so its blind-drafted body describes the final diff; with `--guard` it continues with forge-guard's process
+- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, runs the quality passes, exercises the changed path when the project says how to run it, and only then opens the PR so its blind-drafted body describes the final diff and carries the evidence; with `--guard` it continues with forge-guard's process
 - **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 

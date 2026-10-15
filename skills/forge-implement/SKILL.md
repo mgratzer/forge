@@ -20,7 +20,7 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
 
-- **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
+- **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and reference each in the PR so the merge closes them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints.
 
@@ -63,7 +63,7 @@ Otherwise branch off the fetched default branch without switching to it — this
 git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
 ```
 
-When working from a plan file or free-text (no Issue number), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
+Use the tracker's identifier verbatim when it isn't a GitHub number (`feat/ABC-60-note-summary`). When working from a plan file or free-text (no Issue), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 ### Step 4: Implement
 
@@ -111,6 +111,8 @@ gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIG
 <PR body>
 PR_EOF
 ```
+
+When the work comes from an Issue, follow **Link PR** in [issue-operations](_shared/issue-operations.md): its first half before the push and the draft (closing references for the drafter, and the markdown provider's closing commit), its second half and **Mark in Review** once the PR is open. Never mark the Issue done — completion belongs to the merge.
 
 ### Step 9: Summarize
 

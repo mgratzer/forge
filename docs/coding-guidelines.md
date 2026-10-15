@@ -44,7 +44,7 @@ When a step benefits from fresh context (e.g., unbiased review), mark it with th
 - Sub-agent instructions are either **fully self-contained in a blockquote** or **composed from a role reference plus task-specific instructions** (see [Using Roles in Delegate Steps](#using-roles-in-delegate-steps) below)
 - List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
 - List **Expected output** — what the parent receives back
-- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape)
+- Only delegate when it provides a genuine quality improvement: fresh context for unbiased review (e.g., reflect), parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape), or keeping a noisy run's output (an app's logs during an exercise) out of the parent session
 
 ### Using Roles in Delegate Steps
 
@@ -129,7 +129,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard is always unattended |
 | Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | implement, review-delegation, guard, ship |
-| Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`) | implement, ship, guard, batch |
+| Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`) | every skill that touches Issues (`Issue tracker`); implement, reflect, ship, guard, batch for the rest; the table in project-config names each setting's consumers |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 
