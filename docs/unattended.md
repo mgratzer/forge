@@ -8,9 +8,9 @@ forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-h
   in parallel)      per Issue)
 ```
 
-The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read their settings from `## Shipping` sections in `AGENTS.md` and in your own `~/.config/forge/shipping.md` ([project-config](../skills/_shared/project-config.md)).
 
-The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` and leaves merging to you; its summary lists the threads it left open.
+The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` with the PR still a draft, and leaves marking it ready and merging to you; its summary lists the threads it left open.
 
 ## One Issue or ten
 
@@ -30,5 +30,7 @@ Once per user:
 Once per project:
 
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
-- [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
+- [ ] Make sure CI and the peer reviewer run on draft PRs — skills never mark a PR ready, so a workflow gated on `draft == false` or a bot that skips drafts leaves the guard waiting until `needs-human`. Otherwise declare `Pull requests: ready`
+- [ ] Put personal settings (assignee, labels, `After create`) in `~/.config/forge/shipping.md`, scoped per remote where they differ
+- [ ] Add the `## Shipping` section to `AGENTS.md` — PR state (forge opens drafts by default), peer reviewer, security-sensitive paths, serialized resources, max rounds (see [project-config](../skills/_shared/project-config.md)). An existing `## Unattended Shipping` section keeps working
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests

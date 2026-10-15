@@ -102,7 +102,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Types: ✓/✗
 - Tests: ✓/✗
 
-(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](_shared/review-rubric.md).)
+(Use severity tags: P0, P1, P2. Omit P3; see the [review rubric](_shared/review-rubric.md).)
 ```
 
 ## Guidelines

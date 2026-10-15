@@ -36,10 +36,10 @@ The most reliable test is running the skill on a real project:
 1. Open a compatible coding agent in a test repository
 2. Invoke the skill with `/forge-<skill-name>`
 3. Walk through the full process
-4. Verify all generated output (issues, branches, PRs, files) is correct
+4. Verify all generated output (issues, branches, PRs, files) is correct — PRs open as drafts and stay drafts
 5. If the skill delegates to sub-agents (for example `forge-reflect` or `forge-ship`), verify the delegated runs use either the parent session's model/provider or whatever compatible runtime-level model routing/configuration you intentionally set up
 6. For `forge-reflect` and `forge-ship`, verify review stays lean by default — tiny low-risk diffs stay inline, ordinary diffs use one reviewer, and a second pass appears only for clearly high-risk or broad changes
-7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`
+7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging or marking the draft ready; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`
 8. For a launcher, run it with `--dry-run` first and check the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
 9. For the worktree scripts, pipe the JSON by hand (below), then run one `claude -w probe -p 'run pwd'` and check the printed path is the hook's, not `.claude/worktrees/`
 

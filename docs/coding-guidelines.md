@@ -104,6 +104,8 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
+| Writing for humans | Plain, short, no em dashes, nothing the reader already has (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
+| PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
@@ -125,7 +127,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard is always unattended |
 | Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | implement, review-delegation, guard, ship |
-| Unattended configuration | Read the `## Unattended Shipping` section of `AGENTS.md` — see `_shared/unattended-config.md`; defaults when absent | guard, batch |
+| Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`) | implement, ship, guard, batch |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 
@@ -147,4 +149,4 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- Use em dashes (`—`) not hyphens for parenthetical clauses in prose
+- No em dashes: use a comma, a colon, parentheses, or a new sentence. The model mirrors the prompt's register in what it writes for people (see `_shared/writing.md`)

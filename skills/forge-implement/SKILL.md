@@ -1,6 +1,6 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug — stops after opening the PR (use forge-ship to also run review).
+description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug — stops after opening a draft PR (use forge-ship to also run review).
 disable-model-invocation: true
 ---
 
@@ -97,19 +97,24 @@ Fix issues and commit fixes.
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked), then the approach, changes list, test plan, and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
+#### Draft the Body (delegate)
 
-Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
+Delegate the body to a sub-agent that never saw the work, with the [pr-body](_shared/pr-body.md) spec — a session that did the work narrates the journey instead of the change. If the runtime has no sub-agents, draft it yourself from the same inputs only: re-read the diff instead of summarizing from memory.
+
+**Inputs provided to sub-agent:** the pr-body spec and the [writing](_shared/writing.md) rule, the quoted why, the diff commands, the PR template if the repository has one, manual deployment steps, known limitations and follow-ups, exercise evidence if any, the closing reference.
+**Expected output:** the finished body.
+
+Create the PR with a conventional commit title and the PR settings from the Shipping settings ([project-config](_shared/project-config.md)): a draft unless `Pull requests: ready` (the human marks it ready), plus `--assignee` and `--label` when declared, leaving out labels the repository doesn't have. Once it exists, run the `After create` skill when one is declared. Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
 ```bash
-gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'
+gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIGNEE>] [--label <LABELS>] --body-file - <<'PR_EOF'   # drop --draft for `Pull requests: ready`
 <PR body>
 PR_EOF
 ```
 
 ### Step 9: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items.
+Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items, the `After create` skill's result and any labels left out.
 
 ## Guidelines
 

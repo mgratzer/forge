@@ -30,11 +30,15 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Round** — one trip through the guard's react step: a CI fix or a feedback pass, followed by a fresh wait. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
+**Draft PR** — the state every PR a forge skill opens starts in, unless the project declares `Pull requests: ready`. Marking it ready for review is always a human action, never a skill's. _Avoid_: "WIP PR".
+
+**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone, "ready for review" (GitHub's non-draft state).
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
-**Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
+**Shipping settings** — every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
+
+**Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [project-config](skills/_shared/project-config.md).
 
 **Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 
@@ -58,7 +62,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 - A **Plan** implements one **Issue** through ordered **Vertical phases**.
 - A **Reflection** produces zero or more **Findings**; each is fixed or becomes a **Deferred item**.
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
-- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.
+- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**; it works on a **Draft PR** and never marks it ready.
 - A **Batch** orders **Waves**; a **Launcher** starts one **Guard**-ed ship per Issue in a Wave.
 
 ## Flagged Ambiguities

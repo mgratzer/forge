@@ -20,7 +20,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 ### Step 1: Implement
 
-Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary** — the review below informs the single final report.
+Execute the [forge-implement](../forge-implement/SKILL.md) process through the push in its Step 8, with two modifications: **don't create the PR yet** — *Open the PR* below opens it once the diff is final, so the body describes what the reviewer will read — and **don't produce implement's summary**; the review below informs the single final report.
 
 ### Step 2: Review (delegate)
 
@@ -37,11 +37,15 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
-### Step 4: Guard (only with `--guard`)
+### Step 4: Open the PR
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
 
-### Step 5: Summarize
+### Step 5: Guard (only with `--guard`)
+
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR opened above. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+
+### Step 6: Summarize
 
 Report implementation, review, and guard results together.
 
@@ -50,9 +54,10 @@ Report implementation, review, and guard results together.
 ```text
 ## Ship Summary
 
-**PR:** #<number> — <title>
+**PR:** #<number> <title>
 **Branch:** <branch-name>
-**Result:** pushed | review-ready | needs-human — <reason>
+**Result:** pushed | review-ready | needs-human: <reason>
+**Next:** <the human's next step for the result, per status-reporting>
 
 ### Implementation
 - <N> commits, <M> files changed
@@ -61,9 +66,10 @@ Report implementation, review, and guard results together.
 
 ### Review Findings
 - Fixed in PR: <list or "none">
-- Deferred: #<issue> — <title> (or "none")
+- Deferred: #<issue> <title> (or "none")
+- After create: <skill> ran | not available | not declared; labels left out: <labels>
 
-### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
+### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -78,6 +84,7 @@ Report implementation, review, and guard results together.
 - **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
 - **Don't skip the review** — even if implementation felt clean
 - **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
+- **Write the summary for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
 

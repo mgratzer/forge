@@ -82,6 +82,7 @@ Report what was created/changed — see [output-format.md](references/output-for
 - **Signal over volume** — tables beat paragraphs; omit empty sections.
 - **Tier discipline** — AGENTS.md stays under ~200 lines. Past 200, move to Tier 2.
 - **Edge cases** — monorepos: suggest per-package AGENTS.md. No tests/CI: mention as next steps.
+- **Write docs for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
 

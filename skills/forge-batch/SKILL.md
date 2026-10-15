@@ -36,7 +36,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [unattended-config](_shared/unattended-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [project-config](_shared/project-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 
@@ -53,7 +53,7 @@ Use the output format below. The launch line names `$FORGE_LAUNCHER` when that v
 ```text
 ## Batch: <scope>
 
-### Wave 1 — <n> Issues
+### Wave 1: <n> Issues
 | # | Title | Touch set | Notes |
 |---|-------|-----------|-------|
 | 123 | feat(api): ... | src/api/x.ts, src/api/x.test.ts | |
@@ -61,12 +61,12 @@ Use the output format below. The launch line names `$FORGE_LAUNCHER` when that v
 
 launch: <launcher> 123 124 ...
 
-### Wave 2 — <n> Issues (after Wave 1 merges)
+### Wave 2: <n> Issues (after Wave 1 merges)
 ...
 
 ### Excluded
-- #130 — HITL
-- #131 — open PR #400 already
+- #130: HITL
+- #131: open PR #400 already
 ```
 
 ## Guidelines

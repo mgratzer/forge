@@ -21,9 +21,9 @@ Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" wait
 | `reviewing` | Self-review and quality passes running | no |
 | `waiting` | Blocked on an external signal (CI, peer review) | no |
 | `addressing` | Reacting to CI failures or review feedback | no |
-| `pushed` | PR open and self-reviewed; no guard ran | yes |
+| `pushed` | PR open (a draft by default) and self-reviewed; no guard ran | yes |
 | `review-ready` | CI green, peer review present, every thread addressed. The human can look now | yes |
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 
-Report a terminal state exactly once, as the last thing before the final summary.
+Report a terminal state exactly once, as the last thing before the final summary. The summary's **Next:** line names the human's step: `pushed` / `review-ready` → review the PR, then `gh pr ready <number>` if it is still a draft; `needs-human` → the items left open for the human; `failed` → the reason.

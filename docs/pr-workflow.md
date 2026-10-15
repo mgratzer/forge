@@ -50,23 +50,7 @@ See [testing.md — Structural Review](testing.md#1-structural-review) for the c
 
 ## PR Description
 
-```markdown
-## Summary
-
-<1-2 sentences: why this change was needed, then the approach taken>
-
-Closes #<issue-number>
-
-## Changes
-
-- <skill or file>: <what changed>
-
-## Test Plan
-
-- [ ] Invoked skill via `/forge-<name>` on a test project
-- [ ] Verified generated output is correct
-- [ ] Checked cross-skill consistency
-```
+Forge's own PRs follow the spec forge-implement drafts against, [pr-body](../skills/_shared/pr-body.md): two paragraphs with no headings, why first, about 150 words, one caveat the diff can't show, and `Closes #<issue-number>` as the last line. No changes list and no CI results. When a skill was run on a test project, add the evidence paragraph: what was invoked and what it produced.
 
 ## Review Process
 

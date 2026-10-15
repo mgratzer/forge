@@ -9,15 +9,15 @@ Use the format matching the work performed.
 
 ### Context Infrastructure
 
-**Tier 1 — Hot Memory (always loaded):**
-- AGENTS.md — <line count> lines
+**Tier 1, hot memory (always loaded):**
+- AGENTS.md: <line count> lines
 
-**Tier 2 — Warm Memory (on-demand):**
-- docs/architecture.md — Design decisions and data flow
+**Tier 2, warm memory (on demand):**
+- docs/architecture.md: design decisions and data flow
 <list only docs that were created>
 
-**Tier 3 — Cold Memory (recommended for later):**
-<suggest for complex projects — API docs, DB schemas, deployment runbooks>
+**Tier 3, cold memory (recommended for later):**
+<suggest for complex projects: API docs, DB schemas, deployment runbooks>
 
 ### Agent Readiness
 
@@ -29,14 +29,14 @@ Use the format matching the work performed.
 | Known risks | <risks> | <where documented> |
 
 ### Supporting Files
-<CLAUDE.md removed, or reduced to an @AGENTS.md import — only when one existed>
+<CLAUDE.md removed, or reduced to an @AGENTS.md import; only when one existed>
 - .gitignore
 
 ### Next Steps
 1. Fill any <!-- TODO --> markers
 2. Add failure modes as you encounter agent mistakes
 3. Re-run /forge-setup-project periodically
-4. Use /forge-create-issue to plan your first piece of work — or /forge-shape if the idea is still rough
+4. Use /forge-create-issue to plan your first piece of work, or /forge-shape if the idea is still rough
 ```
 
 ## Audit / Update of Existing Guidance
