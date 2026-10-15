@@ -135,13 +135,13 @@ Conventions shared across skills. When modifying any, update every skill that re
 
 ## Instruction Budget
 
-Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, adherence degrades and steps get skipped unpredictably. Since skills share the context window with AGENTS.md, system prompts, and tool definitions, keep individual skills lean:
+Every instruction in a skill competes with the task for attention, skills share the context with AGENTS.md, system prompts, and tool definitions, and composite skills stack their components' instructions. Keep individual skills lean so they compose:
 
-- **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
+- **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule. The number is a composability heuristic, not a model limit — a larger context window doesn't raise it.
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
 - **Count composites per invocation.** A composite skill loads its component's instructions too — keep the composite's own body thin so the combined load stays reasonable.
 - **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
-- **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
+- **Match effort and model to task shape.** For factual scouting and routine review, try the same model at lower effort before switching to a cheaper model, and switch only when it holds up (Claude Code subagents can set `model` and `effort`). Save full effort for synthesis, planning, and hard implementation decisions. If the runtime cannot vary either per task, the skill still works by inheriting the parent session's settings.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 
 ## Style Rules

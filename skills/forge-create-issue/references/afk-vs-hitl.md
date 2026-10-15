@@ -35,4 +35,4 @@ All must hold:
 
 ## Mode lock-in
 
-Classification is set at creation. If an AFK Issue surfaces ambiguity mid-flight: pause, resolve, update the Issue. A silently-HITL implementation mixes agent work with ad-hoc human decisions and destroys the audit trail.
+Classification is set at creation. If an AFK Issue surfaces ambiguity mid-flight, an unattended run proceeds on explicitly stated assumptions and names them in the PR body; when the ambiguity would change what the Issue asks for, it stops with `needs-human` instead, and the Issue is updated before work resumes. A silently-HITL implementation mixes agent work with ad-hoc human decisions and destroys the audit trail.

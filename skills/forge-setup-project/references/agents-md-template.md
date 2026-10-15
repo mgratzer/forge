@@ -33,9 +33,9 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 ## Conventions
 
 <project-specific naming, imports, preferred libraries, patterns>
-<organize by constraint level:>
-<MUST / MUST NOT — invariants that cause bugs or security issues when violated>
-<PREFER / AVOID — team preferences where multiple valid approaches exist>
+<organize by constraint level, stated plainly with the reason beside each rule:>
+<invariants — rules whose violation causes bugs or security issues; name the failure each prevents>
+<preferences — team choices where multiple valid approaches exist>
 <for each rule, note enforcement mechanism — linter, CI, script, or manual>
 
 ## Commits
@@ -50,7 +50,7 @@ Types: feat, fix, docs, refactor, test, chore, perf
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-<each entry traces to an observed agent mistake — omit section entirely if none>
+<each entry traces to an agent mistake seen more than once — omit section entirely if none>
 
 ## Domain Invariants
 

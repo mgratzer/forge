@@ -19,6 +19,7 @@ The skill is unattended by nature: it decides on evidence, replies on threads, a
 ### Step 1: Locate the PR and Read the Configuration
 
 ```bash
+PR_ARG="<PR number or URL, empty for the current branch's PR>"
 gh pr view $PR_ARG --json number,headRefName,baseRefName   # PR, BRANCH, BASE
 ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch

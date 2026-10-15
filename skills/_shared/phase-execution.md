@@ -11,7 +11,7 @@ Run all applicable checks:
 - [ ] **Code generators** — run codegen, verify output is current (`git diff --stat -- generated/`). Stale artifacts make the type system lie.
 - [ ] **Config placement** — grep for where similar config is consumed before placing a new value. Config defined but never read is a silent failure.
 - [ ] **External services** — verify dependencies are reachable and authenticated (health check or known-good request). Don't wire against vapor.
-- [ ] **Env vars / secrets** — confirm required variables exist (`echo "${VAR:?not set}"`).
+- [ ] **Env vars / secrets** — confirm required variables exist without printing them (`: "${VAR:?not set}"`).
 - [ ] **Existing patterns** — grep for similar implementations before writing new code.
 
 Skip a check only when its failure mode is impossible for this specific work (no new config → skip config placement; no external dependency → skip service health).

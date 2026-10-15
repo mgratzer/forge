@@ -103,7 +103,7 @@ Share the Issue reference. Suggest using `forge-implement` to start implementati
 ## Guidelines
 
 - **Be curious** — challenge assumptions, ask "why" and "what if"
-- **Don't over-specify** — leave room for implementer judgment
+- **Settle decisions, not code** — an AFK Issue carries the chosen approach and every decision an implementer would stall on (see [afk-vs-hitl.md](references/afk-vs-hitl.md)); taste-neutral implementation choices stay open
 - **No time estimates in the Issue** — the Step 4 effort heuristic is for deciding splits, not for the Issue body
 - **Write the Issue for people:** follow [writing](_shared/writing.md)
 

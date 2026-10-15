@@ -1,6 +1,6 @@
 ---
 name: forge-address-pr-feedback
-description: Analyze and address unresolved feedback on a GitHub pull request. Use when the user has received PR review comments and wants to systematically address each piece of feedback, or when the user mentions PR feedback, review comments, or addressing reviewer concerns.
+description: Analyze and address unresolved feedback on a GitHub pull request. Use when the user wants to work through the review comments on a PR.
 disable-model-invocation: true
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 ---
@@ -22,8 +22,8 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 **Use GraphQL** — the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
 
 ```bash
-# Derive owner/repo from the checkout; PR_ARG is the number or URL from $ARGUMENTS, empty when omitted
-PR_ARG=""
+# Derive owner/repo from the checkout
+PR_ARG="<PR number or URL, empty for the current branch's PR>"
 OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
 PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch

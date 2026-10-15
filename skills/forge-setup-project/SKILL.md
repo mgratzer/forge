@@ -58,7 +58,7 @@ Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
-Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process); offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test — an empty doc wastes context.
+Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process) when exploration or the user supplied content for them; offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test — an empty doc wastes context.
 
 ### Step 7: Remove Redundant CLAUDE.md and Update .gitignore
 
@@ -79,7 +79,7 @@ Report what was created/changed — see [output-format.md](references/output-for
 ## Guidelines
 
 - **Undiscoverability test** — "Would an agent find this by exploring?" If yes, don't write it.
-- **Signal over volume** — tables beat paragraphs; omit empty sections.
+- **Signal over volume** — tables for reference data (commands, the docs map); one sentence with its reason for each behavioral rule; omit empty sections.
 - **Tier discipline** — AGENTS.md stays under ~200 lines. Past 200, move to Tier 2.
 - **Edge cases** — monorepos: suggest per-package AGENTS.md. No tests/CI: mention as next steps.
 - **Write docs for people:** follow [writing](_shared/writing.md)
