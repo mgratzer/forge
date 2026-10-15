@@ -104,6 +104,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
+| PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |

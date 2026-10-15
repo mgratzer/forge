@@ -17,6 +17,7 @@ forge/
 │   │   ├── issue-operations.md            # Provider detection and Issue CRUD
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
+│   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # `## Shipping` settings in AGENTS.md, per consuming skill
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
