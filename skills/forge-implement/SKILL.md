@@ -101,7 +101,7 @@ git push -u origin <BRANCH_NAME>
 
 Delegate the body to a sub-agent that never saw the work, with the [pr-body](_shared/pr-body.md) spec — a session that did the work narrates the journey instead of the change. If the runtime has no sub-agents, draft it yourself from the same inputs only: re-read the diff instead of summarizing from memory.
 
-**Inputs provided to sub-agent:** the pr-body spec, the quoted why, the diff commands, the PR template if the repository has one, manual deployment steps, exercise evidence if any, the closing reference.
+**Inputs provided to sub-agent:** the pr-body spec, the quoted why, the diff commands, the PR template if the repository has one, manual deployment steps, known limitations and follow-ups, exercise evidence if any, the closing reference.
 **Expected output:** the finished body.
 
 Create the PR with a conventional commit title. Open it as a draft unless the project's `## Shipping` section says `Pull requests: ready` (see [project-config](_shared/project-config.md)) — the human marks it ready. Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:

@@ -126,7 +126,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard is always unattended |
 | Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once | implement, review-delegation, guard, ship |
-| Project configuration | Read the `## Shipping` section of `AGENTS.md` (legacy heading `## Unattended Shipping`) — see `_shared/project-config.md`; defaults when absent | guard, batch |
+| Project configuration | Read the `## Shipping` section of `AGENTS.md` (legacy heading `## Unattended Shipping`) — see `_shared/project-config.md`; defaults when absent | implement, ship, guard, batch |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 

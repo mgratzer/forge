@@ -10,6 +10,7 @@ The drafter is a sub-agent that never saw the work. It receives only:
 - **The diff** — commands to regenerate it: `git diff origin/<BASE>...HEAD` and `git diff --stat origin/<BASE>...HEAD`
 - **This spec**, and the repository's PR template when one exists (below)
 - **Manual deployment steps**, when the change needs any
+- **Known limitations and follow-ups**, when there are any — deliberate scope cuts, and deferred Issues with their one-line titles
 - **Exercise evidence**, when the caller ran the changed path — what was run and what it showed
 - **The closing reference** — `Closes #<ID>`, or the tracker's own form per [issue-operations](issue-operations.md)
 
@@ -18,7 +19,7 @@ Never the session history: earlier attempts, review findings, and what review ch
 ## Spec
 
 - **Two paragraphs, no headings, about 150 words.** The first says why: the problem in the reader's terms, quoting the Issue where it says it best. The second says what changes in behavior and how, at the level a reviewer needs to read the diff.
-- **Keep one caveat the diff can't show** — a deliberate limitation, a deployment order, a follow-up already filed. When trimming, cut anything else first.
+- **Keep one caveat the diff can't show** when the inputs name one — a deliberate limitation, a deployment order, a follow-up already filed. When trimming, cut anything else first. Never invent one.
 - **Never** a `## Changes` list or a file-by-file walk (the diff shows it), CI or quality-gate results (the checks show them), the path taken, or test counts.
 - **Additions, only when they apply:** a `> [!WARNING]` block at the top for manual deployment steps; an evidence paragraph after the two — each thing exercised in one line, the command and the observed result, no logs; the closing reference as the last line.
 
