@@ -49,7 +49,8 @@ From the research, create a plan:
 - **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
 - Files to create or modify
 - Scope boundaries: what will not change, and what we are not building
-- Expected diff size, in changed lines; past the project's `Split threshold` (see [project-config](_shared/project-config.md)), propose stacked branches in the plan instead
+- Expected diff size, in changed lines. Past the `Split threshold` Shipping setting (see [project-config](_shared/project-config.md)), an attended plan proposes stacked branches: one branch per group of phases, each cut from the previous one, published in stack order. An unattended plan stays on one branch and hands the size to the PR body drafter as a known limitation
+- With `Backward compatibility: not needed`, no shims or migration paths for old callers
 
 Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.
 

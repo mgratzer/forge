@@ -27,7 +27,7 @@ A project appends its own passes in the `## Shipping` section:
 - Extra passes: /threat-model, /team-review (covers: security)
 ```
 
-Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. Run each pass in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session; it returns findings and the changes it made. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
+Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. Run each skill-backed pass (`/simplify`, `/security-review`, an extra pass) in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session; it returns findings and the changes it made. The review-delegation fallbacks already run in their own sub-agent. Passes run one at a time, because they edit the same working tree. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
 
 ## Triage and Push
 
