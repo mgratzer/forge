@@ -18,7 +18,7 @@ forge/
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
-│   │   ├── unattended-config.md           # AGENTS.md settings read by guard and batch
+│   │   ├── project-config.md              # `## Shipping` settings in AGENTS.md, per consuming skill
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy

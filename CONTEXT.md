@@ -34,7 +34,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
-**Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
+**Shipping section** — the `## Shipping` section of a project's AGENTS.md, holding every project-declared forge setting. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole section.
+
+**Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [project-config](skills/_shared/project-config.md).
 
 **Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 

@@ -7,7 +7,7 @@ Two scripts that create a project-ready checkout for an agent session and remove
 | [`create.sh`](create.sh) | `{"cwd": "<repo>", "name": "<name>"}` | Detached worktree under `~/.forge/worktrees/<repo>/<name>` at a fresh origin default branch, then `scripts/bootstrap-worktree.sh` when the project has one. Prints the path |
 | [`remove.sh`](remove.sh) | `{"worktree_path": "<path>"}` | `scripts/teardown-worktree.sh` when present, then removes the worktree |
 
-`FORGE_WORKTREE_ROOT` overrides the location. The two project scripts are described in [unattended-config](../../skills/_shared/unattended-config.md).
+`FORGE_WORKTREE_ROOT` overrides the location. The two project scripts are described in [project-config](../../skills/_shared/project-config.md).
 
 ## Claude Code
 

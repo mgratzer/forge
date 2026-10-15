@@ -1,13 +1,13 @@
-# Unattended Configuration
+# Project Configuration
 
-Project settings the unattended skills (`forge-guard`, `forge-batch`, `forge-ship --guard`) read from `AGENTS.md`. All optional; defaults apply when the section or a line is absent.
+Project settings forge skills read from the `## Shipping` section of `AGENTS.md`. All optional; defaults apply when the section or a line is absent.
 
 ## Declaration
 
 Projects declare the section verbatim:
 
 ```markdown
-## Unattended Shipping
+## Shipping
 
 - Peer reviewer: copilot-pull-request-reviewer[bot]
 - Security-sensitive paths: src/auth/**, src/webhooks/**, src/middleware/**
@@ -15,7 +15,7 @@ Projects declare the section verbatim:
 - Max guard rounds: 3
 ```
 
-The section is already in context when the runtime auto-loads `AGENTS.md`; otherwise `grep -A6 "^## Unattended Shipping" AGENTS.md`.
+`## Unattended Shipping` is the legacy heading and is read the same way. The section is already in context when the runtime auto-loads `AGENTS.md`; otherwise `grep -A12 -E "^## (Unattended )?Shipping" AGENTS.md`.
 
 ## Settings
 

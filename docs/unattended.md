@@ -8,7 +8,7 @@ forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-h
   in parallel)      per Issue)
 ```
 
-The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Shipping` section of `AGENTS.md` ([project-config](../skills/_shared/project-config.md)).
 
 The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` and leaves merging to you; its summary lists the threads it left open.
 
@@ -30,5 +30,5 @@ Once per user:
 Once per project:
 
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
-- [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
+- [ ] Add the `## Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [project-config](../skills/_shared/project-config.md)). An existing `## Unattended Shipping` section keeps working
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests
