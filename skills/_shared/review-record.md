@@ -23,4 +23,4 @@ Map them onto the spec's fields. For a field forge has no fact for, follow the s
 - **forge-guard, standalone, on a PR without a record** — run one fresh-context review over `origin/<BASE>..HEAD` per [review-delegation](review-delegation.md) and triage it before the first record, so the record never attests to the quality passes alone.
 - **forge-guard** — before any push that changes code after a record exists (a CI fix, a feedback round): review the commits since the latest record with one fresh-context reviewer per [review-delegation](review-delegation.md), fix P0–P2 in-scope findings, then write a new record as the last commit of that push. The newest record therefore always matches the tree the human receives.
 
-No code change since the latest record means no new record.
+Commits after the latest record that change no code — tracker updates after the PR opens, metadata — need no re-review. When the spec ties the record to the handed-off tree, write a fresh record over them as the last commit of the same push; otherwise leave the record as it is.
