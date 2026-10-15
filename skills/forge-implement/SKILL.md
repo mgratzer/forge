@@ -99,10 +99,10 @@ git push -u origin <BRANCH_NAME>
 
 Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked), then the approach, changes list, test plan, and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
 
-Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
+Open it as a draft unless the project's `## Shipping` section says `Pull requests: ready` (see [project-config](_shared/project-config.md)) — the human marks it ready. Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
 ```bash
-gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'
+gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'   # drop --draft for `Pull requests: ready`
 <PR body>
 PR_EOF
 ```

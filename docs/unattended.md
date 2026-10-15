@@ -30,5 +30,5 @@ Once per user:
 Once per project:
 
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
-- [ ] Add the `## Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [project-config](../skills/_shared/project-config.md)). An existing `## Unattended Shipping` section keeps working
+- [ ] Add the `## Shipping` section to `AGENTS.md` — PR state (forge opens drafts by default), peer reviewer, security-sensitive paths, serialized resources, max rounds (see [project-config](../skills/_shared/project-config.md)). An existing `## Unattended Shipping` section keeps working
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests

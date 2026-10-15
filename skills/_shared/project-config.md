@@ -9,6 +9,7 @@ Projects declare the section verbatim:
 ```markdown
 ## Shipping
 
+- Pull requests: draft
 - Peer reviewer: copilot-pull-request-reviewer[bot]
 - Security-sensitive paths: src/auth/**, src/webhooks/**, src/middleware/**
 - Serialized resources: db/migrations/**, bun.lock, messages/**
@@ -21,6 +22,7 @@ Projects declare the section verbatim:
 
 | Setting | Used by | Default | Meaning |
 |---------|---------|---------|---------|
+| Pull requests | implement, ship | draft | `draft` or `ready` — the state a new PR opens in. Forge never marks a draft ready; that is the human's signal |
 | Peer reviewer | guard | none | Login the guard re-requests after each push, as the review-request API spells it (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`) |
 | Security-sensitive paths | guard | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |

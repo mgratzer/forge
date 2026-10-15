@@ -66,7 +66,7 @@ The review signal is satisfied when a post-push review exists, when no peer revi
 Check the terminal conditions first, on every round:
 
 - **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
-- **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
+- **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**.
 
@@ -79,7 +79,7 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 
 **Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
-Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
+Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
 ## Output Format
 
