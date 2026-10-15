@@ -63,7 +63,7 @@ Otherwise branch off the fetched default branch without switching to it — this
 git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
 ```
 
-When working from a plan file or free-text (no Issue number), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
+Use the tracker's identifier verbatim when it isn't a GitHub number (`feat/ABC-60-note-summary`). When working from a plan file or free-text (no Issue), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 ### Step 4: Implement
 

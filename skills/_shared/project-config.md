@@ -56,7 +56,7 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 | Security-sensitive paths | ship, guard | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them |
 | Extra passes | ship, guard | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass — see [quality-passes](quality-passes.md) |
 | Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format — see [review-record](review-record.md) |
-| Exercise | ship | the runtime's run skill (Claude Code: `/run`), else none | How to start the app and reach the changed path — a command or a pointer to the doc. Ship drives the change once and puts the result in the PR body |
+| Exercise | ship | the runtime's run skill (Claude Code: `/run`), else none | How to start the app and reach the changed path: a command, or a pointer to an AGENTS.md section or doc with Start, Exercise, Needs a human, and Stop. Ship drives the change once and puts the result in the PR body |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |
 

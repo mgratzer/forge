@@ -41,9 +41,12 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 Run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
 
-### Step 5: Exercise the Change
+### Step 5: Exercise the Change (delegate)
 
-When the diff changes runtime behavior and the project declares an `Exercise:` recipe or the runtime has a run skill, start the app, drive the changed path once plus one failure case, and keep the observations as evidence — see [exercise](references/exercise.md). Otherwise report `not exercised` with the reason; never guess how to start the app.
+When the diff changes runtime behavior and the project declares an `Exercise:` recipe or the runtime has a run skill, delegate the run to a sub-agent following [exercise](references/exercise.md), so app output and logs stay out of this session. Ask the human for any blocked action first (attended mode only). If the runtime has no sub-agents, follow the same reference inline. With no recipe, report `not exercised` with the reason; never guess how to start the app.
+
+**Inputs provided to sub-agent:** the exercise reference, the recipe, the branch diff commands, the human actions already done or skipped.
+**Expected output:** evidence lines (command and observed result), what wasn't covered and why, and the commands a reviewer can run to try it.
 
 ### Step 6: Open the PR
 
@@ -70,8 +73,11 @@ Report implementation, review, and guard results together.
 ### Implementation
 - <N> commits, <M> files changed
 - Tests: <added/modified/none>
-- Exercised: <what, one line> | not exercised — <reason>
+- Exercised: <what, one line> | not exercised: <reason>
 - Docs: <updated/none>
+
+### Try It Yourself   (when Step 5 ran)
+<the commands from the exercise, ready to paste>
 
 ### Review Findings
 - Fixed in PR: <list or "none">
