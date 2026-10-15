@@ -3,7 +3,7 @@
 An optional commit attesting that the tree handed to the human was reviewed, for teams that audit review in git history. Used by `forge-ship` and `forge-guard`, and only when the project declares one in its `## Shipping` section:
 
 ```markdown
-- Review record: docs/agentic-workflows.md#review-sign-off
+- Review record: docs/review-process.md#sign-off
 ```
 
 The value points at the format spec — a path in the repository, a URL, or a section. Forge supplies the facts; the format is the project's. Never invent a field, trailer, or value the spec doesn't define. When the spec can't be read, write no record and say so in the summary.
@@ -20,6 +20,7 @@ Map them onto the spec's fields. For a field forge has no fact for, follow the s
 ## When
 
 - **forge-ship** — after triage and the quality passes, as the last commit before the PR opens.
+- **forge-guard, standalone, on a PR without a record** — run one fresh-context review over `origin/<BASE>..HEAD` per [review-delegation](review-delegation.md) and triage it before the first record, so the record never attests to the quality passes alone.
 - **forge-guard** — before any push that changes code after a record exists (a CI fix, a feedback round): review the commits since the latest record with one fresh-context reviewer per [review-delegation](review-delegation.md), fix P0–P2 in-scope findings, then write a new record as the last commit of that push. The newest record therefore always matches the tree the human receives.
 
 No code change since the latest record means no new record.

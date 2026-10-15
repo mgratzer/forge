@@ -14,7 +14,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — CI, peer review, feedback rounds; ship has already run the quality passes — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -73,7 +73,7 @@ Report implementation, review, and guard results together.
 - Deferred: #<issue> <title> (or "none")
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
 - Record: <sha> covering <range> | not declared
-- Passes: simplify <n> applied; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available
+- Passes: simplify <n> applied | covered by <pass>; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 

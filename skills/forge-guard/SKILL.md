@@ -24,7 +24,7 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
+Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, extra passes, review record, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
 ### Step 2: Run Quality Passes
 
@@ -64,18 +64,16 @@ Check the terminal conditions first, on every round:
 - **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
 
-When neither applies, react and go back to Step 3. Each reaction is one **round**.
+When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
-**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push:
+**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push (after the record, when one is declared):
 
 ```bash
 RUN=$(gh run list --branch "$BRANCH" --status failure --limit 1 --json databaseId --jq '.[0].databaseId')
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
 
-**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
-
-When the project declares a review record, every push that changes code ends with a fresh one — review the commits since the latest record first, per [review-record](_shared/review-record.md).
+**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
@@ -90,7 +88,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
-- Simplify: applied <n> findings | skipped | ran in forge-ship
+- Simplify: applied <n> findings | covered by <extra pass> | skipped | ran in forge-ship
 - Security: applied <n> findings | not triggered | covered by <extra pass> | ran in forge-ship
 - Extra: <pass> applied <n> | not available   (one line per declared pass)
 

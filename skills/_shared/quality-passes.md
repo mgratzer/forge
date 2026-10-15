@@ -1,6 +1,6 @@
 # Quality Passes
 
-Focused passes that run after the fresh-context review, each owning one dimension, so no dimension is reviewed twice. Used by `forge-ship` (always) and `forge-guard` (when ship didn't already run them).
+Focused passes that run after the fresh-context review, each owning one dimension, so no dimension is reviewed twice. Used by `forge-ship` (always) and `forge-guard` (unless `forge-ship --guard` composed it — ship already ran them).
 
 ## Owners
 
@@ -13,10 +13,10 @@ Each dimension has exactly one owner per run — the first that applies:
 
 The security pass replaces review-delegation's mandatory security second reviewer: callers that run quality passes add no second reviewer for auth, authorization, secrets, or payments. The default reviewer keeps its light security dimension — it is part of one combined pass, not a second review.
 
-**Security trigger** — the PR or its Issue carries a `security` label, or the branch diff touches a security-sensitive path from [project-config](project-config.md):
+**Security trigger** — any of: the PR or its Issue carries a `security` label; the branch diff touches a security-sensitive path from [project-config](project-config.md); or the diff's content touches auth, authorization, secrets, or payments, wherever the files live — the signal the replaced second reviewer used.
 
 ```bash
-git diff --name-only origin/<BASE>...HEAD   # match against Security-sensitive paths, or the default risky signals
+git diff --name-only origin/<BASE>...HEAD   # match against Security-sensitive paths; judge the content signal on the diff itself
 ```
 
 ## Extra Passes
@@ -27,7 +27,7 @@ A project appends its own passes in the `## Shipping` section:
 - Extra passes: /risk-eval, /team-review (covers: security)
 ```
 
-Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. An extra pass the runtime doesn't provide is skipped and named in the summary.
+Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
 
 ## Triage and Push
 
