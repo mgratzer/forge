@@ -9,7 +9,7 @@ Before reviewing, collect:
 1. **Review scope** — exact commands the reviewer can run to regenerate the diff and changed file list
 2. **Changed file list** — from the selected scope
 3. **Diff size metadata** — changed file count and approximate changed line count
-4. **Relevant project conventions** — the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters
+4. **Relevant project conventions** — the relevant parts of `AGENTS.md`, including a `Backward compatibility: not needed` setting; do not blindly paste the whole file if only a small subset matters
 5. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
    - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists

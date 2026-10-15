@@ -24,6 +24,8 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 Execute the [forge-implement](../forge-implement/SKILL.md) process through its Step 7, plus the first half of **Link PR** from Step 8. Don't push and don't create the PR: *Publish* below does both once the diff is final, so every pass runs before anything is pushed and the body describes what the reviewer will read. Skip implement's local-mode stop and its status report, and don't produce implement's summary; the review below informs the single final report.
 
+When the branch diff grew past the project's `Split threshold` (default 600 changed lines), propose splitting it into stacked local branches before the review. In unattended mode, keep going and name the size as a known limitation for the PR body.
+
 ### Step 2: Review (delegate)
 
 Follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.

@@ -8,7 +8,7 @@ Each dimension has exactly one owner per run — the first that applies:
 
 | Dimension | Owner, in order of preference | Runs |
 |-----------|-------------------------------|------|
-| Simplify | an extra pass marked `covers: simplify` → the runtime's simplification skill (Claude Code: `/simplify`) → [review-delegation](review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](review-dimensions.md) | always |
+| Simplify | an extra pass marked `covers: simplify` → the runtime's simplification skill (Claude Code: `/simplify`) → [review-delegation](review-delegation.md) with the default checklist narrowed to items 3, 5, and 6 of [review-dimensions](review-dimensions.md) | always |
 | Security | an extra pass marked `covers: security` → the runtime's security review skill (Claude Code: `/security-review`) → review-delegation with the **Security & Correctness** deep pass | when triggered |
 
 The security pass replaces review-delegation's mandatory security second reviewer: callers that run quality passes add no second reviewer for auth, authorization, secrets, or payments. The default reviewer keeps its light security dimension — it is part of one combined pass, not a second review.
@@ -27,7 +27,7 @@ A project appends its own passes in the `## Shipping` section:
 - Extra passes: /threat-model, /team-review (covers: security)
 ```
 
-Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
+Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. Run each pass in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session; it returns findings and the changes it made. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
 
 ## Triage and Push
 

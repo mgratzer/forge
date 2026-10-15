@@ -44,10 +44,12 @@ Write 3–7 factual questions about existing systems, patterns, and integration 
 Run the scout at lower effort or on a cheaper model when the runtime allows per-task settings — try lower effort first.
 
 From the research, create a plan:
+- The task in one sentence, checked against the Issue's wording before anything else
 - Durable decisions
 - **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
 - Files to create or modify
-- Scope boundaries (what will NOT change)
+- Scope boundaries: what will not change, and what we are not building
+- Expected diff size, in changed lines; past the project's `Split threshold` (see [project-config](_shared/project-config.md)), propose stacked branches in the plan instead
 
 Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.
 
@@ -86,7 +88,7 @@ Run all project quality checks (discover from AGENTS.md, project docs, or reposi
 - [ ] Lint — no violations
 - [ ] Format — no violations
 - [ ] Type check — no errors
-- [ ] All tests pass
+- [ ] All tests pass. A suite skipped because a service isn't running is reported as skipped, never as passing
 - [ ] **Test coverage ≥ 90% for new/modified code** — run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
 
 Fix issues and commit fixes.
