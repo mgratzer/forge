@@ -41,13 +41,13 @@ Report `waiting`. Request the peer reviewers first so their reviews overlap the 
 gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
-**Peer review** — wait for every listed reviewer per [peer-review-wait](_shared/peer-review-wait.md), after the CI wait. With no reviewer configured, the signal is satisfied by a review from anyone other than `$ME` after the latest push, or before it when the wait expires. Note any fallback in the summary.
+**Peer review**: wait for every listed reviewer per [peer-review-wait](_shared/peer-review-wait.md), after the CI wait. With no reviewer configured the signal is satisfied. Note any reviewer still missing in the summary.
 
 ### Step 4: Decide, then React
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
+- **`review-ready`** — CI green, review signal satisfied, no unaddressed feedback (threads or top-level items, per forge-address-pr-feedback Step 1), nothing needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal (on a draft PR, say so — some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
@@ -70,7 +70,7 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 
 Failures the branch didn't cause never start a round; keep waiting for the review signal and addressing threads.
 
-**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
+**Unaddressed feedback**: unresolved threads whose last comment is not `$ME`'s, and top-level items per forge-address-pr-feedback Step 1. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME` — without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered feedback itself. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 

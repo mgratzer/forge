@@ -17,7 +17,7 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 **Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, with no code changes and nothing posted.
 
-**Wait mode:** `--wait` first waits for the configured peer reviewers per [peer-review-wait](_shared/peer-review-wait.md), then addresses what they left.
+**Wait mode:** `--wait` derives `PR_NUMBER` (Step 1's first lines), requests the configured peer reviewers who haven't reviewed the latest commit, and waits for them per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER`; then it addresses what they left.
 
 ## Process
 
@@ -51,16 +51,23 @@ query($owner: String!, $repo: String!, $pr: Int!) {
         }
       }
       reviews(last: 50) { nodes { body state submittedAt url author { login __typename } } }
-      comments(last: 50) { nodes { body createdAt url author { login __typename } } }
+      comments(last: 50) { nodes { body createdAt lastEditedAt url author { login __typename } } }
     }
   }
 }' > "$FEEDBACK"
 jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")" "$FEEDBACK"
 ```
 
-**Top-level feedback counts too:** review bodies with content and bot summary comments from review apps posted after our last comment on the PR. Skip an item that only repeats an inline thread.
+**Top-level feedback counts too**, when it contains findings: review bodies and PR comments by others since our last PR comment, including bot summaries edited in place since then. Skip overviews and walkthroughs with no findings, and anything that only repeats an inline thread:
 
-**Who wrote it decides how we answer:** an author whose `__typename` is `Bot`, or who is listed in `Peer reviewers`, is a bot reviewer; everyone else is a human colleague.
+```bash
+jq --arg me "$ME" '.data.repository.pullRequest
+  | ([.comments.nodes[] | select(.author.login == $me) | .createdAt] | max // "") as $since
+  | [(.reviews.nodes[] | select(.author.login != $me and .body != "" and .submittedAt > $since)),
+     (.comments.nodes[] | select(.author.login != $me and ((.lastEditedAt // .createdAt) > $since)))]' "$FEEDBACK"
+```
+
+**Who wrote it decides how we answer:** an author whose `__typename` is `Bot`, or whose `Peer reviewers` entry carries a `[bot]` suffix, is a bot reviewer; everyone else, including a person listed in `Peer reviewers`, is a human colleague.
 
 ### Step 2: Process Each Item
 
