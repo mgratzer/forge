@@ -21,9 +21,10 @@ Prepend the guarded line above to the command that starts the stage (`<guarded l
 | `reviewing` | Self-review and quality passes running | no |
 | `waiting` | Blocked on an external signal (CI, peer review) | no |
 | `addressing` | Reacting to CI failures or review feedback | no |
+| `ready-for-local-review` | Work committed on a local branch, nothing pushed; self-reviewed when forge-ship stopped there | yes |
 | `pushed` | PR open (a draft by default) and self-reviewed; no guard ran | yes |
 | `review-ready` | CI green, peer review present, every thread addressed. The human can look now | yes |
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 
-Report a terminal state exactly once, as the last thing before the final summary. The summary's **Next:** line names the human's step: `pushed` / `review-ready` → review the PR, then `gh pr ready <number>` if it is still a draft; `needs-human` → the items left open for the human; `failed` → the reason.
+Report a terminal state exactly once, as the last thing before the final summary. The summary's **Next:** line names the human's step: `ready-for-local-review` → review the branch, then `/forge-ship --publish`; `pushed` / `review-ready` → review the PR, then `gh pr ready <number>` if it is still a draft; `needs-human` → the items left open for the human; `failed` → the reason.
