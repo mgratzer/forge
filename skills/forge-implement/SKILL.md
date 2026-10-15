@@ -104,7 +104,7 @@ Delegate the body to a sub-agent that never saw the work, with the [pr-body](_sh
 **Inputs provided to sub-agent:** the pr-body spec and the [writing](_shared/writing.md) rule, the quoted why, the diff commands, the PR template if the repository has one, manual deployment steps, known limitations and follow-ups, exercise evidence if any, the closing reference.
 **Expected output:** the finished body.
 
-Create the PR with a conventional commit title and the PR settings from [project-config](_shared/project-config.md): a draft unless `Pull requests: ready` (the human marks it ready), plus `--assignee` and `--label` when declared. Once it exists, run the `After create` skill when one is declared. Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
+Create the PR with a conventional commit title and the PR settings from the Shipping settings ([project-config](_shared/project-config.md)): a draft unless `Pull requests: ready` (the human marks it ready), plus `--assignee` and `--label` when declared, leaving out labels the repository doesn't have. Once it exists, run the `After create` skill when one is declared. Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
 ```bash
 gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIGNEE>] [--label <LABELS>] --body-file - <<'PR_EOF'   # drop --draft for `Pull requests: ready`
@@ -114,7 +114,7 @@ PR_EOF
 
 ### Step 9: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items.
+Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items, the `After create` skill's result and any labels left out.
 
 ## Guidelines
 

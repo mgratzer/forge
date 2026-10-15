@@ -39,7 +39,7 @@ Fixed findings are committed and pushed; deferred items become Issues — see [i
 
 ### Step 4: Open the PR
 
-Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the project says otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
+Create the PR as forge-implement's Step 8 does — body drafted blind against [pr-body](_shared/pr-body.md), draft unless the Shipping settings say otherwise — from the final diff, passing Step 3's deferred Issues as known follow-ups.
 
 ### Step 5: Guard (only with `--guard`)
 
@@ -67,6 +67,7 @@ Report implementation, review, and guard results together.
 ### Review Findings
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
+- After create: <skill> ran | not available | not declared; labels left out: <labels>
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 

@@ -24,7 +24,7 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the project's `## Shipping` section per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
+Read the Shipping settings per [project-config](_shared/project-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
 ### Step 2: Run Quality Passes
 

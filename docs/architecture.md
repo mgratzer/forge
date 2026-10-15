@@ -20,7 +20,7 @@ forge/
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
-│   │   ├── project-config.md              # `## Shipping` settings in AGENTS.md, per consuming skill
+│   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
