@@ -22,6 +22,8 @@ Projects declare the section in `AGENTS.md`:
 - Exercise: `bin/dev`, then curl the changed endpoint with the tokens in test/fixtures/tokens.json
 - Serialized resources: db/migrations/**, bun.lock, messages/**
 - Max guard rounds: 3
+- Split threshold: 600
+- Backward compatibility: not needed
 ```
 
 `## Unattended Shipping` is the legacy heading and is read the same way.
@@ -60,6 +62,8 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 | Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format — see [review-record](review-record.md) |
 | Exercise | ship | the runtime's run skill (Claude Code: `/run`), else none | How to start the app and reach the changed path: a command, or a pointer to an AGENTS.md section or doc with Start, Exercise, Needs a human, and Stop. Ship drives the change once and puts the result in the PR body |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
+| Split threshold | implement, ship | 600 | Changed lines past which the plan proposes stacked branches and ship offers a split before review |
+| Backward compatibility | implement, reflect, ship (via review-delegation) | needed | `not needed` (a proof of concept, an unreleased API) lets the plan and the reviewer drop compatibility shims, and the reviewer flags new ones |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |
 
 ## Conventions Launchers Rely On

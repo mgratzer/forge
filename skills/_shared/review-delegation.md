@@ -9,8 +9,9 @@ Before reviewing, collect:
 1. **Review scope** — exact commands the reviewer can run to regenerate the diff and changed file list
 2. **Changed file list** — from the selected scope
 3. **Diff size metadata** — changed file count and approximate changed line count
-4. **Relevant project conventions** — the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters
-5. **Review materials** — read and collect (pushed, not referenced):
+4. **Relevant project conventions**: the relevant parts of `AGENTS.md`, plus the `Backward compatibility` Shipping setting resolved per [project-config](project-config.md); do not blindly paste the whole file if only a small subset matters
+5. **The task**, when the caller has it: one sentence on what the change is for and what it is not building, from the plan or the Issue (forge-reflect can use the PR title and body)
+6. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
    - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
    - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
@@ -46,6 +47,7 @@ Create **one self-contained review task per planned pass**. Each task embeds:
   - exact `git diff --name-only` command
   - branch / PR / uncommitted scope description
 - Changed file list
+- The task and what it is not building, when the caller has them
 - Any additional context from the caller
 
 Prefer **pull over push** for bulky review inputs:
