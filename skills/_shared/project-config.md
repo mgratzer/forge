@@ -10,6 +10,7 @@ Projects declare the section in `AGENTS.md`:
 ## Shipping
 
 - Issue tracker: skill /team-tracker
+- Publish: push
 - Pull requests: draft
 - Assignee: @me
 - Labels: agent
@@ -48,6 +49,7 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 | Setting | Used by | Default | Meaning |
 |---------|---------|---------|---------|
 | Issue tracker | every skill that touches Issues | `plan/` folder if present, else GitHub | `skill /<name>` or `mcp <server>` hands every Issue operation to that skill or MCP server — see [issue-operations](issue-operations.md#delegated-providers) |
+| Publish | implement, ship | push | `push` publishes at the end of a run; `local` stops before the push for a local review, and `forge-ship --publish` publishes later. `--guard` always pushes |
 | Pull requests | implement, ship | draft | `draft` or `ready` — the state a new PR opens in. Forge never marks a draft ready; that is the human's signal |
 | Assignee | implement, ship | none | Passed to `gh pr create --assignee`; `@me` assigns the author |
 | Labels | implement, ship | none | Comma-separated labels for `gh pr create --label`. A label the repository doesn't have (`gh label list`) is left out and named in the summary, because `gh pr create` fails on it |

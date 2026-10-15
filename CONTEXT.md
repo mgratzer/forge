@@ -40,6 +40,8 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Quality pass** — a focused pass after the fresh-context review that owns one dimension: simplify, security, or a project-declared extra pass. Each dimension has exactly one owner per run; an extra pass marked `covers: <dimension>` replaces forge's own pass for it. See [quality-passes](skills/_shared/quality-passes.md).
 
+**Local review / Publish** — in local mode a ship stops at `ready-for-local-review` with nothing pushed; **publish** is the later step that rebases, writes the review record, pushes, and opens the PR. _Avoid_: "ship" for the publish step alone.
+
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [project-config](skills/_shared/project-config.md).
 
 **Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
