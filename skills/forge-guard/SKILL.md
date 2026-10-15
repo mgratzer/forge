@@ -1,6 +1,6 @@
 ---
 name: forge-guard
-description: Drive an open pull request to review-ready without a human watching — run simplification and security passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
+description: Drive an open pull request to review-ready without a human watching — run the quality passes, wait for CI and the peer reviewer, address feedback in bounded rounds, and stop at review-ready or needs-human. Never merges or marks the PR ready. Use when the user wants to walk away from a PR and come back only when it is green, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -28,11 +28,7 @@ Read the Shipping settings per [project-config](_shared/project-config.md): peer
 
 ### Step 2: Run Quality Passes
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md).
-
-**Security pass** — run when the PR carries a `security` label or `gh pr diff "$PR" --name-only` matches a security-sensitive path. If the runtime provides a security review skill (Claude Code: `/security-review`), invoke it; otherwise follow review-delegation with the **Security & Correctness** deep pass.
-
-Triage findings from both passes with `forge-ship`'s unattended rule, then run the project quality gates once, commit, and push — one push, so CI and the peer reviewer see one revision.
+Skip this step when `forge-ship --guard` composed the guard — ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) — simplify always, security when triggered, then the project's extra passes — with unattended triage, and push once.
 
 ### Step 3: Wait for Signals
 
@@ -92,8 +88,9 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
-- Simplify: applied <n> findings | skipped
-- Security: applied <n> findings | not triggered | skipped
+- Simplify: applied <n> findings | skipped | ran in forge-ship
+- Security: applied <n> findings | not triggered | covered by <extra pass> | ran in forge-ship
+- Extra: <pass> applied <n> | not available   (one line per declared pass)
 
 ### Rounds
 1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>

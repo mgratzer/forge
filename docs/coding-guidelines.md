@@ -105,6 +105,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Writing for humans | Plain, short, no em dashes, nothing the reader already has (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
+| Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension — `_shared/quality-passes.md` | ship, guard |
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |

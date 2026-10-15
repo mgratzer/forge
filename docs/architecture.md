@@ -18,6 +18,7 @@ forge/
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
+│   │   ├── quality-passes.md              # Simplify, security, and extra passes — one owner per dimension
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults
@@ -66,8 +67,8 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a draft PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, and only then opens the PR so its blind-drafted body describes the final diff; with `--guard` it continues with forge-guard's process
-- **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
+- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, runs the quality passes, and only then opens the PR so its blind-drafted body describes the final diff; with `--guard` it continues with forge-guard's process
+- **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
 ## Skill & Role File Format

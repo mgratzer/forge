@@ -26,6 +26,7 @@ Use the smallest review shape that still gives trustworthy signal:
    - schema or migration changes
    - concurrency, synchronization, background jobs, caches, or distributed behavior
    - public API, protocol, or contract changes
+   When the caller also runs [quality-passes](quality-passes.md) (`forge-ship`, `forge-guard`), the security pass owns the first bullet: add no second reviewer for it. The other bullets still add one.
 4. **Optional second reviewer for broad diffs** — add a second pass for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
 
 When using inline review, keep it to a single pass — do not escalate to sub-agents unless the diff is no longer tiny or new risk appears.
