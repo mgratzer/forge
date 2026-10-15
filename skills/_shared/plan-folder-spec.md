@@ -38,7 +38,8 @@ created: 2026-04-30
 |-------|----------|--------|
 | `id` | Yes | Positive integer, unique across the project |
 | `title` | Yes | Conventional commit format |
-| `status` | Yes | `open`, `in-progress`, `closed` |
+| `status` | Yes | `open`, `in-progress`, `in-review`, `closed` |
+| `pr` | No | URL of the PR implementing the issue |
 | `labels` | No | List of label strings |
 | `mode` | No | `AFK` or `HITL` (defaults to `HITL`) |
 | `created` | Yes | ISO date |

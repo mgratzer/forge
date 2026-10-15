@@ -6,9 +6,24 @@ Provider-agnostic operations for working with Issues. Skills reference this modu
 
 Detect the Issue tracker provider once at the start of work. Check in order — first match wins:
 
-1. **AGENTS.md declaration** — project declares a specific tool or CLI for issue tracking
+1. **AGENTS.md declaration** — the `Issue tracker:` line of the `## Shipping` section (see [project-config](project-config.md)), or a tool or CLI the project names elsewhere in AGENTS.md — see [Delegated Providers](#delegated-providers)
 2. **`plan/` directory** — markdown provider (see [plan-folder-spec](plan-folder-spec.md))
 3. **GitHub fallback** — use `gh` CLI
+
+## Delegated Providers
+
+A project can hand its tracker to a skill or an MCP server:
+
+```markdown
+- Issue tracker: skill /team-tracker
+- Issue tracker: mcp tracker
+```
+
+**Skill** — invoke the named skill for each operation below, passing the operation and its arguments ("read ABC-123", "mark ABC-123 in review, PR <url>"). Prefer this form: the project's skill knows its tracker's states and fields, and switching trackers stays a one-line change.
+
+**MCP** — map each operation to the server's tools: list them once, then use its search, get, create, update, and comment or attachment tools. Read the tracker's workflow states before changing one, and pick the state that means "in review" by name.
+
+Either way, **completion belongs to the merge**: forge moves an Issue to in review, never to done — the tracker's own PR integration or the human closes it.
 
 ## Create Issue
 
@@ -93,6 +108,26 @@ Given keywords:
 **Markdown:** grep `plan/INDEX.md` and `plan/issues/` for relevant keywords.
 
 **Other provider:** use the declared tool to search.
+
+## Link PR
+
+Given an Issue ID and the PR:
+
+**GitHub:** `Closes #<ID>` as the last line of the PR body — the merge closes the Issue.
+
+**Markdown:** `Closes <ID>` in the PR body, and the PR URL in the issue file's `pr` frontmatter.
+
+**Other provider:** the tracker's ID in the PR body in the form its PR integration recognizes, plus the declared tool's link or attachment operation.
+
+## Mark in Review
+
+Given an Issue ID, once its PR is open:
+
+**GitHub:** nothing to do — the linked open PR shows it.
+
+**Markdown:** set `status: in-review` in the issue file and its INDEX.md row.
+
+**Other provider:** move the Issue to the tracker's in-review state with the declared tool. Never to done.
 
 ## Close Issue
 

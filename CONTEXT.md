@@ -4,7 +4,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 ## Language
 
-**Issue tracker** — system tracking Issues. Providers: GitHub (default, via `gh`), markdown `plan/` folder ([spec](skills/_shared/plan-folder-spec.md)), or user-configured (declared in AGENTS.md). Detection: AGENTS.md declaration → `plan/` directory → GitHub fallback.
+**Issue tracker** — system tracking Issues. Providers: GitHub (default, via `gh`), markdown `plan/` folder ([spec](skills/_shared/plan-folder-spec.md)), or user-configured (declared in AGENTS.md — a named skill to delegate to, an MCP server, or a CLI). Completion belongs to the merge: forge marks an Issue in review, never done. Detection: AGENTS.md declaration → `plan/` directory → GitHub fallback.
 
 **Issue** — one tracked unit of work. Carries title, body, and labels; the AFK/HITL mode is recorded at creation (Issue body on GitHub, `mode` frontmatter in the markdown provider).
 
