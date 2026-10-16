@@ -4,14 +4,14 @@ How skills report progress to whatever started them.
 
 ## The Seam
 
-At every stage transition, run the bundled script by its full path inside the skill's directory. It calls `FORGE_STATUS_CMD` when the environment sets it, and otherwise prints `[forge] <state>: <detail>`:
+At every stage transition, run the bundled script by its full path under `<skill dir>`: the directory of the SKILL.md you loaded, which runtimes state as the skill's base directory. Every skill reaches `_shared/scripts/` through its `_shared` symlink. The script calls `FORGE_STATUS_CMD` when the environment sets it, and otherwise prints `[forge] <state>: <detail>`:
 
 ```bash
 # <state> is one word from the table below; <detail> is one short human-readable line
 <skill dir>/_shared/scripts/forge-status.sh <state> "<detail>"
 ```
 
-Write the path out in full; never call `"$FORGE_STATUS_CMD"` or the script through a variable, because runtimes refuse a command whose name is computed at runtime. It may lead the command that starts the stage (`<skill dir>/_shared/scripts/forge-status.sh waiting "CI"; gh pr checks …`), so a transition costs no extra tool call, and it always exits 0. If the install lost the executable bit, run it with `bash <path>`. A launcher provides `FORGE_STATUS_CMD`; skills never do.
+Write the path out in full; never call `"$FORGE_STATUS_CMD"` or the script through a variable, because runtimes refuse a command whose name is computed at runtime. It may lead the command that starts the stage (`<skill dir>/_shared/scripts/forge-status.sh waiting "CI"; gh pr checks …`), so a transition costs no extra tool call, and it always exits 0. A script that isn't executable is an install problem: report it in the summary rather than working around it. A launcher provides `FORGE_STATUS_CMD`; skills never do.
 
 ## States
 
