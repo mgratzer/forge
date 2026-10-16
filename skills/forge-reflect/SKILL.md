@@ -66,16 +66,11 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 
 ### Step 4: Triage Findings
 
-Sort each Finding:
-
-- **Fix now:** in-scope P0–P2 findings and small follow-up work (missing tests, stale docs, duplicated lines, modest refactors that fit the current change). Fix and commit these without asking, and list what you fixed.
-- **Would defer:** the Finding is truly out of scope, materially expands the PR, or needs separate design or review (a cross-cutting refactor, a new feature, a separate migration strategy).
-
-Ask one AskUserQuestion, only when there are findings you would defer: list them with your recommendation and let the user pick which to fix now. Create an Issue for each one still deferred in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)), with context and a proposed solution.
+Triage per *Triage* in the [review rubric](_shared/review-rubric.md): fix in-scope P0–P2 findings and small follow-up work without asking, and ask one AskUserQuestion only about the findings you would defer. Each one still deferred becomes an Issue.
 
 ### Step 5: Report
 
-Aggregate findings from all review passes (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) into the summary format below. Deduplicate any findings flagged by multiple passes; keep the highest severity.
+Report the findings (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) in the format below.
 
 ## Output Format
 
@@ -101,7 +96,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 
 ## Guidelines
 
-- **Bias toward fixing in the same PR:** only create Issues for confirmed deferrals that are truly larger or out of scope
+- **Bias toward fixing in the same PR:** defer only what is truly larger or out of scope
 
 ## Related Skills
 

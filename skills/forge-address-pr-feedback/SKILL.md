@@ -15,22 +15,21 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 **Unattended mode:** `--unattended` never asks; Steps 2–3 say what happens instead.
 
-**Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, with no code changes and nothing posted.
+**Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, changing and posting nothing.
 
-**Wait mode:** `--wait` derives `PR_NUMBER` (Step 1's first lines), requests the peer reviewers (configured, or discovered per peer-review-wait) who haven't reviewed the latest commit, and waits for them per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER`; then it addresses what they left.
+**Wait mode:** `--wait` first requests and waits for the peer reviewers per [peer-review-wait](_shared/peer-review-wait.md), with `PR` from Step 1, then addresses what they left.
 
 ## Process
 
 ### Step 1: Fetch Unaddressed Feedback
 
-**Use GraphQL:** the REST API does NOT expose `isResolved` status on review threads. Threads whose last comment is ours are awaiting the reviewer, so they are filtered out here in every mode. When composed by `forge-guard`, reuse its `$PR` and `$ME` instead of re-deriving them.
+**Use GraphQL:** the REST API does NOT expose `isResolved` on review threads. Threads whose last comment is ours await the reviewer, so they are filtered out. When composed by `forge-guard`, reuse its `$PR` and `$ME`.
 
 ```bash
-# Derive owner/repo from the checkout
 PR_ARG="<PR number or URL, empty for the current branch's PR>"
 OWNER=$(gh repo view --json owner --jq .owner.login)
 REPO=$(gh repo view --json name --jq .name)
-PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)   # empty PR_ARG → PR for the current branch
+PR_NUMBER=$(gh pr view $PR_ARG --json number --jq .number)
 ME=$(gh api user --jq .login)
 FEEDBACK=$(mktemp)
 
@@ -58,7 +57,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 jq ".data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false and .comments.nodes[-1].author.login != \"$ME\")" "$FEEDBACK"
 ```
 
-**Top-level feedback counts too**, when it contains findings: review bodies and PR comments by others since our last PR comment, including bot summaries edited in place since then. Skip overviews and walkthroughs with no findings, and anything that only repeats an inline thread:
+**Top-level feedback counts too** when it has findings: review bodies and PR comments by others since our last PR comment, including bot summaries edited since. Skip overviews and repeats of inline threads:
 
 ```bash
 jq --arg me "$ME" '.data.repository.pullRequest
@@ -67,32 +66,24 @@ jq --arg me "$ME" '.data.repository.pullRequest
      (.comments.nodes[] | select(.author.login != $me and ((.lastEditedAt // .createdAt) > $since)))]' "$FEEDBACK"
 ```
 
-**Who wrote it decides how we answer:** an author whose `__typename` is `Bot`, or whose `Peer reviewers` entry carries a `[bot]` suffix, is a bot reviewer; everyone else, including a person listed in `Peer reviewers`, is a human colleague.
+**Who wrote it decides how we answer:** an author whose `__typename` is `Bot`, or whose `Peer reviewers` entry carries a `[bot]` suffix, is a bot reviewer; everyone else is a human colleague.
 
 ### Step 2: Process Each Item
 
-For each unaddressed thread or top-level item, read the file and surrounding context, then categorize:
-- **Actionable:** code change needed
-- **Question:** respond with explanation
-- **Discussion:** assess if change improves code
-- **Already addressed:** thread not resolved but change was made
-- **Won't fix:** current approach is preferred
-- **Deferred:** valid but out of scope; becomes a Deferred item (new Issue)
+Read the file and surrounding context, then categorize: **Actionable** (code change needed), **Question** (explain), **Discussion** (assess whether the change improves the code), **Already addressed** (changed, thread still open), **Won't fix** (the current approach is preferred), or **Deferred** (valid but out of scope; becomes a new Issue).
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> (<what each costs>)", leave the thread open, and list it under *needing a human decision* in the summary. Never resolve it or hide it in an Issue.
+For a **Discussion** the user should decide, ask via AskUserQuestion. **In unattended mode:** decide when the code or project conventions settle it, citing that evidence; otherwise reply "Needs your decision: <option A> vs <option B> (<what each costs>)", leave the thread open, and list it under *needing a human decision*, never resolved or hidden in an Issue.
 
 ### Step 3: Address and Reply Individually
 
-Address each item and reply before moving to the next, so every reply can cite the commit that resolved it.
+Address each item and reply before the next, so every reply can cite its commit.
 
-**Bot reviewers, and everyone in unattended mode:** post the reply as below. **Human colleagues in attended mode:** make the change and commit as usual, but don't post or resolve anything: write a ready-to-paste Markdown reply for the summary, with the thread URL, and ask via AskUserQuestion when a claim isn't actionable or is unclear. Top-level items get one PR comment that answers each in turn, or one drafted comment for a human.
+**Bot reviewers, and everyone in unattended mode:** post the reply. **Human colleagues in attended mode:** commit the change but post and resolve nothing; draft a ready-to-paste reply with the thread URL for the summary, and ask via AskUserQuestion when a claim is unclear. Top-level items get one PR comment answering each in turn (drafted, for a human).
 
 For each thread:
 
-1. **Make the change** (if actionable)
-2. **Run lint/format/checks**
-3. **Commit**: `git commit -m "fix: address PR feedback (<brief description>)"`
-4. **Reply, and resolve when the outcome is concrete**: Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin, because interpolating it into the query breaks on quotes and newlines:
+1. **Make the change** (if actionable), run the checks, and commit: `git commit -m "fix: address PR feedback (<brief description>)"`
+2. **Reply, and resolve when the outcome is concrete** (Actionable, Already addressed, Deferred); the others stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` to keep it open); pass the reply on stdin, since interpolating it breaks on quotes and newlines:
 
 ```bash
 gh api graphql -f threadId="<THREAD_ID>" -F body=@- -f query='
@@ -108,34 +99,22 @@ mutation($threadId: ID!, $body: String!) {
 REPLY_EOF
 ```
 
-Reply format by category:
-- **Actionable**: "Fixed in `<sha>`. <what changed>"
-- **Question**: "<answer with code references>"
-- **Discussion**: "<decision and reasoning>"
-- **Already addressed**: "Addressed in `<sha>`."
-- **Won't fix**: "Keeping current approach because <reason>."
-- **Deferred**: "Created #<num> to track this."
+Reply by category: **Actionable** "Fixed in `<sha>`. <what changed>"; **Question** "<answer with code references>"; **Discussion** "<decision and reasoning>"; **Already addressed** "Addressed in `<sha>`."; **Won't fix** "Keeping current approach because <reason>."; **Deferred** "Created #<num> to track this."
 
 ### Step 4: Create Issues for Deferred Items
 
-For each Deferred item, create an Issue in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Include the PR context: reviewer's comment, PR number, and proposed solution.
+Create an Issue per Deferred item (see [issue-operations](_shared/issue-operations.md)) with the reviewer's comment, the PR number, and a proposed solution.
 
 ### Step 5: Push and Summarize
 
-When this run changed code, run the `(each push)` extra passes first ([quality-passes](_shared/quality-passes.md)).
+When this run changed code, run the `(each push)` extra passes first ([quality-passes](_shared/quality-passes.md)), then `git push`.
 
-```bash
-git push
-```
-
-Report: threads addressed, commits created, Deferred items created, threads needing a human decision, and under **Replies to post** each drafted reply for a human colleague with its thread URL.
+Report: threads addressed, commits, Deferred items, threads needing a human decision, and under **Replies to post** each drafted reply for a human colleague with its thread URL.
 
 ## Guidelines
 
-- **GraphQL for discovery:** REST API doesn't show resolution status
 - **Address, reply, then next:** don't batch
 - **Be specific:** reference commits, line numbers, and code
-- **Test changes:** run checks before committing
 - **Write replies for people:** follow [writing](_shared/writing.md)
 
 ## Related Skills
