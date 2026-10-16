@@ -83,6 +83,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 ## Reflection Summary
 
 **Scope:** <PR #N | branch <name> vs <default> | uncommitted changes>
+**Review:** inline (tiny diff) | fresh-context, <n> passes | self (reviewer failed)
 
 ### Findings
 #### <file>

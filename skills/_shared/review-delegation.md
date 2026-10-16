@@ -67,7 +67,7 @@ Report `reviewing` via [status-reporting](status-reporting.md), then use the cho
 
 Wait for **all planned review passes** before proceeding, with a bound: about 20 minutes per pass, or the runtime's sub-agent timeout when it has one.
 
-**When a reviewer fails.** A sub-agent that fails to start, errors, returns nothing, or exceeds the bound gets one retry with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary, and the same caveat for the PR body drafter as a known limitation. Never fall back to inline review silently. When the runtime rejects a per-task model or effort setting, retry once with the parent session's settings; that is not a failed reviewer.
+**When a reviewer fails.** A sub-agent that fails to start, errors, returns nothing, or exceeds the bound gets one retry with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary, in the review record's *How the review ran* when the project declares one (see [review-record](review-record.md)), and as a known limitation for the PR body drafter. Never fall back to inline review silently. When the runtime rejects a per-task model or effort setting, retry once with the parent session's settings; that is not a failed reviewer.
 
 ## Aggregate Findings
 
