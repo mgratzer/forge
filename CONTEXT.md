@@ -38,7 +38,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Addressed feedback**: an unresolved review thread whose last comment is ours, a thread we resolved, or a top-level review or comment we answered after it was posted. Unaddressed feedback blocks review-ready. _Avoid_: "addressed thread" for top-level items.
 
-**Shipping settings:** every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
+**Shipping settings:** every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. Forge defines a setting only when it acts on it mechanically; every other project convention stays prose in AGENTS.md. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
 
 **Quality pass:** a focused pass after the fresh-context review that owns one dimension: simplify, security, or a project-declared extra pass. Each dimension has exactly one owner per run; an extra pass marked `covers: <dimension>` replaces forge's own pass for it, and one marked `each push` runs again before every later push that changes code. See [quality-passes](skills/_shared/quality-passes.md).
 

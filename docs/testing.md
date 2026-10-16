@@ -41,8 +41,9 @@ The most reliable test is running the skill on a real project:
 6. For `forge-reflect` and `forge-ship`, verify review stays lean by default: tiny low-risk diffs stay inline, ordinary diffs use one reviewer, and a second pass appears only for clearly high-risk or broad changes
 7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging or marking the draft ready; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`. Add a check that already fails on the base branch and one that fails only on its first attempt: the guard leaves the first alone, reruns the second once, and neither costs a round
 8. For local mode, run `forge-ship --local` and check nothing was pushed and the summary says `ready-for-local-review`; add a commit to the default branch, then run `forge-ship --publish` and check it rebased, re-ran the gates, and drafted the same kind of body
-9. For a launcher, run it with `--dry-run` first and check the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
-10. For the worktree scripts, pipe the JSON by hand (below), then run one `claude -w probe -p 'run pwd'` and check the printed path is the hook's, not `.claude/worktrees/`
+9. For extra passes, declare a trivial skill marked `(each push)` and check it runs once in the quality passes and again before each guard round or feedback push that changes code, and not before a push that changes none
+10. For a launcher, run it with `--dry-run` first and check the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
+11. For the worktree scripts, pipe the JSON by hand (below), then run one `claude -w probe -p 'run pwd'` and check the printed path is the hook's, not `.claude/worktrees/`
 
 ### 4. Cross-Skill Consistency Check
 
