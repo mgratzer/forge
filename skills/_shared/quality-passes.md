@@ -8,8 +8,8 @@ Each dimension has exactly one owner per run, the first that applies:
 
 | Dimension | Owner, in order of preference | Runs |
 |-----------|-------------------------------|------|
-| Simplify | an extra pass marked `covers: simplify` → the runtime's simplification skill (Claude Code: `/simplify`) → [review-delegation](review-delegation.md) with the default checklist narrowed to items 3, 5, and 6 of [review-dimensions](review-dimensions.md) | always |
-| Security | an extra pass marked `covers: security` → the runtime's security review skill (Claude Code: `/security-review`) → review-delegation with the **Security & Correctness** deep pass | when triggered |
+| Simplify | an extra pass marked `covers: simplify` → the runtime's simplification skill (for example Claude Code's `/simplify`) → [review-delegation](review-delegation.md) with the default checklist narrowed to items 3, 5, and 6 of [review-dimensions](review-dimensions.md) | always |
+| Security | an extra pass marked `covers: security` → the runtime's security review skill (for example Claude Code's `/security-review`) → review-delegation with the **Security & Correctness** deep pass | when triggered |
 
 The security pass replaces review-delegation's mandatory security second reviewer; the default reviewer keeps its light security dimension.
 

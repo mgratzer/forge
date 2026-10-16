@@ -7,9 +7,9 @@ Tests prove what the tests say. Driving the changed path once in the running app
 When the diff changes runtime behavior (not only docs, tests, CI configuration, or comments) and a recipe exists:
 
 1. The `Exercise:` Shipping setting (see [project-config](../_shared/project-config.md)): a command, or a pointer to an AGENTS.md section or doc that says how to run the app
-2. Otherwise the runtime's skill for running the project (Claude Code: `/run`)
+2. Otherwise the runtime's skill for running the project (for example Claude Code's `/run`)
 
-With neither, report `not exercised: no recipe`. Never guess how to start the app. A recipe section can spell out each part:
+With neither, skip the exercise and report `not exercised: no recipe`. Never guess how to start the app. A recipe section can spell out each part:
 
 ```markdown
 ## Local Verification
