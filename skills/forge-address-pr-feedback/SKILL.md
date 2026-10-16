@@ -17,7 +17,7 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 **Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, changing and posting nothing.
 
-**Wait mode:** `--wait` first requests and waits for the peer reviewers per [peer-review-wait](_shared/peer-review-wait.md), with `PR` from Step 1, then addresses what they left.
+**Wait mode:** `--wait` first requests and waits for the peer reviewers per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER` from Step 1, then addresses what they left.
 
 ## Process
 
@@ -107,7 +107,7 @@ Create an Issue per Deferred item (see [issue-operations](_shared/issue-operatio
 
 ### Step 5: Push and Summarize
 
-When this run changed code, run the `(each push)` extra passes first ([quality-passes](_shared/quality-passes.md)), then `git push`.
+When this run changed code, run the `(each push)` extra passes first ([quality-passes](_shared/quality-passes.md)), unless forge-guard composed this run: guard runs them itself. Then `git push`.
 
 Report: threads addressed, commits, Deferred items, threads needing a human decision, and under **Replies to post** each drafted reply for a human colleague with its thread URL.
 

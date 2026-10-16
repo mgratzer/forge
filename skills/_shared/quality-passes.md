@@ -1,6 +1,6 @@
 # Quality Passes
 
-Focused passes that run after the fresh-context review, each owning one dimension, so no dimension is reviewed twice. Used by `forge-ship`, `forge-guard` (unless ship composed it), and, for `(each push)` passes, `forge-address-pr-feedback`.
+Focused passes that run after the fresh-context review, each owning one dimension, so no dimension is reviewed twice. Used by `forge-ship`, `forge-guard` (unless ship composed it), and, for `(each push)` passes, `forge-address-pr-feedback` run on its own.
 
 ## Owners
 
@@ -28,7 +28,7 @@ A project appends its own passes in the `## Shipping` section:
 ```
 
 - **`(covers: <dimension>)`** hands that dimension to the extra pass, so forge's own pass for it doesn't run.
-- **`(each push)`** runs the pass again before every later push that changes code: a guard round, the publish step, a standalone `forge-address-pr-feedback` run. A project that needs an attestation of what was reviewed (a sign-off commit, a review log) declares its own skill this way; forge only runs it.
+- **`(each push)`** runs the pass again before any push that changes code since the pass last ran: a guard round (guard runs it, including for the feedback runs it composes), the publish step, a standalone `forge-address-pr-feedback` run. A project that needs an attestation of what was reviewed (a sign-off commit, a review log) declares its own skill this way; forge only runs it.
 
 Run forge's own passes first, then each extra pass in declared order, one at a time on the branch diff, because they edit the same working tree. Run a skill-backed pass in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session. An extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes to the next owner.
 

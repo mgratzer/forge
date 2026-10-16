@@ -48,7 +48,7 @@ Check the terminal conditions first, on every round:
 - **`review-ready`:** CI green, review signal satisfied, no unaddressed feedback (forge-address-pr-feedback Step 1), nothing needing a human decision
 - **`needs-human`:** a wait cap expires without its signal (on a draft PR, say so), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (name each check and why)
 
-Otherwise react and go back to Step 3. Each reaction is one **round**: a fix for a caused CI failure, or a feedback pass. One that changes code runs the `(each push)` extra passes ([quality-passes](_shared/quality-passes.md)) before it pushes.
+Otherwise react and go back to Step 3. Each reaction is one **round**: a fix for a caused CI failure, or a feedback pass. One that changes code runs the `(each push)` extra passes ([quality-passes](_shared/quality-passes.md)) before it pushes; for a feedback pass, between its commits and its push.
 
 **CI failed:** report `addressing` and sort each failed check before touching anything:
 
@@ -61,8 +61,10 @@ gh run view "$RUN" --json attempt --jq .attempt
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
 
-- **Pre-existing:** the same check fails on the base branch's latest completed run; leave it. With no completed base run (a stacked base, a pull-request-only workflow), sort on the log alone.
-- **Flaky:** infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check passes on base. Rerun with `gh run rerun "$RUN" --failed` only while `attempt` is 1.
+With no completed base run (a stacked base, a pull-request-only workflow), the base comparison below can't be made, so sort on the log alone.
+
+- **Pre-existing:** the same check fails on the base branch's latest completed run; leave it.
+- **Flaky:** infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun with `gh run rerun "$RUN" --failed` only while `attempt` is 1.
 - **Caused:** everything else. Fix it, run the quality gates, commit, push.
 - **Not an Actions job:** a check with no `workflow` can't be compared or rerun. Fix it only when its description and link point at the diff; otherwise leave it for the human.
 

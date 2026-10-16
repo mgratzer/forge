@@ -40,7 +40,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Shipping settings:** every forge setting, declared in a `## Shipping` section of the project's AGENTS.md (which wins) or of the user's `~/.config/forge/shipping.md`, else defaulted. Forge defines a setting only when it acts on it mechanically; every other project convention stays prose in AGENTS.md. `## Unattended Shipping` is still read as a legacy heading. See [project-config](skills/_shared/project-config.md). _Avoid_: "unattended config" for the whole set.
 
-**Quality pass:** a focused pass after the fresh-context review that owns one dimension: simplify, security, or a project-declared extra pass. Each dimension has exactly one owner per run; an extra pass marked `covers: <dimension>` replaces forge's own pass for it, and one marked `each push` runs again before every later push that changes code. See [quality-passes](skills/_shared/quality-passes.md).
+**Quality pass:** a focused pass after the fresh-context review that owns one dimension: simplify, security, or a project-declared extra pass. Each dimension has exactly one owner per run; an extra pass marked `covers: <dimension>` replaces forge's own pass for it, and one marked `each push` runs again before any push that changes code since it last ran. See [quality-passes](skills/_shared/quality-passes.md).
 
 **Local review / Publish:** in local mode a ship stops at `ready-for-local-review` with nothing pushed; **publish** is the later step that rebases, pushes, and opens the PR. _Avoid_: "ship" for the publish step alone.
 

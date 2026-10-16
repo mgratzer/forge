@@ -28,9 +28,10 @@
 - **Alternative implementations:** "you could also do this with X" when the current approach works
 - **Missing tests for trivial code:** getters, simple mappings, framework boilerplate
 - **TODOs for unrelated improvements:** stay within the PR's scope
+
 ## Triage
 
-How the calling skill sorts the aggregated findings, attended or not:
+For the calling skill; reviewers skip this section. How it sorts the aggregated findings, attended or not:
 
 - **Fix now:** in-scope P0–P2 findings and small follow-up work that fits the change (a missing test, a stale doc, a modest refactor). Commit the fixes and list them, without asking.
 - **Defer:** what is truly out of scope, materially expands the change, or needs separate design. It becomes an Issue ([issue-operations](issue-operations.md)) with context and a proposed solution. In attended mode, ask one question first: list the deferrals with your recommendation and let the user pick which to fix now.
