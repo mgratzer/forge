@@ -76,11 +76,11 @@ Report `ready-for-local-review` via [status-reporting](_shared/status-reporting.
 
 ### Step 8: Guard (only with `--guard`)
 
-Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes; *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md): the PR is open and self-reviewed, and the human takes it from there.
+Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes; *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md), or `needs-human` when an unattended run left a decision open: the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 9: Summarize
 
-Report implementation, review, and guard results together. List issues the review or a pass found outside this change as follow-ups (filed as Issues in unattended mode). In unattended mode, a decision left open for a human makes the result `needs-human`, not `pushed` or `review-ready`.
+Report implementation, review, and guard results together. List **follow-ups**: issues reported outside this change that are neither a Finding nor a thread already deferred (filed as Issues in unattended mode). Each item appears once, under Deferred or Follow-ups.
 
 ## Output Format
 
@@ -105,7 +105,7 @@ Report implementation, review, and guard results together. List issues the revie
 - Review: fresh-context, <n> passes | self (reviewer failed)
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
-- Follow-ups: <issues a reviewer or pass reported outside this change; Issues in unattended mode> | none
+- Follow-ups: <reported issues outside this change, not already deferred; Issues in unattended mode> | none
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
 - Record: <sha> covering <range> | not declared | at publish (local)
 - Passes: simplify <n> applied | covered by <pass>; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available

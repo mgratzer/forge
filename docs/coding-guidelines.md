@@ -116,7 +116,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged | reflect, ship |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
-| Follow-ups in the summary | Reviewer-reported issues outside the change are listed as follow-ups (Issues when unattended); an open decision for a human makes the result `needs-human` | ship, guard |
+| Follow-ups in the summary | Reported issues outside the change that are neither a Finding nor an already deferred thread, listed once (Issues when unattended); an open decision for a human makes the result `needs-human` | ship, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
 | Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship, guard, batch |
