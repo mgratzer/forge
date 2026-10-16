@@ -43,7 +43,7 @@ Fixed findings are committed; deferred items become Issues (see [issue-operation
 
 ### Step 4: Run Quality Passes
 
-Run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes), triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
+Run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes), triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it. When a pass's skill returns its report, go on to Step 5 in the same turn; the report is triage input, not the end of the ship.
 
 ### Step 5: Exercise the Change (delegate)
 

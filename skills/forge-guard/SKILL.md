@@ -29,7 +29,7 @@ Read the Shipping settings per [project-config](_shared/project-config.md): peer
 
 ### Step 2: Run Quality Passes
 
-Skip this step when `forge-ship --guard` composed the guard; ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes) with unattended triage, write the review record when the project declares one, and push once.
+Skip this step when `forge-ship --guard` composed the guard; ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes) with unattended triage, write the review record when the project declares one, and push once. An inline pass's closing report is not the end of the run: push what it committed and go on to Step 3 in the same turn.
 
 ### Step 3: Wait for Signals
 
