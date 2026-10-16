@@ -49,4 +49,10 @@ Verify before proceeding to the next phase:
 - [ ] Tests exist for new behavior in this phase
 - [ ] All tests pass (not just new ones)
 - [ ] No lint/type errors introduced
-- [ ] Commit the phase: one logical change per commit, conventional format
+- [ ] Commit the phase: one logical change per commit, conventional format, under the configured git identity (never change `user.name` or `user.email`)
+
+## When Tests Fail
+
+- **Environmental:** connection refused or closed, a missing database or service, a port already taken. Start the project's test services (its bootstrap script, or the command AGENTS.md or the docs give) and run again. With no documented way, ask in attended mode; in unattended mode, stop with `needs-human` and the reason rather than continue. A suite that couldn't reach its service is reported as skipped, never as passing.
+- **The changed module's own tests** failing is never pre-existing. That failure belongs to this change.
+- **Pre-existing** takes proof from the base: the same check's latest CI result on the base branch, or a run in a throwaway worktree (`git worktree add --detach <path> origin/<BASE>`, removed afterwards). Never `git stash` to get there.

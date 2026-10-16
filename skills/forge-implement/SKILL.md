@@ -84,13 +84,14 @@ Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 
 ### Step 7: Run Final Quality Gate
 
-Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts):
+Run all project quality checks. Discover them from AGENTS.md, project docs, repository scripts, and the CI workflow files (`.github/workflows/` or the CI system's config): a codegen-is-current step or a coverage threshold that only CI enforces is a gate here too.
 
 - [ ] Lint: no violations
 - [ ] Format: no violations
 - [ ] Type check: no errors
-- [ ] All tests pass. A suite skipped because a service isn't running is reported as skipped, never as passing
-- [ ] **Test coverage ≥ 90% for new/modified code:** run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
+- [ ] Generated code current, when CI checks it
+- [ ] All tests pass. Treat failures per *When Tests Fail* in [phase-execution](_shared/phase-execution.md): start missing test services instead of writing failures off, and never call a failure in the changed module's tests pre-existing
+- [ ] **Test coverage ≥ 90% for new/modified code**, or CI's threshold when that is stricter: run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
 
 Fix issues and commit fixes.
 

@@ -56,7 +56,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Pattern audit:** when a pattern changes, find every other place using its old shape and update it. See [pattern-audit](skills/_shared/pattern-audit.md).
 
-**Quality gates:** lint, format, type check, tests, and coverage (≥90% on new/modified code where tooling exists). Run at phase gates, before commit, PR push, and reflection.
+**Quality gates:** lint, format, type check, tests, and coverage (≥90% on new/modified code where tooling exists), plus any check the CI workflows enforce (generated code, a coverage threshold). Run at phase gates, before commit, PR push, and reflection.
+
+**Environmental failure:** a test failure caused by a missing service or database (connection refused, port taken), not by code. It is fixed by starting the service, never written off as pre-existing. See [phase-execution](skills/_shared/phase-execution.md).
 
 **Attended / unattended:** default pauses for confirmation; `--unattended` uses severity-gated heuristics.
 
