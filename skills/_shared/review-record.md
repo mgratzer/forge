@@ -13,7 +13,7 @@ The value points at the format spec: a path in the repository, a URL, or a secti
 - **Tree:** `git rev-parse 'HEAD^{tree}'` at the moment of writing
 - **Range:** the commits this record covers: `<previous record>..HEAD`, or `origin/<BASE>..HEAD` for the first
 - **Verdict inputs:** findings fixed, deferred (with their Issue IDs), and still open; decisions left for the human
-- **How the review ran:** fresh-context reviewer passes, which quality passes ran and who owned each dimension
+- **How the review ran:** fresh-context reviewer passes, or `review: self (reviewer failed)` when a reviewer failed (see [review-delegation](review-delegation.md)); which quality passes ran and who owned each dimension
 
 Map them onto the spec's fields. For a field forge has no fact for, follow the spec's rule for unknowns, or leave it out and name it in the summary. Write the record the way the spec says, typically an empty commit (`git commit --allow-empty -F <message-file>`).
 

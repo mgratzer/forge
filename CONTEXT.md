@@ -44,7 +44,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Local review / Publish:** in local mode a ship stops at `ready-for-local-review` with nothing pushed; **publish** is the later step that rebases, writes the review record, pushes, and opens the PR. _Avoid_: "ship" for the publish step alone.
 
-**Serialized resource:** a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project; see [project-config](skills/_shared/project-config.md).
+**Serialized resource:** a file two Issues must never change in the same Wave (migrations, lockfiles, generated files), or test services every checkout shares (`Test infrastructure: shared`). Declared per project; see [project-config](skills/_shared/project-config.md).
 
 **Wave:** a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 
@@ -56,7 +56,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Pattern audit:** when a pattern changes, find every other place using its old shape and update it. See [pattern-audit](skills/_shared/pattern-audit.md).
 
-**Quality gates:** lint, format, type check, tests, and coverage (≥90% on new/modified code where tooling exists). Run at phase gates, before commit, PR push, and reflection.
+**Quality gates:** lint, format, type check, tests, and coverage (≥90% on new/modified code where tooling exists), plus any check the CI workflows enforce (generated code, a coverage threshold). Run at phase gates, before commit, PR push, and reflection.
+
+**Environmental failure:** a test failure caused by a missing service or database (connection refused, port taken), not by code. It is fixed by starting the service, never written off as pre-existing. See [phase-execution](skills/_shared/phase-execution.md).
 
 **Attended / unattended:** default pauses for confirmation; `--unattended` uses severity-gated heuristics.
 

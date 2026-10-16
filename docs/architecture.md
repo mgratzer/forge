@@ -20,7 +20,7 @@ forge/
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
 │   │   ├── quality-passes.md              # Simplify, security, and extra passes; one owner per dimension
 │   │   ├── review-record.md               # Optional project-declared review attestation commit
-│   │   ├── peer-review-wait.md            # Request and wait for the configured peer reviewers
+│   │   ├── peer-review-wait.md            # Resolve (or discover), request, and wait for the peer reviewers
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults
@@ -31,6 +31,7 @@ forge/
 │   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
+│   │   ├── scripts/                       # Runnable helpers: forge-status.sh, wait-reviews.sh
 │   │   └── roles/                         # Cross-skill personas: forge-reviewer, forge-scout
 │   ├── forge-create-issue/
 │   │   ├── SKILL.md                       # Step 1: Plan and create Issues (provider-agnostic)
@@ -71,7 +72,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a draft PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), triages findings with the user, runs the quality passes, exercises the changed path when the project says how to run it, and only then publishes (rebase, push, PR) so its blind-drafted body describes the final diff and carries the evidence; in local mode it stops before publishing and `--publish` finishes later; with `--guard` it continues with forge-guard's process
+- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), fixes in-scope findings and asks the user only about deferrals, runs the quality passes, exercises the changed path when the project says how to run it, and only then publishes (rebase, push, PR) so its blind-drafted body describes the final diff and carries the evidence; in local mode it stops before publishing and `--publish` finishes later; with `--guard` it continues with forge-guard's process
 - **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewers, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human`; it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
@@ -121,5 +122,6 @@ Long sessions still cost: each turn re-reads the context, so accumulated history
 | PRs open as drafts | `gh pr create --draft` unless the project declares `Pull requests: ready`; no skill runs `gh pr ready` | The draft flag tells people an agent may still push; clearing it is the human's signal that review can start. Projects run CI and the peer reviewers on drafts; see [unattended](unattended.md#setup) |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output re-enters the context on every later turn and buys nothing; a blocked shell call costs nothing |
+| Runnable helpers in `_shared/scripts/` | Small POSIX-style bash scripts, called by a literal path, `<skill dir>/_shared/scripts/<script>` | Runtimes refuse a command whose name is computed at runtime, a shell loop, or a `sleep` prefix, and skills that inline them stall. A script with a fixed name runs as one plain command. Besides `contrib/`, this is the one place forge ships runnable code; the scripts stay runtime-agnostic and need only `bash` and `gh` |
 | One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files; surface gaps early |

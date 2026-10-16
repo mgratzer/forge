@@ -29,19 +29,19 @@ Read the Shipping settings per [project-config](_shared/project-config.md): peer
 
 ### Step 2: Run Quality Passes
 
-Skip this step when `forge-ship --guard` composed the guard; ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes) with unattended triage, write the review record when the project declares one, and push once.
+Skip this step when `forge-ship --guard` composed the guard; ship already ran the passes. Otherwise run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes) with unattended triage, write the review record when the project declares one, and push once. After the last pass and its triage (an inline skill's report is input, not the end of the turn), go on to Step 3 in the same turn.
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Request the peer reviewers first so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
+Report `waiting` (the CI command below leads with it). Resolve the reviewer list and request each reviewer first, so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
 
-**CI**: block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI, unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
+**CI**: block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. Never put a `sleep` in front of it; runtimes refuse that. "No checks reported" within 3 minutes of a push means the run has not registered yet: re-run the same command, spaced by the runtime's wait facility when it has one. After that, treat the repository as having no CI, unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
+<skill dir>/_shared/scripts/forge-status.sh waiting "CI"; gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 needs every failed check
 ```
 
-**Peer review**: wait for every listed reviewer per [peer-review-wait](_shared/peer-review-wait.md), after the CI wait. With no reviewer configured the signal is satisfied. Note any reviewer still missing in the summary.
+**Peer review**: after the CI wait, run `<skill dir>/_shared/scripts/wait-reviews.sh` and act on its exit code per [peer-review-wait](_shared/peer-review-wait.md). Note any reviewer still missing in the summary.
 
 ### Step 4: Decide, then React
 
@@ -72,6 +72,8 @@ Failures the branch didn't cause never start a round; keep waiting for the revie
 
 **Unaddressed feedback**: unresolved threads whose last comment is not `$ME`'s, and top-level items per forge-address-pr-feedback Step 1. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`, without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered feedback itself. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
+**Follow-ups** are issues reviewers report outside this change (pre-existing bugs, adjacent debt) that are neither a Finding nor a thread already deferred. File each as an Issue per [issue-operations](_shared/issue-operations.md) and list it once, under Follow-ups.
+
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
 ## Output Format
@@ -82,6 +84,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **PR:** #<number> <title>
 **Result:** review-ready | needs-human: <reason>
 **Rounds:** <n> of <max>
+**Reviewers:** <logins> (configured | found on recent PRs) | none (opted out | none found)
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
@@ -98,6 +101,10 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 ### Open for the human
 - <thread url>: <the decision, with both options>
 - Deferred: #<issue> <title>
+- No peer review: <why>   (when no reviewer was configured or found, or none reviewed)
+
+### Follow-ups
+- #<issue> <title>: <what the reviewer reported outside this change, not already under Deferred>
 ```
 
 ## Guidelines

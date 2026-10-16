@@ -35,7 +35,7 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 ### Step 3: Triage Findings
 
-**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now**: defer only changes that materially expand PR scope or are truly out of scope.
+**In attended mode (default):** fix in-scope P0–P2 findings without asking, and list what you fixed. Ask one question, only when there are findings you would defer because they are out of scope or materially larger: list them with your recommendation and let the user pick which to fix now. Plan approval is unchanged.
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
@@ -43,7 +43,7 @@ Fixed findings are committed; deferred items become Issues (see [issue-operation
 
 ### Step 4: Run Quality Passes
 
-Run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes), triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it.
+Run the [quality-passes](_shared/quality-passes.md) (simplify always, security when triggered, then the project's extra passes), triaging with Step 3's rule. Each dimension has one owner, so a declared pass that covers security replaces forge's own security pass instead of adding to it. After the last pass and its triage (an inline skill's report is input, not the end of the turn), go on to Step 5 in the same turn.
 
 ### Step 5: Exercise the Change (delegate)
 
@@ -76,11 +76,11 @@ Report `ready-for-local-review` via [status-reporting](_shared/status-reporting.
 
 ### Step 8: Guard (only with `--guard`)
 
-Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes; *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md): the PR is open and self-reviewed, and the human takes it from there.
+Run the [forge-guard](../forge-guard/SKILL.md) process on the PR opened above, skipping its quality passes; *Run Quality Passes* already ran them. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md), or `needs-human` when an unattended run left a decision open: the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 9: Summarize
 
-Report implementation, review, and guard results together.
+Report implementation, review, and guard results together. List **follow-ups**: issues reported outside this change that are neither a Finding nor a thread already deferred (filed as Issues in unattended mode). Each item appears once, under Deferred or Follow-ups.
 
 ## Output Format
 
@@ -102,8 +102,10 @@ Report implementation, review, and guard results together.
 <the commands from the exercise, ready to paste>
 
 ### Review Findings
+- Review: fresh-context, <n> passes | self (reviewer failed)
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
+- Follow-ups: <reported issues outside this change, not already deferred; Issues in unattended mode> | none
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
 - Record: <sha> covering <range> | not declared | at publish (local)
 - Passes: simplify <n> applied | covered by <pass>; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available

@@ -66,15 +66,12 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 
 ### Step 4: Triage Findings
 
-Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
+Sort each Finding:
 
-For each Finding, recommend one of (bias toward fix now):
-- **Fix now:** default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
-- **Defer:** only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
+- **Fix now:** in-scope P0–P2 findings and small follow-up work (missing tests, stale docs, duplicated lines, modest refactors that fit the current change). Fix and commit these without asking, and list what you fixed.
+- **Would defer:** the Finding is truly out of scope, materially expands the PR, or needs separate design or review (a cross-cutting refactor, a new feature, a separate migration strategy).
 
-State your recommendation and let the user decide. Then:
-- **Fix now:** apply the fix and commit it
-- **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)) with context and proposed solution
+Ask one AskUserQuestion, only when there are findings you would defer: list them with your recommendation and let the user pick which to fix now. Create an Issue for each one still deferred in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)), with context and a proposed solution.
 
 ### Step 5: Report
 
@@ -86,6 +83,7 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 ## Reflection Summary
 
 **Scope:** <PR #N | branch <name> vs <default> | uncommitted changes>
+**Review:** inline (tiny diff) | fresh-context, <n> passes | self (reviewer failed)
 
 ### Findings
 #### <file>

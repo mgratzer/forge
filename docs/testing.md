@@ -72,9 +72,11 @@ grep -rn "\.\./_shared" skills/*/SKILL.md   # references/ files may link ../_sha
 ### 5. Launcher Validation
 
 ```bash
-bash -n contrib/launchers/*.sh                      # syntax
+bash -n contrib/launchers/*.sh skills/_shared/scripts/*.sh   # syntax
 contrib/launchers/cmux-claude.sh --dry-run <issue>  # what it would do
 FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam end to end
 wt=$(printf '{"cwd":"%s","name":"probe"}' "$PWD" | contrib/worktree/create.sh)      # in a target repo
 printf '{"worktree_path":"%s"}' "$wt" | contrib/worktree/remove.sh
+skills/_shared/scripts/forge-status.sh waiting "smoke"       # prints [forge] waiting: smoke without FORGE_STATUS_CMD
+skills/_shared/scripts/wait-reviews.sh <pr> <reviewer>[bot]  # exits 0 when the bot reviewed after the latest commit
 ```
