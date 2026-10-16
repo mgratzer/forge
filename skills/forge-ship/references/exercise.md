@@ -25,10 +25,10 @@ A recipe section can spell out each part:
 ## How
 
 1. **Human actions come first, from the caller.** Before delegating, the caller asks the human for each blocked action the recipe names (a login, a running service, a key in `.env`) in attended mode, and passes which were done. The run itself never asks: a part that still needs a human is skipped and recorded as `not run: needs <action>`.
-2. **Start** the app per the recipe, in the background, and wait for readiness in one bounded shell loop.
+2. **Start** the app per the recipe, in the background, on this checkout's own ports where the recipe or the `Test infrastructure` setting allows, and wait for readiness in one bounded wait. A service already running that this run didn't start is never reused or stopped, unless `Test infrastructure` declares it shared.
 3. **Drive the changed path** once, the way a user or client would: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged.
 4. **Drive one failure case** where the change has one: an unauthorized caller, another tenant's data, invalid input.
-5. **Stop** everything you started.
+5. **Stop** everything you started, and nothing else.
 6. **Report**: the outcome (below); one evidence line per thing exercised, with the command and the observed result, no logs; one line for what wasn't covered and why, including the `not run: needs <action>` parts; and the commands a reviewer can paste to try it. Use the recipe's test credentials and never put a real secret into the report.
 
 ## Outcomes

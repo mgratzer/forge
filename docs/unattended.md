@@ -34,3 +34,4 @@ Once per project:
 - [ ] Put personal settings (assignee, labels, `After create`) in `~/.config/forge/shipping.md`, scoped per remote where they differ
 - [ ] Add the `## Shipping` section to `AGENTS.md`: PR state (forge opens drafts by default), peer reviewers, security-sensitive paths, serialized resources, max rounds, and optionally extra passes ([quality-passes](../skills/_shared/quality-passes.md)) and a review record ([review-record](../skills/_shared/review-record.md)); see [project-config](../skills/_shared/project-config.md). An existing `## Unattended Shipping` section keeps working
 - [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests
+- [ ] Declare `Test infrastructure`: how a checkout gets its own test database and ports, or `shared`, which makes `forge-batch` run one Issue per Wave. Parallel runs that share one database or fixed ports break each other's tests

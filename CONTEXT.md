@@ -44,7 +44,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Local review / Publish:** in local mode a ship stops at `ready-for-local-review` with nothing pushed; **publish** is the later step that rebases, writes the review record, pushes, and opens the PR. _Avoid_: "ship" for the publish step alone.
 
-**Serialized resource:** a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project; see [project-config](skills/_shared/project-config.md).
+**Serialized resource:** a file two Issues must never change in the same Wave (migrations, lockfiles, generated files), or test services every checkout shares (`Test infrastructure: shared`). Declared per project; see [project-config](skills/_shared/project-config.md).
 
 **Wave:** a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
 
