@@ -17,7 +17,7 @@ PR number or URL (`$ARGUMENTS`; auto-detects from current branch if omitted). Op
 
 **Assess mode:** `--assess` runs Steps 1–2 only: it categorizes each item and recommends an action, with no code changes and nothing posted.
 
-**Wait mode:** `--wait` derives `PR_NUMBER` (Step 1's first lines), requests the configured peer reviewers who haven't reviewed the latest commit, and waits for them per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER`; then it addresses what they left.
+**Wait mode:** `--wait` derives `PR_NUMBER` (Step 1's first lines), requests the peer reviewers (configured, or discovered per peer-review-wait) who haven't reviewed the latest commit, and waits for them per [peer-review-wait](_shared/peer-review-wait.md) with `PR=$PR_NUMBER`; then it addresses what they left.
 
 ## Process
 

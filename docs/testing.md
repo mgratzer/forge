@@ -78,5 +78,5 @@ FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam e
 wt=$(printf '{"cwd":"%s","name":"probe"}' "$PWD" | contrib/worktree/create.sh)      # in a target repo
 printf '{"worktree_path":"%s"}' "$wt" | contrib/worktree/remove.sh
 skills/_shared/scripts/forge-status.sh waiting "smoke"       # prints [forge] waiting: smoke without FORGE_STATUS_CMD
-skills/_shared/scripts/wait-reviews.sh <pr> <reviewer>[bot]  # in a repo with a PR the bot already reviewed: exits 0
+skills/_shared/scripts/wait-reviews.sh <pr> <reviewer>[bot]  # exits 0 when the bot reviewed after the latest commit
 ```

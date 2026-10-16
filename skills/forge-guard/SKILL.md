@@ -41,14 +41,14 @@ Report `waiting` (the CI command below leads with it). Resolve the reviewer list
 <skill dir>/_shared/scripts/forge-status.sh waiting "CI"; gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 needs every failed check
 ```
 
-**Peer review**: after the CI wait, run `_shared/scripts/wait-reviews.sh` per [peer-review-wait](_shared/peer-review-wait.md) and act on its exit code. An error post from a bot is not a review: re-request it once, and a second error is a `needs-human` reason naming the reviewer. Note any reviewer still missing in the summary.
+**Peer review**: after the CI wait, run `<skill dir>/_shared/scripts/wait-reviews.sh` and act on its exit code per [peer-review-wait](_shared/peer-review-wait.md). Note any reviewer still missing in the summary.
 
 ### Step 4: Decide, then React
 
 Check the terminal conditions first, on every round:
 
 - **`review-ready`:** CI green, review signal satisfied, no unaddressed feedback (threads or top-level items, per forge-address-pr-feedback Step 1), nothing needing a human decision
-- **`needs-human`:** anything that stops progress: a wait cap expires without its signal (on a draft PR, say so; some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, a bot reviewer errored twice, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
+- **`needs-human`:** anything that stops progress: a wait cap expires without its signal (on a draft PR, say so; some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
@@ -84,7 +84,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **PR:** #<number> <title>
 **Result:** review-ready | needs-human: <reason>
 **Rounds:** <n> of <max>
-**Reviewers:** <logins> (configured | found on recent PRs) | none configured or found
+**Reviewers:** <logins> (configured | found on recent PRs) | none (opted out | none found)
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes
