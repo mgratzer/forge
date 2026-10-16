@@ -33,22 +33,22 @@ Skip this step when `forge-ship --guard` composed the guard; ship already ran th
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Request the peer reviewers first so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
+Report `waiting` (the CI command below leads with it). Resolve the reviewer list and request each reviewer first, so their reviews overlap the CI wait, per [peer-review-wait](_shared/peer-review-wait.md).
 
-**CI**: block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI, unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
+**CI**: block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. Never put a `sleep` in front of it; runtimes refuse that. "No checks reported" within 3 minutes of a push means the run has not registered yet: re-run the same command, spaced by the runtime's wait facility when it has one. After that, treat the repository as having no CI, unless `.github/workflows/` exists and the PR is a draft, which means CI skips drafts: stop with `needs-human`:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
+<skill dir>/_shared/scripts/forge-status.sh waiting "CI"; gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 needs every failed check
 ```
 
-**Peer review**: wait for every listed reviewer per [peer-review-wait](_shared/peer-review-wait.md), after the CI wait. With no reviewer configured the signal is satisfied. Note any reviewer still missing in the summary.
+**Peer review**: after the CI wait, run `_shared/scripts/wait-reviews.sh` per [peer-review-wait](_shared/peer-review-wait.md) and act on its exit code. An error post from a bot is not a review: re-request it once, and a second error is a `needs-human` reason naming the reviewer. Note any reviewer still missing in the summary.
 
 ### Step 4: Decide, then React
 
 Check the terminal conditions first, on every round:
 
 - **`review-ready`:** CI green, review signal satisfied, no unaddressed feedback (threads or top-level items, per forge-address-pr-feedback Step 1), nothing needing a human decision
-- **`needs-human`:** anything that stops progress: a wait cap expires without its signal (on a draft PR, say so; some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
+- **`needs-human`:** anything that stops progress: a wait cap expires without its signal (on a draft PR, say so; some repositories skip CI or bot reviews on drafts, and `Pull requests: ready` opts out), the round limit is reached, a check the branch caused fails twice with the same error, a reviewer repeats an answered point, a bot reviewer errored twice, only threads needing a human decision remain, or everything else is ready but CI is red only from failures this branch didn't cause (the reason names each check and why)
 
 When neither applies, react and go back to Step 3. Each reaction is one **round**. When the project declares a review record, a reaction that changes code pushes only after it: commit, review the commits since the latest record, write a new record per [review-record](_shared/review-record.md), then push once.
 
@@ -82,6 +82,7 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 **PR:** #<number> <title>
 **Result:** review-ready | needs-human: <reason>
 **Rounds:** <n> of <max>
+**Reviewers:** <logins> (configured | found on recent PRs) | none configured or found
 **Next:** <the human's next step for the result, per status-reporting>
 
 ### Passes

@@ -94,6 +94,7 @@ Role names are prefixed with `forge-` to avoid shadowing generic names (`scout`,
 - Include comments in multi-step bash blocks explaining each command
 - Show both the command and the expected usage pattern
 - When reading repository files in examples, prefer the `Read` tool over shelling out with `cat`
+- No shell loops, `sleep`, or command names held in variables in a skill's bash: runtimes refuse them. Put the logic in a script under `skills/_shared/scripts/` and call it by its path inside the skill's directory
 
 ## Cross-Skill Consistency
 
@@ -129,7 +130,9 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard is always unattended |
 | Local mode | `--local` or `Publish: local` stops before the push at `ready-for-local-review`; `forge-ship --publish` rebases, reviews what isn't attested, and publishes; `--guard` always publishes | implement, ship |
-| Status reporting | Report state transitions through `FORGE_STATUS_CMD` (see `_shared/status-reporting.md`); terminal state exactly once | implement, review-delegation, guard, ship |
+| Status reporting | Report state transitions with `_shared/scripts/forge-status.sh`, which calls `FORGE_STATUS_CMD` (see `_shared/status-reporting.md`); terminal state exactly once | implement, review-delegation, guard, ship |
+| Runnable helpers | Loops, waits, and computed command names live in `_shared/scripts/*.sh`, called by a literal path inside the skill's directory, never inline in a skill | guard, address-pr-feedback (via `_shared/peer-review-wait.md`), every status report |
+| Peer review wait | Reviewers from `Peer reviewers`, else bots that reviewed recent merged PRs; a bot's error post is not a review, re-requested once (`_shared/peer-review-wait.md`) | guard, address-pr-feedback |
 | Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`) | every skill that touches Issues (`Issue tracker`); implement, reflect, ship, guard, batch for the rest; the table in project-config names each setting's consumers |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
