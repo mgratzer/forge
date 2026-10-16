@@ -111,7 +111,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates; consolidated in `_shared/phase-execution.md` | implement |
 | Failing tests | Environmental failures start the test services (or ask, or stop unattended); the changed module's failures are never pre-existing; compare against the base via its CI or a throwaway worktree, never `git stash` (`_shared/phase-execution.md`) | implement, ship |
-| Test infrastructure | Each run uses its own test services and ports where the setting allows, stops only what it started; `shared` serializes Waves (`_shared/project-config.md`) | implement (phase-execution), ship (exercise), batch |
+| Test infrastructure | `per checkout`: own services and ports, never reuse another checkout's; `shared` or unset: reuse what runs; always stop only what the run started; `shared` serializes Waves (`_shared/project-config.md`) | implement (phase-execution), ship (exercise), batch |
 | Gates from CI | The final gate also derives checks from the CI workflow files (codegen, coverage thresholds) | implement, ship |
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged | reflect, ship |
