@@ -18,13 +18,12 @@ forge/
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── writing.md                     # Writing rule for anything forge writes for people
-│   │   ├── quality-passes.md              # Simplify, security, and extra passes; one owner per dimension
-│   │   ├── review-record.md               # Optional project-declared review attestation commit
+│   │   ├── quality-passes.md              # Simplify, security, extra passes; one owner per dimension, (each push) reruns
 │   │   ├── peer-review-wait.md            # Resolve (or discover), request, and wait for the peer reviewers
 │   │   ├── pr-body.md                     # PR body spec for the blind drafter, PR template handling
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── project-config.md              # Shipping settings: AGENTS.md, the user's file, defaults
-│   │   ├── review-rubric.md               # P0–P3 severity taxonomy
+│   │   ├── review-rubric.md               # P0–P3 severity taxonomy and the triage rule
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
 │   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
@@ -43,7 +42,9 @@ forge/
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
 │   └── forge-ship/
 │       ├── SKILL.md                       # Composite: implement + review [+ guard] in one invocation
-│       └── references/exercise.md         # Driving the changed path once in the running app
+│       └── references/
+│           ├── exercise.md                # Driving the changed path once in the running app
+│           └── publish.md                 # Splitting, the local-review hand-off note, rebase and publish
 ├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
 ├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
@@ -72,7 +73,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a draft PR
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), fixes in-scope findings and asks the user only about deferrals, runs the quality passes, exercises the changed path when the project says how to run it, and only then publishes (rebase, push, PR) so its blind-drafted body describes the final diff and carries the evidence; in local mode it stops before publishing and `--publish` finishes later; with `--guard` it continues with forge-guard's process
+- **forge-ship** executes forge-implement's process up to the push, delegates review to one fresh-context reviewer by default (the session authored the diff), fixes in-scope findings and asks the user only about deferrals, runs the quality passes, exercises the changed path when the project says how to run it, and only then publishes (rebase, push, PR) so its blind-drafted body describes the final diff and carries the evidence; in local mode it stops before publishing and `--publish` finishes later (`references/publish.md`); with `--guard` it continues with forge-guard's process
 - **forge-guard** runs the quality passes (unless forge-ship already did), waits for CI and the peer reviewers, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human`; it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
@@ -124,4 +125,6 @@ Long sessions still cost: each turn re-reads the context, so accumulated history
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output re-enters the context on every later turn and buys nothing; a blocked shell call costs nothing |
 | Runnable helpers in `_shared/scripts/` | Small POSIX-style bash scripts, called by a literal path, `<skill dir>/_shared/scripts/<script>` | Runtimes refuse a command whose name is computed at runtime, a shell loop, or a `sleep` prefix, and skills that inline them stall. A script with a fixed name runs as one plain command. Besides `contrib/`, this is the one place forge ships runnable code; the scripts stay runtime-agnostic and need only `bash` and `gh` |
 | One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
+| Settings only for what forge acts on | A Shipping setting exists only when a skill acts on it mechanically: which tracker, which reviewers, draft or ready, which passes | Everything else (a compatibility policy, shared test services, a sign-off format) is a project convention the agent already reads from `AGENTS.md`; a setting for it would turn forge into a configuration framework for one team's environment |
+| Attestation is the project's skill | A project that audits review declares its own skill in `Extra passes`, marked `(each push)`; forge only runs it before any push that changes code since it last ran | Record formats differ per team; forge runs the hook at the right moments instead of owning a format |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files; surface gaps early |

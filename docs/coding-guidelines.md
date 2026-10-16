@@ -96,6 +96,10 @@ Role names are prefixed with `forge-` to avoid shadowing generic names (`scout`,
 - When reading repository files in examples, prefer the `Read` tool over shelling out with `cat`
 - No shell loops, `sleep`, or command names held in variables in a skill's bash: runtimes refuse them. Put the logic in a script under `skills/_shared/scripts/` and call it as `<skill dir>/_shared/scripts/<script>`
 
+## Settings
+
+**Forge defines a setting only when it acts on it mechanically**: which tracker to call, which reviewers to wait for, draft or ready, which passes to run. Anything else is a project convention the agent already reads from `AGENTS.md`, so a skill follows it without forge naming it. Before adding a row to `_shared/project-config.md`, name the skill step that branches on its value; if none does, it is not a setting.
+
 ## Cross-Skill Consistency
 
 Conventions shared across skills. When modifying any, update every skill that references them:
@@ -105,16 +109,16 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` (titles, branches, commits, PRs) | create-issue, shape, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Writing for humans | Plain, short, no em dashes, nothing the reader already has, claims only with recorded evidence, no agent or vendor byline (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
-| Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension; an inline skill's closing report is input, never the end of the turn (`_shared/quality-passes.md`) | ship, guard |
-| Review record | Optional, project-declared; forge supplies facts, the project's spec sets the format; the newest record matches the handed-off tree (`_shared/review-record.md`) | ship, guard |
+| Writing for humans | Plain, short, nothing the reader already has, claims only with recorded evidence, no agent or vendor byline (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
+| Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension; `(each push)` passes run again before any push that changes code since they last ran (guard owns them for the feedback runs it composes); an inline skill's closing report is input, never the end of the turn (`_shared/quality-passes.md`) | ship, guard, address-pr-feedback |
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates; consolidated in `_shared/phase-execution.md` | implement |
 | Failing tests | Environmental failures start the test services (or ask, or stop unattended); the changed module's failures are never pre-existing; compare against the base via its CI or a throwaway worktree, never `git stash` (`_shared/phase-execution.md`) | implement, ship |
-| Test infrastructure | `per checkout`: own services and ports, never reuse another checkout's; `shared` or unset: reuse what runs; always stop only what the run started; `shared` serializes Waves (`_shared/project-config.md`) | implement (phase-execution), ship (exercise), batch |
+| Test services | Never stop or reuse a service the run didn't start, unless the human started it for this run or AGENTS.md says checkouts share it; per-checkout ports when the recipe allows (`_shared/phase-execution.md`). A shared service is listed under `Serialized resources` | implement, ship (exercise), batch |
 | Gates from CI | The final gate also derives checks from the CI workflow files (codegen, coverage thresholds) | implement, ship |
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
-| Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged | reflect, ship |
+| Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged (*Triage* in `_shared/review-rubric.md`) | reflect, ship, guard (unattended) |
+| Project conventions bind review | The reviewer follows `AGENTS.md` conventions (a "no compatibility shims" rule makes a new shim a finding); forge doesn't mirror them as settings (`_shared/review-delegation.md`) | reflect, ship |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Follow-ups in the summary | Reported issues outside the change that are neither a Finding nor an already deferred thread, listed once (Issues when unattended); an open decision for a human makes the result `needs-human` | ship, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
@@ -132,13 +136,14 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
-| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
+| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name. A runtime's command name appears only as an example in parentheses after the generic description, with the fallback stated | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), ship + guard (the runtime's simplification and security review skills, falling back to review-delegation; `_shared/quality-passes.md`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard is always unattended |
-| Local mode | `--local` or `Publish: local` stops before the push at `ready-for-local-review`; `forge-ship --publish` rebases, reviews what isn't attested, and publishes; `--guard` always publishes | implement, ship |
+| Local mode | `--local` or `Publish: local` stops before the push at `ready-for-local-review`; `forge-ship --publish` rebases, reviews a branch nothing reviewed yet, and publishes; `--guard` always publishes (`forge-ship/references/publish.md`) | implement, ship |
+| Diff size | Past roughly 600 changed lines, an attended plan proposes stacked branches (forge-implement Step 2) | implement, ship |
 | Status reporting | Report state transitions with `<skill dir>/_shared/scripts/forge-status.sh`, which calls `FORGE_STATUS_CMD` (see `_shared/status-reporting.md`); terminal state exactly once | implement, review-delegation, guard, ship |
 | Runnable helpers | Loops, waits, and computed command names live in `_shared/scripts/*.sh`, called as `<skill dir>/_shared/scripts/<script>` (defined in `_shared/status-reporting.md`), never inline in a skill | guard, address-pr-feedback (via `_shared/peer-review-wait.md`), every status report |
 | Peer review wait | Reviewers from `Peer reviewers` (`none` opts out), else bots that reviewed recent merged PRs, which never block; a bot's error post is not a review, re-requested once and waited for with `--since` (`_shared/peer-review-wait.md`) | guard, address-pr-feedback |
-| Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`) | every skill that touches Issues (`Issue tracker`); implement, reflect, ship, guard, batch for the rest; the table in project-config names each setting's consumers |
+| Project configuration | Resolve the Shipping settings: AGENTS.md's `## Shipping` section (legacy `## Unattended Shipping`) wins, then the user's `~/.config/forge/shipping.md`, then defaults (see `_shared/project-config.md`). Only settings forge acts on mechanically (see [Settings](#settings)) | every skill that touches Issues (`Issue tracker`); implement, ship, guard, address-pr-feedback, batch for the rest |
 | Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
 | Workflow order | setup → [shape →] create → implement → reflect → address → guard; ship composes implement + reflect [+ guard]; batch groups Issues for launchers | All skills |
 
@@ -150,7 +155,7 @@ Every instruction in a skill competes with the task for attention, skills share 
 - **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
 - **Count composites per invocation.** A composite skill loads its component's instructions too, so keep the composite's own body thin so the combined load stays reasonable.
 - **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
-- **Match effort and model to task shape.** For factual scouting and routine review, try the same model at lower effort before switching to a cheaper model, and switch only when it holds up (Claude Code subagents can set `model` and `effort`). Save full effort for synthesis, planning, and hard implementation decisions. If the runtime cannot vary either per task, the skill still works by inheriting the parent session's settings.
+- **Match effort and model to task shape.** For factual scouting and routine review, try the same model at lower effort before switching to a cheaper model, and switch only when it holds up (for example through Claude Code subagent frontmatter, which can set `model` and `effort`). Save full effort for synthesis, planning, and hard implementation decisions. If the runtime cannot vary either per task, the skill still works by inheriting the parent session's settings.
 - **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
 
 ## Style Rules
@@ -160,4 +165,4 @@ Every instruction in a skill competes with the task for attention, skills share 
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- No em dashes: use a comma, a colon, parentheses, or a new sentence. The model mirrors the prompt's register in what it writes for people (see `_shared/writing.md`)
+- No em dashes in this repository's files: use a comma, a colon, parentheses, or a new sentence. This is forge's own house style, not a rule the skills impose on projects

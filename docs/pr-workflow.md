@@ -50,7 +50,7 @@ See [testing.md: Structural Review](testing.md#1-structural-review) for the cano
 
 ## PR Description
 
-Forge's own PRs follow the spec forge-implement drafts against, [pr-body](../skills/_shared/pr-body.md): two paragraphs with no headings, why first, about 150 words, one caveat the diff can't show, and `Closes #<issue-number>` as the last line. No changes list and no CI results. When a skill was run on a test project, add the evidence paragraph: what was invoked and what it produced.
+Forge's own PRs follow the spec forge-implement drafts against, [pr-body](../skills/_shared/pr-body.md): two short paragraphs with no headings, why first, readable in a minute, one caveat the diff can't show, and `Closes #<issue-number>` as the last line. No changes list and no CI results. When a skill was run on a test project, add the evidence paragraph: what was invoked and what it produced.
 
 ## Review Process
 

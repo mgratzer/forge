@@ -1,10 +1,6 @@
 # Plan Folder Spec
 
-The markdown issue tracker provider for projects that track work locally instead of in a hosted service.
-
-## When to use it
-
-Use the `plan/` folder when the project has no hosted issue tracker, when the team prefers issues-as-code versioned alongside the codebase, or when working offline. The folder lives at the repository root.
+The markdown issue tracker provider, for projects that track work as files in the repository (no hosted tracker, issues-as-code, or offline work). The folder lives at the repository root.
 
 ## Directory structure
 
@@ -83,6 +79,5 @@ Forge closes an issue on the branch that implements it, so the change lands with
 
 ## Common mistakes
 
-- **Letting INDEX.md drift from issue files.** Always update both when changing status. INDEX.md is what skills scan first; stale rows cause missed or duplicate work.
-- **Skipping the ID in filenames.** Skills rely on the `<ID>-` prefix to locate issue files by number. Descriptive-only filenames break `plan/issues/<ID>-*.md` lookups.
-- **Using non-numeric IDs.** Forge skills reference issues as `#<number>` in commit messages and cross-references. String IDs break this convention.
+- **Letting INDEX.md drift from issue files:** skills scan INDEX.md first, so a stale row causes missed or duplicate work.
+- **Dropping the `<ID>-` filename prefix or using non-numeric IDs:** lookups by `plan/issues/<ID>-*.md` and `#<number>` references break.

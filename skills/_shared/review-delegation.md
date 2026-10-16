@@ -4,76 +4,43 @@ How to set up, delegate, and aggregate a **lean fresh-context review**. Used by 
 
 ## Inputs Required
 
-Before reviewing, collect:
-
-1. **Review scope:** exact commands the reviewer can run to regenerate the diff and changed file list
-2. **Changed file list:** from the selected scope
-3. **Diff size metadata:** changed file count and approximate changed line count
-4. **Relevant project conventions**: the relevant parts of `AGENTS.md`, plus the `Backward compatibility` Shipping setting resolved per [project-config](project-config.md); do not blindly paste the whole file if only a small subset matters
-5. **The task**, when the caller has it: one sentence on what the change is for and what it is not building, from the plan or the Issue (forge-reflect can use the PR title and body)
-6. **Review materials:** read and collect (pushed, not referenced):
-   - [forge-reviewer](roles/forge-reviewer.md) role
-   - [review-dimensions](review-dimensions.md): default checklist plus optional deep-pass checklists
-   - [review-rubric](review-rubric.md): P0–P3 severity taxonomy
+1. **Review scope:** exact commands that regenerate the diff and the changed file list
+2. **Diff size:** changed file count and approximate changed lines
+3. **Project conventions:** the parts of `AGENTS.md` that matter for this diff, not the whole file. They bind the reviewer: a convention such as "no compatibility shims, this is a proof of concept" makes a new shim a finding
+4. **The task**, when the caller has it: one sentence on what the change is for and what it is not building, from the plan or the Issue (forge-reflect can use the PR title and body)
+5. **Review materials**, pushed into the task rather than referenced: the [forge-reviewer](roles/forge-reviewer.md) role, the [review-dimensions](review-dimensions.md) checklists, and the [review-rubric](review-rubric.md)
 
 ## Choose Review Shape
 
-Use the smallest review shape that still gives trustworthy signal:
+Use the smallest shape that still gives trustworthy signal:
 
-1. **Tiny diff, inline review:** only if the change is small and low-risk (roughly `<=2` files and `<=100` changed lines), with **no** risky signals such as auth/authz, secrets, payments, migrations, concurrency, jobs, caches, public API/protocol changes, or infrastructure/config changes, **and the current session did not implement the changes**. A session reviewing its own diff has self-review bias, so delegate even tiny diffs then. Review inline in the current context using the default combined checklist.
-2. **Default, one reviewer:** for everything else, use one fresh-context reviewer running the combined checklist.
-3. **Mandatory second reviewer for risky changes:** add a second focused pass whenever the diff touches:
+1. **Tiny diff, inline review:** roughly `<=2` files and `<=100` changed lines, with none of the risky signals below, **and the current session did not write the changes**; a session reviewing its own diff has self-review bias. One combined checklist pass in the current context; escalate only if the diff stops being tiny or new risk appears.
+2. **Default, one reviewer:** one fresh-context reviewer running the combined checklist.
+3. **Mandatory second reviewer** whenever the diff touches:
    - auth, authorization, secrets, payments, or other security-sensitive code
    - schema or migration changes
    - concurrency, synchronization, background jobs, caches, or distributed behavior
    - public API, protocol, or contract changes
-   When the caller also runs [quality-passes](quality-passes.md) (`forge-ship`, `forge-guard`), the security pass owns the first bullet: add no second reviewer for it. The other bullets still add one.
-4. **Optional second reviewer for broad diffs:** add a second pass for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
+   When the caller also runs [quality-passes](quality-passes.md), the security pass owns the first bullet; the others still add a reviewer.
+4. **Optional second reviewer** for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
 
-When using inline review, keep it to a single pass; do not escalate to sub-agents unless the diff is no longer tiny or new risk appears.
-
-When adding a second reviewer, assign it only the **highest-risk deep pass** from [review-dimensions](review-dimensions.md).
+A second reviewer gets only the **highest-risk deep pass** from review-dimensions.
 
 ## Compose Review Tasks
 
-Create **one self-contained review task per planned pass**. Each task embeds:
-
-- Role definition (from forge-reviewer)
-- The selected checklist (default combined pass or one optional deep pass)
-- Review rubric
-- Relevant project conventions from `AGENTS.md`
-- Review scope metadata:
-  - exact `git diff` command
-  - exact `git diff --name-only` command
-  - branch / PR / uncommitted scope description
-- Changed file list
-- The task and what it is not building, when the caller has them
-- Any additional context from the caller
-
-Prefer **pull over push** for bulky review inputs:
-
-- If the reviewer has shell access in the repo, give it the exact commands to regenerate the diff instead of pasting a huge diff into the prompt
-- Only push the full diff when the runtime cannot access git state reliably
-
-Each task is fully self-contained. Do not make the task depend on a runtime-specific agent name, preset, or config file.
+One self-contained task per pass, embedding the inputs above with only the selected checklist, the scope description (branch, PR, or uncommitted), and any caller context. Give a reviewer with shell access the commands rather than a pasted diff. Never depend on a runtime-specific agent name, preset, or config file.
 
 ## Execute Review
 
-Report `reviewing` via [status-reporting](status-reporting.md), then use the chosen review shape:
+Report `reviewing` via [status-reporting](status-reporting.md), then:
 
-1. **Inline tiny-diff path:** run one combined checklist pass in the current context
-2. **Sub-agent tool or task runtime**: spawn **one** reviewer by default, and a second reviewer when required by the rules above. Push the [forge-reviewer](roles/forge-reviewer.md) role into the delegated prompt or `systemPrompt`. Prefer inheriting the parent session's model/provider when the runtime supports that. If the runtime supports per-task settings, run routine review at lower effort or on a cheaper review-capable model; try lower effort first.
-3. **Inline fallback:** if no sub-agent mechanism is available, execute the same number of passes sequentially in the current context.
+- **Sub-agents:** one reviewer per planned pass, with the role pushed into the prompt. Inherit the parent session's model; for routine review, try lower effort before a cheaper model
+- **No sub-agent mechanism (or the tiny-diff path):** run the same passes sequentially in the current context
 
-Wait for **all planned review passes** before proceeding, with a bound: about 20 minutes per pass, or the runtime's sub-agent timeout when it has one.
+Wait for every planned pass, about 20 minutes each or the runtime's sub-agent timeout.
 
-**When a reviewer fails.** A sub-agent that fails to start, errors, returns nothing, or exceeds the bound gets one retry with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary, in the review record's *How the review ran* when the project declares one (see [review-record](review-record.md)), and as a known limitation for the PR body drafter. Never fall back to inline review silently. When the runtime rejects a per-task model or effort setting, retry once with the parent session's settings; that is not a failed reviewer.
+**When a reviewer fails** (it doesn't start, errors, returns nothing, or exceeds the bound), retry once with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary and as a known limitation for the PR body drafter. Never fall back silently. A rejected per-task model or effort setting is retried once with the parent's settings, and is not a failed reviewer.
 
 ## Aggregate Findings
 
-1. Collect findings from all review passes
-2. Deduplicate: if multiple passes flag the same issue, keep the highest severity
-3. Group by file, then by severity (P0 → P1 → P2)
-4. Drop P3 findings entirely (per the rubric)
-
-Return the aggregated findings to the calling skill for triage.
+Collect findings from all passes, keep the highest severity of duplicates, group by file then severity (P0 → P1 → P2), drop P3, and return them to the caller for triage.

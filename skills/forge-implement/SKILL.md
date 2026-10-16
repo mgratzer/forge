@@ -14,45 +14,39 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 **Unattended mode:** `--unattended` skips plan approval and proceeds without confirmation prompts.
 
-**Local mode:** `--local`, or `Publish: local` in the Shipping settings, stops after Step 7 and **Link PR**'s first half, with the work committed on the branch, and reports `ready-for-local-review`. Nothing has reviewed it yet: `forge-ship --publish` reviews, then publishes.
+**Local mode:** `--local`, or `Publish: local` in the Shipping settings, stops after Step 7 and **Link PR**'s first half and reports `ready-for-local-review`; `forge-ship --publish` later reviews and publishes.
 
 ## Process
 
 ### Step 1: Understand the Work
 
-Report `implementing` via [status-reporting](_shared/status-reporting.md). Read AGENTS.md if the runtime hasn't loaded it; its conventions shape the plan. Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
+Report `implementing` via [status-reporting](_shared/status-reporting.md). Read AGENTS.md if the runtime hasn't loaded it; its conventions shape the plan. Detect the Issue tracker (see [issue-operations](_shared/issue-operations.md)).
 
-- **Issue:** fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and reference each in the PR so the merge closes them.
-- **Plan file:** extract goals, requirements, constraints, acceptance criteria.
-- **Free-text:** parse scope and constraints.
+- **Issue:** fetch it with title, requirements, acceptance criteria, labels, sub-issues, and comments; add missing labels. Each sub-issue is a separate task, referenced in the PR so the merge closes it.
+- **Plan file or free-text:** extract goals, requirements, constraints, and acceptance criteria.
 
-Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead and hand them to the PR body drafter as known limitations, unless the ambiguity would change what the Issue asks for: then stop with `needs-human`.
+Ask when requirements are too vague to plan. In unattended mode, proceed on stated assumptions, handed to the PR body drafter as known limitations, unless the ambiguity would change what the Issue asks for: then stop with `needs-human`.
 
 ### Step 2: Plan Approach
 
 Identify **durable architectural decisions**: data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](_shared/deep-modules.md)).
 
-**For complex work**, delegate codebase research to a sub-agent for unbiased answers:
-
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions, not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
+For complex work, write 3–7 factual questions about existing systems, patterns, and integration points, and delegate them to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions, not the Issue (at lower effort when the runtime allows). Without sub-agents, answer them yourself by the role's rules.
 
 **Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
-Run the scout at lower effort or on a cheaper model when the runtime allows per-task settings; try lower effort first.
-
 From the research, create a plan:
-- The task in one sentence, checked against the Issue's wording before anything else
+- The task in one sentence, checked against the Issue's wording
 - Durable decisions
-- **Structure outline:** vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
+- **Structure outline:** vertical phases, each spanning the layers it needs and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time
 - Files to create or modify
 - Scope boundaries: what will not change, and what we are not building
-- Expected diff size, in changed lines. Past the `Split threshold` Shipping setting (see [project-config](_shared/project-config.md)), an attended plan proposes stacked branches: one branch per group of phases, each cut from the previous one, published in stack order. An unattended plan stays on one branch and hands the size to the PR body drafter as a known limitation
-- With `Backward compatibility: not needed`, no shims or migration paths for old callers
+- Expected diff size. Past roughly 600 changed lines (the **split size**), an attended plan proposes stacked branches, one per group of phases, each cut from the previous one; an unattended plan stays on one branch and names the size as a known limitation
 
-Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.
+Present the plan via AskUserQuestion and get confirmation before coding. **In unattended mode:** proceed.
 
 ### Step 3: Create Feature Branch
 
@@ -62,21 +56,21 @@ DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remote
 git rev-list --count origin/$DEFAULT_BRANCH..HEAD   # 0 on a non-default branch → a worktree tool prepared it; stay on it
 ```
 
-Otherwise branch off the fetched default branch without switching to it. This also works inside a worktree, where the default branch is checked out elsewhere:
+Otherwise branch off it without switching to it, which also works inside a worktree:
 
 ```bash
 git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
 ```
 
-Use the tracker's identifier verbatim when it isn't a GitHub number (`feat/ABC-60-note-summary`). When working from a plan file or free-text (no Issue), use a descriptive slug: `<TYPE>/<BRIEF_DESCRIPTION>`.
+Use the tracker's identifier verbatim when it isn't a GitHub number (`feat/ABC-60-note-summary`); without an Issue, `<TYPE>/<BRIEF_DESCRIPTION>`.
 
 ### Step 4: Implement
 
-Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate (tests pass, no new lint/type failures, one committed logical change) before the next.
+Execute the phases following [phase-execution](_shared/phase-execution.md): pre-flight before the first phase, code and tests together, and a phase gate before the next.
 
 ### Step 5: Audit Pattern Consistency
 
-If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too. Audit the pattern *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
+If you changed a pattern (error handling, component structure, API convention), update every other place using its old *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
 
 ### Step 6: Update Documentation
 
@@ -84,16 +78,7 @@ Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
 
 ### Step 7: Run Final Quality Gate
 
-Run all project quality checks. Discover them from AGENTS.md, project docs, repository scripts, and the CI workflow files (`.github/workflows/` or the CI system's config): a codegen-is-current step or a coverage threshold that only CI enforces is a gate here too.
-
-- [ ] Lint: no violations
-- [ ] Format: no violations
-- [ ] Type check: no errors
-- [ ] Generated code current, when CI checks it
-- [ ] All tests pass. Treat failures per *When Tests Fail* in [phase-execution](_shared/phase-execution.md): start missing test services instead of writing failures off, and never call a failure in the changed module's tests pre-existing
-- [ ] **Test coverage ≥ 90% for new/modified code**, or CI's threshold when that is stricter: run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
-
-Fix issues and commit fixes.
+Run every project check, discovered from AGENTS.md, docs, repository scripts, and the CI workflow files (a codegen or coverage check only CI enforces is a gate here too): lint, format, and type check pass; generated code is current; all tests pass, with failures handled per *When Tests Fail* in [phase-execution](_shared/phase-execution.md); new or modified code has at least 90% coverage, or CI's stricter threshold. Without coverage tooling, say so and offer to set it up. Fix issues and commit.
 
 ### Step 8: Push and Create PR
 
@@ -103,12 +88,12 @@ git push -u origin <BRANCH_NAME>
 
 #### Draft the Body (delegate)
 
-Delegate the body to a sub-agent that never saw the work, with the [pr-body](_shared/pr-body.md) spec: a session that did the work narrates the journey instead of the change. If the runtime has no sub-agents, draft it yourself from the same inputs only: re-read the diff instead of summarizing from memory.
+Delegate the body to a sub-agent that never saw the work, per [pr-body](_shared/pr-body.md): a session that did the work narrates the journey instead of the change. Without sub-agents, draft it from the same inputs only, re-reading the diff.
 
-**Inputs provided to sub-agent:** the pr-body spec and the [writing](_shared/writing.md) rule, the quoted why, the diff commands, the PR template if the repository has one, manual deployment steps, known limitations and follow-ups, exercise evidence if any, the closing reference.
+**Inputs provided to sub-agent:** the drafter inputs listed in pr-body.
 **Expected output:** the finished body.
 
-Create the PR with a conventional commit title and the PR settings from the Shipping settings ([project-config](_shared/project-config.md)): a draft unless `Pull requests: ready` (the human marks it ready), plus `--assignee` and `--label` when declared, leaving out labels the repository doesn't have. Once it exists, run the `After create` skill when one is declared. Pass the body on stdin via a quoted heredoc (an inline `--body "..."` mangles multi-line text, backticks, and quotes):
+Create the PR with a conventional commit title and the PR settings ([project-config](_shared/project-config.md)), passing the body through a quoted heredoc; an inline `--body "..."` mangles multi-line text, backticks, and quotes. Then run the `After create` skill when one is declared.
 
 ```bash
 gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIGNEE>] [--label <LABELS>] --body-file - <<'PR_EOF'   # drop --draft for `Pull requests: ready`
@@ -116,11 +101,11 @@ gh pr create --draft --title "<TYPE>(<SCOPE>): <DESCRIPTION>" [--assignee <ASSIG
 PR_EOF
 ```
 
-When the work comes from an Issue, follow **Link PR** in [issue-operations](_shared/issue-operations.md): its first half before the push and the draft (closing references for the drafter, and the markdown provider's closing commit), its second half and **Mark in Review** once the PR is open. Never mark the Issue done; completion belongs to the merge.
+When the work comes from an Issue, follow **Link PR** in [issue-operations](_shared/issue-operations.md): its first half before the push (closing references for the drafter, the markdown provider's closing commit), its second half and **Mark in Review** once the PR is open. Never mark the Issue done; completion belongs to the merge.
 
 ### Step 9: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items, the `After create` skill's result and any labels left out.
+Report: branch, PR link, commits, files changed, tests added, docs updated, deferred items, the `After create` result, and any labels left out.
 
 ## Guidelines
 
