@@ -102,6 +102,7 @@ Report implementation, review, and guard results together. List issues the revie
 <the commands from the exercise, ready to paste>
 
 ### Review Findings
+- Review: fresh-context, <n> passes | self (reviewer failed)
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> <title> (or "none")
 - Follow-ups: <issues a reviewer or pass reported outside this change; Issues in unattended mode> | none
