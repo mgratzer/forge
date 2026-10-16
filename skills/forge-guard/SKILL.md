@@ -72,6 +72,8 @@ Failures the branch didn't cause never start a round; keep waiting for the revie
 
 **Unaddressed feedback**: unresolved threads whose last comment is not `$ME`'s, and top-level items per forge-address-pr-feedback Step 1. Report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`, without its own push when a review record is declared, so the guard pushes once after the record; it skips already-answered feedback itself. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
+An open decision for a human (a policy question, a choice a reviewer left to the team) makes the outcome `needs-human`, never `review-ready`. Issues reviewers report outside this change (pre-existing bugs, adjacent debt) become follow-up Issues per [issue-operations](_shared/issue-operations.md) and are listed in the summary.
+
 Never merge, never force-push, never close the PR, never mark a draft ready. Report the terminal state via status-reporting, then summarize.
 
 ## Output Format
@@ -99,6 +101,10 @@ Never merge, never force-push, never close the PR, never mark a draft ready. Rep
 ### Open for the human
 - <thread url>: <the decision, with both options>
 - Deferred: #<issue> <title>
+- No peer review: <why>   (when no reviewer was configured or found, or none reviewed)
+
+### Follow-ups
+- #<issue> <title>: <what the reviewer reported outside this change>
 ```
 
 ## Guidelines

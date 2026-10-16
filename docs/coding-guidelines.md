@@ -115,6 +115,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Gates from CI | The final gate also derives checks from the CI workflow files (codegen, coverage thresholds) | implement, ship |
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
+| Follow-ups in the summary | Reviewer-reported issues outside the change are listed as follow-ups (Issues when unattended); an open decision for a human makes the result `needs-human` | ship, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
 | Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship, guard, batch |
