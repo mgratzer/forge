@@ -17,15 +17,13 @@ Projects declare the section in `AGENTS.md`:
 - After create: /risk-eval
 - Peer reviewers: copilot-pull-request-reviewer[bot], review-app[bot]
 - Security-sensitive paths: src/auth/**, src/webhooks/**, src/middleware/**
-- Extra passes: /threat-model, /team-review (covers: security)
-- Review record: docs/review-process.md#sign-off
+- Extra passes: /threat-model, /team-review (covers: security), /sign-off (each push)
 - Exercise: `bin/dev`, then curl the changed endpoint with the tokens in test/fixtures/tokens.json
 - Serialized resources: db/migrations/**, bun.lock, messages/**
-- Test infrastructure: per checkout, scripts/bootstrap-worktree.sh starts a database on a free port and writes it to .env.test
 - Max guard rounds: 3
-- Split threshold: 600
-- Backward compatibility: not needed
 ```
+
+Forge defines a setting only when it acts on it mechanically: which tracker to call, which reviewers to wait for, draft or ready, which passes to run. Every other project convention (compatibility policy, how test services are shared, sign-off rules) lives in `AGENTS.md` as prose, and the agent follows it like any other convention.
 
 `## Unattended Shipping` is the legacy heading and is read the same way.
 
@@ -33,7 +31,7 @@ Projects declare the section in `AGENTS.md`:
 
 Resolve the Shipping settings once at the start of a run. For each setting, the first source that declares it wins:
 
-1. **The project's `AGENTS.md`.** Team contracts such as security paths or the review record belong to the repository. The section is in context when the runtime auto-loads `AGENTS.md`; otherwise read it up to the next heading: `awk '/^## (Unattended )?Shipping$/{f=1;next} /^## /{f=0} f' AGENTS.md`.
+1. **The project's `AGENTS.md`.** Team contracts such as security paths or peer reviewers belong to the repository. The section is in context when the runtime auto-loads `AGENTS.md`; otherwise read it up to the next heading: `awk '/^## (Unattended )?Shipping$/{f=1;next} /^## /{f=0} f' AGENTS.md`.
 2. **The user's file**, for personal workflow kept out of a shared AGENTS.md, such as an assignee. Always read it, even when AGENTS.md is in context; a missing file means no user settings: `cat "${FORGE_CONFIG:-$HOME/.config/forge/shipping.md}" 2>/dev/null`. Its `## Shipping` section applies everywhere. A `## Shipping: <glob>` section applies where the glob matches the repository as `host/owner/repo`: the `origin` URL with the scheme, `user@`, and `.git` removed and `:` read as `/`, so `git@github.com:acme/api.git` is `github.com/acme/api`. A matching glob section wins over the general one; when several match, the longest glob wins.
 3. **The defaults** in the table below.
 
@@ -59,13 +57,9 @@ Resolve the Shipping settings once at the start of a run. For each setting, the 
 | After create | implement, ship | none | A runtime skill run once the PR exists, e.g. one that posts a risk assessment and sets a label; skipped and named in the summary when the runtime doesn't provide it |
 | Peer reviewers | guard, address-pr-feedback | the bots that reviewed recent merged PRs, waited for but never blocking (see [peer-review-wait](peer-review-wait.md)) | `none` opts out of waiting and discovery. Otherwise logins to request and wait for after each push, as the review-request API spells them (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`); comma-separated. Feedback from the `[bot]` entries is answered automatically; a person listed here still gets drafted replies. `Peer reviewer` (singular) is read the same way |
 | Security-sensitive paths | ship, guard | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them |
-| Extra passes | ship, guard | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass (see [quality-passes](quality-passes.md)) |
-| Review record | ship, guard | none | Where the project's review-record format is specified; forge writes a record at hand-off in that format (see [review-record](review-record.md)) |
+| Extra passes | ship, guard, address-pr-feedback | none | Runtime skills run after forge's quality passes, in order; `(covers: simplify)` or `(covers: security)` hands that dimension to the pass, and `(each push)` runs it again before every later push that changes code (see [quality-passes](quality-passes.md)) |
 | Exercise | ship | the runtime's run skill (Claude Code: `/run`), else none | How to start the app and reach the changed path: a command, or a pointer to an AGENTS.md section or doc with Start, Exercise, Needs a human, and Stop. Ship drives the change once and puts the result in the PR body |
-| Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
-| Test infrastructure | implement, ship, batch | none | How a checkout gets its own test services or ports: `per checkout, <how>`, or `shared` when every checkout uses one set that must not be used by two runs at once. With `Test infrastructure: per checkout`, start this checkout's own services and ports and never reuse one another checkout started. With `shared` or no setting, reuse what is running. Either way, stop only what this run started; a service the human started for this run is always fine to use. `shared` makes forge-batch treat the test services like a serialized resource |
-| Split threshold | implement, ship | 600 | Changed lines past which the plan proposes stacked branches and ship offers a split before review |
-| Backward compatibility | implement, reflect, ship (via review-delegation) | needed | `not needed` (a proof of concept, an unreleased API) lets the plan and the reviewer drop compatibility shims, and the reviewer flags new ones |
+| Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ. A test service every checkout shares (`shared test database`) goes here too: every Issue touches it, so each Wave holds one Issue |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |
 
 ## Conventions Launchers Rely On

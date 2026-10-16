@@ -24,7 +24,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 Execute the [forge-implement](../forge-implement/SKILL.md) process through its Step 7, plus the first half of **Link PR** from Step 8. Don't push and don't create the PR: *Publish* below does both once the diff is final, so every pass runs before anything is pushed and the body describes what the reviewer will read. Skip implement's local-mode stop and its status report, and don't produce implement's summary; the review below informs the single final report.
 
-When the diff grew past the `Split threshold` Shipping setting (default 600 changed lines) and the approved plan didn't already settle its size, propose splitting it into stacked local branches before the review; on a stacked branch, measure against its parent. An accepted split ends the run at `ready-for-local-review` with the branch layout in the summary; the human publishes each branch in stack order with `--publish`. In unattended mode, keep going and name the size as a known limitation for the PR body.
+When the diff grew past the split size in forge-implement Step 2 and the approved plan didn't already settle its size, propose splitting it into stacked local branches before the review; on a stacked branch, measure against its parent. An accepted split ends the run at `ready-for-local-review` with the branch layout in the summary; the human publishes each branch in stack order with `--publish`. In unattended mode, keep going and name the size as a known limitation for the PR body.
 
 ### Step 2: Review (delegate)
 
@@ -54,7 +54,7 @@ When the diff changes runtime behavior and the Shipping settings declare an `Exe
 
 ### Step 6: Stop for Local Review (local mode only)
 
-Write the hand-off note, so a later publish drafts the same body and record this run would have. It lives in the shared git directory, survives a removed worktree, and is never committed:
+Write the hand-off note, so a later publish drafts the same body this run would have. It lives in the shared git directory, survives a removed worktree, and is never committed:
 
 ```bash
 NOTE="$(git rev-parse --path-format=absolute --git-common-dir)/forge/ship-$(git branch --show-current | tr / -).md"
@@ -70,9 +70,8 @@ Report `ready-for-local-review` via [status-reporting](_shared/status-reporting.
 `--publish` starts here, on the current branch, with the hand-off note. Without a note (the work came from `forge-implement --local` or by hand), nothing attests the branch yet: run **Link PR**'s first half and Steps 2 to 5 first, then continue. A non-local run continues here directly.
 
 1. **Rebase** onto the fetched default branch, recomputed with forge-implement Step 3's `git symbolic-ref` line: `git fetch origin && git rebase origin/<DEFAULT_BRANCH>`. When the note names a base branch other than the default and that base's PR has merged, `git rebase --onto origin/<DEFAULT_BRANCH> <BASE>`; while it is still open, rebase onto `origin/<BASE>` instead. Resolve conflicts, asking in attended mode when a resolution changes behavior.
-2. **Re-check after the rebase.** When it brought in upstream commits, re-run the quality gates. When it needed conflict resolutions, review the resolution with one fresh-context reviewer per [review-delegation](_shared/review-delegation.md), so the record never attests an unreviewed tree. Name the rebase in the summary.
-3. **Write the review record** when the project declares one, per [review-record](_shared/review-record.md), from the note's verdict inputs: the last commit before the push.
-4. **Push and open the PR** as forge-implement's Step 8 does: body drafted blind against [pr-body](_shared/pr-body.md) with the note's deferred Issues, limitations, evidence, and try-it commands, the PR settings, `--base <BASE>` while a stacked base is unmerged, and the second half of **Link PR**. When the branch is already on `origin` (an earlier publish, a push by hand), a rebased branch needs `git push --force-with-lease`: ask first in attended mode; in unattended mode, skip the rebase rather than force-push. When a PR already exists for the branch, push to it and skip creating one. Delete the note.
+2. **Re-check after the rebase.** When it brought in upstream commits, re-run the quality gates. When it needed conflict resolutions, review the resolution with one fresh-context reviewer per [review-delegation](_shared/review-delegation.md), so nothing unreviewed is published. When either changed code, run the `(each push)` extra passes ([quality-passes](_shared/quality-passes.md)). Name the rebase in the summary.
+3. **Push and open the PR** as forge-implement's Step 8 does: body drafted blind against [pr-body](_shared/pr-body.md) with the note's deferred Issues, limitations, evidence, and try-it commands, the PR settings, `--base <BASE>` while a stacked base is unmerged, and the second half of **Link PR**. When the branch is already on `origin` (an earlier publish, a push by hand), a rebased branch needs `git push --force-with-lease`: ask first in attended mode; in unattended mode, skip the rebase rather than force-push. When a PR already exists for the branch, push to it and skip creating one. Delete the note.
 
 ### Step 8: Guard (only with `--guard`)
 
@@ -107,7 +106,6 @@ Report implementation, review, and guard results together. List **follow-ups**: 
 - Deferred: #<issue> <title> (or "none")
 - Follow-ups: <reported issues outside this change, not already deferred; Issues in unattended mode> | none
 - After create: <skill> ran | not available | not declared; labels left out: <labels>
-- Record: <sha> covering <range> | not declared | at publish (local)
 - Passes: simplify <n> applied | covered by <pass>; security <n> applied | not triggered | covered by <pass>; <extra pass> <n> applied | not available
 
 ### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)

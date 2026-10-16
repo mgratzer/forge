@@ -106,12 +106,11 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Writing for humans | Plain, short, no em dashes, nothing the reader already has, claims only with recorded evidence, no agent or vendor byline (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
-| Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension; an inline skill's closing report is input, never the end of the turn (`_shared/quality-passes.md`) | ship, guard |
-| Review record | Optional, project-declared; forge supplies facts, the project's spec sets the format; the newest record matches the handed-off tree (`_shared/review-record.md`) | ship, guard |
+| Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension; `(each push)` passes run again before every later push that changes code; an inline skill's closing report is input, never the end of the turn (`_shared/quality-passes.md`) | ship, guard, address-pr-feedback |
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates; consolidated in `_shared/phase-execution.md` | implement |
 | Failing tests | Environmental failures start the test services (or ask, or stop unattended); the changed module's failures are never pre-existing; compare against the base via its CI or a throwaway worktree, never `git stash` (`_shared/phase-execution.md`) | implement, ship |
-| Test infrastructure | `per checkout`: own services and ports, never reuse another checkout's; `shared` or unset: reuse what runs; always stop only what the run started; `shared` serializes Waves (`_shared/project-config.md`) | implement (phase-execution), ship (exercise), batch |
+| Test services | Never stop or reuse a service the run didn't start unless the human started it for this run; per-checkout ports when the recipe allows; a shared service is a serialized resource (`_shared/phase-execution.md`) | implement, ship (exercise), batch |
 | Gates from CI | The final gate also derives checks from the CI workflow files (codegen, coverage thresholds) | implement, ship |
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged | reflect, ship |

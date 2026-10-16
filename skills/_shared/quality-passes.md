@@ -24,10 +24,15 @@ git diff --name-only origin/<BASE>...HEAD   # match against Security-sensitive p
 A project appends its own passes in the `## Shipping` section:
 
 ```markdown
-- Extra passes: /threat-model, /team-review (covers: security)
+- Extra passes: /threat-model, /team-review (covers: security), /sign-off (each push)
 ```
 
-Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. Run each skill-backed pass (`/simplify`, `/security-review`, an extra pass) in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session; it returns findings and the changes it made. The review-delegation fallbacks already run in their own sub-agent. Passes run one at a time, because they edit the same working tree. `covers: <dimension>` hands that dimension to the extra pass, so forge's own pass for it doesn't run. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
+Two markers change when a pass runs:
+
+- **`(covers: <dimension>)`** hands that dimension to the extra pass, so forge's own pass for it doesn't run.
+- **`(each push)`** runs the pass again before every later push that changes code: a guard round, the publish step, a standalone `forge-address-pr-feedback` run. A project that needs an attestation of what was reviewed (a sign-off commit, a review log) declares its own skill this way; forge only runs it.
+
+Run the built-in passes that are still owned by forge first, then each extra pass in declared order, on the branch diff. Run each skill-backed pass (`/simplify`, `/security-review`, an extra pass) in a sub-agent when the runtime lets a sub-agent invoke skills, so its output stays out of the session; it returns findings and the changes it made. The review-delegation fallbacks already run in their own sub-agent. Passes run one at a time, because they edit the same working tree. Check availability before any pass runs: an extra pass the runtime doesn't provide is skipped and named in the summary, and a dimension it covered goes back to the next owner in the table.
 
 **A pass never ends the run.** A skill-backed pass that runs inline closes with its own report. That report is input for triage, not the end of the turn: continue in the same turn with the next pass, then the next step of the calling skill, and push what the pass committed when the caller pushes.
 

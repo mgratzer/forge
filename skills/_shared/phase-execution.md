@@ -56,4 +56,7 @@ Verify before proceeding to the next phase:
 - **Environmental:** connection refused or closed, a missing database or service, a port already taken. Start the project's test services (its bootstrap script, or the command AGENTS.md or the docs give) and run again. With no documented way, ask in attended mode; in unattended mode, stop with `needs-human` and the reason rather than continue. A suite that couldn't reach its service is reported as skipped, never as passing.
 - **The changed module's own tests** failing is never pre-existing. That failure belongs to this change.
 - **Pre-existing** takes proof from the base: the same check's latest CI result on the base branch, or a run in a throwaway worktree (`git worktree add --detach <path> origin/<BASE>`, removed afterwards). Never `git stash` to get there.
-- **Services**, per the `Test infrastructure` Shipping setting (see [project-config](project-config.md)): With `Test infrastructure: per checkout`, start this checkout's own services and ports and never reuse one another checkout started. With `shared` or no setting, reuse what is running. Either way, stop only what this run started; a service the human started for this run is always fine to use.
+
+## Services
+
+Other checkouts may be running their own tests at the same time. Never stop or reuse a service this run didn't start, unless the human started it for this run or AGENTS.md says the checkouts share it. Use per-checkout ports when the project's recipe allows it. Stop what this run started when it is done.

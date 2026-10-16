@@ -36,7 +36,7 @@ For each candidate, produce its **touch set**: the files and directories the imp
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [project-config](_shared/project-config.md). With `Test infrastructure: shared`, the test services are a serialized resource every Issue touches, so each Wave holds one Issue; say why in the output. Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [project-config](_shared/project-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 

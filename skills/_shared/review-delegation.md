@@ -9,7 +9,7 @@ Before reviewing, collect:
 1. **Review scope:** exact commands the reviewer can run to regenerate the diff and changed file list
 2. **Changed file list:** from the selected scope
 3. **Diff size metadata:** changed file count and approximate changed line count
-4. **Relevant project conventions**: the relevant parts of `AGENTS.md`, plus the `Backward compatibility` Shipping setting resolved per [project-config](project-config.md); do not blindly paste the whole file if only a small subset matters
+4. **Relevant project conventions**: the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters. They bind the reviewer: a convention such as "no compatibility shims, this is a proof of concept" makes a new shim a finding
 5. **The task**, when the caller has it: one sentence on what the change is for and what it is not building, from the plan or the Issue (forge-reflect can use the PR title and body)
 6. **Review materials:** read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
@@ -67,7 +67,7 @@ Report `reviewing` via [status-reporting](status-reporting.md), then use the cho
 
 Wait for **all planned review passes** before proceeding, with a bound: about 20 minutes per pass, or the runtime's sub-agent timeout when it has one.
 
-**When a reviewer fails.** A sub-agent that fails to start, errors, returns nothing, or exceeds the bound gets one retry with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary, in the review record's *How the review ran* when the project declares one (see [review-record](review-record.md)), and as a known limitation for the PR body drafter. Never fall back to inline review silently. When the runtime rejects a per-task model or effort setting, retry once with the parent session's settings; that is not a failed reviewer.
+**When a reviewer fails.** A sub-agent that fails to start, errors, returns nothing, or exceeds the bound gets one retry with the same task. If the retry fails too, run that pass inline and say so: `review: self (reviewer failed)` in the summary and as a known limitation for the PR body drafter. Never fall back to inline review silently. When the runtime rejects a per-task model or effort setting, retry once with the parent session's settings; that is not a failed reviewer.
 
 ## Aggregate Findings
 

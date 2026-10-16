@@ -22,7 +22,7 @@ Use this as the **second reviewer** only for high-risk changes.
 1. **Security-sensitive flows:** authentication, authorization, privilege boundaries, payments, secrets, tenancy boundaries
 2. **Data safety:** migrations, destructive operations, rollback paths, schema assumptions, race conditions on shared state
 3. **External input:** validation, injection, path traversal, SSRF, unsafe deserialization, unbounded input
-4. **Public contracts:** API behavior, protocol changes, serialization, backwards compatibility (unless the project declares `Backward compatibility: not needed`), client-visible errors
+4. **Public contracts:** API behavior, protocol changes, serialization, backwards compatibility, client-visible errors
 5. **Correctness under failure:** retries, partial writes, timeouts, unexpected nil/null states, cleanup on failure
 
 ## Optional Deep Pass: Maintainability, Performance, Tests & Docs
