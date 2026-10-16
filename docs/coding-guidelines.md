@@ -105,7 +105,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Conventional commits | `<type>(<scope>): <description>` (titles, branches, commits, PRs) | create-issue, shape, implement, address-pr-feedback |
 | Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Writing for humans | Plain, short, no em dashes, nothing the reader already has, claims only with recorded evidence, no agent or vendor byline (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
+| Writing for humans | Plain, short, nothing the reader already has, claims only with recorded evidence, no agent or vendor byline (`_shared/writing.md`) | implement, ship, create-issue, address-pr-feedback, setup-project |
 | Quality passes | Simplify, security, and project-declared extra passes after the review, one owner per dimension; `(each push)` passes run again before every later push that changes code; an inline skill's closing report is input, never the end of the turn (`_shared/quality-passes.md`) | ship, guard, address-pr-feedback |
 | PR body | Drafted blind by a sub-agent against `_shared/pr-body.md`: why first, two paragraphs, no changes list; a repository PR template sets the structure | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates; consolidated in `_shared/phase-execution.md` | implement |
@@ -159,4 +159,4 @@ Every instruction in a skill competes with the task for attention, skills share 
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- No em dashes: use a comma, a colon, parentheses, or a new sentence. The model mirrors the prompt's register in what it writes for people (see `_shared/writing.md`)
+- No em dashes in this repository's files: use a comma, a colon, parentheses, or a new sentence. This is forge's own house style, not a rule the skills impose on projects
