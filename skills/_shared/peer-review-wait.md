@@ -4,7 +4,7 @@ How to request the peer reviewers and wait for them without polling from the mod
 
 ## Reviewers
 
-Read `Peer reviewers` from [project-config](project-config.md). When none is configured, look at who reviewed the last few merged PRs, because a bot may review every PR without being declared:
+Read `Peer reviewers` from [project-config](project-config.md). `Peer reviewers: none` opts out: the review signal is satisfied without waiting. When the setting is absent, look at who reviewed the last few merged PRs, because a bot may review every PR without being declared:
 
 ```bash
 gh api graphql -F owner='{owner}' -F name='{repo}' -f query='
@@ -15,7 +15,7 @@ gh api graphql -F owner='{owner}' -F name='{repo}' -f query='
          | select(.__typename == "Bot") | .login + "[bot]"] | unique | .[]'
 ```
 
-The bots it prints are this run's reviewer list; name that in the summary (`reviewers: found on recent PRs`). Only when it prints nothing is the review signal satisfied without waiting.
+The bots it prints are this run's **discovered** reviewers; name them in the summary (`reviewers: found on recent PRs`). They are requested and waited for like configured ones, but they never block: a bot that posts only when it has findings, or an app no longer installed, may never review. When it prints nothing, the signal is satisfied without waiting.
 
 ## Request
 
@@ -29,16 +29,16 @@ A reviewer the API can't request (an app that reviews on every push) is only wai
 
 ## Wait
 
-Run the bundled script by its full path inside the skill's directory, in one call with the runtime's longest timeout (in the background when that is shorter than 15 minutes). It polls in the shell (30 times, 30 seconds apart), so nothing re-enters the context while it waits:
+Run the bundled script by its full path under `<skill dir>` (see [status-reporting](status-reporting.md#the-seam)), in one call with the runtime's longest timeout (in the background when that is shorter than 15 minutes). It polls in the shell (30 times, 30 seconds apart), so nothing re-enters the context while it waits:
 
 ```bash
 <skill dir>/_shared/scripts/wait-reviews.sh "$PR" <REVIEWER> <REVIEWER>
 ```
 
-It prints one line per reviewer still missing, then `missing: <n>`. A missing line ends in `earlier` when that reviewer reviewed only before the latest commit, and in `errored` when its review after the commit is an error post ("encountered an error and was unable to review"). An error post never counts as a review.
+It prints one line per reviewer still missing, then `missing: <n>`. A missing line ends in `earlier` when that reviewer reviewed only before the latest commit, and in `errored` when a `[bot]` reviewer posted "encountered an error and was unable to review" after it. An error post never counts as a review.
 
 | Exit | Meaning | Next |
 |------|---------|------|
 | 0 | every reviewer reviewed after the latest commit | signal satisfied |
-| 1 | timed out | an `earlier` reviewer still counts; name everyone else as missing in the summary |
-| 2 | everyone still missing posted an error | re-request those reviewers once and run the wait again; a second error ends the review signal at `needs-human`, naming the reviewer |
+| 1 | timed out | an `earlier` reviewer still counts; name everyone else as missing in the summary. A configured reviewer still missing ends the signal at `needs-human`; a discovered one is only a summary note |
+| 2 | a reviewer errored; the script stops at the first error post | note the time (`date -u +%Y-%m-%dT%H:%M:%SZ`), re-request each `errored` reviewer once, and run the wait again for the reviewers it listed with `--since <that time>`, so the old error post no longer counts. A second exit 2 ends the signal at `needs-human` naming the reviewer, or a summary note for a discovered one |

@@ -2,26 +2,38 @@
 # Wait until every listed reviewer has reviewed the PR after its latest commit.
 # See ../peer-review-wait.md.
 #
-# Usage: wait-reviews.sh <pr> <reviewer>...
+# Usage: wait-reviews.sh [--since <ISO time>] <pr> <reviewer>...
 #   Reviewers as the review-request API spells them (bots with a [bot] suffix).
+#   --since: count only reviews and error posts after this time as well (the re-request time).
 #   Polls 30 times, 30 seconds apart (FORGE_WAIT_TRIES and FORGE_WAIT_INTERVAL override).
 #
-# A review whose body says the reviewer errored ("encountered an error",
-# "unable to review this pull request") does not count.
+# A review from a [bot] reviewer whose body says it "encountered an error and was
+# unable to review" is an error post, not a review.
 #
 # Output: one line per reviewer still missing, then "missing: <n>".
 #   <login>          no review at all
-#   <login> earlier  reviewed only before the latest commit
-#   <login> errored  its latest review after the commit is an error post
-# Exit: 0 all reviewed, 1 timed out, 2 everyone still missing errored (re-request them),
+#   <login> earlier  reviewed only before the cutoff (the latest commit, or --since)
+#   <login> errored  posted an error after the cutoff
+# Exit: 0 all reviewed, 1 timed out, 2 a reviewer errored (stops at the first error post),
 #       64 usage error.
 
 set -u
 
-if [ "$#" -lt 1 ]; then
-  echo "usage: wait-reviews.sh <pr> <reviewer>..." >&2
+usage() {
+  echo "usage: wait-reviews.sh [--since <ISO time>] <pr> <reviewer>..." >&2
   exit 64
+}
+
+since=""
+if [ "${1:-}" = "--since" ]; then
+  [ "$#" -ge 2 ] || usage
+  since="$2"
+  shift 2
+  case "$since" in
+    "" | *[!0-9TZ:.+-]*) echo "wait-reviews.sh: not an ISO time: $since" >&2; exit 64 ;;
+  esac
 fi
+[ "$#" -ge 1 ] || usage
 pr="$1"
 shift
 if [ "$#" -eq 0 ]; then
@@ -34,6 +46,7 @@ interval="${FORGE_WAIT_INTERVAL:-30}"
 
 # Review authors appear without the [bot] suffix, so compare bare logins.
 want=""
+bots=""
 for reviewer in "$@"; do
   login="${reviewer%"[bot]"}"
   case "$login" in
@@ -43,15 +56,17 @@ for reviewer in "$@"; do
       ;;
   esac
   want="$want${want:+, }\"$login\""
+  [ "$login" != "$reviewer" ] && bots="$bots${bots:+, }\"$login\""
 done
 
 filter='
-def errored: (.body // "") | test("encountered an error|unable to review this (pull request|PR)"; "i");
-.commits[-1].committedDate as $push
-| [.reviews[] | select(.submittedAt >= $push)] as $recent
+def errored: (.author.login as $a | ['"$bots"'] | any(. == $a))
+  and ((.body // "") | test("encountered an error and was unable to review"; "i"));
+([.commits[-1].committedDate, "'"$since"'"] | max) as $cutoff
+| [.reviews[] | select(.submittedAt >= $cutoff)] as $recent
 | ($recent | map(select(errored | not) | .author.login)) as $done
 | ($recent | map(select(errored) | .author.login)) as $failed
-| ([.reviews[] | select(.submittedAt < $push and (errored | not)) | .author.login]) as $before
+| ([.reviews[] | select(.submittedAt < $cutoff and (errored | not)) | .author.login]) as $before
 | ['"$want"'][] as $r
 | select($done | any(. == $r) | not)
 | if ($failed | any(. == $r)) then "\($r) errored"
@@ -70,8 +85,7 @@ while [ "$i" -lt "$tries" ]; do
       echo "missing: 0"
       exit 0
     fi
-    errored=$(printf '%s' "$out" | grep -c ' errored$')
-    if [ "$errored" -eq "$missing" ]; then
+    if printf '%s' "$out" | grep -q ' errored$'; then
       printf '%s\n' "$out"
       echo "missing: $missing"
       exit 2
