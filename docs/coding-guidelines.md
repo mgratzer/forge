@@ -114,6 +114,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Test infrastructure | Each run uses its own test services and ports where the setting allows, stops only what it started; `shared` serializes Waves (`_shared/project-config.md`) | implement (phase-execution), ship (exercise), batch |
 | Gates from CI | The final gate also derives checks from the CI workflow files (codegen, coverage thresholds) | implement, ship |
 | Pattern audit | When changing a pattern, update ALL files using it; consolidated in `_shared/pattern-audit.md` | implement, reflect |
+| Attended triage | Fix in-scope P0–P2 findings without asking and list them; ask one question only about findings that would be deferred. Plan approval is unchanged | reflect, ship |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Follow-ups in the summary | Reviewer-reported issues outside the change are listed as follow-ups (Issues when unattended); an open decision for a human makes the result `needs-human` | ship, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |

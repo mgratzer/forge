@@ -35,7 +35,7 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 ### Step 3: Triage Findings
 
-**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now**: defer only changes that materially expand PR scope or are truly out of scope.
+**In attended mode (default):** fix in-scope P0–P2 findings without asking, and list what you fixed. Ask one question, only when there are findings you would defer because they are out of scope or materially larger: list them with your recommendation and let the user pick which to fix now. Plan approval is unchanged.
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
