@@ -58,6 +58,7 @@ Report implementation, review, and guard results together.
 - <N> commits, <M> files changed
 - Tests: <added/modified/none>
 - Docs: <updated/none>
+- Exercised: <intended | wrong: <observed vs expected> | not exercised: <why>> (plus "not run: <parts>" when parts were skipped)
 
 ### Review Findings
 - Fixed in PR: <list or "none">

@@ -91,13 +91,17 @@ Run all project quality checks (discover from AGENTS.md, project docs, or reposi
 
 Fix issues and commit fixes.
 
-### Step 8: Push and Create PR
+### Step 8: Exercise the Change
+
+Run the app and use the changed path once, plus one failure case, following [exercise](_shared/exercise.md). Fix what it finds, with a test, before opening the PR.
+
+### Step 9: Push and Create PR
 
 ```bash
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked), then the approach, changes list, test plan, and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
+Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, also the assumptions you proceeded on), then the approach, changes list, test plan, `## Exercised` (from Step 8), and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
@@ -107,9 +111,9 @@ gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'
 PR_EOF
 ```
 
-### Step 9: Summarize
+### Step 10: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, deferred items.
+Report: branch name, PR link, commits made, files changed, tests added, docs updated, exercise outcome, deferred items.
 
 ## Guidelines
 
