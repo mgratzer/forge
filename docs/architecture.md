@@ -64,7 +64,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 - **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process
-- **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
+- **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, keeps the branch mergeable, fixes only the CI failures the branch caused, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
 ## Skill & Role File Format

@@ -30,9 +30,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Guard** — the stage after self-review that drives an open PR to review-ready without a human: quality passes, CI, peer review, bounded feedback rounds. Never merges. See [forge-guard](skills/forge-guard/SKILL.md).
 
-**Round** — one trip through the guard's react step: a CI fix or a feedback pass, followed by a fresh wait. Bounded by *max guard rounds*.
+**Round** — one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check is not a round. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: CI green, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
+**Review-ready / Needs-human** — the guard's two terminal states. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
