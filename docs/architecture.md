@@ -36,8 +36,6 @@ forge/
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
 │   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
-├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
-├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 └── README.md                              # Project overview
@@ -116,5 +114,5 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
-| One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
+| One seam, launchers outside forge | `FORGE_STATUS_CMD`; forge ships no launcher and no worktree hooks | Skills stay ignorant of terminals and worktree tools. A launcher or a checkout bootstrap fits one person's terminal and projects, so it stays theirs, and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

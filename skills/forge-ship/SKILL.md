@@ -83,7 +83,7 @@ Report implementation, review, and guard results together.
 
 **Components:** Composes `forge-implement`, the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`), and `forge-guard` when `--guard` is set.
 **After peer review:** Use `forge-address-pr-feedback` to address reviewer comments (guard mode does this for you).
-**Many Issues at once:** Use `forge-batch` to group Issues into Waves, then a launcher from `contrib/launchers/` to start one guarded ship per Issue.
+**Many Issues at once:** Use `forge-batch` to group Issues into Waves, then start one `forge-ship --guard` session per Issue.
 
 ## Example Usage
 
