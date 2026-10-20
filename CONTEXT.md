@@ -16,6 +16,8 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **AFK / HITL** — Issue execution mode. AFK: fully specified for autonomous execution. HITL: requires human judgment during implementation. Set at creation time. See [afk-vs-hitl](skills/forge-create-issue/references/afk-vs-hitl.md).
 
+**Exercise** — running the app and using the changed path once, plus one failure case, before the PR opens. Reported in the PR body's `## Exercised` section; a run that didn't reach the changed path is not evidence. See [exercise](skills/_shared/exercise.md). _Avoid_: "smoke test", "manual test".
+
 **Reflection** — self-review of current changes before peer review: tiny diffs review inline, otherwise one fresh-context review pass by default, deepened only when risk justifies it. Produces Findings.
 
 **Tiny diff** — roughly ≤2 files and ≤100 changed lines with low risk; reviewed inline only when the session didn't author the changes. See [review-delegation](skills/_shared/review-delegation.md).
@@ -56,6 +58,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 - An **Issue** has one **AFK/HITL mode** and labels.
 - A **Plan** implements one **Issue** through ordered **Vertical phases**.
+- An **Exercise** runs once per implementation, before the PR; a wrong result is fixed with a test, not deferred.
 - A **Reflection** produces zero or more **Findings**; each is fixed or becomes a **Deferred item**.
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
 - A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.

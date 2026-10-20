@@ -23,6 +23,7 @@ forge/
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
 │   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
+│   │   ├── exercise.md                    # Run the changed path before the PR; ## Exercised report
 │   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
@@ -59,7 +60,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-setup-project** sets up or audits a project's context infrastructure using a three-tier model: `AGENTS.md` as lean hot memory, `docs/` as earned warm memory, and `specs/` (or equivalent) as cold memory, with signal-to-noise scoring for existing guidance. It also supports migrating legacy `CLAUDE.md`-first repos to an `AGENTS.md`-first layout.
 - **forge-shape** investigates the codebase, shapes the problem through one-at-a-time questioning — challenging terminology against CONTEXT.md, cross-referencing claims against code, stress-testing with concrete scenarios — until a shared design concept emerges. Updates CONTEXT.md inline as terms are resolved. Optionally explores contrasting approaches if shaping didn't surface one, and produces a plan summary ready for issue creation
 - **forge-create-issue** uses AskUserQuestion to collaboratively scope work, then creates Issues in the project's Issue tracker (GitHub, markdown `plan/` folder, or user-configured provider)
-- **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, and opens a PR
+- **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, exercises the change in the running app following `_shared/exercise.md`, and opens a PR with an `## Exercised` section
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
 - **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process
@@ -112,6 +113,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Bundled shared layer | Each skill contains a `_shared -> ../_shared` symlink; skills link `_shared/<file>.md`, never `../_shared/` | Installers such as `npx skills add` copy only directories with a `SKILL.md`, one at a time, and dereference symlinks — the symlink ships a real copy of the shared layer inside every installed skill. Agents also resolve `..` lexically from the install path, so sibling links break under symlinked installs |
 | Issue tracker abstraction | Provider operations in `_shared/issue-operations.md`; skills reference it | Concentrates provider detection and CRUD in one module; skills say "create an Issue" without re-deriving the three-way conditional |
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
+| Exercise before the PR | `forge-implement` runs the app and uses the changed path once; the recipe comes from the runtime's run skill or `AGENTS.md`, never a guess | Tests only cover what someone thought to test; the observed result in the PR lets a human skip checking out a small PR. No recipe means an honest `not exercised` line, never a made-up run |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
 | One seam, launchers outside forge | `FORGE_STATUS_CMD`; forge ships no launcher and no worktree hooks | Skills stay ignorant of terminals and worktree tools. A launcher or a checkout bootstrap fits one person's terminal and projects, so it stays theirs, and skills must work without one |
