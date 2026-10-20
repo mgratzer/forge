@@ -15,7 +15,7 @@ With neither, report `not exercised: no way to run the app`. Never guess how to 
 
 ## How
 
-1. **Human actions first.** When the recipe needs something only a human can do (a login, a running service, a key in `.env`), ask for it in attended mode. In unattended mode, skip that part and record `not run: needs <action>`.
+1. **Human actions first.** When the recipe needs something only a human can do (a login, a running service, a key in `.env`), ask for it in attended mode. In unattended mode, skip that part and list it on the report's `Not exercised` line as `needs <action>`; the parts that ran still decide the outcome.
 2. **Start** the app per the recipe, in the background, and wait for readiness in one bounded shell loop.
 3. **Drive the changed path** once: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged.
 4. **Drive one failure case** where the change has one: invalid input, an unauthorized caller, another tenant's data.
