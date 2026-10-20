@@ -20,6 +20,7 @@ forge/
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
 │   │   ├── unattended-config.md           # AGENTS.md settings read by guard and batch
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
+│   │   ├── risk-rubric.md                 # forge-land's checks, judgment test, ## Risk section
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
 │   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
@@ -35,6 +36,7 @@ forge/
 │   ├── forge-reflect/SKILL.md             # Step 3: Self-review changes (PR, branch, or uncommitted)
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments (--unattended for guards)
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
+│   ├── forge-land/SKILL.md                # Step 6: Risk verdict on a green PR: merge-ready or review-ready
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
 │   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
 ├── docs/                                  # Project documentation
@@ -47,8 +49,8 @@ forge/
 The skills form a workflow. Each non-terminal skill references the next step in its "Related Skills" section:
 
 ```
-forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard
-                                                                        ╰──── forge-ship ────╯╰──── forge-ship --guard ────╯
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard → forge-land
+                                                                        ╰──── forge-ship ────╯╰────────── forge-ship --guard ───────────╯
 ```
 
 `forge-batch` sits beside the line: it groups prepared Issues into Waves, and a launcher runs the line once per Issue (see [unattended.md](unattended.md)).
@@ -63,8 +65,9 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-implement** reads an Issue, plan file, or free-text description, researches the codebase (optionally via blind scout delegation for complex work), plans vertical implementation phases following `_shared/phase-execution.md`, exercises the change in the running app following `_shared/exercise.md`, and opens a PR with an `## Exercised` section
 - **forge-reflect** self-reviews changes (PR, branch diff, or uncommitted) inline for tiny low-risk diffs the session didn't author, otherwise using one fresh-context reviewer by default and adding a second focused pass only for high-risk or broad diffs, with a P0-P3 severity rubric
 - **forge-address-pr-feedback** fetches unresolved review threads via GraphQL and addresses each one
-- **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process
+- **forge-ship** executes forge-implement's process, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process, then forge-land's when the guard reaches `review-ready`
 - **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, keeps the branch mergeable, fixes only the CI failures the branch caused, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
+- **forge-land** checks that a PR is mergeable, green, addressed and exercised, delegates a risk verdict on the head commit to fresh context using `_shared/risk-rubric.md`, writes it into the PR as `## Risk`, and reports `merge-ready` or `review-ready` with a review request and a Where to look list — it never merges
 - **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
 
 ## Skill & Role File Format
@@ -115,6 +118,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Undiscoverability test | Only document what agents can't find by exploring | Agents that build own context outperform pre-loaded context; docs should contain decisions, conventions, failure modes |
 | Exercise before the PR | `forge-implement` runs the app and uses the changed path once; the recipe comes from the runtime's run skill or `AGENTS.md`, never a guess | Tests only cover what someone thought to test; the observed result in the PR lets a human skip checking out a small PR. No recipe means an honest `not exercised` line, never a made-up run |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
+| Risk verdict in its own skill | `forge-land` judges in fresh context, tied to the head commit; four mechanical checks first, then one judgment test | The session that wrote the code is the worst judge of its risk, and a verdict on an older commit says nothing about the new one. Separate from the guard so it works on any PR; it decides what a PR needs from a human but still leaves the merge to one |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
 | One seam, launchers outside forge | `FORGE_STATUS_CMD`; forge ships no launcher and no worktree hooks | Skills stay ignorant of terminals and worktree tools. A launcher or a checkout bootstrap fits one person's terminal and projects, so it stays theirs, and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

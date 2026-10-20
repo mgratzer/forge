@@ -3,14 +3,16 @@
 How a prepared Issue becomes a review-ready PR while you do something else, and how ten of them run at once.
 
 ```
-forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-human
- (which Issues     (one session       (implement → review → guard)
+forge-batch  →  launcher  →  forge-ship --guard  →  merge-ready | review-ready | needs-human
+ (which Issues     (one session       (implement → review → guard → land)
   in parallel)      per Issue)
 ```
 
 The skills are portable; only your launcher knows your terminal, and forge ships none. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
 
-The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` and leaves merging to you; its summary lists the threads it left open.
+The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready`; its summary lists the threads it left open.
+
+Then [forge-land](../skills/forge-land/SKILL.md) decides what the PR needs from you and writes it into the PR's `## Risk` section, judged on the head commit. `merge-ready`: the checks in the [risk rubric](../skills/_shared/risk-rubric.md) found nothing and the verdict is low risk, so you can merge without reading the diff. `review-ready`: read the PR, starting from its Where to look list; land requests your review when you are not the one who opened the PR. Either way, merging is yours. Run `/forge-land <pr>` on its own for any green PR.
 
 ## One Issue or ten
 
@@ -30,6 +32,7 @@ Once per project:
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
+- [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
 
 ## Writing a launcher
 

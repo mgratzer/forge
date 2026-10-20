@@ -129,6 +129,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 
 **Composed by:** `forge-ship --guard` runs this process after its own review.
 **Uses:** `forge-address-pr-feedback --unattended` for each feedback round.
+**After review-ready:** Use `forge-land` to judge the PR's risk and write it into the PR.
 
 ## Example Usage
 
