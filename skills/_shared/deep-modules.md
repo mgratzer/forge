@@ -16,7 +16,6 @@ Shallow modules are the easy default: one function per concept, interfaces mirro
 
 - **Define interface first** — function signature, type shape, API contract — before implementing
 - **Evaluate interface in isolation** — can a caller use this without reading the body?
-- **Fill in the body last** — the interface is the decision callers depend on; the body can change behind it
 
 ## When depth doesn't apply
 

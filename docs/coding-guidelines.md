@@ -149,4 +149,4 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- Use em dashes (`—`) not hyphens for parenthetical clauses in prose
+- Templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence. Skill prose itself may use them
