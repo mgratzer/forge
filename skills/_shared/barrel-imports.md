@@ -1,6 +1,6 @@
 # Barrel Imports
 
-Agents reflexively create barrel files (index re-exports) because the shape looks clean. The costs usually outweigh the benefits.
+Barrel files (index re-exports) look clean, but their costs usually outweigh the benefits.
 
 ## Decision tree
 

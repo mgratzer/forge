@@ -26,7 +26,7 @@ Only flag P0, P1, and P2 findings. Skip P3 entirely.
 
 - Apply the assigned checklist to the changed files and surrounding code
 - Use the provided scope commands to inspect the diff when needed
-- When checking pattern consistency, verify ALL files using the pattern:
+- When checking pattern consistency, verify every file using the pattern:
   ```bash
   grep -rn "<changed-pattern>" <search-root>/
   ```

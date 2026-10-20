@@ -76,9 +76,9 @@ Never merge outside the opt-in above, never push, never close the PR. Report the
 ```text
 ## Land Summary
 
-**PR:** #<number> — <title>
-**Result:** merged | merge-ready | review-ready | needs-human — <reason>
-**Judged:** <short SHA> — low risk | needs review
+**PR:** #<number>: <title>
+**Result:** merged | merge-ready | review-ready | needs-human (<reason>)
+**Judged:** <short SHA>, low risk | needs review
 **Checks:** <hits, or "none">
 **Review requested from:** <login> | not requested: <why> | n/a
 ```

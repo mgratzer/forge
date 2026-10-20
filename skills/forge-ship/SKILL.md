@@ -50,9 +50,9 @@ Report implementation, review, guard, and land results together.
 ```text
 ## Ship Summary
 
-**PR:** #<number> — <title>
+**PR:** #<number>: <title>
 **Branch:** <branch-name>
-**Result:** pushed | merged | merge-ready | review-ready | needs-human — <reason>
+**Result:** pushed | merged | merge-ready | review-ready | needs-human (<reason>)
 
 ### Implementation
 - <N> commits, <M> files changed
@@ -62,7 +62,7 @@ Report implementation, review, guard, and land results together.
 
 ### Review Findings
 - Fixed in PR: <list or "none">
-- Deferred: #<issue> — <title> (or "none")
+- Deferred: #<issue> (<title>), or "none"
 
 ### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 

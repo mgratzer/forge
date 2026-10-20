@@ -37,7 +37,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - What the checks would miss: <one or two sentences>
 
 **Where to look** (needs review only)
-- `<file>:<line>` — <the question the reviewer should answer>
+- `<file>:<line>`: <the question the reviewer should answer>
 
 **Revert:** <only when a plain `git revert` is not enough: data to restore, a migration to roll back, an external change to undo>
 ```

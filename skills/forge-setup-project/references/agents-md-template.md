@@ -34,8 +34,8 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 
 <project-specific naming, imports, preferred libraries, patterns>
 <organize by constraint level:>
-<MUST / MUST NOT — invariants that cause bugs or security issues when violated>
-<PREFER / AVOID — team preferences where multiple valid approaches exist>
+<Invariants: rules that cause bugs or security issues when violated, each with its reason>
+<Preferences: team choices where multiple valid approaches exist>
 <for each rule, note enforcement mechanism — linter, CI, script, or manual>
 
 ## Commits
