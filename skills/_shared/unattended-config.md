@@ -15,7 +15,7 @@ Projects declare the section verbatim:
 - Max guard rounds: 3
 ```
 
-The section is already in context when the runtime auto-loads `AGENTS.md`; otherwise `grep -A6 "^## Unattended Shipping" AGENTS.md`.
+The section is already in context when the runtime auto-loads `AGENTS.md`; otherwise `grep -A7 "^## Unattended Shipping" AGENTS.md`.
 
 ## Settings
 
@@ -25,6 +25,7 @@ The section is already in context when the runtime auto-loads `AGENTS.md`; other
 | Security-sensitive paths | guard, land | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them, and that always need a human review |
 | Serialized resources | batch | migration directories, lockfiles, generated files | Files two Issues must never change in the same Wave, even when the exact paths differ |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |
+| Auto-merge | land | off | `low-risk` lets land merge a PR it judged low risk; any other value is off. Left out of the example above on purpose: turn it on only after you agreed with several of land's `merge-ready` verdicts on real PRs |
 
 ## Launcher
 

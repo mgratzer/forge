@@ -34,9 +34,11 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Review-ready / Needs-human** — the guard's two terminal states. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present, every thread addressed. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
 
-**Land** — the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into the PR's `## Risk` section. Ends in Merge-ready, Review-ready (with a Where to look list), or Needs-human. Never merges. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
+**Land** — the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into the PR's `## Risk` section. Ends in Merge-ready, Review-ready (with a Where to look list), or Needs-human; with the project's auto-merge opt-in, a low-risk PR ends in Merged instead of Merge-ready. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
 
 **Merge-ready** — land's low-risk outcome: every precondition met and a low-risk verdict on the head commit, so a person can merge without reading the diff. A new push makes it stale. _Avoid_: "approved", "safe to merge".
+
+**Merged** — land's low-risk outcome when the project set `Auto-merge: low-risk`: the host merged the judged commit, or will once its required checks pass. A push after the verdict stops the merge.
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
@@ -66,7 +68,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 - A **Reflection** produces zero or more **Findings**; each is fixed or becomes a **Deferred item**.
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
 - A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.
-- A **Land** judges one commit and ends in exactly one of **Merge-ready**, **Review-ready**, or **Needs-human**.
+- A **Land** judges one commit and ends in exactly one of **Merged** (opt-in only), **Merge-ready**, **Review-ready**, or **Needs-human**.
 - A **Batch** orders **Waves**; a **Launcher** starts one **Guard**-ed ship per Issue in a Wave.
 
 ## Flagged Ambiguities

@@ -1,6 +1,6 @@
 ---
 name: forge-land
-description: Decide what a green pull request needs from a human: check it is mergeable, green, addressed and exercised, get a fresh-context risk verdict on the head commit, write it into the PR as a ## Risk section, and report merge-ready or review-ready. Never merges. Use after forge-guard reaches review-ready, on any open PR, or when forge-ship runs with --guard.
+description: Decide what a green pull request needs from a human: check it is mergeable, green, addressed and exercised, get a fresh-context risk verdict on the head commit, write it into the PR as a ## Risk section, and report merge-ready or review-ready. Merges a low-risk PR only when the project opts in with Auto-merge: low-risk. Use after forge-guard reaches review-ready, on any open PR, or when forge-ship runs with --guard.
 disable-model-invocation: true
 ---
 
@@ -24,7 +24,7 @@ ME=$(gh api user --jq .login)
 git fetch origin "$BASE" "pull/$PR/head"   # the verdict reads the diff and files at $SHA, whatever is checked out
 ```
 
-Read the security-sensitive paths per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
+Read the security-sensitive paths and the auto-merge setting per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
 
 - **Mergeable** — `gh pr view "$PR" --json mergeable` is `MERGEABLE` (`UNKNOWN`: ask up to 5 times, 10 seconds apart; still `UNKNOWN` fails)
 - **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and block on `gh pr checks "$PR" --watch --interval 30`, capped at 60 minutes. No checks reported 3 minutes after the last push means the repository has no CI, which passes
@@ -55,13 +55,21 @@ gh pr edit "$PR" --body-file "$BODY"
 ### Step 4: Act
 
 - **Low risk** — report `merge-ready`. A person can merge without reading the diff.
+- **Low risk, project set `Auto-merge: low-risk`** — merge the judged commit and nothing newer. The host merges at once when the PR is mergeable, or waits for its required checks:
+
+  ```bash
+  gh pr merge "$PR" --squash --auto --match-head-commit "$SHA"
+  gh pr view "$PR" --json state,autoMergeRequest   # MERGED, or auto-merge enabled
+  ```
+
+  Merged or enabled: report `merged`. The host refused because the head moved: the verdict is stale, report `needs-human`. Any other refusal: report `merge-ready` with the host's reason.
 - **Needs review** — request a review from the person the PR waits on: the assignee, else the author, of a linked Issue, when they have write access (the rubric's Trust command) and did not open the PR. The host's notification is the poke. With no such person, skip the request and say so in the summary. Report `review-ready`.
 
 ```bash
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<LOGIN>"
 ```
 
-Never merge, never push, never close the PR. Report the terminal state exactly once, then summarize.
+Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize.
 
 ## Output Format
 
@@ -69,7 +77,7 @@ Never merge, never push, never close the PR. Report the terminal state exactly o
 ## Land Summary
 
 **PR:** #<number> — <title>
-**Result:** merge-ready | review-ready | needs-human — <reason>
+**Result:** merged | merge-ready | review-ready | needs-human — <reason>
 **Judged:** <short SHA> — low risk | needs review
 **Checks:** <hits, or "none">
 **Review requested from:** <login> | not requested: <why> | n/a
@@ -79,6 +87,7 @@ Never merge, never push, never close the PR. Report the terminal state exactly o
 
 - **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk`
 - **Doubt means review** — a verdict that can't name what the checks would miss is needs-review
+- **Merging is the project's choice** — without `Auto-merge: low-risk`, low risk stops at `merge-ready`; no argument or trailing context turns merging on
 
 ## Related Skills
 

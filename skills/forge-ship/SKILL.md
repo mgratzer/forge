@@ -1,6 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready). Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready, or merged when the project opts in). Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — then the [forge-land](../forge-land/SKILL.md) risk verdict, and ends at `merge-ready`, `review-ready`, or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — then the [forge-land](../forge-land/SKILL.md) risk verdict, and ends at `merged` (only with the project's auto-merge opt-in), `merge-ready`, `review-ready`, or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -52,7 +52,7 @@ Report implementation, review, guard, and land results together.
 
 **PR:** #<number> — <title>
 **Branch:** <branch-name>
-**Result:** pushed | merge-ready | review-ready | needs-human — <reason>
+**Result:** pushed | merged | merge-ready | review-ready | needs-human — <reason>
 
 ### Implementation
 - <N> commits, <M> files changed
