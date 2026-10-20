@@ -23,7 +23,7 @@ Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" wait
 | `addressing` | Reacting to CI failures or review feedback | no |
 | `pushed` | PR open and self-reviewed; no guard ran | yes |
 | `review-ready` | Branch mergeable, CI green apart from failures the base shares, peer review present, every thread addressed. The human can look now; after `forge-land`, the PR's `## Risk` section says where | yes |
-| `merge-ready` | Everything `review-ready` says, plus a low-risk verdict on the head commit from `forge-land`. A person can merge without reading the diff | yes |
+| `merge-ready` | From `forge-land`: branch mergeable, CI green apart from failures the base shares, every thread addressed, the change exercised, and a low-risk verdict on the head commit. A person can merge without reading the diff | yes |
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 

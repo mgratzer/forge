@@ -43,7 +43,7 @@ Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 
 
 ### Step 5: Summarize
 
-Report implementation, review, and guard results together.
+Report implementation, review, guard, and land results together.
 
 ## Output Format
 

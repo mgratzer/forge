@@ -110,7 +110,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
-| Risk verdict | Four checks then one judgment test, judged on the head commit, written as `## Risk` — consolidated in `_shared/risk-rubric.md` | land |
+| Risk verdict | Mechanical checks then one judgment test, judged on the head commit, written as `## Risk` — consolidated in `_shared/risk-rubric.md` | land |
 | Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship, guard, land, batch |
 | Review delegation | Tiny low-risk diffs stay inline when the session didn't author them; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
 | One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
