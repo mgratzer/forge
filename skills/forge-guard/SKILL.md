@@ -45,7 +45,7 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 **CI** — block on the checks in one call with the runtime's longest timeout; re-run when the call times out, and cap the total wait at 60 minutes. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30 --fail-fast
+gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
 **Peer review** — a review by someone other than `$ME` after the latest push. Wait for it in one bounded shell loop, not by polling from the model:
@@ -65,17 +65,34 @@ The review signal is satisfied when a post-push review exists, when no peer revi
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — CI green, review signal satisfied, no unaddressed threads, no threads needing a human decision
-- **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, the same check fails twice with the same error, a reviewer repeats an answered point, or only threads needing a human decision remain
+- **`review-ready`** — branch mergeable, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads, no threads needing a human decision
+- **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a check is left for the human, a conflict can't be resolved, a reviewer repeats an answered point, or only threads needing a human decision remain
 
-When neither applies, react and go back to Step 3. Each reaction is one **round**.
+When neither applies, react and go back to Step 3. Each reaction that pushes code is one **round**; a rerun is not.
 
-**CI failed** — report `addressing`, read the failure, fix, run the quality gates, commit, push:
+**Branch not mergeable** — `gh pr view "$PR" --json mergeable,mergeStateStatus` reports `CONFLICTING` or `BEHIND` (`UNKNOWN` means GitHub is still computing; ask again after a few seconds). Report `addressing`, merge the base in, run the quality gates, commit, push:
 
 ```bash
-RUN=$(gh run list --branch "$BRANCH" --status failure --limit 1 --json databaseId --jq '.[0].databaseId')
+git fetch origin "$BASE" && git merge --no-edit "origin/$BASE"   # merge, never rebase: the guard never force-pushes
+```
+
+Resolve a conflict only when both sides' intent is clear from the code and its history; otherwise `git merge --abort` and stop with `needs-human`, naming the files. The review signal carries over this push, so Step 3 waits for CI only.
+
+**CI failed** — report `addressing`, then sort each failed check before touching anything:
+
+```bash
+gh pr checks "$PR" --json name,bucket,workflow,link --jq '.[] | select(.bucket == "fail")'
+BASE_RUN=$(gh run list --branch "$BASE" --workflow "<WORKFLOW>" --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+[ -n "$BASE_RUN" ] && gh run view "$BASE_RUN" --json jobs --jq '.jobs[] | select(.name == "<CHECK>") | .conclusion'   # the same check on the base branch
+RUN=<run id from the check's link>
+gh run view "$RUN" --json attempt --jq .attempt
 gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
 ```
+
+- **Pre-existing** — the same check fails on the base branch's latest completed run. Leave it and name it in the summary. With no completed base run (a stacked base, a workflow that runs only on pull requests), this can't be shown: sort on the log alone.
+- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun it with `gh run rerun "$RUN" --failed` only while the run's `attempt` is 1; still red on a later attempt, leave it for the human.
+- **Caused** — everything else: fix it, run the quality gates, commit, push.
+- **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: fix it only when its description and link point at the diff, otherwise leave it for the human with the reason.
 
 **Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
 
@@ -95,10 +112,11 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds
-1. CI <green/failed → fixed>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
+1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
 
 ### Open for the human
 - <thread url> — <the decision, with both options>
+- Pre-existing: <check> — fails on <base> too
 - Deferred: #<issue> — <title>
 ```
 
