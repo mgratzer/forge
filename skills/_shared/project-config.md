@@ -46,7 +46,6 @@ Resolve the settings once at the start of a run. For each setting, the first sou
 | Serialized resources | migration directories, lockfiles, generated files | What two Issues must never change in the same Wave. A test service every checkout shares goes here too: every Issue touches it, so each Wave holds one Issue |
 | Max guard rounds | 3 | Rounds before the guard stops with `needs-human` |
 
-## Conventions Launchers Rely On
+## Environment
 
-- `scripts/bootstrap-worktree.sh`, when present and executable, prepares a fresh checkout to run the tests; `contrib/worktree/create.sh` runs it (`FORGE_BOOTSTRAP` overrides). `scripts/teardown-worktree.sh` releases what it allocated; `contrib/worktree/remove.sh` runs it.
-- `FORGE_LAUNCHER` names the launcher in `forge-batch`'s launch lines; it is per developer, so it lives in the environment.
+`FORGE_LAUNCHER` names the launcher in `forge-batch`'s launch lines; it is per developer, so it lives in the environment.

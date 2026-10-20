@@ -45,8 +45,6 @@ forge/
 │       └── references/
 │           ├── exercise.md                # Driving the changed path once in the running app
 │           └── publish.md                 # Splitting, the local-review hand-off note, rebase and publish
-├── contrib/worktree/                      # Agent-agnostic worktree create/remove (Claude Code hooks call them)
-├── contrib/launchers/                     # Terminal-specific launchers (cmux first)
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 └── README.md                              # Project overview
@@ -123,8 +121,8 @@ Long sessions still cost: each turn re-reads the context, so accumulated history
 | PRs open as drafts | `gh pr create --draft` unless the project declares `Pull requests: ready`; no skill runs `gh pr ready` | The draft flag tells people an agent may still push; clearing it is the human's signal that review can start. Projects run CI and the peer reviewers on drafts; see [unattended](unattended.md#setup) |
 | Guard never merges | `review-ready` is the last state | Merging is a human decision with production consequences; an unattended loop that merges removes the one review that matters |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output re-enters the context on every later turn and buys nothing; a blocked shell call costs nothing |
-| Runnable helpers in `_shared/scripts/` | Small POSIX-style bash scripts, called by a literal path, `<skill dir>/_shared/scripts/<script>` | Runtimes refuse a command whose name is computed at runtime, a shell loop, or a `sleep` prefix, and skills that inline them stall. A script with a fixed name runs as one plain command. Besides `contrib/`, this is the one place forge ships runnable code; the scripts stay runtime-agnostic and need only `bash` and `gh` |
-| One seam, launchers outside the skill layer | `FORGE_STATUS_CMD` + `contrib/launchers/<terminal>-<agent>.sh` | Skills stay ignorant of terminals; launchers are the only runtime-specific code and skills must work without one |
+| Runnable helpers in `_shared/scripts/` | Small POSIX-style bash scripts, called by a literal path, `<skill dir>/_shared/scripts/<script>` | Runtimes refuse a command whose name is computed at runtime, a shell loop, or a `sleep` prefix, and skills that inline them stall. A script with a fixed name runs as one plain command. This is the one place forge ships runnable code; the scripts stay runtime-agnostic and need only `bash` and `gh` |
+| One seam, launchers outside forge | `FORGE_STATUS_CMD`; forge ships no launcher and no worktree hooks | Skills stay ignorant of terminals and worktree tools. A launcher or a checkout bootstrap fits one person's terminal and projects, so it stays theirs, and skills must work without one |
 | Settings only for what forge acts on | A Shipping setting exists only when a skill acts on it mechanically: which tracker, which reviewers, draft or ready, which passes | Everything else (a compatibility policy, shared test services, a sign-off format) is a project convention the agent already reads from `AGENTS.md`; a setting for it would turn forge into a configuration framework for one team's environment |
 | Attestation is the project's skill | A project that audits review declares its own skill in `Extra passes`, marked `(each push)`; forge only runs it before any push that changes code since it last ran | Record formats differ per team; forge runs the hook at the right moments instead of owning a format |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files; surface gaps early |

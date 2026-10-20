@@ -78,7 +78,7 @@ launch: <launcher> 123 124 ...
 ## Related Skills
 
 **Before:** `forge-create-issue` classifies Issues as AFK or HITL; only AFK Issues enter a Wave.
-**After:** start a Wave with a launcher from `contrib/launchers/`, which runs `forge-ship --guard` per Issue.
+**After:** start each Issue in a Wave with `forge-ship --guard`, through `$FORGE_LAUNCHER` or by hand.
 
 ## Example Usage
 

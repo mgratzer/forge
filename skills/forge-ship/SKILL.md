@@ -99,7 +99,7 @@ Report implementation, review, and guard results together. List **follow-ups**: 
 
 **Components:** `forge-implement`, the review flow shared with `forge-reflect`, and `forge-guard` with `--guard`.
 **After peer review:** `forge-address-pr-feedback` (guard mode does this for you).
-**Many Issues at once:** `forge-batch`, then a launcher from `contrib/launchers/`.
+**Many Issues at once:** `forge-batch`, then one `forge-ship --guard` session per Issue.
 
 ## Example Usage
 

@@ -42,8 +42,6 @@ The most reliable test is running the skill on a real project:
 7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging or marking the draft ready; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`. Add a check that already fails on the base branch and one that fails only on its first attempt: the guard leaves the first alone, reruns the second once, and neither costs a round
 8. For local mode, run `forge-ship --local` and check nothing was pushed and the summary says `ready-for-local-review`; add a commit to the default branch, then run `forge-ship --publish` and check it rebased, re-ran the gates, and drafted the same kind of body
 9. For extra passes, declare a trivial skill marked `(each push)` and check it runs once in the quality passes and again before each guard round or feedback push that changes code and before the `--publish` push after an exercise fix or a rebase, and not before a push that changes none
-10. For a launcher, run it with `--dry-run` first and check the agent command; then launch one Issue and confirm the status pill and the terminal notification arrive
-11. For the worktree scripts, pipe the JSON by hand (below), then run one `claude -w probe -p 'run pwd'` and check the printed path is the hook's, not `.claude/worktrees/`
 
 ### 4. Cross-Skill Consistency Check
 
@@ -70,14 +68,10 @@ for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || e
 grep -rn "\.\./_shared" skills/*/SKILL.md   # references/ files may link ../_shared; that is the skill's own copy
 ```
 
-### 5. Launcher Validation
+### 5. Script Validation
 
 ```bash
-bash -n contrib/launchers/*.sh skills/_shared/scripts/*.sh   # syntax
-contrib/launchers/cmux-claude.sh --dry-run <issue>  # what it would do
-FORGE_ISSUE=0 contrib/launchers/cmux-status.sh waiting "smoke"   # status seam end to end
-wt=$(printf '{"cwd":"%s","name":"probe"}' "$PWD" | contrib/worktree/create.sh)      # in a target repo
-printf '{"worktree_path":"%s"}' "$wt" | contrib/worktree/remove.sh
+bash -n skills/_shared/scripts/*.sh                         # syntax
 skills/_shared/scripts/forge-status.sh waiting "smoke"       # prints [forge] waiting: smoke without FORGE_STATUS_CMD
 skills/_shared/scripts/wait-reviews.sh <pr> <reviewer>[bot]  # exits 0 when the bot reviewed after the latest commit
 ```
