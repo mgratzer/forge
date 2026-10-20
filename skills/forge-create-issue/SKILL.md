@@ -19,21 +19,20 @@ If no argument is provided, ask the user what they'd like to create an Issue for
 
 ## Process
 
-### Step 1: Understand and Clarify
+### Step 1: Research the Codebase
 
-Parse the user's input, then use AskUserQuestion to gather:
+Parse the user's input, then explore the relevant code before asking anything:
+- Find related existing implementations and patterns
+- Identify integration points and potential reuse
+
+Verify external dependencies are accessible if relevant — flag broken ones before proceeding.
+
+### Step 2: Clarify
+
+Use AskUserQuestion to gather what the code can't answer:
 - **Problem context** — what triggered this, who's affected, current vs desired behavior
 - **Success criteria** — how will we know this is done
 - **Constraints** — technical limitations, dependencies
-
-### Step 2: Research the Codebase
-
-Before proposing solutions, explore relevant code:
-- Find related existing implementations and patterns
-- Identify integration points and potential reuse
-- Look for similar past implementations
-
-Verify external dependencies are accessible if relevant — flag broken ones before proceeding.
 
 ### Step 3: Present Alternative Approaches
 
