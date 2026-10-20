@@ -32,7 +32,7 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
 | **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready, then lands it** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds — never merges |
-| Land | `/forge-land [pr]` | Judge a green PR's risk on its head commit and write it into the PR: merge-ready, or review-ready with where to look — never merges |
+| Land | `/forge-land [pr]` | Judge a green PR's risk on its head commit and write it into the PR: merge-ready, or review-ready with where to look; merges low-risk PRs only when the project opts in |
 | Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
 
 All skills accept optional trailing execution guidance using `-- <additional context>`.

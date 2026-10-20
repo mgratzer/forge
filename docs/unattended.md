@@ -3,7 +3,7 @@
 How a prepared Issue becomes a review-ready PR while you do something else, and how ten of them run at once.
 
 ```
-forge-batch  →  launcher  →  forge-ship --guard  →  merge-ready | review-ready | needs-human
+forge-batch  →  launcher  →  forge-ship --guard  →  merged | merge-ready | review-ready | needs-human
  (which Issues     (one session       (implement → review → guard → land)
   in parallel)      per Issue)
 ```
@@ -12,7 +12,7 @@ The skills are portable; only your launcher knows your terminal, and forge ships
 
 The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready`; its summary lists the threads it left open.
 
-Then [forge-land](../skills/forge-land/SKILL.md) decides what the PR needs from you and writes it into the PR's `## Risk` section, judged on the head commit. `merge-ready`: the checks in the [risk rubric](../skills/_shared/risk-rubric.md) found nothing and the verdict is low risk, so you can merge without reading the diff. `review-ready`: read the PR, starting from its Where to look list; land requests your review when you are not the one who opened the PR. Either way, merging is yours. Run `/forge-land <pr>` on its own for any green PR.
+Then [forge-land](../skills/forge-land/SKILL.md) decides what the PR needs from you and writes it into the PR's `## Risk` section, judged on the head commit. `merge-ready`: the checks in the [risk rubric](../skills/_shared/risk-rubric.md) found nothing and the verdict is low risk, so you can merge without reading the diff. `review-ready`: read the PR, starting from its Where to look list; land requests your review when you are not the one who opened the PR. Merging is yours, unless the project set `Auto-merge: low-risk`: then land merges a low-risk PR itself and reports `merged`. It merges only the commit it judged, so a push after the verdict stops the merge. Run `/forge-land <pr>` on its own for any green PR.
 
 ## One Issue or ten
 
@@ -33,6 +33,7 @@ Once per project:
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
 - [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
+- [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
 
 ## Writing a launcher
 
