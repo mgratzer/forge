@@ -45,7 +45,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
                                                                         ╰──── forge-ship ────╯╰──── forge-ship --guard ────╯
 ```
 
-For many Issues at once, `forge-batch` groups them into Waves and a launcher from [`contrib/launchers/`](contrib/launchers/) starts one guarded ship per Issue. See [Unattended Shipping](docs/unattended.md).
+For many Issues at once, `forge-batch` groups them into Waves and your launcher (one `claude -w` per Issue, or a script for your terminal) starts one guarded ship per Issue. See [Unattended Shipping](docs/unattended.md).
 
 `forge-ship` composes implement + review into a single invocation; its review always delegates to a fresh-context reviewer (the session authored the diff), adding a second pass only when risk justifies it. Standalone `forge-reflect` keeps tiny diffs inline when the session didn't author them. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
 
@@ -66,8 +66,6 @@ ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
 Check your agent's docs for the correct skills directory path. Each skill reaches the shared modules through its own `_shared` symlink, so no separate `_shared/` install is needed with either method.
-
-For unattended runs in fresh checkouts, install the [worktree hooks](contrib/worktree/) once and put a [launcher](contrib/launchers/) on your PATH.
 
 ## Project Guidance
 

@@ -8,27 +8,35 @@ forge-batch  →  launcher  →  forge-ship --guard  →  review-ready | needs-h
   in parallel)      per Issue)
 ```
 
-The skills are portable; only the launcher knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+The skills are portable; only your launcher knows your terminal, and forge ships none. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
 
 The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops at `review-ready` and leaves merging to you; its summary lists the threads it left open.
 
 ## One Issue or ten
 
-One Issue: `/forge-ship --guard 123` in any session, `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout (needs the [worktree hooks](../contrib/worktree/)), or `contrib/launchers/cmux-claude.sh 123` for a named tab.
+One Issue: `/forge-ship --guard 123` in any session, or `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout.
 
-Ten: `/forge-batch <scope>` prints Waves. Paste a Wave's launch line into the launcher. Re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
+Ten: `/forge-batch <scope>` prints Waves. Start each Issue in a Wave with your launcher, or by hand. Re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
 
 ## Setup
 
 Once per user:
 
-- [ ] Install the [worktree hooks](../contrib/worktree/) in `~/.claude/settings.json`, so every session gets its own bootstrapped checkout. Point them at a forge clone that stays on `main`, not the one you develop in
-- [ ] Put a launcher on your `PATH`, e.g. `ln -s /path/to/forge/contrib/launchers/cmux-claude.sh ~/bin/forge-launch`
-- [ ] Set `FORGE_LAUNCHER=forge-launch` so `forge-batch` prints launch lines you can paste as is
-- [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or `--yes-skip-permissions` per launch for Issues you trust — see [launcher permissions](../contrib/launchers/README.md#permissions). Without either, each session waits at its first prompt
+- [ ] If you write a launcher, set `FORGE_LAUNCHER` to its command so `forge-batch` prints launch lines you can paste as is
+- [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or the agent's skip-permissions flag for Issues you trust (the Issue text then directs the agent unchecked). Without either, each session waits at its first prompt
 
 Once per project:
 
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
-- [ ] Provide `scripts/bootstrap-worktree.sh` and `scripts/teardown-worktree.sh` when a fresh checkout needs more than a clone to run the tests
+- [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
+
+## Writing a launcher
+
+A launcher is yours, for your terminal. It does three things:
+
+1. Gives each Issue an isolated checkout, such as `claude -w <issue>` or `git worktree add`.
+2. Starts the agent with `/forge-ship --guard <issue>`, with `FORGE_STATUS_CMD` pointing at a script that accepts `<state> "<detail>"` ([status-reporting](../skills/_shared/status-reporting.md)).
+3. Makes the session findable: a tab name, a window title, a tmux session name.
+
+Keep it to starting sessions. Anything smarter belongs in a skill.
