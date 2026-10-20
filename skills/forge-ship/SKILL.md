@@ -1,6 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review and addresses feedback until the PR is review-ready. Use when the user wants to implement and review without manual handoff between skills.
+description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready). Use when the user wants to implement and review without manual handoff between skills.
 disable-model-invocation: true
 ---
 
@@ -14,7 +14,7 @@ Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or f
 
 **Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — and ends at `review-ready` or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — then the [forge-land](../forge-land/SKILL.md) risk verdict, and ends at `merge-ready`, `review-ready`, or `needs-human`. Implies `--unattended`.
 
 ## Process
 
@@ -37,13 +37,13 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
-### Step 4: Guard (only with `--guard`)
+### Step 4: Guard and Land (only with `--guard`)
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. Its terminal state is this skill's terminal state. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. When it ends at `needs-human`, that is this skill's terminal state. When it reaches `review-ready`, don't report that state: run the full [forge-land](../forge-land/SKILL.md) process on the same PR, and its terminal state is this skill's. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
 
 ### Step 5: Summarize
 
-Report implementation, review, and guard results together.
+Report implementation, review, guard, and land results together.
 
 ## Output Format
 
@@ -52,7 +52,7 @@ Report implementation, review, and guard results together.
 
 **PR:** #<number> — <title>
 **Branch:** <branch-name>
-**Result:** pushed | review-ready | needs-human — <reason>
+**Result:** pushed | merge-ready | review-ready | needs-human — <reason>
 
 ### Implementation
 - <N> commits, <M> files changed
@@ -65,6 +65,8 @@ Report implementation, review, and guard results together.
 - Deferred: #<issue> — <title> (or "none")
 
 ### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
+
+### Land    (guard mode only, when guard reached review-ready — Judged, Checks, and Review requested from forge-land)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -82,7 +84,7 @@ Report implementation, review, and guard results together.
 
 ## Related Skills
 
-**Components:** Composes `forge-implement`, the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`), and `forge-guard` when `--guard` is set.
+**Components:** Composes `forge-implement`, the fresh-context review flow shared with `forge-reflect` (`_shared/review-delegation.md`), and `forge-guard` followed by `forge-land` when `--guard` is set.
 **After peer review:** Use `forge-address-pr-feedback` to address reviewer comments (guard mode does this for you).
 **Many Issues at once:** Use `forge-batch` to group Issues into Waves, then start one `forge-ship --guard` session per Issue.
 

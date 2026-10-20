@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Nine skills. From idea to review-ready code.
+  One workflow. Ten skills. From idea to review-ready code.
 </p>
 
 <p align="center">
@@ -30,8 +30,9 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 | Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description |
 | Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
 | Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
-| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready** |
+| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready, then lands it** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds — never merges |
+| Land | `/forge-land [pr]` | Judge a green PR's risk on its head commit and write it into the PR: merge-ready, or review-ready with where to look — never merges |
 | Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
 
 All skills accept optional trailing execution guidance using `-- <additional context>`.
@@ -41,8 +42,8 @@ All skills accept optional trailing execution guidance using `-- <additional con
 The skills form a simple workflow — each step feeds into the next:
 
 ```
-forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard
-                                                                        ╰──── forge-ship ────╯╰──── forge-ship --guard ────╯
+forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard → forge-land
+                                                                        ╰──── forge-ship ────╯╰────────── forge-ship --guard ───────────╯
 ```
 
 For many Issues at once, `forge-batch` groups them into Waves and your launcher (one `claude -w` per Issue, or a script for your terminal) starts one guarded ship per Issue. See [Unattended Shipping](docs/unattended.md).
