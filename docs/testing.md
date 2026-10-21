@@ -1,13 +1,15 @@
 # Testing
 
-The skills have no automated test suite: they are prompt templates, not executable code, and validation is manual. The plugin and the [lens](lens.md) have automated checks:
+The skills are prompt templates, not executable code: their behavior is validated by hand, below. What can be checked mechanically runs in CI (`.github/workflows/checks.yml`) on every pull request, and locally with the same commands:
 
 ```bash
-claude plugin validate .   # plugin and marketplace manifests, the lens's hooks
-claude plugin test .       # lens/tests/*.test.tsx
+scripts/check-skills.sh                        # shared-layer symlinks, no ../_shared links, name matches directory, quoted descriptions
+npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/ and the plugin JSON
+claude plugin validate .                       # plugin and marketplace manifests, the lens's hooks
+claude plugin test .                           # lens/tests/*.test.tsx
 ```
 
-Run both when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
+CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. Run the lens checks when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
 
 ## How to Validate a Skill
 
@@ -70,10 +72,6 @@ grep -rn "additional context\|-- <additional context>" skills/
 # Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
 
-# Check frontmatter descriptions with ": " are quoted; installers parse YAML strictly and skip the skill otherwise (should print nothing)
-grep -nE '^description: [^"'"'"'].*: ' skills/*/SKILL.md skills/_shared/roles/*.md
-
-# Check every skill bundles the shared layer and no sibling-relative links remain (both should print nothing)
-for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"; done
-grep -rn "\.\./_shared" skills/
+# Shared-layer symlinks, sibling-relative links, names and quoted descriptions (prints nothing when healthy; CI runs it)
+scripts/check-skills.sh
 ```

@@ -43,11 +43,13 @@ The lens reads status from the command a skill wrote, never from command output,
 ## Working on It
 
 ```bash
-claude --plugin-dir .        # load this checkout's skills and lens for one session
-claude plugin validate .     # manifests, hooks, and what the lens calls
-claude plugin test .         # lens/tests/*.test.tsx
+claude --plugin-dir .                      # load this checkout's skills and lens for one session
+npx @biomejs/biome@2.6.2 check --write .   # lint and format
+claude plugin validate .                   # manifests, hooks, and what the lens calls
+claude plugin test .                       # lens/tests/*.test.tsx
+tsc -p .                                   # type-check, once a session has loaded the plugin
 ```
 
-The lens is TypeScript run by Claude Code itself: no build step and no dependencies. Claude Code writes its API types to `.claude-plugin/types/` when it loads the plugin from a folder (git-ignored). Hooks may only change the state model through pure functions in `lens/hooks/model.ts`, because Claude Code refuses a module that passes `$` to a helper; side effects (`gh`, notifications, the status line, the demo) run in the one-second loop in `register.tsx`.
+The lens is TypeScript run by Claude Code itself: no build step and no dependencies. Claude Code writes its API types to `.claude-plugin/types/` and a `tsconfig.json` when a session loads the plugin from a folder (both git-ignored), so type-checking is local only; CI runs Biome, `validate` and `test`. Hooks may only change the state model through pure functions in `lens/hooks/model.ts`, because Claude Code refuses a module that passes `$` to a helper; side effects (`gh`, notifications, the status line, the demo) run in the one-second loop in `register.tsx`.
 
 The mod API is early access and may change between Claude Code releases. `validate` and `test` show a break first.

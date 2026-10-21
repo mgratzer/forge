@@ -1,0 +1,46 @@
+name: Checks
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  skills:
+    name: Skills
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Structural checks
+        run: scripts/check-skills.sh
+
+  lens:
+    name: Lens
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The version matches the $schema in biome.json.
+      - name: Biome
+        run: npx --yes @biomejs/biome@2.6.2 ci --error-on-warnings .
+
+      # Claude Code is the lens's runtime and test runner, so its version is
+      # pinned: a release can change what `validate` refuses. Neither command
+      # needs a login. Type-checking stays local, because only a session that
+      # loads the plugin writes the API types (docs/lens.md).
+      - name: Install Claude Code
+        run: npm install --global @anthropic-ai/claude-code@2.1.306
+
+      - name: Validate plugin
+        run: claude plugin validate .
+
+      - name: Test lens
+        run: claude plugin test .
