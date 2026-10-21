@@ -24,7 +24,7 @@ CI (`.github/workflows/checks.yml`) runs all three on every pull request; see [T
 | [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
 | [Development](docs/development.md) | How to create and modify skills |
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
-| [Testing](docs/testing.md) | How to validate skills manually |
+| [Testing](docs/testing.md) | Automated checks and validating skills by hand |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
 | [Lens](docs/lens.md) | Claude Code plugin install, the lens's views, the text formats it reads |
