@@ -1,105 +1,130 @@
 <p align="center">
+  <img src="docs/images/icon-256.png" width="128" height="128" alt="forge icon: a pixel-art anvil with a glowing bar inside an ember progress ring">
+</p>
+
+<p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
   One workflow. Ten skills. From idea to merged code.
 </p>
 
 <p align="center">
-  <a href="CONTEXT.md">Context</a> &middot;
+  <a href="#quick-start">Quick start</a> &middot;
+  <a href="#how-it-works">How it works</a> &middot;
+  <a href="#skills">Skills</a> &middot;
+  <a href="docs/lens.md">Lens</a> &middot;
   <a href="docs/architecture.md">Architecture</a> &middot;
-  <a href="docs/development.md">Development</a> &middot;
-  <a href="docs/coding-guidelines.md">Guidelines</a> &middot;
-  <a href="docs/testing.md">Testing</a> &middot;
-  <a href="docs/pr-workflow.md">PR Workflow</a>
+  <a href="#contributing">Contributing</a>
 </p>
 
 ---
 
-A forge is where raw material meets intention. You bring the codebase — these skills shape the workflow from issue to implementation to review.
+A forge is where raw material meets intention. You bring the codebase; these skills shape the workflow from issue to implementation to review.
 
 ---
 
-## Skills
+<p align="center">
+  <img src="docs/images/lens.png" width="480" alt="The forge lens beside a Claude Code session: a guarded ship run with its current state, the next command, the pipeline, the PR's CI, review findings, the risk verdict and a timeline">
+</p>
 
-Forge skills follow the [Agent Skills](https://agentskills.io) open standard and work with any compatible agent.
+## Quick Start
 
-| Skill | Command | Purpose |
-|-------|---------|---------|
-| Setup Project | `/forge-setup-project` | Set up or audit a project's context infrastructure for agentic engineering |
-| Shape | `/forge-shape` | Shape a vague idea into a clear plan through one-at-a-time structured questioning |
-| Create Issue | `/forge-create-issue` | Collaboratively plan and create Issues (GitHub, markdown, or other provider) |
-| Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description |
-| Reflect | `/forge-reflect` | Self-review changes (PR, branch, or uncommitted) |
-| Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR review comments |
-| **Ship** | **`/forge-ship <input>`** | **Implement + review in one invocation; `--guard` continues until the PR is review-ready, then lands it** |
-| Guard | `/forge-guard [pr]` | Drive an open PR to review-ready: quality passes, CI, peer review, feedback rounds — never merges |
-| Land | `/forge-land [pr]` | Judge a green PR's risk on its head commit and write it into the PR: merge-ready, or review-ready with where to look; merges low-risk PRs only when the project opts in |
-| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
+Install forge one way per machine:
 
-All skills accept optional trailing execution guidance using `-- <additional context>`.
+```
+# Claude Code: the skills plus the lens above
+/plugin install forge --marketplace mgratzer/forge
+```
 
-## Workflow
+```bash
+# any other agent that reads Agent Skills
+npx skills add mgratzer/forge
+```
 
-The skills form a simple workflow — each step feeds into the next:
+Then, in your project:
+
+```
+/forge-setup-project       # once per repo: AGENTS.md and the docs agents work from
+/forge-ship 42             # implement Issue #42, review it in fresh context, open the PR
+/forge-ship --guard 42     # and keep going: CI, review feedback, then a risk verdict
+```
+
+With the plugin, the commands are namespaced (`/forge:forge-ship`), and `/forge demo` replays a guarded run in the lens without touching GitHub.
+
+## How It Works
 
 ```
 forge-setup-project → [forge-shape →] forge-create-issue → forge-implement → forge-reflect → forge-address-pr-feedback → forge-guard → forge-land
                                                                         ╰──── forge-ship ────╯╰────────── forge-ship --guard ───────────╯
 ```
 
-For many Issues at once, `forge-batch` groups them into Waves and your launcher (one `claude -w` per Issue, or a script for your terminal) starts one guarded ship per Issue. See [Unattended Shipping](docs/unattended.md).
+**Ship** implements a change from an Issue, a plan file or a description: it researches the codebase, works in vertical phases with tests, runs the app on the changed path when the project says how, and opens a PR. A fresh-context reviewer, not the session that wrote the code, reviews the diff before you see it.
 
-`forge-ship` composes implement + review into a single invocation; its review always delegates to a fresh-context reviewer (the session authored the diff), adding a second pass only when risk justifies it. Standalone `forge-reflect` keeps tiny diffs inline when the session didn't author them. Scout and review work should use cheaper models when the runtime supports per-task model choice; otherwise they should inherit the parent session model cleanly.
+**Guard** drives the open PR to review-ready without anyone watching: a simplification pass, a security pass when the diff calls for one, CI, the peer reviewer, and feedback in bounded rounds. It never merges.
 
-## Install
+**Land** judges a green PR's risk on its head commit and writes the verdict into the PR. Low risk means you can merge without reading the diff; anything else comes with a list of where to look. It merges by itself only when the project opts in.
 
-Forge skills follow the [Agent Skills](https://agentskills.io) open standard and work with any compatible agent.
+Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the repo, or a tracker you declare in `AGENTS.md`. For many Issues at once, `forge-batch` groups them into Waves that can ship in parallel; see [Unattended Shipping](docs/unattended.md).
 
-**Via [npx skills](https://skills.sh)** — auto-detects your agents and installs to all of them:
+## Skills
 
-```bash
-npx skills add mgratzer/forge
-```
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Setup Project | `/forge-setup-project` | Set up or audit a project's context for agentic engineering |
+| Shape | `/forge-shape` | Shape a vague idea into a clear plan, one question at a time |
+| Create Issue | `/forge-create-issue` | Plan and create Issues (GitHub, markdown, or another provider) |
+| Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description, and open the PR |
+| Reflect | `/forge-reflect` | Self-review changes: a PR, a branch, or uncommitted work |
+| Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved review threads |
+| **Ship** | **`/forge-ship <input>`** | **Implement and review in one go; `--guard` continues through guard and land** |
+| Guard | `/forge-guard [pr]` | Drive an open PR to review-ready; never merges |
+| Land | `/forge-land [pr]` | Judge a green PR's risk: merge-ready, or review-ready with where to look |
+| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
 
-**Claude Code plugin**: the skills plus the [lens](docs/lens.md), a live pane with the pipeline, the PR's CI, review findings, the risk verdict, and the next step:
+Every skill takes optional trailing guidance: `/forge-ship 42 -- keep the diff minimal`.
 
-```
-/plugin install forge --marketplace mgratzer/forge
-```
+## The Lens
 
-Commands become `/forge:forge-ship` and so on. Pick one channel: the plugin and npx together list every skill twice.
+The Claude Code plugin adds the lens: a pane beside the session that follows a forge run. It shows the current state and the command that most likely comes next, the pipeline step, the PR's CI and review state, review findings as a checklist, and the risk verdict, which it marks stale once the PR moves past the judged commit. A status line, a next-step suggestion you take with Tab, and a notification when a run ends or needs you come with it.
 
-**Manual** — symlink into your agent's skills directory:
+`/forge` says where a run is and what to do next, and `/forge config` shows the project's unattended settings with their defaults filled in. The lens only reads what the skills already print, so the skills work the same without it. See [Lens](docs/lens.md).
+
+## Install Details
+
+**Claude Code plugin.** `/plugin install forge --marketplace mgratzer/forge` brings the skills and the lens. The plugin tracks commits on `main`: update with `claude plugin update forge@forge`, or turn on auto-update for the marketplace under `/plugin`.
+
+**npx skills.** `npx skills add mgratzer/forge` detects your agents and installs the skills to each of them ([skills.sh](https://skills.sh)).
+
+**Manual.** Symlink the skills into your agent's skills directory:
 
 ```bash
 ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
-Check your agent's docs for the correct skills directory path. Each skill reaches the shared modules through its own `_shared` symlink, so no separate `_shared/` install is needed with either method.
-
-## Project Guidance
-
-- [`AGENTS.md`](AGENTS.md) is the only project guidance file — no `CLAUDE.md`; Claude Code reads `AGENTS.md` natively
-
-## Documentation
-
-| Document | Purpose |
-|----------|---------|
-| [Context](CONTEXT.md) | Shared vocabulary used across forge skills |
-| [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
-| [Development](docs/development.md) | How to create and modify skills |
-| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
-| [Testing](docs/testing.md) | How to validate skills manually |
-| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
-| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
-| [Lens](docs/lens.md) | Claude Code plugin install, the lens's views, the text formats it reads |
-
-## Contributors
-
-- [@denrase](https://github.com/denrase) — configurable git workflow idea ([#7](https://github.com/mgratzer/forge/pull/7))
+Each skill reaches the shared modules through its own `_shared` symlink, so nothing else needs installing. Use one channel per machine: with both the plugin and npx, Claude Code lists every skill twice.
 
 ## Contributing
 
-1. Read [AGENTS.md](AGENTS.md) for project principles and conventions
-2. Follow [docs/coding-guidelines.md](docs/coding-guidelines.md) for skill authoring rules
-3. Test your changes by invoking the skill on a real project
-4. Use conventional commits: `feat(skills): add new skill`
+Forge's skills are Markdown prompts that follow the [Agent Skills](https://agentskills.io) standard; the lens is TypeScript that Claude Code runs itself. [`AGENTS.md`](AGENTS.md) holds the principles and commands, and CI checks every pull request:
+
+```bash
+scripts/check-skills.sh                            # skill structure
+npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens
+claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
+```
+
+Test a skill change by invoking it on a real project, and use conventional commits (`feat(skills): add a skill`).
+
+| Document | Purpose |
+|----------|---------|
+| [Context](CONTEXT.md) | Shared vocabulary used across the skills |
+| [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
+| [Development](docs/development.md) | Creating and modifying skills |
+| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions |
+| [Testing](docs/testing.md) | Automated checks and validating skills by hand |
+| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review |
+| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
+| [Lens](docs/lens.md) | The Claude Code plugin and the lens |
+
+## License
+
+[MIT](LICENSE)
