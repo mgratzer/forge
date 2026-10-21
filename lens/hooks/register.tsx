@@ -210,23 +210,28 @@ export const register: Register = (on) => {
 	// Reviewer sub-agents answer with `### file` / `- [P1] …` findings
 	on("tool.call", { tool: "Agent" }, async ($, e, next) => {
 		const ran = await next(e);
-		const text = ran.deny === undefined ? parse.resultText(ran.result) : "";
-		if (text) await update($, state, (m) => model.withReviewText(m, text));
+		// Most sub-agent results hold no findings: write only when one does
+		const found = ran.deny === undefined ? parse.findings(parse.resultText(ran.result)) : [];
+		if (found.length) await update($, state, (m) => model.withReviewFindings(m, found));
 		return ran;
 	}).catch((_, e, next) => next(e));
 
 	// A background reviewer's report arrives as a delivery
 	on("session.receive", async ($, e, next) => {
-		await update($, state, (m) => model.withReviewText(m, e.text));
+		const found = parse.findings(e.text);
+		if (found.length) await update($, state, (m) => model.withReviewFindings(m, found));
 		return next(e);
 	}).catch((_, e, next) => next(e));
 
 	on("turn.complete", async ($, e, next) => {
 		const done = await next(e);
-		await update($, state, (m) => {
-			const x = model.withAnswer(m, done.text ?? "");
-			return x.run && !x.run.isDemo && x.pr ? model.askPr(x) : x;
-		});
+		const text = done.text ?? "";
+		const now = await $.clock.now();
+		// Skip the write, and the redraws it starts, when the turn changes nothing
+		const before = await read($, state);
+		if (model.afterTurn(before, text, now) !== before) {
+			await update($, state, (m) => model.afterTurn(m, text, now));
+		}
 		const step = (await read($, state)).next;
 		if (step && step.text !== suggested && e.reason === "answer") {
 			suggested = step.text;

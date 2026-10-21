@@ -184,3 +184,18 @@ test("a failed command reports no terminal state, and a new run forgets the old 
 	expect(next.pr).toBe(null);
 	expect(next.want.pr).toBe(null);
 });
+
+test("a turn without a run or a batch changes nothing, and a live run refreshes its PR at most every 15s", () => {
+	expect(model.afterTurn(model.EMPTY, "just chatting", 0)).toBe(model.EMPTY);
+	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
+	const started = model.startRun(model.EMPTY, "guard", "7", 0);
+	// the run's own request for PR #7 already went out
+	const live = {
+		...started,
+		want: { ...started.want, pr: null, isBranchPr: false },
+		pr: pr && { ...pr, isDemo: false, fetchedAt: 10_000 },
+	};
+	expect(model.afterTurn(live, "", 20_000).want.pr).toBe(null);
+	expect(model.afterTurn(live, "", 30_000).want.pr).toBe(88);
+	expect(model.withReviewFindings(model.EMPTY, parse.findings("### a.ts\n- [P1] x"))).toBe(model.EMPTY);
+});

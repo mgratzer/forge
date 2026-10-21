@@ -122,9 +122,9 @@ export function addFindings(m: Model, found: Finding[]): Model {
 	return withNext({ ...m, findings: [...m.findings, ...found.filter((f) => !known.has(f.id))].slice(-60) });
 }
 
-// Reviewer findings in a sub-agent's result, a delivered report or an answer
-export const withReviewText = (m: Model, text: string): Model =>
-	m.run && !m.run.isDemo ? addFindings(m, parse.findings(text)) : m;
+// Reviewer findings from a sub-agent's result, a delivered report or an answer
+export const withReviewFindings = (m: Model, found: Finding[]): Model =>
+	m.run && !m.run.isDemo ? addFindings(m, found) : m;
 
 export function toggleFinding(m: Model, id: string): Model {
 	return withNext({ ...m, findings: m.findings.map((f) => (f.id === id ? { ...f, isDone: !f.isDone } : f)) });
@@ -201,12 +201,23 @@ export function withAnswer(m: Model, text: string): Model {
 	const found = parse.batch(text);
 	if (found) out = { ...out, batch: found, panes: [...out.panes, PANES.waves.id] };
 	if (out.run && !out.run.isDemo) {
-		out = withReviewText(
+		out = withReviewFindings(
 			{ ...out, risk: parse.riskSection(text) ?? out.risk, result: parse.resultLine(text) || out.result },
-			text,
+			parse.findings(text),
 		);
 	}
 	return withNext(out);
+}
+
+// A PR refresh after a turn, at most this often: the loop refreshes a quiet run itself
+const TURN_REFRESH_MS = 15_000;
+
+// What a finished turn changes: the same model when no run is open and the answer holds no batch
+export function afterTurn(m: Model, text: string, now: number): Model {
+	const isLive = !!m.run && !m.run.isDemo;
+	if (!isLive && !parse.batch(text)) return m;
+	const out = withAnswer(m, text);
+	return isLive && out.pr && now - out.pr.fetchedAt > TURN_REFRESH_MS ? askPr(out) : out;
 }
 
 export function withConfig(m: Model, config: Config): Model {
