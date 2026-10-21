@@ -125,8 +125,6 @@ Test a skill change by invoking it on a real project, and use conventional commi
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
 | [Lens](docs/lens.md) | The Claude Code plugin and the lens |
 
-Thanks to [@denrase](https://github.com/denrase) for the configurable git workflow idea ([#7](https://github.com/mgratzer/forge/pull/7)).
-
 ## License
 
 [MIT](LICENSE)
