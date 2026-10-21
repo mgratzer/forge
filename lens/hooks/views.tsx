@@ -1,7 +1,7 @@
 import type { EngineInterface } from 'claude-code'
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from '../types'
-import { PIPELINE, TERMINAL, currentStep } from './parse'
+import { PIPELINE, TERMINAL, currentStep, isLowRisk } from './parse'
 
 type Ui = ReturnType<EngineInterface['ui']['resolve']>
 
@@ -177,11 +177,11 @@ type RiskCardProps = { ui: Ui; risk: Risk; result: string; isOnHead: boolean; he
 
 export function RiskCard({ ui, risk, result, isOnHead, head }: RiskCardProps) {
   const { Box, Text } = ui
-  const isLow = /low/i.test(risk.verdict) && isOnHead
+  const isLow = isLowRisk(risk.verdict) && isOnHead
   return (
     <Box flexDirection="column" borderStyle="round" borderColor={isLow ? 'success' : 'warning'} paddingX={1}>
       <Text bold color={isLow ? 'success' : 'warning'}>
-        {/low/i.test(risk.verdict) ? 'LOW RISK' : 'NEEDS REVIEW'}
+        {isLowRisk(risk.verdict) ? 'LOW RISK' : 'NEEDS REVIEW'}
         <Text dimColor>{risk.sha ? `  judged on ${risk.sha}` : ''}</Text>
       </Text>
       {!isOnHead && (

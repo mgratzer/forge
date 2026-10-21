@@ -34,12 +34,17 @@ export function forgeCommand(text: string): { skill: string; args: string } | nu
 }
 
 // A pull request link into `slug` (owner/repo) only: output may name any repository
+// The last link wins: `gh pr create` prints the new PR's URL last
 export function prUrl(text: string, slug: string): { number: number; url: string } | null {
+  let found: { number: number; url: string } | null = null
   for (const m of text.matchAll(/https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)/g)) {
-    if (slug && (m[1] ?? '').toLowerCase() === slug) return { number: Number(m[2]), url: m[0] }
+    if (slug && (m[1] ?? '').toLowerCase() === slug) found = { number: Number(m[2]), url: m[0] }
   }
-  return null
+  return found
 }
+
+// A low risk verdict, judged by its first word: "not low" or "below" don't count
+export const isLowRisk = (verdict: string): boolean => /^\W*low\b/i.test(verdict)
 
 // owner/repo from a GitHub remote (https or ssh), lowercased; '' for any other host
 export function repoSlug(remote: string | null): string {
@@ -53,7 +58,9 @@ export const isOnHead = (risk: Risk | null, pr: Pr | null): boolean =>
 
 // The first bare number in a skill's arguments: an Issue or PR number
 export function argNumber(args: string): number | null {
-  const m = /(?:^|\s)#?(\d+)(?:\s|$)/.exec(args.split(' -- ')[0] ?? '')
+  // --max-rounds is the one forge flag that takes a value
+  const bare = (args.split(' -- ')[0] ?? '').replace(/--max-rounds[ =]\S+/g, ' ')
+  const m = /(?:^|\s)#?(\d+)(?:\s|$)/.exec(bare)
   return m ? Number(m[1]) : null
 }
 
@@ -72,7 +79,7 @@ export function currentStep(run: Run | null): string | null {
 }
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines
-export function findings(text: string, source: string): Finding[] {
+export function findings(text: string): Finding[] {
   const out: Finding[] = []
   let file = ''
   for (const line of text.split('\n')) {
@@ -81,7 +88,8 @@ export function findings(text: string, source: string): Finding[] {
     const m = /^\s*[-*] \[(P[0-2])\] (.+)$/.exec(line)
     if (m) {
       const body = (m[2] ?? '').trim()
-      out.push({ id: `${source}:${file}:${body.slice(0, 80)}`, severity: m[1] ?? 'P2', file, text: body, isDone: false })
+      // the same finding arrives from the reviewer, a report and the restating answer
+      out.push({ id: `${m[1]}:${file}:${body.slice(0, 80)}`, severity: m[1] ?? 'P2', file, text: body, isDone: false })
     }
   }
   return out
@@ -177,8 +185,8 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
     case 'review-ready':
       return { text: `/forge-land ${n}`.trim(), why: 'green and addressed: land judges the risk' }
     case 'merge-ready':
-      return isOnHead(risk, pr) && /low/i.test(risk?.verdict ?? '')
-        ? { text: `! gh pr merge ${n} --squash`, why: 'low risk verdict on the head commit: you can merge without reading the diff' }
+      return pr && isOnHead(risk, pr) && isLowRisk(risk?.verdict ?? '')
+        ? { text: `! gh pr merge ${n} --squash --match-head-commit ${pr.headSha}`, why: `land judged ${pr.headSha.slice(0, 7)} low risk; the merge holds only for that commit` }
         : { text: `/forge-land ${n}`.trim(), why: "no low risk verdict on the head commit: land judges it again" }
     case 'pushed':
       return { text: `/forge-guard ${n}`.trim(), why: 'the PR is open: guard drives it to review-ready' }

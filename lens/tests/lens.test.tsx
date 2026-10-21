@@ -1,6 +1,9 @@
 import { expect, mock, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 
+import * as model from '../hooks/model'
+import * as parse from '../hooks/parse'
+
 const pane = (requestId: string) =>
   ({
     plugin: 'forge',
@@ -128,4 +131,35 @@ test('/forge pane toggles, and a closed pane stays closed for the next run', asy
   expect(toggled.text).toBe('forge pane closed.')
   expect(closed).toEqual(['forge-lens'])
   expect(seen.opened).not.toContain('forge-lens')
+})
+
+test('parsers: flag values, anchored verdicts, one finding per text', () => {
+  expect(parse.argNumber('--max-rounds 3')).toBe(null)
+  expect(parse.argNumber('--guard 42')).toBe(42)
+  expect(parse.argNumber('--max-rounds 2 17 -- skip 9')).toBe(17)
+  expect(parse.isLowRisk('low risk')).toBe(true)
+  expect(parse.isLowRisk('not low')).toBe(false)
+  expect(parse.isLowRisk('below the bar, needs review')).toBe(false)
+  const text = '### a.ts\n- [P1] the bucket never empties'
+  const twice = model.addFindings(model.addFindings(model.EMPTY, parse.findings(text)), parse.findings(`restated:\n${text}`))
+  expect(twice.findings.length).toBe(1)
+  expect(parse.prUrl('https://github.com/x/y/pull/1\nhttps://github.com/me/repo/pull/7', 'me/repo')?.number).toBe(7)
+  expect(parse.prUrl('https://github.com/x/y/pull/1', 'me/repo')).toBe(null)
+})
+
+test('a failed command reports no terminal state, and a new run forgets the old PR', async ($, on) => {
+  const clock = mock.clock(on)
+  const seen = engine(on)
+  on('tool.call', () => ({ result: { stdout: '', stderr: 'merge failed' }, isError: true }))
+  on('prompt.submit', (_, e) => ({ text: e.text }))
+  on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: '', isStdoutTruncated: false, isStderrTruncated: false } }))
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.prompt.submit({ text: '/forge-land 5', wait: false, origin: { kind: 'composer' } })
+  await $.tool.call({ tool: 'Bash', command: 'gh pr merge 5 && echo "[forge] merged: PR #5"' })
+  await clock.advance(2_000)
+
+  expect(seen.notified).toEqual([])
+  const next = model.startRun({ ...model.EMPTY, pr: model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr }, 'implement', '12', 0)
+  expect(next.pr).toBe(null)
+  expect(next.want.pr).toBe(null)
 })

@@ -91,7 +91,7 @@ function script(isStuck: boolean): Step[] {
   const steps: Step[] = [
     status('implementing', 'Issue #42: rate-limit the notes API'),
     then(checks(0, 0, 5), status('reviewing', '2 reviewer passes on 6 files')),
-    m => model.addFindings(m, parse.findings(REVIEW, 'demo')),
+    m => model.addFindings(m, parse.findings(REVIEW)),
     m => model.closeFindings(m, 1),
     m => model.closeFindings(m, 1),
     then(status('waiting', 'CI on PR #88 (5 checks)'), checks(3, 0, 2)),

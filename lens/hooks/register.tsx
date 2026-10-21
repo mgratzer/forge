@@ -44,22 +44,36 @@ export const register: Register = on => {
         await update($, state, m => demo.tick(m, now))
         let m = await read($, state)
 
-        for (const id of m.panes) void $.ui.open({ id, title: TITLES[id] ?? id })
-        for (const text of m.alerts) {
+        // Clear only what this tick consumed: hooks may queue more while it awaits
+        const { panes, alerts } = m
+        if (panes.length || alerts.length) {
+          await update($, state, x => ({ ...x, panes: x.panes.slice(panes.length), alerts: x.alerts.slice(alerts.length) }))
+        }
+        for (const id of panes) void $.ui.open({ id, title: TITLES[id] ?? id })
+        for (const text of alerts) {
           const sent = await $.ui.notify(text, { title: 'forge' }).catch(() => ({ isSent: false }))
           if (!sent.isSent) $.ui.toast(text, { timeoutMs: 8000 })
         }
-        if (m.panes.length || m.alerts.length) await update($, state, x => ({ ...x, panes: [], alerts: [] }))
 
         const isStale = m.run && !m.run.terminal && !m.run.isDemo && m.pr && now - m.pr.fetchedAt > PR_REFRESH_MS
         if (m.want.pr !== null || m.want.isBranchPr || isStale) {
-          const target = m.want.pr ?? m.pr?.number
-          await update($, state, x => ({ ...x, want: { ...x.want, pr: null, isBranchPr: false } }))
+          const asked = m.want
+          const target = asked.pr ?? m.pr?.number
+          // A request made while this fetch runs stays for the next tick
+          await update($, state, x =>
+            x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr ? { ...x, want: { ...x.want, pr: null, isBranchPr: false } } : x,
+          )
           const argv = ['gh', 'pr', 'view', ...(target ? [String(target)] : []), '--json', PR_FIELDS]
           const ran = await $.process.run(argv, { cwd: await $.session.cwd(), timeoutMs: 20_000 }).catch(() => null)
-          if (ran && ran.exitCode === 0) {
-            const data = JSON.parse(ran.stdout) as model.GhPr
-            await update($, state, x => model.withPr(x, data, now))
+          let data: model.GhPr | null = null
+          try {
+            data = ran && ran.exitCode === 0 ? (JSON.parse(ran.stdout) as model.GhPr) : null
+          } catch {
+            data = null
+          }
+          if (data) {
+            const pr = data
+            await update($, state, x => model.withPr(x, pr, now))
           } else if (m.pr && !m.pr.isDemo) {
             await update($, state, x => (x.pr ? { ...x, pr: { ...x.pr, fetchedAt: now } } : x))
           }
@@ -99,9 +113,11 @@ export const register: Register = on => {
           shown = status
           $.ui.status(status)
         }
-      })().finally(() => {
-        isBusy = false
-      })
+      })()
+        .catch(() => undefined)
+        .finally(() => {
+          isBusy = false
+        })
     })
     return next(e)
   })
@@ -168,8 +184,10 @@ export const register: Register = on => {
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
     const ran = await next(e)
     if (ran.deny !== undefined) return ran
-    const lines = parse.statusCalls(e.command)
-    const isPrCreate = /\bgh pr create\b/.test(e.command)
+    // A failed command's terminal state didn't happen; a stage start counts either way,
+    // since skills prepend it to the stage's own command (`… waiting "CI"; gh pr checks`)
+    const lines = parse.statusCalls(e.command).filter(l => !ran.isError || !parse.TERMINAL.includes(l.state))
+    const isPrCreate = /(?:^|[;&|(]\s*)gh pr create\b/.test(e.command)
     const url = isPrCreate ? parse.prUrl(parse.resultText(ran.result), parse.repoSlug((await $.session.repo())?.remote ?? null)) : null
     const isPrCommand = /\bgh pr (create|checks|ready|edit|merge)\b/.test(e.command)
     if (lines.length || url || isPrCommand) {
@@ -199,14 +217,14 @@ export const register: Register = on => {
     const ran = await next(e)
     const text = ran.deny === undefined ? parse.resultText(ran.result) : ''
     if (text) {
-      await update($, state, m => (m.run ? model.addFindings(m, parse.findings(text, e.description)) : m))
+      await update($, state, m => (m.run ? model.addFindings(m, parse.findings(text)) : m))
     }
     return ran
   }).catch(($, e, next) => next(e))
 
   // A background reviewer's report arrives as a delivery
   on('session.receive', async ($, e, next) => {
-    await update($, state, m => (m.run ? model.addFindings(m, parse.findings(e.text, 'report')) : m))
+    await update($, state, m => (m.run ? model.addFindings(m, parse.findings(e.text)) : m))
     return next(e)
   }).catch(($, e, next) => next(e))
 

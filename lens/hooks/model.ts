@@ -43,8 +43,8 @@ export function startRun(m: Model, skill: string, args: string, now: number, isD
     isDemo,
   }
   const n = parse.argNumber(args)
-  // guard, land and address-pr-feedback take a PR number; the others an Issue
-  const takesPr = ['guard', 'land', 'address-pr-feedback'].includes(skill)
+  // these work on a PR: the one named, else the branch's; the others start fresh
+  const takesPr = ['guard', 'land', 'address-pr-feedback', 'reflect'].includes(skill)
   const started: Model = {
     ...m,
     run,
@@ -54,8 +54,12 @@ export function startRun(m: Model, skill: string, args: string, now: number, isD
     result: '',
     next: null,
     isBandHidden: false,
-    pr: isDemo ? null : m.pr,
-    want: { ...m.want, pr: takesPr && n !== null && !isDemo ? n : m.want.pr },
+    pr: null,
+    want: {
+      ...m.want,
+      pr: takesPr && n !== null && !isDemo ? n : null,
+      isBranchPr: takesPr && n === null && !isDemo,
+    },
     panes: m.isLensClosed ? m.panes : [...m.panes, 'forge-lens'],
   }
   return visit(started, parse.currentStep(run))
@@ -170,7 +174,7 @@ export function withAnswer(m: Model, text: string): Model {
   if (found) out = { ...out, batch: found, panes: [...out.panes, 'forge-waves'] }
   if (out.run && !out.run.isDemo) {
     out = { ...out, risk: parse.riskSection(text) ?? out.risk, result: parse.resultLine(text) || out.result }
-    out = addFindings(out, parse.findings(text, 'answer'))
+    out = addFindings(out, parse.findings(text))
   }
   return withNext(out)
 }

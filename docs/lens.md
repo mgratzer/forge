@@ -38,7 +38,7 @@ The lens has no channel into the skills: it parses what they write. These format
 
 Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR.
 
-The lens reads status from the command a skill wrote, never from command output, which any file or tool can fill. It follows PR links only into the session's repository, and it treats a `## Risk` verdict as valid only on the PR's head commit: the card says when the verdict is stale, and the lens suggests merging only after a low risk verdict on the head.
+The lens reads status from the command a skill wrote, never from command output, which any file or tool can fill, and a terminal state counts only when that command succeeded. It follows PR links only into the session's repository, and it treats a `## Risk` verdict as valid only on the PR's head commit: the card says when the verdict is stale. It suggests merging only after forge-land reported `merge-ready` and the low risk verdict is on the head, and the suggested `gh pr merge` carries `--match-head-commit`, so a head that moved since cannot be merged.
 
 ## Working on It
 
