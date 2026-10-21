@@ -18,7 +18,7 @@ forge/
 │   │   ├── plan-folder-spec.md            # Markdown issue tracker provider spec
 │   │   ├── review-delegation.md           # Lean review flow: inline vs fresh-context passes
 │   │   ├── status-reporting.md            # FORGE_STATUS_CMD seam and state table
-│   │   ├── unattended-config.md           # AGENTS.md settings read by guard and batch
+│   │   ├── unattended-config.md           # AGENTS.md settings read by guard, land, and batch
 │   │   ├── review-rubric.md               # P0–P3 severity taxonomy
 │   │   ├── risk-rubric.md                 # forge-land's checks, judgment test, ## Risk section
 │   │   ├── review-dimensions.md           # Lean review checklists: default pass + optional deep passes
@@ -38,7 +38,7 @@ forge/
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
 │   ├── forge-land/SKILL.md                # Step 6: Risk verdict on a green PR: merge-ready or review-ready
 │   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
-│   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard] in one invocation
+│   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard + land] in one invocation
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
 └── README.md                              # Project overview

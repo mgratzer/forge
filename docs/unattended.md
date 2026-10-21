@@ -1,6 +1,6 @@
 # Unattended Shipping
 
-How a prepared Issue becomes a review-ready PR while you do something else, and how ten of them run at once.
+How a prepared Issue becomes a merged or review-ready PR while you do something else, and how ten of them run at once.
 
 ```
 forge-batch  →  launcher  →  forge-ship --guard  →  merged | merge-ready | review-ready | needs-human

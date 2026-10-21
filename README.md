@@ -1,6 +1,6 @@
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Ten skills. From idea to review-ready code.
+  One workflow. Ten skills. From idea to merged code.
 </p>
 
 <p align="center">
