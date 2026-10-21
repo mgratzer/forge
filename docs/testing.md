@@ -9,7 +9,7 @@ claude plugin validate .                       # plugin and marketplace manifest
 claude plugin test .                           # lens/tests/*.test.tsx
 ```
 
-CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. Run the lens checks when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
+CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. `validate` exits 0 on warnings, so CI also fails on any warning except the missing `version` (left out so installs track commits) and, through `--profile directory`, on anything the plugin directory would refuse, such as a missing LICENSE. Run the lens checks when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
 
 ## How to Validate a Skill
 

@@ -241,7 +241,8 @@ export const register: Register = (on) => {
 		return e.origin.kind === "suggestion" && step ? next({ ...e, text: step.text }) : next(e);
 	}).catch((_, e, next) => next(e));
 
-	on("ui.render", { component: "Pane", requestId: LENS.id }, async ($, e) => {
+	// Matchers name panes literally so `claude plugin validate` can report them (model.PANES holds the same ids)
+	on("ui.render", { component: "Pane", requestId: "forge-lens" }, async ($, e) => {
 		const m = await read($, state);
 		return (
 			<Lens
@@ -261,11 +262,11 @@ export const register: Register = (on) => {
 		);
 	});
 
-	on("ui.render", { component: "Pane", requestId: CONFIG.id }, async ($, e) => (
+	on("ui.render", { component: "Pane", requestId: "forge-config" }, async ($, e) => (
 		<ConfigView ui={$.ui.resolve(e)} config={(await read($, state)).config} />
 	));
 
-	on("ui.render", { component: "Pane", requestId: WAVES.id }, async ($, e) => (
+	on("ui.render", { component: "Pane", requestId: "forge-waves" }, async ($, e) => (
 		<WavesView ui={$.ui.resolve(e)} batch={(await read($, state)).batch} />
 	));
 

@@ -39,8 +39,15 @@ jobs:
       - name: Install Claude Code
         run: npm install --global @anthropic-ai/claude-code@2.1.306
 
+      # validate exits 0 on warnings. Fail on every warning except the missing
+      # version, left out on purpose so installs track commits (docs/lens.md);
+      # --profile directory also fails on what the plugin directory refuses.
       - name: Validate plugin
-        run: claude plugin validate .
+        run: |
+          claude plugin validate . --profile directory
+          claude plugin validate . --profile directory --json > "$RUNNER_TEMP/validate.json"
+          jq -e '[.manifest, .contents[]] | map(.warnings // []) | add
+            | map(select(.path | test("(^|[ →])version$") | not)) | length == 0' "$RUNNER_TEMP/validate.json"
 
       - name: Test lens
         run: claude plugin test .
