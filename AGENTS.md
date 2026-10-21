@@ -6,12 +6,16 @@ Forge is a collection of agent skills that define a structured development workf
 
 ## Commands
 
-There is no application code, build system, or test framework. The repository contains Markdown — skill prompts (`SKILL.md`, shared modules, roles, references) and docs. Forge ships no runtime-specific code: launchers and worktree setup are the user's.
+The skills are Markdown: skill prompts (`SKILL.md`, shared modules, roles, references) and docs, with no build system. The repository root is also a Claude Code plugin that bundles them with the lens (`lens/`), an optional TypeScript view over the text the skills print; see [Lens](docs/lens.md). The skills never depend on the lens, and launchers and worktree setup stay the user's.
 
 ```bash
 # Structural checks (both print nothing when healthy); the full list is in docs/testing.md
 for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"; done
 grep -rn "\.\./_shared" skills/
+
+# Plugin and lens checks
+claude plugin validate .
+claude plugin test .
 ```
 
 ## Documentation
@@ -25,6 +29,7 @@ grep -rn "\.\./_shared" skills/
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
+| [Lens](docs/lens.md) | Claude Code plugin install, the lens's views, the text formats it reads |
 
 **Update docs when you change skill conventions or add new skills.**
 

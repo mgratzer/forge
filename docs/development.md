@@ -6,7 +6,7 @@
 - [GitHub CLI](https://cli.github.com/) (`gh`) — used by skills for GitHub issue and PR operations (only required when GitHub is the issue tracker provider)
 - A compatible coding agent that supports Agent Skills slash commands
 
-No language runtime, package manager, or build tools are needed. The repository contains only Markdown files.
+No language runtime, package manager, or build tools are needed for the skills, which are Markdown. The [lens](lens.md) is TypeScript that Claude Code runs itself; working on it needs only Claude Code (`claude --plugin-dir .`).
 
 ## Setup
 

@@ -60,6 +60,14 @@ Forge skills follow the [Agent Skills](https://agentskills.io) open standard and
 npx skills add mgratzer/forge
 ```
 
+**Claude Code plugin**: the skills plus the [lens](docs/lens.md), a live pane with the pipeline, the PR's CI, review findings, the risk verdict, and the next step:
+
+```
+/plugin install forge --marketplace mgratzer/forge
+```
+
+Commands become `/forge:forge-ship` and so on. Pick one channel: the plugin and npx together list every skill twice.
+
 **Manual** — symlink into your agent's skills directory:
 
 ```bash
@@ -83,6 +91,7 @@ Check your agent's docs for the correct skills directory path. Each skill reache
 | [Testing](docs/testing.md) | How to validate skills manually |
 | [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
+| [Lens](docs/lens.md) | Claude Code plugin install, the lens's views, the text formats it reads |
 
 ## Contributors
 

@@ -1,6 +1,13 @@
 # Testing
 
-Forge has no automated test suite — the skills are prompt templates, not executable code. Validation is manual.
+The skills have no automated test suite: they are prompt templates, not executable code, and validation is manual. The plugin and the [lens](lens.md) have automated checks:
+
+```bash
+claude plugin validate .   # plugin and marketplace manifests, the lens's hooks
+claude plugin test .       # lens/tests/*.test.tsx
+```
+
+Run both when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
 
 ## How to Validate a Skill
 
