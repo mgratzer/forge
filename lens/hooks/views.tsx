@@ -33,6 +33,8 @@ type LensProps = {
 	now: number;
 	run: Run | null;
 	timeline: Stage[];
+	// the latest status, never the run's own start entry
+	last: Stage | null;
 	visited: string[];
 	pr: Pr | null;
 	findings: Finding[];
@@ -47,7 +49,7 @@ export function Lens(p: LensProps) {
 	const { Box, Text, Button, Link } = p.ui;
 	const step = currentStep(p.run);
 	const isShip = p.run?.skill === "ship";
-	const last = p.timeline.at(-1);
+	const last = p.last;
 	const open = p.findings.filter((f) => !f.isDone);
 
 	return (
@@ -70,7 +72,7 @@ export function Lens(p: LensProps) {
 				</Box>
 			)}
 
-			{last && last.state !== "start" && (
+			{last && (
 				<Box flexDirection="column">
 					<Text dimColor>NOW</Text>
 					<Text color={STATE_COLOR[last.state] ?? "text"} bold={TERMINAL.includes(last.state)}>

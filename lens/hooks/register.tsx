@@ -1,5 +1,6 @@
 import type { Register } from "claude-code";
 import { atom, read, update } from "claude-code";
+import type { Model } from "../types";
 
 import * as demo from "./demo";
 import * as model from "./model";
@@ -12,7 +13,6 @@ const nudged = atom({ plugin: "forge", key: "nudged" } as const, []);
 const { lens: LENS, config: CONFIG, waves: WAVES } = model.PANES;
 const PR_FIELDS = "number,url,title,headRefName,headRefOid,state,mergeable,reviewDecision,statusCheckRollup,body";
 const TICK_MS = 1000;
-const PR_REFRESH_MS = 60_000;
 
 export const register: Register = (on) => {
 	// The last next step proposed, so each is proposed once
@@ -36,16 +36,23 @@ export const register: Register = (on) => {
 			isBusy = true;
 			void (async () => {
 				const now = await $.clock.now();
+				// The tick re-reads the model only after it wrote to it
+				let wrote = false;
+				const write = async (fn: (x: Model) => Model) => {
+					await update($, state, fn);
+					wrote = true;
+				};
 				let m = await read($, state);
 				if (m.demo && now >= m.demo.nextAt) {
-					await update($, state, (x) => demo.tick(x, now));
+					await write((x) => demo.tick(x, now));
 					m = await read($, state);
+					wrote = false;
 				}
 
 				// Clear only what this tick consumed: hooks may queue more while it awaits
 				const { panes, alerts } = m;
 				if (panes.length || alerts.length) {
-					await update($, state, (x) => ({
+					await write((x) => ({
 						...x,
 						panes: x.panes.slice(panes.length),
 						alerts: x.alerts.slice(alerts.length),
@@ -57,12 +64,12 @@ export const register: Register = (on) => {
 					if (!sent.isSent) $.ui.toast(text, { timeoutMs: 8000 });
 				}
 
-				const isStale = m.run && !m.run.terminal && !m.run.isDemo && m.pr && now - m.pr.fetchedAt > PR_REFRESH_MS;
+				const isStale = !!m.run && !m.run.terminal && model.isPrStale(m, now, model.PR_REFRESH_MS);
 				if (m.want.pr !== null || m.want.isBranchPr || isStale) {
 					const asked = m.want;
 					const target = asked.pr ?? m.pr?.number;
 					// A request made while this fetch runs stays for the next tick
-					await update($, state, (x) =>
+					await write((x) =>
 						x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr
 							? { ...x, want: { ...x.want, pr: null, isBranchPr: false } }
 							: x,
@@ -71,9 +78,9 @@ export const register: Register = (on) => {
 					const ran = await $.process.run(argv, { cwd: await $.session.cwd(), timeoutMs: 20_000 }).catch(() => null);
 					const data = model.ghPr(ran);
 					if (data) {
-						await update($, state, (x) => model.withPr(x, data, now));
+						await write((x) => model.withPr(x, data, now));
 					} else if (m.pr && !m.pr.isDemo) {
-						await update($, state, (x) => (x.pr ? { ...x, pr: { ...x.pr, fetchedAt: now } } : x));
+						await write((x) => (x.pr ? { ...x, pr: { ...x.pr, fetchedAt: now } } : x));
 					}
 				}
 
@@ -90,7 +97,7 @@ export const register: Register = (on) => {
 						{ name: "FORGE_LAUNCHER", value: (await $.env.get("FORGE_LAUNCHER")) ?? "" },
 					];
 					const config = { root, hasAgents, ...parse.unattended(agents), tracker, env };
-					await update($, state, (x) => model.withConfig(x, config));
+					await write((x) => model.withConfig(x, config));
 
 					const text = model.nudgeText(config);
 					if (repo && text && !(await read($, nudged)).includes(root)) {
@@ -99,7 +106,7 @@ export const register: Register = (on) => {
 					}
 				}
 
-				m = await read($, state);
+				if (wrote) m = await read($, state);
 				const status = model.statusText(m);
 				if (status !== shown) {
 					shown = status;
@@ -227,9 +234,8 @@ export const register: Register = (on) => {
 		const done = await next(e);
 		const text = done.text ?? "";
 		const now = await $.clock.now();
-		// Skip the write, and the redraws it starts, when the turn changes nothing
-		const before = await read($, state);
-		if (model.afterTurn(before, text, now) !== before) {
+		// Skip the write, and the redraws it starts, when the turn can't change anything
+		if (model.turnMatters(await read($, state), text)) {
 			await update($, state, (m) => model.afterTurn(m, text, now));
 		}
 		const step = (await read($, state)).next;
@@ -255,6 +261,7 @@ export const register: Register = (on) => {
 				now={await $.clock.now()}
 				run={m.run}
 				timeline={m.timeline}
+				last={model.lastState(m)}
 				visited={m.visited}
 				pr={m.pr}
 				findings={m.findings}

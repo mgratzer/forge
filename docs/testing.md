@@ -3,7 +3,7 @@
 The skills are prompt templates, not executable code: their behavior is validated by hand, below. What can be checked mechanically runs in CI (`.github/workflows/checks.yml`) on every pull request, and locally with the same commands:
 
 ```bash
-scripts/check-skills.sh                        # shared-layer symlinks, no ../_shared links, name matches directory, quoted descriptions
+scripts/check-skills.sh                        # skill structure; the script lists its checks
 npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/ and the plugin JSON
 claude plugin validate .                       # plugin and marketplace manifests, the lens's hooks
 claude plugin test .                           # lens/tests/*.test.tsx
@@ -72,6 +72,6 @@ grep -rn "additional context\|-- <additional context>" skills/
 # Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
 
-# Shared-layer symlinks, sibling-relative links, names and quoted descriptions (prints nothing when healthy; CI runs it)
+# Structural checks (prints nothing when healthy; the script lists what it checks)
 scripts/check-skills.sh
 ```

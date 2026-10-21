@@ -209,15 +209,23 @@ export function withAnswer(m: Model, text: string): Model {
 	return withNext(out);
 }
 
-// A PR refresh after a turn, at most this often: the loop refreshes a quiet run itself
+// How stale the PR may get: the loop refreshes an open run's PR every minute,
+// and a finished turn, which may have pushed, asks again after 15 seconds
+export const PR_REFRESH_MS = 60_000;
 const TURN_REFRESH_MS = 15_000;
 
-// What a finished turn changes: the same model when no run is open and the answer holds no batch
+export const isPrStale = (m: Model, now: number, ms: number): boolean =>
+	!!m.pr && !m.pr.isDemo && now - m.pr.fetchedAt > ms;
+
+const isLive = (m: Model): boolean => !!m.run && !m.run.isDemo;
+
+// Whether a finished turn can change the model: a live run, or a batch in the answer
+export const turnMatters = (m: Model, text: string): boolean => isLive(m) || /^## Batch: /m.test(text);
+
 export function afterTurn(m: Model, text: string, now: number): Model {
-	const isLive = !!m.run && !m.run.isDemo;
-	if (!isLive && !parse.batch(text)) return m;
+	if (!turnMatters(m, text)) return m;
 	const out = withAnswer(m, text);
-	return isLive && out.pr && now - out.pr.fetchedAt > TURN_REFRESH_MS ? askPr(out) : out;
+	return isLive(out) && isPrStale(out, now, TURN_REFRESH_MS) ? askPr(out) : out;
 }
 
 export function withConfig(m: Model, config: Config): Model {
