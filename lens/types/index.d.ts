@@ -60,7 +60,6 @@ export type Config = {
   tracker: string
   settings: Setting[]
   env: { name: string; value: string }[]
-  readAt: number
 }
 
 export type Demo = { variant: string; step: number; nextAt: number }

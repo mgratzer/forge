@@ -1,7 +1,7 @@
 import type { EngineInterface } from 'claude-code'
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from '../types'
-import { PIPELINE, TERMINAL, currentStep, isLowRisk } from './parse'
+import { DEFAULT_ROUNDS, PIPELINE, TERMINAL, currentStep, isLowRisk, isOnHead, runLabel } from './parse'
 
 type Ui = ReturnType<EngineInterface['ui']['resolve']>
 
@@ -28,7 +28,7 @@ function ago(now: number, at: number): string {
   return s < 60 ? `${s}s` : s < 3600 ? `${Math.round(s / 60)}m` : `${Math.round(s / 3600)}h`
 }
 
-export type LensProps = {
+type LensProps = {
   ui: Ui
   now: number
   run: Run | null
@@ -37,7 +37,6 @@ export type LensProps = {
   pr: Pr | null
   findings: Finding[]
   risk: Risk | null
-  isRiskOnHead: boolean
   result: string
   next: Next | null
   onToggle: (id: string) => void
@@ -56,7 +55,7 @@ export function Lens(p: LensProps) {
       {p.run ? (
         <Box flexDirection="column">
           <Text bold>
-            /forge-{p.run.skill} {p.run.args}
+            {runLabel(p.run.skill, p.run.args)}
             {p.run.isDemo ? '  (demo)' : ''}
           </Text>
           <Text dimColor>
@@ -80,8 +79,8 @@ export function Lens(p: LensProps) {
           const color = isNow ? 'claude' : isDone ? 'success' : 'inactive'
           const bar = isShip && SHIP.includes(s) ? '┃' : ' '
           let note = ''
-          if (isNow && p.run?.phase === 'review') note = 'self-review'
-          if (s === 'guard' && p.run && p.run.round > 0) note = `round ${p.run.round}/${p.run.maxRounds || 3}`
+          if (isNow && isShip && s === 'implement' && last?.state === 'reviewing') note = 'self-review'
+          if (s === 'guard' && p.run && p.run.round > 0) note = `round ${p.run.round}/${p.run.maxRounds || DEFAULT_ROUNDS}`
           return (
             <Text color={color}>
               {' '}
@@ -145,7 +144,7 @@ export function Lens(p: LensProps) {
         </Box>
       )}
 
-      {p.risk && <RiskCard ui={p.ui} risk={p.risk} result={p.result} isOnHead={p.isRiskOnHead} head={p.pr?.headSha ?? ''} />}
+      {p.risk && <RiskCard ui={p.ui} risk={p.risk} result={p.result} pr={p.pr} />}
 
       {p.timeline.length > 1 && (
         <Box flexDirection="column">
@@ -173,18 +172,21 @@ export function Lens(p: LensProps) {
   )
 }
 
-type RiskCardProps = { ui: Ui; risk: Risk; result: string; isOnHead: boolean; head: string }
+type RiskCardProps = { ui: Ui; risk: Risk; result: string; pr: Pr | null }
 
-export function RiskCard({ ui, risk, result, isOnHead, head }: RiskCardProps) {
+function RiskCard({ ui, risk, result, pr }: RiskCardProps) {
   const { Box, Text } = ui
-  const isLow = isLowRisk(risk.verdict) && isOnHead
+  const isLowVerdict = isLowRisk(risk.verdict)
+  const isCurrent = isOnHead(risk, pr)
+  const head = pr?.headSha ?? ''
+  const isLow = isLowVerdict && isCurrent
   return (
     <Box flexDirection="column" borderStyle="round" borderColor={isLow ? 'success' : 'warning'} paddingX={1}>
       <Text bold color={isLow ? 'success' : 'warning'}>
-        {isLowRisk(risk.verdict) ? 'LOW RISK' : 'NEEDS REVIEW'}
+        {isLowVerdict ? 'LOW RISK' : 'NEEDS REVIEW'}
         <Text dimColor>{risk.sha ? `  judged on ${risk.sha}` : ''}</Text>
       </Text>
-      {!isOnHead && (
+      {!isCurrent && (
         <Text color="warning" wrap="wrap">
           ⚠ stale or unverified: the head is {head ? head.slice(0, 10) : 'unknown'}, run /forge-land again
         </Text>

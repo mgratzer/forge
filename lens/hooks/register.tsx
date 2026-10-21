@@ -1,7 +1,6 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { Model } from '../types'
 import * as demo from './demo'
 import * as model from './model'
 import * as parse from './parse'
@@ -10,19 +9,16 @@ import { ConfigView, Lens, MAP, WavesView } from './views'
 const state = atom({ plugin: 'forge', key: 'model' } as const, model.EMPTY)
 const nudged = atom({ plugin: 'forge', key: 'nudged' } as const, [])
 
-const LENS = 'forge-lens'
-const TITLES: Record<string, string> = { 'forge-lens': 'forge', 'forge-config': 'forge config', 'forge-waves': 'forge waves' }
+const { lens: LENS, config: CONFIG, waves: WAVES } = model.PANES
 const PR_FIELDS = 'number,url,title,headRefName,headRefOid,state,mergeable,reviewDecision,statusCheckRollup,body'
 const TICK_MS = 1000
 const PR_REFRESH_MS = 60_000
 
-// A run opened by `/forge-x` fires prompt.submit and then skill.prompt
-const isSameStart = (m: Model, skill: string, now: number) =>
-  m.run?.skill === skill && now - m.run.startedAt < 10_000
-
 export const register: Register = on => {
   // The last next step proposed, so each is proposed once
   let suggested = ''
+  // `/forge-x` fires prompt.submit, which starts the run with its args, then skill.prompt
+  let submitted: string | null = null
 
   on('session.start', async ($, e, next) => {
     await $.command.register({
@@ -35,21 +31,23 @@ export const register: Register = on => {
     // The effect loop: hooks change the model, this does what it asks for
     let isBusy = false
     let shown: string | undefined
-    let isNudgeDone = false
     $.clock.every(TICK_MS, () => {
       if (isBusy) return
       isBusy = true
       void (async () => {
         const now = await $.clock.now()
-        await update($, state, m => demo.tick(m, now))
         let m = await read($, state)
+        if (m.demo && now >= m.demo.nextAt) {
+          await update($, state, x => demo.tick(x, now))
+          m = await read($, state)
+        }
 
         // Clear only what this tick consumed: hooks may queue more while it awaits
         const { panes, alerts } = m
         if (panes.length || alerts.length) {
           await update($, state, x => ({ ...x, panes: x.panes.slice(panes.length), alerts: x.alerts.slice(alerts.length) }))
         }
-        for (const id of panes) void $.ui.open({ id, title: TITLES[id] ?? id })
+        for (const id of panes) void $.ui.open({ id, title: model.paneTitle(id) })
         for (const text of alerts) {
           const sent = await $.ui.notify(text, { title: 'forge' }).catch(() => ({ isSent: false }))
           if (!sent.isSent) $.ui.toast(text, { timeoutMs: 8000 })
@@ -65,22 +63,17 @@ export const register: Register = on => {
           )
           const argv = ['gh', 'pr', 'view', ...(target ? [String(target)] : []), '--json', PR_FIELDS]
           const ran = await $.process.run(argv, { cwd: await $.session.cwd(), timeoutMs: 20_000 }).catch(() => null)
-          let data: model.GhPr | null = null
-          try {
-            data = ran && ran.exitCode === 0 ? (JSON.parse(ran.stdout) as model.GhPr) : null
-          } catch {
-            data = null
-          }
+          const data = model.ghPr(ran)
           if (data) {
-            const pr = data
-            await update($, state, x => model.withPr(x, pr, now))
+            await update($, state, x => model.withPr(x, data, now))
           } else if (m.pr && !m.pr.isDemo) {
             await update($, state, x => (x.pr ? { ...x, pr: { ...x.pr, fetchedAt: now } } : x))
           }
         }
 
         if (m.want.isConfig) {
-          const root = (await $.session.repo())?.root ?? (await $.session.cwd())
+          const repo = await $.session.repo()
+          const root = repo?.root ?? (await $.session.cwd())
           const hasAgents = await $.fs.exists(`${root}/AGENTS.md`)
           const agents = hasAgents ? String(await $.fs.read(`${root}/AGENTS.md`, { as: 'text' })) : ''
           const tracker = (await $.fs.exists(`${root}/plan/INDEX.md`)) ? 'plan/ folder (markdown)' : 'GitHub Issues (gh)'
@@ -88,22 +81,13 @@ export const register: Register = on => {
             { name: 'FORGE_STATUS_CMD', value: (await $.env.get('FORGE_STATUS_CMD')) ?? '' },
             { name: 'FORGE_LAUNCHER', value: (await $.env.get('FORGE_LAUNCHER')) ?? '' },
           ]
-          const config = { root, hasAgents, ...parse.unattended(agents), tracker, env, readAt: now }
+          const config = { root, hasAgents, ...parse.unattended(agents), tracker, env }
           await update($, state, x => model.withConfig(x, config))
 
-          // One toast per repository: forge isn't set up, or reads a stale heading
-          const seen = await read($, nudged)
-          if (!isNudgeDone && (await $.session.repo()) && !seen.includes(root)) {
-            isNudgeDone = true
-            const text = !hasAgents
-              ? 'forge: no AGENTS.md here. /forge-setup-project sets the project up'
-              : config.hasStaleHeading
-                ? 'forge: AGENTS.md says "## Shipping"; forge reads "## Unattended Shipping"'
-                : ''
-            if (text) {
-              $.ui.toast(text, { timeoutMs: 8000 })
-              await update($, nudged, list => [...list, root])
-            }
+          const text = model.nudgeText(config)
+          if (repo && text && !(await read($, nudged)).includes(root)) {
+            await update($, nudged, list => [...list, root])
+            $.ui.toast(text, { timeoutMs: 8000 })
           }
         }
 
@@ -129,28 +113,28 @@ export const register: Register = on => {
       case 'map':
         return { text: MAP }
       case 'pane': {
-        const isOpen = (await $.ui.panes()).some(p => p.id === LENS)
+        const isOpen = (await $.ui.panes()).some(p => p.id === LENS.id)
         await update($, state, m => ({ ...m, isLensClosed: isOpen }))
-        if (isOpen) await $.ui.close({ id: LENS })
-        else await $.ui.open({ id: LENS, title: 'forge' })
+        if (isOpen) await $.ui.close({ id: LENS.id })
+        else await $.ui.open(LENS)
         return { text: isOpen ? 'forge pane closed.' : 'forge pane opened.' }
       }
       case 'config':
         await update($, state, m => ({ ...m, want: { ...m.want, isConfig: true } }))
-        await $.ui.open({ id: 'forge-config', title: 'forge config' })
+        await $.ui.open(CONFIG)
         return { text: 'forge config opened: the Unattended Shipping settings this repo resolves to.' }
       case 'waves':
-        await $.ui.open({ id: 'forge-waves', title: 'forge waves' })
+        await $.ui.open(WAVES)
         return { text: 'forge waves opened.' }
       case 'demo':
         await update($, state, m => demo.start(m, variant, now))
         return { text: `forge demo${variant ? ` (${variant})` : ''} playing: a replay, nothing touches GitHub.` }
       case 'reset':
-        await update($, state, m => ({ ...model.EMPTY, config: m.config }))
+        await update($, state, m => model.fresh(m))
         return { text: 'forge lens cleared.' }
       default: {
-        await update($, state, m => ({ ...m, isLensClosed: false, want: { ...m.want, isBranchPr: !m.pr, isConfig: true } }))
-        void $.ui.open({ id: LENS, title: 'forge' })
+        await update($, state, m => model.askPr({ ...m, isLensClosed: false, want: { ...m.want, isConfig: true } }))
+        void $.ui.open(LENS)
         return { text: model.whereAmI(await read($, state)) }
       }
     }
@@ -158,7 +142,7 @@ export const register: Register = on => {
 
   // A pane the person closed stays closed until they open it again
   on('ui.close', async ($, e, next) => {
-    if (e.id === LENS && e.origin.kind === 'person') await update($, state, m => ({ ...m, isLensClosed: true }))
+    if (e.id === LENS.id && e.origin.kind === 'person') await update($, state, m => ({ ...m, isLensClosed: true }))
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -167,16 +151,18 @@ export const register: Register = on => {
     if (cmd) {
       const now = await $.clock.now()
       suggested = ''
-      await update($, state, m => (isSameStart(m, cmd.skill, now) ? m : model.startRun({ ...m, demo: null }, cmd.skill, cmd.args, now)))
+      submitted = cmd.skill
+      await update($, state, m => model.startRun(m, cmd.skill, cmd.args, now))
     }
     return next(e)
   }).catch(($, e, next) => next(e))
 
   on('skill.prompt', async ($, e, next) => {
-    const skill = /^(?:[\w-]+:)?forge-([\w-]+)$/.exec(e.skill)?.[1]
-    if (skill) {
+    const skill = parse.skillName(e.skill)
+    if (skill && skill === submitted) submitted = null
+    else if (skill) {
       const now = await $.clock.now()
-      await update($, state, m => (isSameStart(m, skill, now) ? m : model.startRun({ ...m, demo: null }, skill, '', now)))
+      await update($, state, m => model.startRun(m, skill, '', now))
     }
     return next(e)
   }).catch(($, e, next) => next(e))
@@ -195,9 +181,8 @@ export const register: Register = on => {
       await update($, state, m => {
         let x = lines.reduce((acc, l) => model.applyStatus(acc, l.state, l.detail, now), m)
         if (!x.run) return x
-        if (url && x.pr?.number !== url.number) x = { ...x, want: { ...x.want, pr: url.number } }
-        else if (isPrCommand) x = { ...x, want: { ...x.want, isBranchPr: !x.pr, pr: x.pr?.number ?? null } }
-        return x
+        if (url && x.pr?.number !== url.number) return model.askPr(x, url.number)
+        return isPrCommand ? model.askPr(x) : x
       })
     }
     return ran
@@ -216,15 +201,13 @@ export const register: Register = on => {
   on('tool.call', { tool: 'Agent' }, async ($, e, next) => {
     const ran = await next(e)
     const text = ran.deny === undefined ? parse.resultText(ran.result) : ''
-    if (text) {
-      await update($, state, m => (m.run ? model.addFindings(m, parse.findings(text)) : m))
-    }
+    if (text) await update($, state, m => model.withReviewText(m, text))
     return ran
   }).catch(($, e, next) => next(e))
 
   // A background reviewer's report arrives as a delivery
   on('session.receive', async ($, e, next) => {
-    await update($, state, m => (m.run ? model.addFindings(m, parse.findings(e.text)) : m))
+    await update($, state, m => model.withReviewText(m, e.text))
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -232,7 +215,7 @@ export const register: Register = on => {
     const done = await next(e)
     await update($, state, m => {
       const x = model.withAnswer(m, done.text ?? '')
-      return x.run && !x.run.isDemo && x.pr ? { ...x, want: { ...x.want, pr: x.pr.number } } : x
+      return x.run && !x.run.isDemo && x.pr ? model.askPr(x) : x
     })
     const step = (await read($, state)).next
     if (step && step.text !== suggested && e.reason === 'answer') {
@@ -248,7 +231,7 @@ export const register: Register = on => {
     return e.origin.kind === 'suggestion' && step ? next({ ...e, text: step.text }) : next(e)
   }).catch(($, e, next) => next(e))
 
-  on('ui.render', { component: 'Pane', requestId: LENS }, async ($, e) => {
+  on('ui.render', { component: 'Pane', requestId: LENS.id }, async ($, e) => {
     const m = await read($, state)
     return (
       <Lens
@@ -260,20 +243,19 @@ export const register: Register = on => {
         pr={m.pr}
         findings={m.findings}
         risk={m.risk}
-        isRiskOnHead={parse.isOnHead(m.risk, m.pr)}
         result={m.result}
         next={m.next}
         onToggle={id => void update($, state, x => model.toggleFinding(x, id))}
-        onRefresh={() => void update($, state, x => ({ ...x, want: { ...x.want, pr: x.pr?.number ?? null, isBranchPr: !x.pr } }))}
+        onRefresh={() => void update($, state, x => model.askPr(x))}
       />
     )
   })
 
-  on('ui.render', { component: 'Pane', requestId: 'forge-config' }, async ($, e) => (
+  on('ui.render', { component: 'Pane', requestId: CONFIG.id }, async ($, e) => (
     <ConfigView ui={$.ui.resolve(e)} config={(await read($, state)).config} />
   ))
 
-  on('ui.render', { component: 'Pane', requestId: 'forge-waves' }, async ($, e) => (
+  on('ui.render', { component: 'Pane', requestId: WAVES.id }, async ($, e) => (
     <WavesView ui={$.ui.resolve(e)} batch={(await read($, state)).batch} />
   ))
 
@@ -297,7 +279,7 @@ export const register: Register = on => {
           plain
           onPress={() => {
             void update($, state, x => ({ ...x, isLensClosed: false }))
-            void $.ui.open({ id: LENS, title: 'forge' })
+            void $.ui.open(LENS)
           }}
         />
         <Button key="hide" label="Hide" plain onPress={() => void update($, state, x => ({ ...x, isBandHidden: true }))} />

@@ -1,7 +1,15 @@
 // Pure transitions of the forge lens's one model. Hooks apply them with
 // `update($, model, m => …)`; the effect loop in register.tsx does the rest.
-import type { Config, Finding, Model, Pr, Run } from '../types'
+import type { Config, Finding, Model, Pr, Run, Stage } from '../types'
 import * as parse from './parse'
+
+export const PANES = {
+  lens: { id: 'forge-lens', title: 'forge' },
+  config: { id: 'forge-config', title: 'forge config' },
+  waves: { id: 'forge-waves', title: 'forge waves' },
+} as const
+
+export const paneTitle = (id: string): string => Object.values(PANES).find(p => p.id === id)?.title ?? id
 
 export const EMPTY: Model = {
   run: null,
@@ -30,6 +38,20 @@ const withNext = (m: Model): Model => ({
 const visit = (m: Model, step: string | null): Model =>
   step && !m.visited.includes(step) ? { ...m, visited: [...m.visited, step] } : m
 
+// A clean model that keeps what describes the project, not the run
+export const fresh = (m: Model): Model => ({ ...EMPTY, config: m.config })
+
+// Ask the effect loop for a PR: the one numbered, else the branch's
+export const askPr = (m: Model, n: number | null = m.pr?.number ?? null): Model => ({
+  ...m,
+  want: { ...m.want, pr: n, isBranchPr: n === null },
+})
+
+export const lastState = (m: Model): Stage | null => {
+  const last = m.timeline.at(-1)
+  return last && last.state !== 'start' ? last : null
+}
+
 export function startRun(m: Model, skill: string, args: string, now: number, isDemo = false): Model {
   const max = /--max-rounds (\d+)/.exec(args)?.[1]
   const run: Run = {
@@ -42,27 +64,24 @@ export function startRun(m: Model, skill: string, args: string, now: number, isD
     terminal: null,
     isDemo,
   }
-  const n = parse.argNumber(args)
   // these work on a PR: the one named, else the branch's; the others start fresh
   const takesPr = ['guard', 'land', 'address-pr-feedback', 'reflect'].includes(skill)
   const started: Model = {
     ...m,
     run,
-    timeline: [{ state: 'start', detail: `/forge-${skill} ${args}`.trim(), at: now }],
+    timeline: [{ state: 'start', detail: parse.runLabel(skill, args), at: now }],
     findings: [],
     risk: null,
     result: '',
     next: null,
     isBandHidden: false,
     pr: null,
-    want: {
-      ...m.want,
-      pr: takesPr && n !== null && !isDemo ? n : null,
-      isBranchPr: takesPr && n === null && !isDemo,
-    },
-    panes: m.isLensClosed ? m.panes : [...m.panes, 'forge-lens'],
+    demo: null,
+    want: { ...m.want, pr: null, isBranchPr: false },
+    panes: m.isLensClosed ? m.panes : [...m.panes, PANES.lens.id],
   }
-  return visit(started, parse.currentStep(run))
+  const asked = takesPr && !isDemo ? askPr(started, parse.argNumber(args)) : started
+  return visit(asked, parse.currentStep(run))
 }
 
 export function setPhase(m: Model, phase: string): Model {
@@ -76,13 +95,7 @@ export function applyStatus(m: Model, state: string, detail: string, now: number
   const base = m.run ? m : startRun(m, 'run', '', now)
   const prev = base.run!
   const r = parse.round(detail)
-  let phase = prev.phase
-  if (prev.skill === 'ship') {
-    if (state === 'implementing') phase = 'implement'
-    else if (state === 'reviewing' && prev.phase === 'implement') phase = 'review'
-    else if (state === 'waiting' || state === 'addressing') phase = 'guard'
-    else if (state === 'merge-ready' || state === 'merged') phase = 'land'
-  }
+  const phase = parse.stepFor(state, prev.phase)
   const isTerminal = parse.TERMINAL.includes(state)
   const run: Run = {
     ...prev,
@@ -108,6 +121,10 @@ export function addFindings(m: Model, found: Finding[]): Model {
   return withNext({ ...m, findings: [...m.findings, ...found.filter(f => !known.has(f.id))].slice(-60) })
 }
 
+// Reviewer findings in a sub-agent's result, a delivered report or an answer
+export const withReviewText = (m: Model, text: string): Model =>
+  m.run && !m.run.isDemo ? addFindings(m, parse.findings(text)) : m
+
 export function toggleFinding(m: Model, id: string): Model {
   return withNext({ ...m, findings: m.findings.map(f => (f.id === id ? { ...f, isDone: !f.isDone } : f)) })
 }
@@ -131,6 +148,16 @@ export type GhPr = {
   reviewDecision: string
   statusCheckRollup: Parameters<typeof parse.checks>[0] | null
   body: string | null
+}
+
+// `gh pr view --json` output, or null when the call failed or printed something else
+export function ghPr(ran: { exitCode: number; stdout: string } | null): GhPr | null {
+  if (!ran || ran.exitCode !== 0) return null
+  try {
+    return JSON.parse(ran.stdout) as GhPr
+  } catch {
+    return null
+  }
 }
 
 export function withPr(m: Model, data: GhPr, now: number): Model {
@@ -171,10 +198,9 @@ export function withDemoPr(m: Model, checks: Pr['checks']): Model {
 export function withAnswer(m: Model, text: string): Model {
   let out = m
   const found = parse.batch(text)
-  if (found) out = { ...out, batch: found, panes: [...out.panes, 'forge-waves'] }
+  if (found) out = { ...out, batch: found, panes: [...out.panes, PANES.waves.id] }
   if (out.run && !out.run.isDemo) {
-    out = { ...out, risk: parse.riskSection(text) ?? out.risk, result: parse.resultLine(text) || out.result }
-    out = addFindings(out, parse.findings(text))
+    out = withReviewText({ ...out, risk: parse.riskSection(text) ?? out.risk, result: parse.resultLine(text) || out.result }, text)
   }
   return withNext(out)
 }
@@ -183,14 +209,21 @@ export function withConfig(m: Model, config: Config): Model {
   return { ...m, config, want: { ...m.want, isConfig: false } }
 }
 
+// The one toast a repository gets: forge isn't set up, or reads a stale heading
+export function nudgeText(c: Config): string {
+  if (!c.hasAgents) return 'forge: no AGENTS.md here. /forge-setup-project sets the project up'
+  if (c.hasStaleHeading) return 'forge: AGENTS.md says "## Shipping"; forge reads "## Unattended Shipping"'
+  return ''
+}
+
 export function statusText(m: Model): string | undefined {
   const r = m.run
   if (!r) return undefined
-  const last = m.timeline.at(-1)
+  const last = lastState(m)
   const parts = [`forge ▸ ${r.skill}${r.args ? ` ${r.args.split(' -- ')[0]}` : ''}`]
   if (r.skill === 'ship') parts.push(r.phase)
-  if (last && last.state !== 'start') parts.push(last.state)
-  if (r.round > 0) parts.push(`round ${r.round}/${r.maxRounds || 3}`)
+  if (last) parts.push(last.state)
+  if (r.round > 0) parts.push(`round ${r.round}/${r.maxRounds || parse.DEFAULT_ROUNDS}`)
   if (m.pr) {
     const c = m.pr.checks
     const total = c.pass + c.fail + c.pending
@@ -204,9 +237,9 @@ export function whereAmI(m: Model): string {
   const lines: string[] = []
   const r = m.run
   if (r) {
-    const last = m.timeline.at(-1)
-    const state = last && last.state !== 'start' ? `, ${last.state}${last.detail ? ` (${last.detail})` : ''}` : ''
-    lines.push(`Run: /forge-${r.skill} ${r.args}`.trim() + state)
+    const last = lastState(m)
+    const state = last ? `, ${last.state}${last.detail ? ` (${last.detail})` : ''}` : ''
+    lines.push(`Run: ${parse.runLabel(r.skill, r.args)}${state}`)
   } else lines.push('No forge run in this session yet.')
   const pr = m.pr
   if (pr) {

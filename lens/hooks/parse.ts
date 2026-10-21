@@ -13,6 +13,18 @@ export const PIPELINE = [
   'land',
 ] as const
 
+export const DEFAULT_ROUNDS = 3
+
+// The pipeline step a status puts a run in; the others leave it where it is
+const STATE_STEP: Record<string, string> = { implementing: 'implement', waiting: 'guard', 'merge-ready': 'land', merged: 'land' }
+
+export const stepFor = (state: string, step: string): string => STATE_STEP[state] ?? step
+
+export const runLabel = (skill: string, args: string): string => `/forge-${skill} ${args}`.trim()
+
+// `forge-ship`, also `forge:forge-ship` from a plugin install → `ship`
+export const skillName = (name: string): string | null => /^(?:[\w-]+:)?forge-([\w-]+)$/.exec(name)?.[1] ?? null
+
 export const TERMINAL = ['pushed', 'review-ready', 'merge-ready', 'merged', 'needs-human', 'failed']
 const STATES = ['implementing', 'reviewing', 'waiting', 'addressing', ...TERMINAL]
 
@@ -29,8 +41,9 @@ export function statusCalls(command: string): { state: string; detail: string }[
 
 // `/forge-ship --guard 42`, also `/forge:forge-ship …` from a plugin install
 export function forgeCommand(text: string): { skill: string; args: string } | null {
-  const m = /^\/(?:[\w-]+:)?forge-([\w-]+)\b\s*([\s\S]*)$/.exec(text.trim())
-  return m ? { skill: m[1] ?? '', args: (m[2] ?? '').trim() } : null
+  const m = /^\/(\S+)\s*([\s\S]*)$/.exec(text.trim())
+  const skill = m ? skillName(m[1] ?? '') : null
+  return m && skill ? { skill, args: (m[2] ?? '').trim() } : null
 }
 
 // A pull request link into `slug` (owner/repo) only: output may name any repository
@@ -69,14 +82,8 @@ export function round(detail: string): { round: number; max: number } | null {
   return m ? { round: Number(m[1]), max: Number(m[2] ?? 0) } : null
 }
 
-// Which pipeline step a run is in, from its skill and composed phase
-export function currentStep(run: Run | null): string | null {
-  if (!run) return null
-  if (run.skill === 'ship' || run.skill === 'batch') {
-    return run.phase === 'review' ? 'implement' : run.phase
-  }
-  return run.skill
-}
+// Which pipeline step a run is in
+export const currentStep = (run: Run | null): string | null => run?.phase ?? null
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines
 export function findings(text: string): Finding[] {
@@ -160,7 +167,7 @@ const SETTINGS: Omit<Setting, 'value' | 'isSet'>[] = [
   { name: 'Peer reviewer', fallback: 'none', usedBy: 'guard' },
   { name: 'Security-sensitive paths', fallback: "forge's risky-signal heuristics", usedBy: 'guard, land' },
   { name: 'Serialized resources', fallback: 'migrations, lockfiles, generated files', usedBy: 'batch' },
-  { name: 'Max guard rounds', fallback: '3', usedBy: 'guard' },
+  { name: 'Max guard rounds', fallback: String(DEFAULT_ROUNDS), usedBy: 'guard' },
   { name: 'Auto-merge', fallback: 'off', usedBy: 'land' },
 ]
 
@@ -193,7 +200,7 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
     case 'merged':
       return { text: '/forge-reflect', why: 'merged: capture what the session taught' }
     case 'failed':
-      return { text: `/forge-${run.skill} ${run.args}`.trim(), why: 'the run failed: retry once the cause is fixed' }
+      return { text: runLabel(run.skill, run.args), why: 'the run failed: retry once the cause is fixed' }
   }
   switch (run.skill) {
     case 'setup-project':

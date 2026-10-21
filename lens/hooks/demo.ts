@@ -4,7 +4,7 @@ import type { Model } from '../types'
 import * as model from './model'
 import * as parse from './parse'
 
-export const STEP_MS = 2500
+const STEP_MS = 2500
 
 const REVIEW = `### src/routes/notes.js
 - [P1] Line 42: the rate limiter keys on req.ip, which is the proxy's address behind the load balancer
@@ -65,11 +65,11 @@ type Step = (m: Model, now: number) => Model
 
 export function start(m: Model, variant: string, now: number): Model {
   if (variant === 'batch') {
-    const run = model.startRun({ ...model.EMPTY, config: m.config }, 'batch', 'milestone v0.4', now, true)
+    const run = model.startRun(model.fresh(m), 'batch', 'milestone v0.4', now, true)
     const out = model.applyStatus(run, 'reviewing', 'touch sets for 7 Issues', now)
-    return { ...out, batch: parse.batch(BATCH), panes: [...out.panes, 'forge-waves'] }
+    return { ...out, batch: parse.batch(BATCH), panes: [...out.panes, model.PANES.waves.id] }
   }
-  const run = model.startRun({ ...model.EMPTY, config: m.config }, 'ship', '--guard 42', now, true)
+  const run = model.startRun(model.fresh(m), 'ship', '--guard 42', now, true)
   return { ...run, demo: { variant, step: 0, nextAt: now + 1000 } }
 }
 
