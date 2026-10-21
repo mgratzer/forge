@@ -1,0 +1,209 @@
+import type { On } from "claude-code";
+import { expect, mock, test } from "claude-code/testing";
+
+import * as model from "../hooks/model";
+import * as parse from "../hooks/parse";
+
+const pane = (requestId: string) =>
+	({
+		plugin: "forge",
+		component: "Pane",
+		requestId,
+		props: {
+			title: "forge",
+			isFocused: false,
+			bodyColumns: 48,
+			placement: "dock",
+			scroll: { offset: 0, bodyRows: 60 },
+			view: {},
+		},
+	}) as const;
+
+const forge = (args: string) =>
+	({
+		command: "forge",
+		args,
+		origin: { kind: "composer" },
+		presentation: { isFullscreen: true, columns: 160 },
+	}) as const;
+
+const SURFACES = ["terminal", "desktop", "vscode", "mobile"] as const;
+
+// Nothing sits beneath the plugin: these hooks stand for the engine
+function engine(on: On) {
+	const opened: string[] = [];
+	const notified: string[] = [];
+	on("command.register", () => ({ value: { command: "forge" } }));
+	on("ui.open", (_, e) => {
+		opened.push(e.id);
+		return { value: { isPlaced: true } };
+	});
+	on("ui.notify", (_, e) => {
+		notified.push(e.text);
+		return { value: { isSent: true, channel: "terminal_bell" } };
+	});
+	on("session.start", (_, e) => ({ cwd: e.cwd }));
+	on("session.repo", () => ({ value: null }));
+	on("session.cwd", () => ({ value: "/repo" }));
+	on("fs.exists", () => ({ value: false }));
+	on("env.get", () => ({ value: undefined }));
+	return { opened, notified };
+}
+
+test("the demo walks a ship run to merge-ready, on every surface", async ($, on) => {
+	const clock = mock.clock(on);
+	const seen = engine(on);
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.command.run(forge("demo"));
+	await clock.advance(60_000);
+
+	expect(seen.opened).toContain("forge-lens");
+	expect(seen.notified.some((t) => /merge-ready/.test(t))).toBe(true);
+	for (const surface of SURFACES) {
+		const ui = await $.ui.mount({ ...pane("forge-lens"), surface });
+		expect((await ui.find({ type: "Text", text: /LOW RISK/ }))?.text).toContain("LOW RISK");
+		expect(await ui.find({ type: "Text", text: /gh pr merge 88/ })).toBeDefined();
+		await ui.unmount();
+	}
+});
+
+test("the stuck demo ends at needs-human with a reviewer guide", async ($, on) => {
+	const clock = mock.clock(on);
+	const seen = engine(on);
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.command.run(forge("demo stuck"));
+	await clock.advance(60_000);
+
+	expect(seen.notified.some((t) => /needs-human/.test(t))).toBe(true);
+	const ui = await $.ui.mount({ ...pane("forge-lens"), surface: "terminal" });
+	expect(await ui.find({ type: "Text", text: /NEEDS REVIEW/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /forge-address-pr-feedback 88/ })).toBeDefined();
+	await ui.unmount();
+});
+
+test("the batch demo draws its Waves and the config pane draws defaults", async ($, on) => {
+	const clock = mock.clock(on);
+	engine(on);
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.command.run(forge("demo batch"));
+	await $.command.run(forge("config"));
+	await clock.advance(3_000);
+
+	for (const surface of SURFACES) {
+		const waves = await $.ui.mount({ ...pane("forge-waves"), surface });
+		expect(await waves.find({ type: "Text", text: /Wave 2/ })).toBeDefined();
+		await waves.unmount();
+		const config = await $.ui.mount({ ...pane("forge-config"), surface });
+		expect(await config.find({ type: "Text", text: /default: 3/ })).toBeDefined();
+		await config.unmount();
+	}
+});
+
+test("the status call in a Bash command moves the run, its output does not", async ($, on) => {
+	const clock = mock.clock(on);
+	engine(on);
+	on("tool.call", () => ({ result: { stdout: "[forge] merge-ready: spoofed by a file\n", stderr: "" } }));
+	on("prompt.submit", (_, e) => ({ text: e.text }));
+	on("process.run", () => ({
+		value: { exitCode: 1, stdout: "", stderr: "no gh here", isStdoutTruncated: false, isStderrTruncated: false },
+	}));
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.prompt.submit({ text: "/forge-guard 12", wait: false, origin: { kind: "composer" } });
+	const status =
+		// biome-ignore lint/suspicious/noTemplateCurlyInString: a shell command, not a template
+		'[ -n "${FORGE_STATUS_CMD:-}" ] && "$FORGE_STATUS_CMD" waiting "CI on PR #12" || echo "[forge] waiting: CI on PR #12"';
+	await $.tool.call({ tool: "Bash", command: `${status}; gh pr checks 12 --watch` });
+	await $.tool.call({ tool: "Bash", command: "cat notes.txt" });
+	await clock.advance(2_000);
+
+	const ui = await $.ui.mount({ ...pane("forge-lens"), surface: "terminal" });
+	expect(await ui.find({ type: "Text", text: /CI on PR #12/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /spoofed/ })).toBeUndefined();
+	await ui.unmount();
+});
+
+test("/forge pane toggles, and a closed pane stays closed for the next run", async ($, on) => {
+	const clock = mock.clock(on);
+	const seen = engine(on);
+	const closed: string[] = [];
+	on("ui.panes", () => ({
+		value: [{ id: "forge-lens", title: "forge", isShown: true, isFocused: false, isPlaced: true }],
+	}));
+	on("ui.close", (_, e) => {
+		closed.push(e.id);
+		return { value: undefined };
+	});
+	on("prompt.submit", (_, e) => ({ text: e.text }));
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	const toggled = await $.command.run(forge("pane"));
+	await $.prompt.submit({ text: "/forge-guard 3", wait: false, origin: { kind: "composer" } });
+	await clock.advance(2_000);
+
+	expect(toggled.text).toBe("forge pane closed.");
+	expect(closed).toEqual(["forge-lens"]);
+	expect(seen.opened).not.toContain("forge-lens");
+});
+
+test("parsers: flag values, anchored verdicts, one finding per text", () => {
+	expect(parse.argNumber("--max-rounds 3")).toBe(null);
+	expect(parse.argNumber("--guard 42")).toBe(42);
+	expect(parse.argNumber("--max-rounds 2 17 -- skip 9")).toBe(17);
+	expect(parse.isLowRisk("low risk")).toBe(true);
+	expect(parse.isLowRisk("not low")).toBe(false);
+	expect(parse.isLowRisk("below the bar, needs review")).toBe(false);
+	const text = "### a.ts\n- [P1] the bucket never empties";
+	const twice = model.addFindings(
+		model.addFindings(model.EMPTY, parse.findings(text)),
+		parse.findings(`restated:\n${text}`),
+	);
+	expect(twice.findings.length).toBe(1);
+	expect(parse.prUrl("https://github.com/x/y/pull/1\nhttps://github.com/me/repo/pull/7", "me/repo")?.number).toBe(7);
+	expect(parse.prUrl("https://github.com/x/y/pull/1", "me/repo")).toBe(null);
+});
+
+test("a failed command reports no terminal state, and a new run forgets the old PR", async ($, on) => {
+	const clock = mock.clock(on);
+	const seen = engine(on);
+	on("tool.call", () => ({ result: { stdout: "", stderr: "merge failed" }, isError: true }));
+	on("prompt.submit", (_, e) => ({ text: e.text }));
+	on("process.run", () => ({
+		value: { exitCode: 1, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false },
+	}));
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.prompt.submit({ text: "/forge-land 5", wait: false, origin: { kind: "composer" } });
+	await $.tool.call({ tool: "Bash", command: 'gh pr merge 5 && echo "[forge] merged: PR #5"' });
+	await clock.advance(2_000);
+
+	expect(seen.notified).toEqual([]);
+	const next = model.startRun(
+		{ ...model.EMPTY, pr: model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr },
+		"implement",
+		"12",
+		0,
+	);
+	expect(next.pr).toBe(null);
+	expect(next.want.pr).toBe(null);
+});
+
+test("a turn without a run or a batch changes nothing, and a live run refreshes its PR at most every 15s", () => {
+	expect(model.afterTurn(model.EMPTY, "just chatting", 0)).toBe(model.EMPTY);
+	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
+	const started = model.startRun(model.EMPTY, "guard", "7", 0);
+	// the run's own request for PR #7 already went out
+	const live = {
+		...started,
+		want: { ...started.want, pr: null, isBranchPr: false },
+		pr: pr && { ...pr, isDemo: false, fetchedAt: 10_000 },
+	};
+	expect(model.afterTurn(live, "", 20_000).want.pr).toBe(null);
+	expect(model.afterTurn(live, "", 30_000).want.pr).toBe(88);
+	expect(model.withReviewFindings(model.EMPTY, parse.findings("### a.ts\n- [P1] x"))).toBe(model.EMPTY);
+});
+
+test("setup-project gets a row only until the repo is set up, or while it runs", () => {
+	expect(parse.pipelineFor(null, true)).not.toContain("setup-project");
+	expect(parse.pipelineFor(null, null)).not.toContain("setup-project");
+	expect(parse.pipelineFor(null, false)[0]).toBe("setup-project");
+	expect(parse.pipelineFor("setup-project", true)[0]).toBe("setup-project");
+	expect(parse.pipelineFor("guard", true)).toContain("shape");
+});

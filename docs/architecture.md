@@ -1,11 +1,13 @@
 # Architecture
 
-Forge is a prompt-only repository — no application code, no runtime, no dependencies. It contains Agent Skills prompt files (`SKILL.md`) that teach compatible agents how to execute a structured development workflow with pluggable issue tracking (GitHub, markdown `plan/` folder, or user-configured provider).
+Forge's skills are prompts: no application code, no runtime, no dependencies. The repository contains Agent Skills prompt files (`SKILL.md`) that teach compatible agents how to execute a structured development workflow with pluggable issue tracking (GitHub, markdown `plan/` folder, or user-configured provider). Its root is also a Claude Code plugin that bundles the skills with the [lens](lens.md), an optional view that reads what the skills print.
 
 ## Project Structure
 
 ```text
 forge/
+├── .claude-plugin/                        # Claude Code plugin "forge" and its marketplace entry
+├── lens/                                  # Optional Claude Code view over a run: hooks/, types/, tests/
 ├── skills/
 │   ├── forge-setup-project/
 │   │   ├── SKILL.md                       # Step 0: Context infrastructure setup/audit
@@ -120,5 +122,6 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 | Only land merges, and only by opt-in | The guard never merges. `forge-land` merges only a PR it judged low risk, only when the project set `Auto-merge: low-risk`, and only the judged commit (`--match-head-commit`) | Merging has production consequences, so a loop that fixes its own PR must not also approve it. A fresh-context verdict on one commit can stand in for the click on small, checked, exercised PRs from trusted Issues. Whether it may is a property of the repository, not of one run, so it is a project setting rather than a flag |
 | Risk verdict in its own skill | `forge-land` judges in fresh context, tied to the head commit; mechanical checks first, then one judgment test | The session that wrote the code is the worst judge of its risk, and a verdict on an older commit says nothing about the new one. Separate from the guard so it works on any PR; it decides what a PR needs from a human and leaves the merge to one unless the project opted in |
 | Waiting happens in shell, not in the model | `gh pr checks --watch`, bounded polling, runtime wait facilities | Polling output in the context window pushes the session toward the dumb zone; a blocked shell call costs nothing |
+| Lens in the plugin, not in the skills | The repo root is the Claude Code plugin `forge`: the skills plus `lens/`, which only parses what the skills already write (status calls, findings, `## Risk`, batch output, `## Unattended Shipping`) | The skills stay portable Markdown and never call the lens. Shipping both as one plugin version keeps the lens's parser matched to the formats it reads, and a format change updates `lens/hooks/parse.ts` in the same PR. The plugin has no `version`, so installs track commits |
 | One seam, launchers outside forge | `FORGE_STATUS_CMD`; forge ships no launcher and no worktree hooks | Skills stay ignorant of terminals and worktree tools. A launcher or a checkout bootstrap fits one person's terminal and projects, so it stays theirs, and skills must work without one |
 | Agent readiness assessment | Evaluate feedback loops, module structure, and risks during setup | Architecture and feedback loops affect agent output more than context files — surface gaps early |

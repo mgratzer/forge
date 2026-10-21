@@ -1,6 +1,15 @@
 # Testing
 
-Forge has no automated test suite — the skills are prompt templates, not executable code. Validation is manual.
+The skills are prompt templates, not executable code: their behavior is validated by hand, below. What can be checked mechanically runs in CI (`.github/workflows/checks.yml`) on every pull request, and locally with the same commands:
+
+```bash
+scripts/check-skills.sh                        # skill structure; the script lists its checks
+npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/ and the plugin JSON
+claude plugin validate .                       # plugin and marketplace manifests, the lens's hooks
+claude plugin test .                           # lens/tests/*.test.tsx
+```
+
+CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. `validate` exits 0 on warnings, so CI also fails on any warning except the missing `version` (left out so installs track commits) and, through `--profile directory`, on anything the plugin directory would refuse, such as a missing LICENSE. Run the lens checks when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
 
 ## How to Validate a Skill
 
@@ -63,10 +72,6 @@ grep -rn "additional context\|-- <additional context>" skills/
 # Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
 grep -rn "issue-operations" skills/*/SKILL.md
 
-# Check frontmatter descriptions with ": " are quoted; installers parse YAML strictly and skip the skill otherwise (should print nothing)
-grep -nE '^description: [^"'"'"'].*: ' skills/*/SKILL.md skills/_shared/roles/*.md
-
-# Check every skill bundles the shared layer and no sibling-relative links remain (both should print nothing)
-for d in skills/forge-*/; do [ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"; done
-grep -rn "\.\./_shared" skills/
+# Structural checks (prints nothing when healthy; the script lists what it checks)
+scripts/check-skills.sh
 ```
