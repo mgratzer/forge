@@ -1,0 +1,128 @@
+import { expect, mock, test } from 'claude-code/testing'
+import type { On } from 'claude-code'
+
+const pane = (requestId: string) =>
+  ({
+    plugin: 'forge',
+    component: 'Pane',
+    requestId,
+    props: {
+      title: 'forge',
+      isFocused: false,
+      bodyColumns: 48,
+      placement: 'dock',
+      scroll: { offset: 0, bodyRows: 60 },
+      view: {},
+    },
+  }) as const
+
+const forge = (args: string) =>
+  ({ command: 'forge', args, origin: { kind: 'composer' }, presentation: { isFullscreen: true, columns: 160 } }) as const
+
+const SURFACES = ['terminal', 'desktop', 'vscode', 'mobile'] as const
+
+// Nothing sits beneath the plugin: these hooks stand for the engine
+function engine(on: On) {
+  const opened: string[] = []
+  const notified: string[] = []
+  on('command.register', () => ({ value: { command: 'forge' } }))
+  on('ui.open', (_, e) => {
+    opened.push(e.id)
+    return { value: { isPlaced: true } }
+  })
+  on('ui.notify', (_, e) => {
+    notified.push(e.text)
+    return { value: { isSent: true, channel: 'terminal_bell' } }
+  })
+  on('session.start', (_, e) => ({ cwd: e.cwd }))
+  on('session.repo', () => ({ value: null }))
+  on('session.cwd', () => ({ value: '/repo' }))
+  on('fs.exists', () => ({ value: false }))
+  on('env.get', () => ({ value: undefined }))
+  return { opened, notified }
+}
+
+test('the demo walks a ship run to merge-ready, on every surface', async ($, on) => {
+  const clock = mock.clock(on)
+  const seen = engine(on)
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run(forge('demo'))
+  await clock.advance(60_000)
+
+  expect(seen.opened).toContain('forge-lens')
+  expect(seen.notified.some(t => /merge-ready/.test(t))).toBe(true)
+  for (const surface of SURFACES) {
+    const ui = await $.ui.mount({ ...pane('forge-lens'), surface })
+    expect((await ui.find({ type: 'Text', text: /LOW RISK/ }))?.text).toContain('LOW RISK')
+    expect(await ui.find({ type: 'Text', text: /gh pr merge 88/ })).toBeDefined()
+    await ui.unmount()
+  }
+})
+
+test('the stuck demo ends at needs-human with a reviewer guide', async ($, on) => {
+  const clock = mock.clock(on)
+  const seen = engine(on)
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run(forge('demo stuck'))
+  await clock.advance(60_000)
+
+  expect(seen.notified.some(t => /needs-human/.test(t))).toBe(true)
+  const ui = await $.ui.mount({ ...pane('forge-lens'), surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /NEEDS REVIEW/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /forge-address-pr-feedback 88/ })).toBeDefined()
+  await ui.unmount()
+})
+
+test('the batch demo draws its Waves and the config pane draws defaults', async ($, on) => {
+  const clock = mock.clock(on)
+  engine(on)
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.command.run(forge('demo batch'))
+  await $.command.run(forge('config'))
+  await clock.advance(3_000)
+
+  for (const surface of SURFACES) {
+    const waves = await $.ui.mount({ ...pane('forge-waves'), surface })
+    expect(await waves.find({ type: 'Text', text: /Wave 2/ })).toBeDefined()
+    await waves.unmount()
+    const config = await $.ui.mount({ ...pane('forge-config'), surface })
+    expect(await config.find({ type: 'Text', text: /default: 3/ })).toBeDefined()
+    await config.unmount()
+  }
+})
+
+test('a [forge] line in Bash output moves the run', async ($, on) => {
+  const clock = mock.clock(on)
+  engine(on)
+  on('tool.call', () => ({ result: { stdout: '[forge] waiting: CI on PR #12\n', stderr: '' } }))
+  on('prompt.submit', (_, e) => ({ text: e.text }))
+  on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: 'no gh here', isStdoutTruncated: false, isStderrTruncated: false } }))
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  await $.prompt.submit({ text: '/forge-guard 12', wait: false, origin: { kind: 'composer' } })
+  await $.tool.call({ tool: 'Bash', command: 'gh pr checks 12' })
+  await clock.advance(2_000)
+
+  const ui = await $.ui.mount({ ...pane('forge-lens'), surface: 'terminal' })
+  expect(await ui.find({ type: 'Text', text: /CI on PR #12/ })).toBeDefined()
+  await ui.unmount()
+})
+
+test('/forge pane toggles, and a closed pane stays closed for the next run', async ($, on) => {
+  const clock = mock.clock(on)
+  const seen = engine(on)
+  const closed: string[] = []
+  on('ui.panes', () => ({ value: [{ id: 'forge-lens', title: 'forge', isShown: true, isFocused: false, isPlaced: true }] }))
+  on('ui.close', (_, e) => {
+    closed.push(e.id)
+    return { value: undefined }
+  })
+  on('prompt.submit', (_, e) => ({ text: e.text }))
+  await $.session.start({ cwd: '/repo', surface: 'terminal', isInteractive: true })
+  const toggled = await $.command.run(forge('pane'))
+  await $.prompt.submit({ text: '/forge-guard 3', wait: false, origin: { kind: 'composer' } })
+  await clock.advance(2_000)
+
+  expect(toggled.text).toBe('forge pane closed.')
+  expect(closed).toEqual(['forge-lens'])
+  expect(seen.opened).not.toContain('forge-lens')
+})

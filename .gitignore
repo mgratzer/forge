@@ -1,3 +1,6 @@
 .claude/
 .DS_Store
 forge-skills-workspace/
+# written by Claude Code when it loads the plugin from this folder
+/.claude-plugin/types/
+/tsconfig.json
