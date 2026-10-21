@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="docs/images/icon-256.png" width="128" height="128" alt="forge icon: a pixel-art anvil with a glowing bar inside an ember progress ring">
+</p>
+
+<p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
   One workflow. Ten skills. From idea to merged code.
 </p>

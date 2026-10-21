@@ -6,6 +6,7 @@
 	},
 	"repository": "https://github.com/mgratzer/forge",
 	"license": "MIT",
+	"icon": "./docs/images/icon-512.png",
 	"hooks": "./lens/hooks/hooks.json",
 	"types": "./lens/types/index.d.ts"
 }
