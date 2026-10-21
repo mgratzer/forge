@@ -70,6 +70,26 @@ export function Lens(p: LensProps) {
 				</Box>
 			)}
 
+			{last && last.state !== "start" && (
+				<Box flexDirection="column">
+					<Text dimColor>NOW</Text>
+					<Text color={STATE_COLOR[last.state] ?? "text"} bold={TERMINAL.includes(last.state)}>
+						{last.state}
+						<Text dimColor>{last.detail ? `  ${last.detail}` : ""}</Text>
+					</Text>
+				</Box>
+			)}
+
+			{p.next && (
+				<Box flexDirection="column">
+					<Text dimColor>NEXT</Text>
+					<Text color="suggestion" bold>
+						{p.next.text}
+					</Text>
+					<Text dimColor>{p.next.why} (Tab in an empty prompt takes it)</Text>
+				</Box>
+			)}
+
 			<Box flexDirection="column">
 				<Text dimColor>PIPELINE{isShip ? "   ┃ = composed by ship" : ""}</Text>
 				{PIPELINE.map((s) => {
@@ -91,17 +111,6 @@ export function Lens(p: LensProps) {
 					);
 				})}
 			</Box>
-
-			{last && last.state !== "start" && (
-				<Box flexDirection="column">
-					<Text dimColor>NOW</Text>
-					<Text color={STATE_COLOR[last.state] ?? "text"} bold={TERMINAL.includes(last.state)}>
-						{last.state}
-						<Text dimColor>{last.detail ? `  ${last.detail}` : ""}</Text>
-					</Text>
-				</Box>
-			)}
-
 			{p.pr && (
 				<Box flexDirection="column">
 					<Box flexDirection="row" justifyContent="space-between">
@@ -150,23 +159,13 @@ export function Lens(p: LensProps) {
 			{p.timeline.length > 1 && (
 				<Box flexDirection="column">
 					<Text dimColor>TIMELINE</Text>
-					{p.timeline.slice(-8).map((s) => (
+					{p.timeline.slice(-5).map((s) => (
 						<Text wrap="truncate">
 							<Text dimColor>{ago(p.now, s.at).padStart(4)} </Text>
 							<Text color={STATE_COLOR[s.state] ?? "subtle"}>{s.state.padEnd(13)}</Text>
 							<Text dimColor>{s.detail}</Text>
 						</Text>
 					))}
-				</Box>
-			)}
-
-			{p.next && (
-				<Box flexDirection="column">
-					<Text dimColor>NEXT</Text>
-					<Text color="suggestion" bold>
-						{p.next.text}
-					</Text>
-					<Text dimColor>{p.next.why} (Tab in an empty prompt takes it)</Text>
 				</Box>
 			)}
 		</Box>

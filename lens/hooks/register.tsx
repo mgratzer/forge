@@ -277,8 +277,10 @@ export const register: Register = (on) => {
 		const { Box, Button, Text } = $.ui.resolve(e);
 		return (
 			<Box flexDirection="row" gap={1}>
-				<Text color="claude">forge ▸ next</Text>
-				<Text color="suggestion" bold>
+				<Box flexShrink={0}>
+					<Text color="claude">forge ▸ next</Text>
+				</Box>
+				<Text color="suggestion" bold wrap="truncate-middle">
 					{m.next.text}
 				</Text>
 				<Text dimColor wrap="truncate">
