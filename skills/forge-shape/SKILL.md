@@ -34,13 +34,7 @@ Converge on a shared design concept through one-at-a-time structured questioning
 
 If CONTEXT.md exists, read it — use its vocabulary when framing questions and challenging the user's language.
 
-Loop until the design concept is clear:
-
-1. Ground the next question in Step 1 facts — never ask what the codebase already answers
-2. Ask one question with your recommended answer (phrase as "I'd suggest X because Y", not as a decision)
-3. Wait for the user's response
-4. **Challenge when warranted** — if the answer conflicts with CONTEXT.md vocabulary, call it out. If it contradicts what the code does, surface it. If it uses vague or overloaded terms, propose a precise canonical term. Invent concrete scenarios to stress-test fuzzy boundaries.
-5. Adjust your understanding and pick the next question
+Ground each question in Step 1 facts, so you never ask what the codebase already answers, and give your recommended answer as "I'd suggest X because Y", not as a decision. **Challenge when warranted:** if an answer conflicts with CONTEXT.md vocabulary, call it out; if it contradicts what the code does, surface it; if it uses vague or overloaded terms, propose a precise canonical term; invent concrete scenarios to stress-test fuzzy boundaries.
 
 **Side effects during shaping** — as terms and decisions crystallize:
 - **Resolved term?** Update CONTEXT.md inline — don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.

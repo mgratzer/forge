@@ -103,8 +103,8 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 ```text
 ## Guard Summary
 
-**PR:** #<number> — <title>
-**Result:** review-ready | needs-human — <reason>
+**PR:** #<number>: <title>
+**Result:** review-ready | needs-human (<reason>)
 **Rounds:** <n> of <max>
 
 ### Passes
@@ -115,9 +115,9 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
 
 ### Open for the human
-- <thread url> — <the decision, with both options>
-- Pre-existing: <check> — fails on <base> too
-- Deferred: #<issue> — <title>
+- <thread url>: <the decision, with both options>
+- Pre-existing: <check>, fails on <base> too
+- Deferred: #<issue> (<title>)
 ```
 
 ## Guidelines

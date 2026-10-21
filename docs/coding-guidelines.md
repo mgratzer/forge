@@ -106,7 +106,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
-| Pattern audit | When changing a pattern, update ALL files using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
+| Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
 | Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
@@ -149,4 +149,4 @@ Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, a
 - Use tables for structured reference data
 - Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
 - Keep lines under 120 characters where practical
-- Use em dashes (`—`) not hyphens for parenthetical clauses in prose
+- Templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence. Skill prose itself may use them

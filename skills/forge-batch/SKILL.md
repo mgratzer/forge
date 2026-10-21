@@ -53,7 +53,7 @@ Use the output format below. The launch line names `$FORGE_LAUNCHER` when that v
 ```text
 ## Batch: <scope>
 
-### Wave 1 — <n> Issues
+### Wave 1 (<n> Issues)
 | # | Title | Touch set | Notes |
 |---|-------|-----------|-------|
 | 123 | feat(api): ... | src/api/x.ts, src/api/x.test.ts | |
@@ -61,12 +61,12 @@ Use the output format below. The launch line names `$FORGE_LAUNCHER` when that v
 
 launch: <launcher> 123 124 ...
 
-### Wave 2 — <n> Issues (after Wave 1 merges)
+### Wave 2 (<n> Issues, after Wave 1 merges)
 ...
 
 ### Excluded
-- #130 — HITL
-- #131 — open PR #400 already
+- #130: HITL
+- #131: open PR #400 already
 ```
 
 ## Guidelines

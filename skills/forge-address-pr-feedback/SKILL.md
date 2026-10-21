@@ -60,7 +60,7 @@ For each unaddressed thread, read the file and surrounding context, then categor
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
 
-For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B> — <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
+For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B>. <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
 
 ### Step 3: Address and Reply Individually
 
@@ -70,7 +70,7 @@ For each thread:
 
 1. **Make the change** (if actionable)
 2. **Run lint/format/checks**
-3. **Commit**: `git commit -m "fix: address PR feedback — <brief description>"`
+3. **Commit**: `git commit -m "fix: address PR feedback, <brief description>"`
 4. **Reply, and resolve when the outcome is concrete** — Actionable, Already addressed, or Deferred. Question, Discussion, and Won't fix stay open so the reviewer sees the reasoning. One mutation does both (drop `resolveReviewThread` for threads that stay open); pass the reply as a GraphQL variable on stdin — interpolating it into the query breaks on quotes and newlines:
 
 ```bash
