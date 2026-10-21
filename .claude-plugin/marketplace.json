@@ -1,6 +1,6 @@
 {
-  "name": "forge",
-  "description": "forge: skills for a structured development workflow",
-  "owner": { "name": "Martin Gratzer" },
-  "plugins": [{ "name": "forge", "source": "./", "description": "forge skills and the forge lens" }]
+	"name": "forge",
+	"description": "forge: skills for a structured development workflow",
+	"owner": { "name": "Martin Gratzer" },
+	"plugins": [{ "name": "forge", "source": "./", "description": "forge skills and the forge lens" }]
 }

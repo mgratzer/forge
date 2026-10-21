@@ -1,10 +1,10 @@
 {
-  "name": "forge",
-  "description": "Structured development workflow skills, with a live lens on each run",
-  "author": {
-    "name": "Martin Gratzer"
-  },
-  "repository": "https://github.com/mgratzer/forge",
-  "hooks": "./lens/hooks/hooks.json",
-  "types": "./lens/types/index.d.ts"
+	"name": "forge",
+	"description": "Structured development workflow skills, with a live lens on each run",
+	"author": {
+		"name": "Martin Gratzer"
+	},
+	"repository": "https://github.com/mgratzer/forge",
+	"hooks": "./lens/hooks/hooks.json",
+	"types": "./lens/types/index.d.ts"
 }
