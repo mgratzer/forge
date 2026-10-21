@@ -199,3 +199,11 @@ test("a turn without a run or a batch changes nothing, and a live run refreshes 
 	expect(model.afterTurn(live, "", 30_000).want.pr).toBe(88);
 	expect(model.withReviewFindings(model.EMPTY, parse.findings("### a.ts\n- [P1] x"))).toBe(model.EMPTY);
 });
+
+test("setup-project gets a row only until the repo is set up, or while it runs", () => {
+	expect(parse.pipelineFor(null, true)).not.toContain("setup-project");
+	expect(parse.pipelineFor(null, null)).not.toContain("setup-project");
+	expect(parse.pipelineFor(null, false)[0]).toBe("setup-project");
+	expect(parse.pipelineFor("setup-project", true)[0]).toBe("setup-project");
+	expect(parse.pipelineFor("guard", true)).toContain("shape");
+});

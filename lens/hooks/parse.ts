@@ -87,6 +87,10 @@ export function round(detail: string): { round: number; max: number } | null {
 	return m ? { round: Number(m[1]), max: Number(m[2] ?? 0) } : null;
 }
 
+// The steps worth a row: setup-project only until the repo is set up, or while it runs
+export const pipelineFor = (step: string | null, isSetUp: boolean | null): string[] =>
+	PIPELINE.filter((s) => s !== "setup-project" || s === step || isSetUp === false);
+
 // Which pipeline step a run is in
 export const currentStep = (run: Run | null): string | null => run?.phase ?? null;
 

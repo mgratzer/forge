@@ -263,6 +263,7 @@ export const register: Register = (on) => {
 				timeline={m.timeline}
 				last={model.lastState(m)}
 				visited={m.visited}
+				isSetUp={m.config ? m.config.hasAgents : null}
 				pr={m.pr}
 				findings={m.findings}
 				risk={m.risk}

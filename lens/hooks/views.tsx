@@ -1,7 +1,7 @@
 import type { EngineInterface } from "claude-code";
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from "../types";
-import { currentStep, DEFAULT_ROUNDS, isLowRisk, isOnHead, PIPELINE, runLabel, TERMINAL } from "./parse";
+import { currentStep, DEFAULT_ROUNDS, isLowRisk, isOnHead, pipelineFor, runLabel, TERMINAL } from "./parse";
 
 type Ui = ReturnType<EngineInterface["ui"]["resolve"]>;
 
@@ -36,6 +36,8 @@ type LensProps = {
 	// the latest status, never the run's own start entry
 	last: Stage | null;
 	visited: string[];
+	// whether the repo has AGENTS.md; null until the config is read
+	isSetUp: boolean | null;
 	pr: Pr | null;
 	findings: Finding[];
 	risk: Risk | null;
@@ -94,13 +96,15 @@ export function Lens(p: LensProps) {
 
 			<Box flexDirection="column">
 				<Text dimColor>PIPELINE{isShip ? "   ┃ = composed by ship" : ""}</Text>
-				{PIPELINE.map((s) => {
+				{pipelineFor(step, p.isSetUp).map((s) => {
 					const isNow = s === step && !p.run?.terminal;
 					const isDone = p.visited.includes(s) && !isNow;
 					const mark = isNow ? "●" : isDone ? "✓" : "○";
 					const color = isNow ? "claude" : isDone ? "success" : "inactive";
 					const bar = isShip && SHIP.includes(s) ? "┃" : " ";
 					let note = "";
+					if (s === "setup-project" && !isNow && !isDone) note = "start here";
+					if (s === "shape" && !isNow && !isDone) note = "optional";
 					if (isNow && isShip && s === "implement" && last?.state === "reviewing") note = "self-review";
 					if (s === "guard" && p.run && p.run.round > 0)
 						note = `round ${p.run.round}/${p.run.maxRounds || DEFAULT_ROUNDS}`;
