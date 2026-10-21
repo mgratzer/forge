@@ -25,7 +25,7 @@ const RISK_LOW = `## Risk
 
 const RISK_REVIEW = `## Risk
 
-**Verdict:** needs review, judged on 9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d
+**Verdict:** needs review, judged on 3f9c2a1e8b7d6c5a4f3e2d1c0b9a8f7e6d5c4b3a
 
 - Size: 412 counted lines (90 excluded: tests) → over 400
 - Always-review paths: src/auth.js

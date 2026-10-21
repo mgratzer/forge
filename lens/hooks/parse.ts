@@ -14,12 +14,17 @@ export const PIPELINE = [
 ] as const
 
 export const TERMINAL = ['pushed', 'review-ready', 'merge-ready', 'merged', 'needs-human', 'failed']
+const STATES = ['implementing', 'reviewing', 'waiting', 'addressing', ...TERMINAL]
 
-// `[forge] <state>: <detail>`, printed when FORGE_STATUS_CMD is unset
-const STATUS_LINE = /^\[forge\] ([a-z-]+): ?(.*)$/gm
-
-export function statusLines(text: string): { state: string; detail: string }[] {
-  return [...text.matchAll(STATUS_LINE)].map(m => ({ state: m[1] ?? '', detail: (m[2] ?? '').trim() }))
+// The status call a skill writes into its Bash command (status-reporting.md):
+// `"$FORGE_STATUS_CMD" <state> "<detail>"` and its fallback `echo "[forge] <state>: <detail>"`.
+// Read from the command, never from output, which any file or tool can fill.
+export function statusCalls(command: string): { state: string; detail: string }[] {
+  const echoed = [...command.matchAll(/echo "\[forge\] ([a-z-]+): ?([^"\n]*)"/g)]
+  const called = [...command.matchAll(/"\$\{?FORGE_STATUS_CMD\}?" ([a-z-]+) "([^"\n]*)"/g)]
+  return (echoed.length ? echoed : called)
+    .map(m => ({ state: m[1] ?? '', detail: (m[2] ?? '').trim() }))
+    .filter(c => STATES.includes(c.state))
 }
 
 // `/forge-ship --guard 42`, also `/forge:forge-ship …` from a plugin install
@@ -28,10 +33,23 @@ export function forgeCommand(text: string): { skill: string; args: string } | nu
   return m ? { skill: m[1] ?? '', args: (m[2] ?? '').trim() } : null
 }
 
-export function prUrl(text: string): { number: number; url: string } | null {
-  const m = /https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/(\d+)/.exec(text)
-  return m ? { number: Number(m[1]), url: m[0] } : null
+// A pull request link into `slug` (owner/repo) only: output may name any repository
+export function prUrl(text: string, slug: string): { number: number; url: string } | null {
+  for (const m of text.matchAll(/https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)/g)) {
+    if (slug && (m[1] ?? '').toLowerCase() === slug) return { number: Number(m[2]), url: m[0] }
+  }
+  return null
 }
+
+// owner/repo from a GitHub remote (https or ssh), lowercased; '' for any other host
+export function repoSlug(remote: string | null): string {
+  const m = /github\.com[:/]([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/.exec(remote ?? '')
+  return (m?.[1] ?? '').toLowerCase()
+}
+
+// A verdict counts only for the commit it was judged on (forge-land's rule)
+export const isOnHead = (risk: Risk | null, pr: Pr | null): boolean =>
+  !!risk && !!pr && risk.sha !== '' && pr.headSha.startsWith(risk.sha)
 
 // The first bare number in a skill's arguments: an Issue or PR number
 export function argNumber(args: string): number | null {
@@ -149,7 +167,7 @@ export function unattended(agents: string): { hasSection: boolean; hasStaleHeadi
 }
 
 // The step a person most likely wants after what just happened
-export function nextStep(run: Run | null, pr: Pr | null, openFindings: number): Next | null {
+export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, risk: Risk | null): Next | null {
   if (!run) return null
   const n = pr ? String(pr.number) : ''
   const issue = argNumber(run.args)
@@ -159,7 +177,9 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number): 
     case 'review-ready':
       return { text: `/forge-land ${n}`.trim(), why: 'green and addressed: land judges the risk' }
     case 'merge-ready':
-      return { text: `! gh pr merge ${n} --squash`, why: 'low risk verdict: you can merge without reading the diff' }
+      return isOnHead(risk, pr) && /low/i.test(risk?.verdict ?? '')
+        ? { text: `! gh pr merge ${n} --squash`, why: 'low risk verdict on the head commit: you can merge without reading the diff' }
+        : { text: `/forge-land ${n}`.trim(), why: "no low risk verdict on the head commit: land judges it again" }
     case 'pushed':
       return { text: `/forge-guard ${n}`.trim(), why: 'the PR is open: guard drives it to review-ready' }
     case 'merged':

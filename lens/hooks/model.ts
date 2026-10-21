@@ -24,7 +24,7 @@ export const EMPTY: Model = {
 
 const withNext = (m: Model): Model => ({
   ...m,
-  next: parse.nextStep(m.run, m.pr, m.findings.filter(f => !f.isDone).length),
+  next: parse.nextStep(m.run, m.pr, m.findings.filter(f => !f.isDone).length, m.risk),
 })
 
 const visit = (m: Model, step: string | null): Model =>
@@ -121,6 +121,7 @@ export type GhPr = {
   url: string
   title: string
   headRefName: string
+  headRefOid: string
   state: string
   mergeable: string
   reviewDecision: string
@@ -134,6 +135,7 @@ export function withPr(m: Model, data: GhPr, now: number): Model {
     url: data.url,
     title: data.title,
     branch: data.headRefName,
+    headSha: data.headRefOid,
     state: data.state,
     mergeable: data.mergeable,
     reviewDecision: data.reviewDecision,
@@ -150,6 +152,7 @@ export function withDemoPr(m: Model, checks: Pr['checks']): Model {
     url: 'https://github.com/example/notes/pull/88',
     title: 'feat(api): rate-limit the notes API',
     branch: 'feat/42-rate-limit',
+    headSha: '3f9c2a1e8b7d6c5a4f3e2d1c0b9a8f7e6d5c4b3a',
     state: 'OPEN',
     mergeable: 'MERGEABLE',
     reviewDecision: 'REVIEW_REQUIRED',

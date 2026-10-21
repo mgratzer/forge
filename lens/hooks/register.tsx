@@ -12,7 +12,7 @@ const nudged = atom({ plugin: 'forge', key: 'nudged' } as const, [])
 
 const LENS = 'forge-lens'
 const TITLES: Record<string, string> = { 'forge-lens': 'forge', 'forge-config': 'forge config', 'forge-waves': 'forge waves' }
-const PR_FIELDS = 'number,url,title,headRefName,state,mergeable,reviewDecision,statusCheckRollup,body'
+const PR_FIELDS = 'number,url,title,headRefName,headRefOid,state,mergeable,reviewDecision,statusCheckRollup,body'
 const TICK_MS = 1000
 const PR_REFRESH_MS = 60_000
 
@@ -168,9 +168,9 @@ export const register: Register = on => {
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
     const ran = await next(e)
     if (ran.deny !== undefined) return ran
-    const out = parse.resultText(ran.result)
-    const lines = parse.statusLines(out)
-    const url = parse.prUrl(out)
+    const lines = parse.statusCalls(e.command)
+    const isPrCreate = /\bgh pr create\b/.test(e.command)
+    const url = isPrCreate ? parse.prUrl(parse.resultText(ran.result), parse.repoSlug((await $.session.repo())?.remote ?? null)) : null
     const isPrCommand = /\bgh pr (create|checks|ready|edit|merge)\b/.test(e.command)
     if (lines.length || url || isPrCommand) {
       const now = await $.clock.now()
@@ -242,6 +242,7 @@ export const register: Register = on => {
         pr={m.pr}
         findings={m.findings}
         risk={m.risk}
+        isRiskOnHead={parse.isOnHead(m.risk, m.pr)}
         result={m.result}
         next={m.next}
         onToggle={id => void update($, state, x => model.toggleFinding(x, id))}

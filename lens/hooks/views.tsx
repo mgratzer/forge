@@ -37,6 +37,7 @@ export type LensProps = {
   pr: Pr | null
   findings: Finding[]
   risk: Risk | null
+  isRiskOnHead: boolean
   result: string
   next: Next | null
   onToggle: (id: string) => void
@@ -144,7 +145,7 @@ export function Lens(p: LensProps) {
         </Box>
       )}
 
-      {p.risk && <RiskCard ui={p.ui} risk={p.risk} result={p.result} />}
+      {p.risk && <RiskCard ui={p.ui} risk={p.risk} result={p.result} isOnHead={p.isRiskOnHead} head={p.pr?.headSha ?? ''} />}
 
       {p.timeline.length > 1 && (
         <Box flexDirection="column">
@@ -172,15 +173,22 @@ export function Lens(p: LensProps) {
   )
 }
 
-export function RiskCard({ ui, risk, result }: { ui: Ui; risk: Risk; result: string }) {
+type RiskCardProps = { ui: Ui; risk: Risk; result: string; isOnHead: boolean; head: string }
+
+export function RiskCard({ ui, risk, result, isOnHead, head }: RiskCardProps) {
   const { Box, Text } = ui
-  const isLow = /low/i.test(risk.verdict)
+  const isLow = /low/i.test(risk.verdict) && isOnHead
   return (
     <Box flexDirection="column" borderStyle="round" borderColor={isLow ? 'success' : 'warning'} paddingX={1}>
       <Text bold color={isLow ? 'success' : 'warning'}>
-        {isLow ? 'LOW RISK' : 'NEEDS REVIEW'}
+        {/low/i.test(risk.verdict) ? 'LOW RISK' : 'NEEDS REVIEW'}
         <Text dimColor>{risk.sha ? `  judged on ${risk.sha}` : ''}</Text>
       </Text>
+      {!isOnHead && (
+        <Text color="warning" wrap="wrap">
+          ⚠ stale or unverified: the head is {head ? head.slice(0, 10) : 'unknown'}, run /forge-land again
+        </Text>
+      )}
       {result !== '' && <Text>Result: {result}</Text>}
       {risk.bullets.map(b => (
         <Text dimColor={/→ ok|: ok$|: none$/.test(b)} wrap="wrap">

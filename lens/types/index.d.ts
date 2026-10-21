@@ -19,6 +19,7 @@ export type Pr = {
   url: string
   title: string
   branch: string
+  headSha: string
   state: string
   mergeable: string
   reviewDecision: string
