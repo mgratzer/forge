@@ -32,7 +32,7 @@ The lens has no channel into the skills: it parses what they write. These format
 |--------|------------|-----------|
 | The status call in a Bash command: `"$FORGE_STATUS_CMD" <state> "<detail>"` and its `echo "[forge] <state>: <detail>"` fallback | `skills/_shared/status-reporting.md` | `statusCalls` |
 | `### <file>` over `- [P0] <finding>` | `skills/_shared/roles/forge-reviewer.md` | `findings` |
-| The `## Risk` section and `**Result:**` line | `skills/_shared/risk-rubric.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
+| The `## Risk` section and `**Result:**` line; the section ends at the next `## ` heading, which is why `## Plan` keeps its own headings at `###` or lower | `skills/_shared/risk-rubric.md`, `skills/_shared/pr-body.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
 | `## Batch:` with one table per Wave | `skills/forge-batch/SKILL.md` | `batch` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
 
