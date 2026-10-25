@@ -64,4 +64,4 @@ Use `diff` blocks (`+` added, `-` removed, a space for unchanged context) when t
 
 Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: the gap between Plan and diff is what `forge-land` checks. Keep headings inside the Plan at `###` or lower, since a `## ` line ends the section.
 
-A **Deviation** is a change outside the Plan's scope or a planned phase that didn't happen. List each one you made with its reason; an unstated deviation sends the PR to review. When there was no Plan (a trivial change that skipped Step 2), leave out the `## Plan` section.
+A **Deviation** is a change outside the Plan's scope or a planned phase that didn't happen. List each one you made with its reason; an unstated deviation sends the PR to review. Changes that answer a review finding, a review thread, or a failing check are in scope and not deviations. `forge-implement` always writes `## Plan`.

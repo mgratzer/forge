@@ -50,7 +50,7 @@ See [testing.md — Structural Review](testing.md#1-structural-review) for the c
 
 ## PR Description
 
-Use the body `forge-implement` writes, described in [pr-body](../skills/_shared/pr-body.md): one sentence on why, a change outline when the shape isn't obvious from the title, `## Exercised` (for skill changes, the skill run on a test project), and `## Plan` when there was one. `Closes #<issue-number>` when an Issue exists.
+Use the body `forge-implement` writes, described in [pr-body](../skills/_shared/pr-body.md). For skill changes, `## Exercised` reports the skill run on a test project.
 
 ## Review Process
 
