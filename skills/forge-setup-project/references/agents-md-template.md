@@ -38,6 +38,11 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 <Preferences: team choices where multiple valid approaches exist>
 <for each rule, note enforcement mechanism — linter, CI, script, or manual>
 
+<important if="<the situation, e.g. changes touch db/migrations>">
+<guidance only that situation needs; agents skip the block otherwise>
+</important>
+<use a conditional block for each rule that applies to some tasks only; omit when there are none>
+
 ## Commits
 
 Format: `<type>(<scope>): <description>`

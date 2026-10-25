@@ -12,6 +12,7 @@ Any hit means **needs-review**. Measure on the judged commit against the merge b
 | Always-review paths | migrations or schema, dependency changes, CI workflows, or the project's security-sensitive paths | CI workflows: `.github/workflows/**` and any other CI configuration. Dependency changes: a manifest or lockfile changed. Security-sensitive paths per [unattended-config](unattended-config.md) |
 | Tests | tests deleted or weakened | A test file or case removed, an assertion removed or loosened, a skip or only marker added, an expected value changed to match new output without a stated reason |
 | Exercise | the change behaved wrongly when exercised | The PR body's `## Exercised` section reports `wrong:` (see [exercise](exercise.md)) |
+| Plan | the PR opened with a deviation from its `## Plan` that it doesn't state | Compare the Plan with `git diff "origin/$BASE...<SHA from **Deviations** (as of …)>"`: a change outside what the Plan set out to do (judge by goal and scope, not its file list) or a planned phase missing, not named under **Deviations**. Later commits are not compared. That SHA no longer on the branch is a hit; a body without `## Plan` (a PR not opened by forge-implement) skips the check |
 | Trust | the Issue's author lacks write access to the repo | `gh api "repos/{owner}/{repo}/collaborators/<login>/permission" --jq .permission` is not `admin` or `write`. The author of each Issue the PR closes; with no linked Issue, the PR's author. Issues in the markdown `plan/` provider were committed by someone who could push, so they pass |
 
 ## Judgment Test
@@ -33,6 +34,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - Always-review paths: none | <paths>
 - Tests: ok | <what was deleted or weakened>
 - Exercise: ok | wrong: <what the section reports>
+- Plan: ok | no plan | <unstated deviation>
 - Trust: ok | <login> has <permission>
 - What the checks would miss: <one or two sentences>
 

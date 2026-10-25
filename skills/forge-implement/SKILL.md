@@ -34,9 +34,9 @@ Identify **durable architectural decisions** — data model, API contracts, and 
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
 
-**Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, codebase access.
+**Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, the pointers, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
 Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
@@ -71,6 +71,8 @@ Read AGENTS.md first. Follow project conventions strictly.
 
 Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 
+Note each deviation from the Step 2 Plan and why as it happens; the PR states each one.
+
 ### Step 5: Audit Pattern Consistency
 
 If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
@@ -101,7 +103,7 @@ Run the app and use the changed path once, plus one failure case, following [exe
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, also the assumptions you proceeded on), then the approach, changes list, test plan, `## Exercised` (from Step 8), and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
+Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. Close the Issue when one exists.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 

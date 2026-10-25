@@ -50,23 +50,7 @@ See [testing.md — Structural Review](testing.md#1-structural-review) for the c
 
 ## PR Description
 
-```markdown
-## Summary
-
-<1-2 sentences: why this change was needed, then the approach taken>
-
-Closes #<issue-number>
-
-## Changes
-
-- <skill or file>: <what changed>
-
-## Test Plan
-
-- [ ] Invoked skill via `/forge-<name>` on a test project
-- [ ] Verified generated output is correct
-- [ ] Checked cross-skill consistency
-```
+Use the body `forge-implement` writes, described in [pr-body](../skills/_shared/pr-body.md). For skill changes, `## Exercised` reports the skill run on a test project.
 
 ## Review Process
 

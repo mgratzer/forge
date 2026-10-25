@@ -33,7 +33,7 @@ Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`. Th
 
 Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Classify each finding as **discoverable** (agents can find it themselves) or **requires documentation** (decisions, conventions, failure modes) — only the second category belongs in context files.
 
-Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks.
+Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks. A check that prints pages on success fills the agent's context with noise: under feedback loops, name the tool's quiet flag when it has one, or leave a `<!-- TODO -->` for a wrapper that prints one line on success and everything on failure.
 
 ### Step 3: Audit Existing Guidance
 
@@ -45,6 +45,7 @@ When guidance files already exist, score each section:
 | **Undiscoverability** | Would an agent find this by exploring? If yes, it's wasted context. |
 | **Currency** | Does this match the current codebase? Verify commands, paths, patterns. |
 | **Signal density** | Ratio of actionable information to total words? |
+| **Scope** | Does every task need this, or only some? Guidance for one area (migrations, a service's logs) goes in a conditional block, or in a doc it points to. |
 
 Present an audit report grouped by impact and get user confirmation via AskUserQuestion before applying changes.
 

@@ -161,6 +161,15 @@ test("parsers: flag values, anchored verdicts, one finding per text", () => {
 	expect(parse.prUrl("https://github.com/x/y/pull/1", "me/repo")).toBe(null);
 });
 
+test("parsers: the Risk section ends where the Plan section begins", () => {
+	const plan =
+		"## Plan\n\n<details><summary>Plan as approved</summary>\n\n### Phases\n- one\n\n</details>\n\n**Deviations:** none";
+	const risk = "## Risk\n\n**Verdict:** low risk, judged on 3f9c2a1e8b\n\n- Size: 10 counted lines → ok\n- Plan: ok";
+	for (const body of [`${plan}\n\n${risk}`, `${risk}\n\n${plan}`]) {
+		expect(parse.riskSection(body)?.bullets).toEqual(["Size: 10 counted lines → ok", "Plan: ok"]);
+	}
+});
+
 test("a failed command reports no terminal state, and a new run forgets the old PR", async ($, on) => {
 	const clock = mock.clock(on);
 	const seen = engine(on);

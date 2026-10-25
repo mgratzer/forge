@@ -106,6 +106,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
+| PR body | One-sentence why, change outline views, `## Exercised`, and `## Plan` as approved with stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land reads it |
 | Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
