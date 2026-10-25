@@ -34,9 +34,9 @@ Identify **durable architectural decisions** — data model, API contracts, and 
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today, never how to build the change: a question a reader could use to guess the goal leaks it, so rewrite it. Collect the concrete pointers the Issue gives (URLs, file paths, packages) verbatim; they name starting points without the goal. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions and pointers — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
 
-**Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, codebase access.
+**Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, the pointers, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
 Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
