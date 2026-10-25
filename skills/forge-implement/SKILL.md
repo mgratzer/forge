@@ -71,6 +71,8 @@ Read AGENTS.md first. Follow project conventions strictly.
 
 Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 
+Keep the Plan from Step 2 as it was approved. When the work leaves it (a change outside its scope, a phase dropped or reshaped), note the deviation and why as it happens; the PR states each one.
+
 ### Step 5: Audit Pattern Consistency
 
 If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
@@ -101,7 +103,7 @@ Run the app and use the changed path once, plus one failure case, following [exe
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title. Lead the body with **why** (from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, also the assumptions you proceeded on), then the approach, changes list, test plan, `## Exercised` (from Step 8), and quality checklist; close the Issue when one exists. Add a `> [!WARNING]` block at the top for any manual deployment steps.
+Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md): the why (from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes), the change outline, `## Exercised` (from Step 8), and `## Plan` with its deviations; close the Issue when one exists.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 

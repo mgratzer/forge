@@ -8,7 +8,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Issue** — one tracked unit of work. Carries title, body, and labels; the AFK/HITL mode is recorded at creation (Issue body on GitHub, `mode` frontmatter in the markdown provider).
 
-**Plan** — structured proposal for implementing an Issue: durable decisions, vertical phases, verification steps.
+**Plan** — structured proposal for implementing an Issue: durable decisions, vertical phases, verification steps. The PR body's `## Plan` section keeps it as approved (as first made, when unattended), never rewritten to match the code.
+
+**Deviation** — a difference between the diff and its Plan: a change outside the Plan's scope, or a planned phase that is missing. Stated deviations are listed with a reason under the Plan; an unstated deviation is a needs-review hit in land's risk rubric. _Avoid_: "drift", "plan mismatch".
 
 **Vertical slice** — end-to-end implementation crossing all layers for one narrow scenario, testable in isolation. See [vertical-slicing](skills/_shared/vertical-slicing.md).
 
