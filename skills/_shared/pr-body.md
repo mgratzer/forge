@@ -33,8 +33,8 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 </details>
 
-**Deviations:** none
-<or one line per deviation: `- <what changed from the Plan>: <why>`>
+**Deviations** (as of <short SHA of the commit the PR opens with>): none
+<or one line per Deviation: `- <what changed from the Plan>: <why>`>
 
 Closes #<N>
 ````
@@ -62,6 +62,6 @@ Use `diff` blocks (`+` added, `-` removed, a space for unchanged context) when t
 
 ## Plan
 
-Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: the gap between Plan and diff is what `forge-land` checks. Keep headings inside the Plan at `###` or lower, since a `## ` line ends the section.
+Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
 
-A **Deviation** is a change outside the Plan's scope or a planned phase that didn't happen. List each one you made with its reason; an unstated deviation sends the PR to review. Changes that answer a review finding, a review thread, a failing check, or one of the project's configured passes are in scope and not deviations. `forge-implement` always writes `## Plan`.
+No section of the body uses a `## ` heading inside it: a `## ` line ends the section for `forge-land` and the lens.

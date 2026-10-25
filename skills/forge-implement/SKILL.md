@@ -34,7 +34,7 @@ Identify **durable architectural decisions** — data model, API contracts, and 
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today, never how to build the change: a question a reader could use to guess the goal leaks it, so rewrite it. Collect the concrete pointers the Issue gives verbatim when they describe what exists (file paths, packages, library docs), never the Issue, a PR, or a spec of the change itself. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions and pointers — not the Issue. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
 
 **Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, the pointers, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
@@ -71,7 +71,7 @@ Read AGENTS.md first. Follow project conventions strictly.
 
 Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
 
-Keep the Plan from Step 2 as it was approved. When the work leaves it (a change outside its scope, a phase dropped or reshaped), note the deviation and why as it happens; the PR states each one.
+Note each deviation from the Step 2 Plan and why as it happens; the PR states each one.
 
 ### Step 5: Audit Pattern Consistency
 
@@ -103,7 +103,7 @@ Run the app and use the changed path once, plus one failure case, following [exe
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md): the why (from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes), the change outline, `## Exercised` (from Step 8), and `## Plan` with its deviations; close the Issue when one exists.
+Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. Close the Issue when one exists.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
