@@ -80,7 +80,7 @@ Always include a **minimal option**. Present the contrasting approaches and let 
 
 ### Step 4: Hand Off Side Effects
 
-When shaping changed CONTEXT.md or added ADRs, never leave those edits stranded in the shaping checkout. Commit them from a temporary worktree on a new `docs/<slug>` branch cut from the fetched default branch, so the shaping checkout keeps its branch: carry over only the shaping changes (the `git diff` of CONTEXT.md, the new ADR files as written), commit with a `docs(context): <description>` message, push, open a docs PR, and remove the worktree. The PR can merge before the Issues are implemented.
+When shaping changed CONTEXT.md or added ADRs, never leave those edits stranded in the shaping checkout. Commit them from a temporary worktree on a new `docs/<slug>` branch cut from the fetched default branch, so the shaping checkout keeps its branch: carry over only the shaping changes (the CONTEXT.md changes, the new ADR files as written), commit with a `docs(context): <description>` message, push, and open a docs PR. Then remove the worktree and restore the shaping checkout's originals (CONTEXT.md as it was, or absent if shaping created it; no new ADR files), so a later pull there isn't blocked. The PR can merge before the Issues are implemented.
 
 ### Step 5: Summarize Plan
 
