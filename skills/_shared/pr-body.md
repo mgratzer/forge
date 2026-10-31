@@ -27,7 +27,7 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 ## Plan
 
-<details><summary>Plan approved | Plan as first made (no approver: <why>) | Plan approved, then revised</summary>
+<details><summary>Plan <provenance, see Plan below></summary>
 
 <the Plan from forge-implement Step 2, verbatim>
 
@@ -78,12 +78,12 @@ Number the steps. They stay inside the `[!WARNING]` block: every line, fenced co
 
 ## Plan
 
-Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
+Copy the Plan verbatim and never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
 
-The summary says who stood behind the Plan, so the PR never claims an approval nobody gave:
+The summary names who stood behind the Plan, so the PR never claims an approval nobody gave:
 
-- **Plan approved** — a person confirmed it in forge-implement Step 2.
-- **Plan as first made (no approver: <why>)** — nobody approved it: `--unattended`, or no person could answer (started by another session). Say which.
-- **Plan approved, then revised** — a person approved it and the Plan changed before the PR opened. Keep the approved Plan verbatim and list each revision under **Revisions** with who asked for it. `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation.
+- `Plan approved` — a person confirmed it.
+- `Plan as first made (no approver: <why>)` — the run was unattended; say whether by `--unattended` or because no person could answer. When it implements a HITL Issue, add a **Notes** bullet `Judgment calls (HITL Issue, run unattended):` listing each decision the Issue left to a person and what you chose.
+- `Plan approved, then revised` — the Plan changed after approval. List each revision under **Revisions** with who asked; `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation.
 
 No section of the body uses a `## ` heading inside it: a `## ` line ends the section for `forge-land` and the lens.
