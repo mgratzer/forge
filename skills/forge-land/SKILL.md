@@ -23,7 +23,7 @@ ME=$(gh api user --jq .login)
 git fetch origin "$BASE" "pull/$PR/head"   # the verdict reads the diff and files at $SHA, whatever is checked out
 ```
 
-Read the security-sensitive paths and the auto-merge setting per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
+Read the peer reviewer, the security-sensitive paths, and the auto-merge setting per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
 
 - **Mergeable** — `gh pr view "$PR" --json mergeable` is `MERGEABLE` (`UNKNOWN`: ask up to 5 times, 10 seconds apart; still `UNKNOWN` fails)
 - **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and block on `gh pr checks "$PR" --watch --interval 30`, capped at 60 minutes. No checks reported 3 minutes after the last push means the repository has no CI, which passes

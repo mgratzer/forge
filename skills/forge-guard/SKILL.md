@@ -47,14 +47,14 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
-**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body reports that it could not review (Copilot: "encountered an error", "unable to review … due to rate limiting") is a **failed review** and counts as none. Wait in one bounded shell loop, not by polling from the model; it prints `reviewed`, `failed`, or nothing:
+**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message (Copilot: "Copilot encountered an error", or "Copilot was unable to review" for rate limits) is a **failed review** and counts as none. Wait in one bounded shell loop, not by polling from the model; it prints `reviewed`, `failed`, or nothing:
 
 ```bash
 PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
 for _ in $(seq 1 30); do   # 15 minutes
   r=$(gh pr view "$PR" --json commits,reviews --jq ".commits[-1].committedDate as \$push
         | [.reviews[] | select(.submittedAt >= \$push and .author.login != \"$ME\")
-           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"encountered an error|unable to review|rate.?limit\"; \"i\"))
+           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^Copilot (encountered an error|was unable to review)\"))
              then \"failed\" else \"reviewed\" end]
         | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
   [ -n "$r" ] && break
@@ -64,7 +64,7 @@ done
 
 The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
 
-**Failed review** — the loop printed `failed`. Wait 10 minutes (`sleep 600`: rate limits outlast the loop's interval), request the peer reviewer once more, and run the loop again. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads. Step 4 handles its findings as it handles unaddressed threads, and the substitute satisfies the signal for the rest of the run.
+**Failed review** — the loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), request the peer reviewer once more, and run the loop again. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads. Step 4 handles its findings as it handles unaddressed threads, and the substitute satisfies the signal for the rest of the run.
 
 ### Step 4: Decide, then React
 
