@@ -78,7 +78,7 @@ scripts/check-skills.sh
 
 ## Exercise a Skill Change
 
-Skill prompts are forge's runtime. A PR that changes `skills/` exercises the change (see [exercise](../skills/_shared/exercise.md)) and reports what the runs printed in `## Exercised`, never `not exercised: no runtime change`; that line stays for PRs that change only docs, CI, or the lens's tests. The app here is a coding agent running the skill in another repository, such as the private sandbox `mgratzer/forge-e2e-sandbox`, or any repository of yours with run commands in its `AGENTS.md`.
+Skill prompts are forge's runtime. A PR that changes `skills/` exercises the change (see [exercise](../skills/_shared/exercise.md)) and reports what the runs printed in `## Exercised`, never `not exercised: no runtime change`; that line stays for PRs that change only docs, tests, or CI. The app here is a coding agent running the skill in another repository, such as the private sandbox `mgratzer/forge-e2e-sandbox`, or any repository of yours with run commands in its `AGENTS.md`.
 
 1. **Snapshot** the branch and its base as two plugins, named apart so neither collides with an installed forge:
 
