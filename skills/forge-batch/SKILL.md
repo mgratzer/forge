@@ -1,7 +1,6 @@
 ---
 name: forge-batch
-description: Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other — estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Use when the user has several prepared Issues and wants to know which can run in parallel unattended.
-disable-model-invocation: true
+description: "Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other: estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Asks the user to approve the batch unless --unattended. Use when the user or an orchestrating agent asks for forge-batch or which of several prepared Issues can run in parallel unattended."
 allowed-tools: Read, Bash, Grep, Glob, AskUserQuestion
 ---
 
@@ -17,13 +16,9 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 ### Step 1: Collect Candidates
 
-List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
+List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
 
-```bash
-gh pr list --state open --limit 100 --json number,title,headRefName,body
-```
-
-Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues that depend on an open Issue outside the scope. Everything left is AFK and free to start.
+Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues with a prerequisite outside the scope that is unmet per *Prerequisites* in open-work (one query for all of them). Everything left is AFK and free to start.
 
 ### Step 2: Estimate Touch Sets (delegate)
 
@@ -36,7 +31,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [unattended-config](_shared/unattended-config.md). Issue A **depends on** B when the listing's dependency references for A include B: a native blocked-by link, or body text (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when the listing's dependency references for A include B: a native blocked-by link, or body text (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 

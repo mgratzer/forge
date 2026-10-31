@@ -218,7 +218,7 @@ export function checks(rollup: Rollup[]): Checks {
 const SETTINGS: Omit<Setting, "value" | "isSet">[] = [
 	{ name: "Peer reviewer", fallback: "none", usedBy: "guard" },
 	{ name: "Security-sensitive paths", fallback: "forge's risky-signal heuristics", usedBy: "guard, land" },
-	{ name: "Serialized resources", fallback: "migrations, lockfiles, generated files", usedBy: "batch" },
+	{ name: "Serialized resources", fallback: "migrations, lockfiles, generated files", usedBy: "batch, implement" },
 	{ name: "Max guard rounds", fallback: String(DEFAULT_ROUNDS), usedBy: "guard" },
 	{ name: "Auto-merge", fallback: "off", usedBy: "land" },
 ];
@@ -240,7 +240,13 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 	const issue = argNumber(run.args);
 	switch (run.terminal) {
 		case "needs-human":
-			return { text: `/forge-address-pr-feedback ${n}`.trim(), why: "the guard stopped and needs a decision from you" };
+			// implement stops before any PR when open work blocks the Issue
+			return pr
+				? { text: `/forge-address-pr-feedback ${n}`, why: "the guard stopped and needs a decision from you" }
+				: {
+						text: `/forge-${run.skill} ${run.args}`.trim(),
+						why: "stopped before a PR: retry once what it named has landed",
+					};
 		case "review-ready":
 			return { text: `/forge-land ${n}`.trim(), why: "green and addressed: land judges the risk" };
 		case "merge-ready":

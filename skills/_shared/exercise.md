@@ -19,9 +19,29 @@ With neither, report `not exercised: no way to run the app`. Never guess how to 
 2. **Start** the app per the recipe, in the background, and wait for readiness in one bounded shell loop.
 3. **Drive the changed path** once: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged.
 4. **Drive one failure case** where the change has one: invalid input, an unauthorized caller, another tenant's data.
-5. **Stop** everything you started.
+5. **Capture** what a person looks at when the changed path renders one (a screen, a rendered email, a generated image); see [Screenshots](#screenshots).
+6. **Stop** everything you started, and remove any worktree you added for before screenshots (`git worktree remove --force <path>`).
 
 A run that didn't reach the changed path is not evidence, whatever it printed.
+
+## Screenshots
+
+Capture with the runtime's browser or screenshot tool, or the project's render script, in each state the change affects: the locales, viewports, or themes it touches, and before and after when the base is cheap to run (from a throwaway `git worktree add` at the default branch, never a stash or a switch of this branch). Save each as a PNG named for its state, outside the working tree, so it never lands on the feature branch. Publish them to an orphan `pr-assets/<branch>` branch without touching the working tree or index:
+
+```bash
+BRANCH=$(git branch --show-current)
+SHOTS=<directory holding the screenshots>
+TREE=$(for f in "$SHOTS"/*.png; do printf '100644 blob %s\t%s\n' "$(git hash-object -w "$f")" "$(basename "$f")"; done | git mktree) &&
+  [ "$TREE" != "$(git hash-object -t tree /dev/null)" ] &&
+  COMMIT=$(git commit-tree "$TREE" -m "chore: screenshots for $BRANCH [skip ci]") &&
+  git push --force origin "${COMMIT}:refs/heads/pr-assets/${BRANCH}"
+```
+
+Each step guards the next: a missing or empty screenshot directory pushes nothing, where an unguarded push of an empty ref would delete the branch.
+
+The branch holds only this PR's screenshots, so exercising again replaces them. Link each as `https://github.com/<owner>/<repo>/blob/pr-assets/<branch>/<file>?raw=true`, or the host's raw-file URL for that branch elsewhere. The branch can be deleted after the PR merges; the images in the PR body stop rendering with it.
+
+A visible change with no screenshots (no browser or screenshot tool, no way to render it) goes on the `Not exercised` line as `screenshots: <why>`.
 
 ## Outcomes
 
@@ -38,6 +58,7 @@ The PR body's `## Exercised` section:
 
 - `<command>` → <observed result>
 - Failure case: `<command>` → <observed result>
+- <state>: ![<state>](<raw URL on pr-assets/<branch>>)
 - Not exercised: <what, and why> (or "nothing")
 - Try it: `<commands a reviewer can paste>`
 ```

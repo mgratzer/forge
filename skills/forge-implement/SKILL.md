@@ -1,7 +1,6 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug — stops after opening the PR (use forge-ship to also run review).
-disable-model-invocation: true
+description: Implement an Issue, plan file, or free-text description on a feature branch, following project standards, and stop at an open PR. Asks the user to approve the plan unless --unattended. Use when the user or an orchestrating agent asks for forge-implement or to take an Issue to a PR, not for a quick edit or fix in the current session; use forge-ship to also run review.
 ---
 
 # Implement a Change
@@ -26,6 +25,8 @@ Report `implementing` via [status-reporting](_shared/status-reporting.md). Deter
 
 Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
 
+For an Issue, check open work before planning, following [open-work](_shared/open-work.md). When a prerequisite is unmet or an open PR is already for this Issue, name each one and its state, and ask via AskUserQuestion whether to proceed. **In unattended mode**: stop and report `needs-human` with them. Keep the other open PRs' files for the plan.
+
 ### Step 2: Plan Approach
 
 Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](_shared/deep-modules.md)).
@@ -45,6 +46,7 @@ From the research, create a plan:
 - Durable decisions
 - **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
 - Files to create or modify
+- Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
 
 Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.

@@ -268,4 +268,15 @@ test("pipeline rows: stopped in its step, skipped before it, the Issue counts as
 	expect(model.readSkill(land, "guard")).toBe(land);
 	expect(model.enterSkill(land, "land", "", 1)).toBe(land);
 	expect(parse.argNumber("-- see 12")).toBe(null);
+	// implement stopped on open work has no PR to address yet
+	const blocked = model.applyStatus(
+		model.startRun(model.EMPTY, "implement", "--unattended 87", 0),
+		"needs-human",
+		"#85 open",
+		1,
+	);
+	expect(parse.nextStep(blocked.run, null, 0, null)).toEqual({
+		text: "/forge-implement --unattended 87",
+		why: "stopped before a PR: retry once what it named has landed",
+	});
 });
