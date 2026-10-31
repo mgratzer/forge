@@ -78,7 +78,7 @@ Given a milestone, a label, or an epic — keep the listing light (number, title
 **GitHub:**
 ```bash
 gh issue list --milestone "<MILESTONE>" --state open --limit 100 --json number,title,labels,body,blockedBy \
-  --jq '.[] | {number, title, labels: [.labels[].name], mode: ((.body | capture("(?i)execution mode:\\W*(?<m>\\w+)") | .m) // null), deps: ([.blockedBy.nodes[].number] + [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0] | tonumber] | unique)}'
+  --jq '.[] | {number, title, labels: [.labels[].name], mode: ((.body | capture("(?i)execution mode:\\W*(?<m>\\w+)") | .m) // null), deps: ([.blockedBy.nodes[] | select(.state == "OPEN") | .number] + [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0] | tonumber] | unique)}'
 gh issue list --label "<LABEL>" --state open --limit 100 --json number,title,labels,body,blockedBy --jq '<same filter>'
 gh issue view <EPIC> --json subIssues,body --jq '[.subIssues.nodes[] | select(.state == "OPEN") | .number] + [.body | scan("- \\[ \\] #(\\d+)") | .[0] | tonumber] | unique'   # open native and task-list sub-issues, then view each
 ```
