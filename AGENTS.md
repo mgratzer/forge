@@ -16,6 +16,8 @@ claude plugin validate . && claude plugin test .   # plugin manifests and lens t
 
 CI (`.github/workflows/checks.yml`) runs all three on every pull request; see [Testing](docs/testing.md).
 
+Skill prompts are forge's runtime, so a change under `skills/` is exercised, not reported as `no runtime change`: run the changed skill (or forge-land's judge, for a rubric change) from a snapshot of the branch in a sandbox repository, with a snapshot of `origin/main` as the control. The commands are in [Testing: Exercise a Skill Change](docs/testing.md#exercise-a-skill-change).
+
 ## Documentation
 
 | Document | Purpose |
