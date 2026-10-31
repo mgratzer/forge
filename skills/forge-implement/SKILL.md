@@ -11,7 +11,7 @@ Implement a feature or fix following project standards.
 
 Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-text description. Optional: `-- <additional context>` for execution guidance.
 
-**Unattended mode:** `--unattended` skips plan approval and proceeds without confirmation prompts.
+**Unattended mode:** `--unattended` skips plan approval and proceeds without confirmation prompts. When no person can answer, because the task came from another agent session or a scheduler rather than a person, run unattended even without the flag and say so in your first message.
 
 ## Process
 
@@ -49,7 +49,7 @@ From the research, create a plan:
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
 
-Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed.
+Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed. Keep the Plan as approved or first made for the PR; when the user changes it later, record each revision and who asked for it (see [pr-body](_shared/pr-body.md)).
 
 ### Step 3: Create Feature Branch
 
@@ -105,7 +105,7 @@ Run the app and use the changed path once, plus one failure case, following [exe
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. Close the Issue when one exists.
+Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. An unattended run on a HITL Issue adds one Notes bullet, `Judgment calls (HITL Issue, run unattended):`, listing each decision the Issue left to a person and what you chose. Close the Issue when one exists.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
