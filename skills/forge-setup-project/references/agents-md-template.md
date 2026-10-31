@@ -13,6 +13,8 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 <all verified commands — install, dev, build, test, lint, format, typecheck>
 ```
 
+<run recipe (see unattended-shipping.md): start the app, drive it, test credentials, stop; a <!-- TODO --> for each part nobody knows>
+
 ## Documentation
 
 | Document | Purpose |
@@ -60,4 +62,8 @@ Types: feat, fix, docs, refactor, test, chore, perf
 ## Domain Invariants
 
 <numbered must-always-hold rules — omit section entirely if none provided>
+
+## Unattended Shipping
+
+<settings per unattended-shipping.md, only when the project ships through PRs and the user accepted; never an Auto-merge line>
 ````

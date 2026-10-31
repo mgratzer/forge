@@ -27,6 +27,8 @@ Use the format matching the work performed.
 | Module structure | <status> | <action> |
 | App legibility | <status> | <action> |
 | Known risks | <risks> | <where documented> |
+| Run recipe | <complete / parts marked TODO / nothing to run> | <action> |
+| Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
 
 ### Supporting Files
 <CLAUDE.md removed, or reduced to an @AGENTS.md import — only when one existed>
@@ -36,7 +38,8 @@ Use the format matching the work performed.
 1. Fill any <!-- TODO --> markers
 2. Add failure modes as you encounter agent mistakes
 3. Re-run /forge-setup-project periodically
-4. Use /forge-create-issue to plan your first piece of work, or /forge-shape if the idea is still rough
+4. Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to `## Unattended Shipping`
+5. Use /forge-create-issue to plan your first piece of work, or /forge-shape if the idea is still rough
 ```
 
 ## Audit / Update of Existing Guidance
@@ -55,6 +58,8 @@ Use the format matching the work performed.
 | Module structure | <status> | <action> |
 | App legibility | <status> | <action> |
 | Known risks | <risks> | <where documented> |
+| Run recipe | <complete / parts marked TODO / nothing to run> | <action> |
+| Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
 
 ### Recommendations Not Applied
 <items the user chose not to apply>
@@ -63,4 +68,5 @@ Use the format matching the work performed.
 1. Review changes and verify accuracy
 2. Revisit recommendations not applied
 3. Re-run /forge-setup-project periodically
+4. Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to `## Unattended Shipping`
 ```
