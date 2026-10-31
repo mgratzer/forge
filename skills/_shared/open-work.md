@@ -9,11 +9,11 @@ An Issue's prerequisites are the numbers its body names as `depends on #N`, `blo
 ```bash
 gh api graphql -F owner='{owner}' -F repo='{repo}' -f query='query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){
   n142: issueOrPullRequest(number:142){...s}  n150: issueOrPullRequest(number:150){...s}}}
-fragment s on IssueOrPullRequest{... on PullRequest{number state} ... on Issue{number state closedByPullRequestsReferences(first:10,includeClosedPrs:true){nodes{number state}}}}' \
+fragment s on IssueOrPullRequest{... on PullRequest{number state} ... on Issue{number state stateReason closedByPullRequestsReferences(first:10,includeClosedPrs:true){nodes{number state}}}}' \
   --jq '.data.repository[]'
 ```
 
-A prerequisite is **met** when it is a PR in state `MERGED`, or a closed Issue with a `MERGED` PR among its closing references. Open, closed as not planned, or closed while its PR is still open is **unmet**: closed is not merged.
+A prerequisite is **met** when it is a PR in state `MERGED`, or an Issue closed as `COMPLETED` with no open PR among its closing references (a sub-issue closed by hand counts). Open, closed as not planned or duplicate, or closed while a closing PR is still open is **unmet**. In the [plan folder](plan-folder-spec.md), `status: closed` is met.
 
 ## Open PRs
 

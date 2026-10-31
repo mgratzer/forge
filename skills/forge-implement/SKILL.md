@@ -26,7 +26,7 @@ Report `implementing` via [status-reporting](_shared/status-reporting.md). Deter
 
 Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
 
-For an Issue, check open work before planning, following [open-work](_shared/open-work.md). When a prerequisite is unmet or an open PR is already for this Issue, stop: report `needs-human` naming each one and its state. Keep the other open PRs' files for the plan.
+For an Issue, check open work before planning, following [open-work](_shared/open-work.md). When a prerequisite is unmet or an open PR is already for this Issue, name each one and its state, and ask via AskUserQuestion whether to proceed. **In unattended mode**: stop and report `needs-human` with them. Keep the other open PRs' files for the plan.
 
 ### Step 2: Plan Approach
 

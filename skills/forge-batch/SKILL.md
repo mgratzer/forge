@@ -19,7 +19,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
 
-Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues that depend on an open Issue outside the scope. Everything left is AFK and free to start.
+Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues with a prerequisite outside the scope that is unmet per *Prerequisites* in open-work (one query for all of them). Everything left is AFK and free to start.
 
 ### Step 2: Estimate Touch Sets (delegate)
 

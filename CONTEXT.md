@@ -44,7 +44,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 
-**Prerequisite** — an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a closed Issue counts when a merged PR closed it. See [open-work](skills/_shared/open-work.md).
+**Prerequisite** — an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
 
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
 
