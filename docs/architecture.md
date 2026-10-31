@@ -27,7 +27,7 @@ forge/
 │   │   ├── vertical-slicing.md            # Thin end-to-end slicing philosophy
 │   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
 │   │   ├── exercise.md                    # Run the changed path before the PR; ## Exercised report
-│   │   ├── pr-body.md                     # PR body: why, change outline, ## Exercised, ## Plan with deviations
+│   │   ├── pr-body.md                     # PR body: why, deployment steps, change outline, ## Exercised, ## Plan with deviations
 │   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
