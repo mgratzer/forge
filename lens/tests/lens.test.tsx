@@ -216,3 +216,56 @@ test("setup-project gets a row only until the repo is set up, or while it runs",
 	expect(parse.pipelineFor("setup-project", true)[0]).toBe("setup-project");
 	expect(parse.pipelineFor("guard", true)).toContain("shape");
 });
+
+test("a ship run the model starts keeps its args, follows a cat'ed skill file, and marks where it stopped", async ($, on) => {
+	const clock = mock.clock(on);
+	engine(on);
+	on("tool.call", () => ({ result: { stdout: "", stderr: "" } }));
+	on("process.run", () => ({
+		value: { exitCode: 1, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false },
+	}));
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.tool.call({ tool: "Skill", skill: "forge-ship", args: "--guard 171 -- Wave notes: a long paragraph" });
+	await $.tool.call({ tool: "Bash", command: "cat ~/.claude/skills/forge-guard/SKILL.md" });
+	// a composed step the model starts moves the ship run on instead of replacing it
+	await $.tool.call({ tool: "Skill", skill: "forge-land", args: "178" });
+	await $.tool.call({ tool: "Bash", command: 'echo "[forge] needs-human: #178 needs a decision"' });
+	await clock.advance(2_000);
+
+	const ui = await $.ui.mount({ ...pane("forge-lens"), surface: "terminal" });
+	expect(await ui.find({ type: "Text", text: /^\/forge-ship --guard 171$/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /! ┃ land/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /✓ ┃ guard/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /– +reflect/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /#171/ })).toBeDefined();
+	await ui.unmount();
+});
+
+test("pipeline rows: stopped in its step, skipped before it, the Issue counts as created", () => {
+	const ship = model.startRun(model.EMPTY, "ship", "--guard 171", 0);
+	const guarded = model.applyStatus(model.readSkill(ship, "guard"), "needs-human", "stuck", 1);
+	const at = (s: string) => parse.stepState(s, guarded.run, guarded.visited);
+	expect(["create-issue", "implement", "reflect", "guard", "land"].map(at)).toEqual([
+		"done",
+		"done",
+		"skipped",
+		"stopped",
+		"todo",
+	]);
+	expect(parse.runLabel("ship", "--guard 171 -- notes -- more")).toBe("/forge-ship --guard 171");
+	expect(parse.runLabel("ship", "-- notes")).toBe("/forge-ship");
+	expect(parse.skillStep("cat a/forge-implement/SKILL.md; cat b/forge-guard/SKILL.md")).toBe("guard");
+	expect(parse.skillStep("cat _shared/roles/forge-reviewer.md")).toBe(null);
+	// an open run's PR refreshes every minute, an ended run's every 5 while it is open
+	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
+	const ended = { ...guarded, pr: pr && { ...pr, isDemo: false, fetchedAt: 0 } };
+	expect(model.isPrDue({ ...ended, run: ship.run }, 61_000)).toBe(true);
+	expect(model.isPrDue(ended, 61_000)).toBe(false);
+	expect(model.isPrDue(ended, 301_000)).toBe(true);
+	expect(model.isPrDue({ ...ended, pr: ended.pr && { ...ended.pr, state: "MERGED" } }, 301_000)).toBe(false);
+	// a land run only cites guard's file; skill.prompt after the start keeps the args
+	const land = model.startRun(model.EMPTY, "land", "178", 0);
+	expect(model.readSkill(land, "guard")).toBe(land);
+	expect(model.enterSkill(land, "land", "", 1)).toBe(land);
+	expect(parse.argNumber("-- see 12")).toBe(null);
+});

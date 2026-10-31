@@ -17,8 +17,6 @@ const TICK_MS = 1000;
 export const register: Register = (on) => {
 	// The last next step proposed, so each is proposed once
 	let suggested = "";
-	// `/forge-x` fires prompt.submit, which starts the run with its args, then skill.prompt
-	let submitted: string | null = null;
 
 	on("session.start", async ($, e, next) => {
 		await $.command.register({
@@ -64,16 +62,17 @@ export const register: Register = (on) => {
 					if (!sent.isSent) $.ui.toast(text, { timeoutMs: 8000 });
 				}
 
-				const isStale = !!m.run && !m.run.terminal && model.isPrStale(m, now, model.PR_REFRESH_MS);
-				if (m.want.pr !== null || m.want.isBranchPr || isStale) {
+				if (m.want.pr !== null || m.want.isBranchPr || model.isPrDue(m, now)) {
 					const asked = m.want;
 					const target = asked.pr ?? m.pr?.number;
 					// A request made while this fetch runs stays for the next tick
-					await write((x) =>
-						x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr
-							? { ...x, want: { ...x.want, pr: null, isBranchPr: false } }
-							: x,
-					);
+					if (asked.pr !== null || asked.isBranchPr) {
+						await write((x) =>
+							x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr
+								? { ...x, want: { ...x.want, pr: null, isBranchPr: false } }
+								: x,
+						);
+					}
 					const argv = ["gh", "pr", "view", ...(target ? [String(target)] : []), "--json", PR_FIELDS];
 					const ran = await $.process.run(argv, { cwd: await $.session.cwd(), timeoutMs: 20_000 }).catch(() => null);
 					const data = model.ghPr(ran);
@@ -166,18 +165,28 @@ export const register: Register = (on) => {
 		if (cmd) {
 			const now = await $.clock.now();
 			suggested = "";
-			submitted = cmd.skill;
 			await update($, state, (m) => model.startRun(m, cmd.skill, cmd.args, now));
+		}
+		return next(e);
+	}).catch((_, e, next) => next(e));
+
+	// `/forge-x` and the Skill tool carry the run's args; skill.prompt, which follows
+	// either, carries none and leaves the run they started as it is
+	on("tool.call", { tool: "Skill" }, async ($, e, next) => {
+		const skill = parse.skillName(e.skill);
+		if (skill) {
+			const now = await $.clock.now();
+			suggested = "";
+			await update($, state, (m) => model.enterSkill(m, skill, e.args ?? "", now));
 		}
 		return next(e);
 	}).catch((_, e, next) => next(e));
 
 	on("skill.prompt", async ($, e, next) => {
 		const skill = parse.skillName(e.skill);
-		if (skill && skill === submitted) submitted = null;
-		else if (skill) {
+		if (skill) {
 			const now = await $.clock.now();
-			await update($, state, (m) => model.startRun(m, skill, "", now));
+			await update($, state, (m) => model.enterSkill(m, skill, "", now));
 		}
 		return next(e);
 	}).catch((_, e, next) => next(e));
@@ -193,10 +202,13 @@ export const register: Register = (on) => {
 			? parse.prUrl(parse.resultText(ran.result), parse.repoSlug((await $.session.repo())?.remote ?? null))
 			: null;
 		const isPrCommand = /\bgh pr (create|checks|ready|edit|merge)\b/.test(e.command);
-		if (lines.length || url || isPrCommand) {
+		// forge-ship may `cat` a composed skill's file instead of using Read
+		const step = parse.skillStep(e.command);
+		if (lines.length || url || isPrCommand || step) {
 			const now = await $.clock.now();
 			await update($, state, (m) => {
-				const x = lines.reduce((acc, l) => model.applyStatus(acc, l.state, l.detail, now), m);
+				const entered = step ? model.readSkill(m, step) : m;
+				const x = lines.reduce((acc, l) => model.applyStatus(acc, l.state, l.detail, now), entered);
 				if (!x.run) return x;
 				if (url && x.pr?.number !== url.number) return model.askPr(x, url.number);
 				return isPrCommand ? model.askPr(x) : x;
@@ -207,10 +219,8 @@ export const register: Register = (on) => {
 
 	// forge-ship reads the composed skills' files: guard, land, …
 	on("tool.call", { tool: "Read" }, async ($, e, next) => {
-		const step = /forge-([\w-]+)\/SKILL\.md$/.exec(e.file_path)?.[1];
-		if (step && (parse.PIPELINE as readonly string[]).includes(step)) {
-			await update($, state, (m) => (m.run && m.run.skill !== step ? model.setPhase(m, step) : m));
-		}
+		const step = parse.skillStep(e.file_path);
+		if (step) await update($, state, (m) => model.readSkill(m, step));
 		return next(e);
 	}).catch((_, e, next) => next(e));
 

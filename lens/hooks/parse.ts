@@ -2,7 +2,7 @@
 // the ## Risk section, forge-batch's output and the Unattended Shipping config.
 import type { Batch, Checks, Finding, Next, Pr, Risk, Run, Setting, Wave } from "../types";
 
-export const PIPELINE = [
+export const PIPELINE: readonly string[] = [
 	"setup-project",
 	"shape",
 	"create-issue",
@@ -11,9 +11,12 @@ export const PIPELINE = [
 	"address-pr-feedback",
 	"guard",
 	"land",
-] as const;
+];
 
 export const DEFAULT_ROUNDS = 3;
+
+// The steps forge-ship and forge-ship --guard compose
+export const SHIP_STEPS = ["implement", "guard", "land"];
 
 // The pipeline step a status puts a run in; the others leave it where it is
 const STATE_STEP: Record<string, string> = {
@@ -25,12 +28,23 @@ const STATE_STEP: Record<string, string> = {
 
 export const stepFor = (state: string, step: string): string => STATE_STEP[state] ?? step;
 
-export const runLabel = (skill: string, args: string): string => `/forge-${skill} ${args}`.trim();
+// The arguments without their trailing `-- <additional context>`, which may run to a paragraph
+export const bareArgs = (args: string): string => args.replace(/(?:^|\s)--(?=\s|$)[\s\S]*$/, "").trim();
+
+export const runLabel = (skill: string, args: string): string => `/forge-${skill} ${bareArgs(args)}`.trim();
+
+// The pipeline step whose skill file a path or command reads: `…/forge-guard/SKILL.md` → `guard`
+export function skillStep(text: string): string | null {
+	const read = [...text.matchAll(/forge-([\w-]+)\/SKILL\.md\b/g)].map((m) => m[1] ?? "");
+	return read.filter((s) => PIPELINE.includes(s)).at(-1) ?? null;
+}
 
 // `forge-ship`, also `forge:forge-ship` from a plugin install → `ship`
 export const skillName = (name: string): string | null => /^(?:[\w-]+:)?forge-([\w-]+)$/.exec(name)?.[1] ?? null;
 
 export const TERMINAL = ["pushed", "review-ready", "merge-ready", "merged", "needs-human", "failed"];
+// The terminal states that end a run inside its step, not past it
+const STOPPED = ["needs-human", "failed"];
 const STATES = ["implementing", "reviewing", "waiting", "addressing", ...TERMINAL];
 
 // The status call a skill writes into its Bash command (status-reporting.md):
@@ -77,7 +91,7 @@ export const isOnHead = (risk: Risk | null, pr: Pr | null): boolean =>
 // The first bare number in a skill's arguments: an Issue or PR number
 export function argNumber(args: string): number | null {
 	// --max-rounds is the one forge flag that takes a value
-	const bare = (args.split(" -- ")[0] ?? "").replace(/--max-rounds[ =]\S+/g, " ");
+	const bare = bareArgs(args).replace(/--max-rounds[ =]\S+/g, " ");
 	const m = /(?:^|\s)#?(\d+)(?:\s|$)/.exec(bare);
 	return m ? Number(m[1]) : null;
 }
@@ -93,6 +107,24 @@ export const pipelineFor = (step: string | null, isSetUp: boolean | null): strin
 
 // Which pipeline step a run is in
 export const currentStep = (run: Run | null): string | null => run?.phase ?? null;
+
+// The Issue a run works on: ship and implement take one, so create-issue came before
+export const issueOf = (run: Run | null): number | null =>
+	run && ["ship", "implement"].includes(run.skill) ? argNumber(run.args) : null;
+
+export type StepState = "now" | "done" | "stopped" | "skipped" | "todo";
+
+// What a pipeline row shows: the step the run is in or stopped in, a step this session
+// ran or passed over, or one still ahead
+export function stepState(s: string, run: Run | null, visited: string[]): StepState {
+	if (run && s === currentStep(run)) {
+		if (!run.terminal) return "now";
+		if (STOPPED.includes(run.terminal)) return "stopped";
+	}
+	if (visited.includes(s)) return "done";
+	const at = PIPELINE.indexOf(s);
+	return visited.some((v) => PIPELINE.indexOf(v) > at) ? "skipped" : "todo";
+}
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines
 export function findings(text: string): Finding[] {
@@ -223,7 +255,8 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 		case "merged":
 			return { text: "/forge-reflect", why: "merged: capture what the session taught" };
 		case "failed":
-			return { text: runLabel(run.skill, run.args), why: "the run failed: retry once the cause is fixed" };
+			// the retry keeps the context runLabel leaves out
+			return { text: `/forge-${run.skill} ${run.args}`.trim(), why: "the run failed: retry once the cause is fixed" };
 	}
 	switch (run.skill) {
 		case "setup-project":

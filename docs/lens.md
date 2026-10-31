@@ -14,7 +14,7 @@ The plugin brings the skills and the lens. It carries no `version`, so an instal
 
 | View | Opens with | Shows |
 |------|------------|-------|
-| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
+| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran or skipped and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
 | Status line | always, while a run is open | skill, phase, state, guard round, CI count |
 | Next step | a band above the prompt, and the prompt suggestion (Tab) | the command that most likely comes next, and why |
 | Config pane | `/forge config` | the `## Unattended Shipping` settings with defaults filled in, the Issue tracker, `FORGE_STATUS_CMD` and `FORGE_LAUNCHER` |
@@ -37,6 +37,8 @@ The lens has no channel into the skills: it parses what they write. These format
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
 
 Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR.
+
+A run starts from the typed `/forge-…` command or the Skill tool call, which carry its arguments. A forge-ship run moves into a composed step when it reads that step's `SKILL.md` (with Read or `cat`) or starts it with the Skill tool.
 
 The lens reads status from the command a skill wrote, never from command output, which any file or tool can fill, and a terminal state counts only when that command succeeded. It follows PR links only into the session's repository, and it treats a `## Risk` verdict as valid only on the PR's head commit: the card says when the verdict is stale. It suggests merging only after forge-land reported `merge-ready` and the low risk verdict is on the head, and the suggested `gh pr merge` carries `--match-head-commit`, so a head that moved since cannot be merged.
 

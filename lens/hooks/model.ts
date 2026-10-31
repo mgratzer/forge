@@ -81,13 +81,33 @@ export function startRun(m: Model, skill: string, args: string, now: number, isD
 		panes: m.isLensClosed ? m.panes : [...m.panes, PANES.lens.id],
 	};
 	const asked = takesPr && !isDemo ? askPr(started, parse.argNumber(args)) : started;
-	return visit(asked, parse.currentStep(run));
+	// a run that names its Issue comes after create-issue
+	const created = parse.issueOf(run) !== null ? visit(asked, "create-issue") : asked;
+	return visit(created, parse.currentStep(run));
 }
 
 export function setPhase(m: Model, phase: string): Model {
-	if (!m.run) return m;
+	if (!m.run || m.run.phase === phase) return m;
 	const run = { ...m.run, phase };
 	return visit({ ...m, run }, parse.currentStep(run));
+}
+
+const isOpen = (m: Model): boolean => !!m.run && !m.run.isDemo && !m.run.terminal;
+
+// Whether an open ship run composes this step; other skills only cite each other's files
+const isComposed = (m: Model, step: string): boolean =>
+	isOpen(m) && m.run?.skill === "ship" && parse.SHIP_STEPS.includes(step);
+
+// A ship run reading a composed step's skill file (Read, or `cat` in Bash) has moved into it
+export const readSkill = (m: Model, step: string): Model => (isComposed(m, step) ? setPhase(m, step) : m);
+
+// A skill the model starts (the Skill tool) or the engine expands (skill.prompt, which
+// carries no args): a composed step moves the run on, the open run's own skill without
+// args is that same run, anything else starts a run of its own
+export function enterSkill(m: Model, skill: string, args: string, now: number): Model {
+	if (isComposed(m, skill)) return setPhase(m, skill);
+	if (isOpen(m) && m.run?.skill === skill && !args) return m;
+	return startRun(m, skill, args, now);
 }
 
 // One `[forge] <state>: <detail>` transition
@@ -209,13 +229,18 @@ export function withAnswer(m: Model, text: string): Model {
 	return withNext(out);
 }
 
-// How stale the PR may get: the loop refreshes an open run's PR every minute,
-// and a finished turn, which may have pushed, asks again after 15 seconds
-export const PR_REFRESH_MS = 60_000;
+// How stale the PR may get: the loop refreshes an open run's PR every minute and an
+// ended run's open PR every 5 minutes, since the person may push or rerun CI; a finished
+// turn, which may have pushed, asks again after 15 seconds
+const PR_REFRESH_MS = 60_000;
+const ENDED_REFRESH_MS = 300_000;
 const TURN_REFRESH_MS = 15_000;
 
-export const isPrStale = (m: Model, now: number, ms: number): boolean =>
-	!!m.pr && !m.pr.isDemo && now - m.pr.fetchedAt > ms;
+const isPrStale = (m: Model, now: number, ms: number): boolean => !!m.pr && !m.pr.isDemo && now - m.pr.fetchedAt > ms;
+
+export const isPrDue = (m: Model, now: number): boolean =>
+	!!m.run &&
+	(m.run.terminal ? m.pr?.state === "OPEN" && isPrStale(m, now, ENDED_REFRESH_MS) : isPrStale(m, now, PR_REFRESH_MS));
 
 const isLive = (m: Model): boolean => !!m.run && !m.run.isDemo;
 
@@ -243,7 +268,7 @@ export function statusText(m: Model): string | undefined {
 	const r = m.run;
 	if (!r) return undefined;
 	const last = lastState(m);
-	const parts = [`forge ▸ ${r.skill}${r.args ? ` ${r.args.split(" -- ")[0]}` : ""}`];
+	const parts = [`forge ▸ ${parse.runLabel(r.skill, r.args).slice("/forge-".length)}`];
 	if (r.skill === "ship") parts.push(r.phase);
 	if (last) parts.push(last.state);
 	if (r.round > 0) parts.push(`round ${r.round}/${r.maxRounds || parse.DEFAULT_ROUNDS}`);
