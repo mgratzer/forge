@@ -34,7 +34,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Round** — one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check is not a round. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present, every thread addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
+**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), every thread addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
 
 **Land** — the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into the PR's `## Risk` section. Ends in Merge-ready, Review-ready (with a Where to look list), or Needs-human; with the project's auto-merge opt-in, a low-risk PR ends in Merged instead of Merge-ready. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
 

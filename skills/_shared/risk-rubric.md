@@ -32,11 +32,13 @@ The PR body's `## Risk` section, replaced on every verdict:
 
 **Verdict:** low risk | needs review, judged on <full SHA>
 
+- Peer review: <login> | internal (<peer reviewer> failed: <reason>) | none configured
 - Size: <n> counted lines (<n> excluded: docs, tests, ...) → ok | over 400
 - Always-review paths: none | <paths>
 - Tests: ok | <what was deleted or weakened>
 - Exercise: ok | wrong: <what the section reports> | not exercised: <why>
 - Plan: ok | no plan | <unstated deviation>
+- HITL: ok | #<n> shipped without an approved Plan, judgment calls <listed | missing>
 - Trust: ok | <login> has <permission>
 - Deployment: none | <n> manual steps
 - What the checks would miss: <one or two sentences>
@@ -48,3 +50,5 @@ The PR body's `## Risk` section, replaced on every verdict:
 ```
 
 Two to five **Where to look** items, each a place and a question, not a summary of the change.
+
+Copy **Peer review** as land gives it. It is a record, not a check: an internal substitute review neither hits nor clears anything by itself.

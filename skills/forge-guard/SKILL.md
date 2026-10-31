@@ -35,7 +35,7 @@ Triage findings from both passes with `forge-ship`'s unattended rule, then run t
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Request the peer review first so it overlaps the CI wait — bot reviewers review a PR once and stay silent afterwards unless asked, and Step 2 just pushed past their first look. Skip the request when the latest push only merged the base:
+Report `waiting`. Request the peer review first so it overlaps the CI wait — bot reviewers review a PR once and stay silent afterwards unless asked, and Step 2 just pushed past their first look. Skip the request when the latest push only merged the base, when no peer reviewer is configured, or once the run has a substitute review:
 
 ```bash
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
@@ -47,24 +47,30 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 gh pr checks "$PR" --watch --interval 30   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 ```
 
-**Peer review** — a review by someone other than `$ME` after the latest push. Wait for it in one bounded shell loop, not by polling from the model:
+**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message (Copilot: "Copilot encountered an error", or "Copilot was unable to review" for rate limits) is a **failed review** and counts as none. Wait in one bounded shell loop, not by polling from the model; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
 
 ```bash
+PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
 for _ in $(seq 1 30); do   # 15 minutes
-  n=$(gh pr view "$PR" --json commits,reviews \
-        --jq ".commits[-1].committedDate as \$push | [.reviews[] | select(.submittedAt >= \$push and .author.login != \"$ME\")] | length")
-  [ "$n" -gt 0 ] && break
+  r=$(gh pr view "$PR" --json commits,reviews --jq "(if \"$SINCE\" == \"\" then .commits[-1].committedDate else \"$SINCE\" end) as \$since
+        | [.reviews[] | select(.submittedAt >= \$since and .author.login != \"$ME\")
+           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^Copilot (encountered an error|was unable to review)\"))
+             then \"failed\" else \"reviewed\" end]
+        | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
+  [ -n "$r" ] && break
   sleep 30
 done
 ```
 
-The review signal is satisfied when a post-push review exists, when no peer reviewer is configured, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
+The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
+
+**Failed review** — the loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), set `SINCE=$(date -u +%FT%TZ)`, request the peer reviewer once more, and run the loop again with that `$SINCE`, so the first failure no longer counts. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads. Step 4 handles its findings as it handles unaddressed threads, and the substitute satisfies the signal for the rest of the run.
 
 ### Step 4: Decide, then React
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — branch mergeable, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads, no threads needing a human decision
+- **`review-ready`** — branch mergeable, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads or substitute review findings, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a flaky or external check stays red, a conflict can't be resolved, a reviewer repeats an answered point, or only threads needing a human decision remain
 
 When neither applies, react in this order (mergeability, CI, threads) and go back to Step 3. One trip is one **round**, however many pushes it makes; a trip that only reruns a flaky check is not.
@@ -93,7 +99,7 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 - **Caused** — everything else: fix it, run the quality gates, commit, push.
 - **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: fix it only when its description and link point at the diff, otherwise leave it for the human with the reason.
 
-**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`.
+**Unaddressed threads** — unresolved threads whose last comment is not `$ME`'s — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`; it skips already-answered threads itself. Threads it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`. Substitute review findings have no threads: triage them with `forge-ship`'s unattended rule, run the quality gates, commit, and push.
 
 Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
 
@@ -111,7 +117,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds
-1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present/fell back to earlier review>, threads <n addressed, m deferred>
+1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present (<login>) | fell back to earlier review | substituted (<PEER_REVIEWER> failed: <reason>) | none configured>, threads <n addressed, m deferred>
 
 ### Open for the human
 - <thread url>: <the decision, with both options>

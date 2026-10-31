@@ -216,7 +216,7 @@ export function checks(rollup: Rollup[]): Checks {
 }
 
 const SETTINGS: Omit<Setting, "value" | "isSet">[] = [
-	{ name: "Peer reviewer", fallback: "none", usedBy: "guard" },
+	{ name: "Peer reviewer", fallback: "none", usedBy: "guard, land" },
 	{ name: "Security-sensitive paths", fallback: "forge's risky-signal heuristics", usedBy: "guard, land" },
 	{ name: "Serialized resources", fallback: "migrations, lockfiles, generated files", usedBy: "batch, implement" },
 	{ name: "Max guard rounds", fallback: String(DEFAULT_ROUNDS), usedBy: "guard" },
