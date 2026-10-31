@@ -108,7 +108,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 **Rounds:** <n> of <max>
 
 ### Passes
-- Simplify: applied <n> findings | skipped
+- Simplify: applied <n> findings | skipped | skipped (forge-ship)
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds

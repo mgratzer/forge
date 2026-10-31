@@ -37,7 +37,7 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
+Commit fixed findings and push them together with any Step 2 simplification commit, even when nothing needed fixing; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
 ### Step 4: Guard and Land (only with `--guard`)
 
