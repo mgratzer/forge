@@ -52,7 +52,9 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 
 ### Step 2: Process Each Thread
 
-For each unaddressed thread, read the file and surrounding context, then categorize:
+For each unaddressed thread, read the file and surrounding context. When the comment asserts a fact (an API exists or behaves a certain way, how the code used to work, a project convention), check it against the code, docs, or history (`git log -S`, `git blame`) before changing anything: reviewers, human or agent, can be wrong. A claim that doesn't hold is **Won't fix**, and the reply cites the evidence.
+
+Then categorize:
 - **Actionable** — code change needed
 - **Question** — respond with explanation
 - **Discussion** — assess if change improves code
@@ -92,7 +94,7 @@ Reply format by category:
 - **Question**: "<answer with code references>"
 - **Discussion**: "<decision and reasoning>"
 - **Already addressed**: "Addressed in `<sha>`."
-- **Won't fix**: "Keeping current approach because <reason>."
+- **Won't fix**: "Keeping current approach because <reason>." For a claim that doesn't hold: "<the claim> doesn't hold: <evidence: `file:line`, commit, or doc>."
 - **Deferred**: "Created #<num> to track this."
 
 ### Step 4: Create Issues for Deferred Items

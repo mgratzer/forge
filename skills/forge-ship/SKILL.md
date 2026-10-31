@@ -26,7 +26,7 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 Follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
 
-**Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
+**Inputs provided to sub-agent:** the branch diff, changed file list, project conventions, and the Issue's acceptance criteria per review-delegation.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Triage Findings
