@@ -27,11 +27,14 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 ## Plan
 
-<details><summary>Plan as approved</summary>
+<details><summary>Plan approved | Plan as first made (no approver: <why>) | Plan approved, then revised</summary>
 
 <the Plan from forge-implement Step 2, verbatim>
 
 </details>
+
+**Revisions** (only when revised)
+- <what changed>: asked by <who>, <why>
 
 **Deviations** (as of <short SHA of the commit the PR opens with>): none
 <or one line per Deviation: `- <what changed from the Plan>: <why>`>
@@ -76,5 +79,11 @@ Number the steps. They stay inside the `[!WARNING]` block: every line, fenced co
 ## Plan
 
 Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
+
+The summary says who stood behind the Plan, so the PR never claims an approval nobody gave:
+
+- **Plan approved** — a person confirmed it in forge-implement Step 2.
+- **Plan as first made (no approver: <why>)** — nobody approved it: `--unattended`, or no person could answer (started by another session). Say which.
+- **Plan approved, then revised** — a person approved it and the Plan changed before the PR opened. Keep the approved Plan verbatim and list each revision under **Revisions** with who asked for it. `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation.
 
 No section of the body uses a `## ` heading inside it: a `## ` line ends the section for `forge-land` and the lens.
