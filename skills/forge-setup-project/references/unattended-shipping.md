@@ -1,6 +1,6 @@
 # Prepare for Unattended Shipping
 
-The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, and `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe. Both are quiet failures: nothing says the defaults were used. This step closes both gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
+The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe, and a worktree session loses its first gates to an unprepared checkout when Commands don't say how to prepare one. All three are quiet failures: nothing says what was missing. This step closes those gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
 
 ## Run Recipe
 
@@ -15,7 +15,9 @@ The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship -
 
 Write the parts you found under Commands in `AGENTS.md`. Ask for the rest in Step 4's round of questions, and leave a `<!-- TODO: <part> -->` for what the user doesn't know. Never guess how to start the app. A project with nothing to run (a library without an entry point, docs only) needs no recipe; say so in the summary.
 
-**Fresh-checkout step:** `forge-implement` runs the step Commands name for getting a fresh checkout ready to run the tests, so a worktree session doesn't lose its first gates to stale dependencies or a missing test database. Discover it from a `bootstrap` or `setup` script, `prepare` or `postinstall` hooks, the README's setup, and the CI steps that run before the tests. When the project needs one (dependencies to install, generated output that isn't tracked, its own test database, services or ports) and Commands name none, flag it in the Step 3 audit and ask in Step 4; leave a `<!-- TODO: fresh-checkout step -->` for what the user doesn't know. This holds for a project with nothing to run too.
+## Fresh-Checkout Step
+
+`forge-implement`'s pre-flight runs the step Commands name for getting a fresh checkout ready to run the tests, so stale dependencies or a missing test database don't fail its first gates. Discover it from a `bootstrap` or `setup` script, `prepare` or `postinstall` hooks, the README's setup, and the CI steps that run before the tests. When the project needs one (dependencies to install, generated output that isn't tracked, its own test database, services or ports) and Commands name none, flag it in the Step 3 audit and ask in Step 4; leave a `<!-- TODO: fresh-checkout step -->` for what the user doesn't know.
 
 ## The Section
 

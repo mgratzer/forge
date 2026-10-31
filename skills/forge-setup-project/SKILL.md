@@ -53,7 +53,7 @@ Present an audit report grouped by impact and get user confirmation via AskUserQ
 
 ### Step 4: Gather Project Information
 
-Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the run recipe parts and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
+Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the fresh-checkout step, run recipe parts, and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
 
 ### Step 5: Generate or Update AGENTS.md
 
