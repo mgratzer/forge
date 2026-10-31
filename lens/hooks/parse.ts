@@ -183,32 +183,23 @@ const after = (text: string, label: RegExp): string => (label.exec(text)?.[1] ??
 export function batch(text: string): Batch | null {
 	const head = /^## Batch: (.+)$/m.exec(text);
 	if (!head) return null;
-	const out: Batch = {
-		scope: (head[1] ?? "").trim(),
-		status: [],
-		launch: "",
-		merge: "",
-		progress: "",
-		waves: [],
-		excluded: [],
-	};
+	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, waves: [], excluded: [] };
 	for (const chunk of text.slice(head.index).split(/^### /m).slice(1)) {
 		const [title = "", ...lines] = chunk.split("\n");
-		const body = lines.join("\n");
-		const launch = after(body, /^launch: (.+)$/m);
 		if (/^Excluded/.test(title)) {
 			out.excluded = lines.filter((l) => l.startsWith("- ")).map((l) => l.slice(2));
-		} else if (/^Status/.test(title)) {
+			continue;
+		}
+		const body = lines.join("\n");
+		const launch = after(body, /^launch: (.+)$/m);
+		if (/^Status/.test(title)) {
 			// `--start` prints the scope's state before the Waves
-			out.status = tableRows(lines).map(([num = "", t = "", state = "", detail = ""]) => ({
-				num,
-				title: t,
-				state,
-				detail,
-			}));
-			out.launch = launch;
-			out.merge = after(body, /^\*\*Merge:\*\*\s*(.+)$/m);
-			out.progress = after(body, /^\*\*Scope:\*\*\s*(.+)$/m);
+			out.status = {
+				rows: tableRows(lines).map(([num = "", t = "", state = "", detail = ""]) => ({ num, title: t, state, detail })),
+				launch,
+				merge: after(body, /^\*\*Merge:\*\*\s*(.+)$/m),
+				progress: after(body, /^\*\*Scope:\*\*\s*(.+)$/m),
+			};
 		} else {
 			const rows = tableRows(lines).map(([num = "", t = "", touch = "", notes = ""]) => ({
 				num,

@@ -293,20 +293,20 @@ export function WavesView({ ui, batch }: { ui: Ui; batch: Batch | null }) {
 	return (
 		<Box flexDirection="column" gap={1}>
 			<Text bold>Batch: {batch.scope}</Text>
-			{batch.status.length > 0 && (
+			{batch.status && (
 				<Box flexDirection="column" borderStyle="round" borderColor="claude" paddingX={1}>
 					<Text bold color="claude">
-						Status{batch.progress !== "" && <Text dimColor> · {batch.progress}</Text>}
+						Status{batch.status.progress !== "" && <Text dimColor> · {batch.status.progress}</Text>}
 					</Text>
-					{batch.status.map((r) => (
+					{batch.status.rows.map((r) => (
 						<Text wrap="truncate">
 							<Text bold>{r.num.padEnd(5)}</Text>
 							<Text color={ISSUE_COLOR[r.state] ?? "text"}>{r.state.padEnd(10)}</Text>
 							<Text dimColor>{r.detail}</Text>
 						</Text>
 					))}
-					{batch.launch !== "" && <Text color="suggestion">launch: {batch.launch}</Text>}
-					{batch.merge !== "" && <Text color="success">merge: {batch.merge}</Text>}
+					{batch.status.launch !== "" && <Text color="suggestion">launch: {batch.status.launch}</Text>}
+					{batch.status.merge !== "" && <Text color="success">merge: {batch.status.merge}</Text>}
 				</Box>
 			)}
 			{batch.waves.map((w, i) => (

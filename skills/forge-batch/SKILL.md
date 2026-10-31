@@ -10,7 +10,7 @@ Decide which Issues can ship side by side, and in what order.
 
 ## Input
 
-A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together. `--unattended` skips the approval step. `--start` also starts the ready Issues and reports the scope's status; it spends real tokens, so it is opt-in. Without it, nothing starts and the output is the plan alone.
+A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together. `--unattended` skips the approval step. `--start` also starts the ready Issues and reports the scope's status; without it, nothing starts.
 
 ## Process
 
@@ -39,7 +39,7 @@ Place Issues greedily: order by priority label, then by number; put each into th
 
 Present the batch via AskUserQuestion: approve, move an Issue, or exclude one. **In unattended mode:** skip and print.
 
-With `--start`, start the ready Issues and post their start comments, following *Start* in [start](references/start.md). Never run `gh pr merge`.
+With `--start`, the approval covers the run's starts (a re-run no person can answer is unattended); then start the ready Issues, following *Start* in [start](references/start.md). Never run `gh pr merge`.
 
 ### Step 5: Print the Batch
 
@@ -71,13 +71,11 @@ launch: <launcher> 123 124 ...
 - **Touch sets are estimates** — say so; a Wave is a bet the human approves, not a proof
 - **Serialized resources trump everything** — two migrations in one Wave is a merge conflict by construction
 - **Later Waves are provisional** — re-run after a Wave merges; touch sets shift as code lands
-- **Each `--start` run is stateless** — it reads the scope from GitHub, acts once, and ends; the next run continues it
 
 ## Related Skills
 
 **Before:** `forge-create-issue` classifies Issues as AFK or HITL — only AFK Issues enter a Wave.
 **After:** start each Issue in a Wave with `forge-ship --guard`, through `$FORGE_LAUNCHER` or by hand, or let `--start` do it.
-**Merging:** `forge-land` (with the project's auto-merge opt-in) or the human; batch only lists merge-ready PRs.
 
 ## Example Usage
 

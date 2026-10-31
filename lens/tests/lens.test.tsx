@@ -292,10 +292,7 @@ test("parsers: a --start batch's Status table, and a plan without one parses as 
 		"## Batch: label:ready\n\n### Wave 1 (1 Issues)\n| # | Title | Touch set | Notes |\n|---|---|---|---|\n| 7 | fix: x | a.ts | |\n\nlaunch: 7";
 	expect(parse.batch(plan)).toEqual({
 		scope: "label:ready",
-		status: [],
-		launch: "",
-		merge: "",
-		progress: "",
+		status: null,
 		waves: [
 			{ title: "Wave 1 (1 Issues)", rows: [{ num: "7", title: "fix: x", touch: "a.ts", notes: "" }], launch: "7" },
 		],
@@ -323,14 +320,14 @@ test("parsers: a --start batch's Status table, and a plan without one parses as 
 			"| 8 | docs: y | d.md | |",
 		].join("\n"),
 	);
-	expect(started?.status.map((r) => `${r.num} ${r.state}: ${r.detail}`)).toEqual([
+	expect(started?.status?.rows.map((r) => `${r.num} ${r.state}: ${r.detail}`)).toEqual([
 		"6 in flight: PR #9, merge-ready (low risk, judged on head)",
 		"7 waiting: PR #9 (a.ts)",
 		"8 ready: launch line",
 	]);
-	expect(started?.launch).toBe("forge-launch 8");
-	expect(started?.merge).toBe("#9 (land judged it low risk; batch never merges)");
-	expect(started?.progress).toBe("continuing: 1 in flight, 1 waiting");
+	expect(started?.status?.launch).toBe("forge-launch 8");
+	expect(started?.status?.merge).toBe("#9 (land judged it low risk; batch never merges)");
+	expect(started?.status?.progress).toBe("continuing: 1 in flight, 1 waiting");
 	expect(started?.waves.map((w) => w.title)).toEqual(["Wave 1 (1 Issues)"]);
 	// a --start run is continued by re-running it; a plan hands the starts to the person
 	const next = (args: string) => parse.nextStep(model.startRun(model.EMPTY, "batch", args, 0).run, null, 0, null);

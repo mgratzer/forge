@@ -48,15 +48,9 @@ export type WaveRow = { num: string; title: string; touch: string; notes: string
 export type Wave = { title: string; rows: WaveRow[]; launch: string };
 // One Issue in a `--start` run's ### Status table: merged, in flight, ready, waiting
 export type StatusRow = { num: string; title: string; state: string; detail: string };
-export type Batch = {
-	scope: string;
-	status: StatusRow[];
-	launch: string;
-	merge: string;
-	progress: string;
-	waves: Wave[];
-	excluded: string[];
-};
+export type BatchStatus = { rows: StatusRow[]; launch: string; merge: string; progress: string };
+// status is null for a plan, which starts nothing
+export type Batch = { scope: string; status: BatchStatus | null; waves: Wave[]; excluded: string[] };
 
 export type Next = { text: string; why: string };
 
