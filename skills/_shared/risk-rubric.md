@@ -37,6 +37,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - Tests: ok | <what was deleted or weakened>
 - Exercise: ok | wrong: <what the section reports> | not exercised: <why>
 - Plan: ok | no plan | <unstated deviation>
+- HITL: ok | #<n> shipped without an approved Plan, judgment calls <listed | missing>
 - Trust: ok | <login> has <permission>
 - Deployment: none | <n> manual steps
 - What the checks would miss: <one or two sentences>
