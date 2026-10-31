@@ -1,7 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready, or merged when the project opts in). Use when the user wants to implement and review without manual handoff between skills.
-disable-model-invocation: true
+description: "End-to-end implementation and self-review in a single invocation: implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready, or merged when the project opts in). Use when the user or an orchestrating agent asks for forge-ship or to ship an Issue as a reviewed PR, not for a quick edit in the current session."
 ---
 
 # Ship a Change

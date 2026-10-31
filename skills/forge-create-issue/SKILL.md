@@ -1,7 +1,6 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured Issues through interactive discussion (GitHub, markdown plan/ folder, or other providers). Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague.
-disable-model-invocation: true
+description: Plan and create well-structured Issues (GitHub, markdown plan/ folder, or other providers), researching the codebase first. Use when the user or an orchestrating agent asks for forge-create-issue or to file an Issue for work that is already understood, not when a bug merely comes up in conversation; use forge-shape first when the idea is still vague.
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 

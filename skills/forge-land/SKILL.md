@@ -1,7 +1,6 @@
 ---
 name: forge-land
-description: "Decide what a green pull request needs from a human: check it is mergeable, green, addressed and exercised, get a fresh-context risk verdict on the head commit, write it into the PR as a ## Risk section, and report merge-ready or review-ready. Merges a low-risk PR only when the project opts in with Auto-merge: low-risk. Use after forge-guard reaches review-ready, on any open PR, or when forge-ship runs with --guard."
-disable-model-invocation: true
+description: "Decide what a green pull request needs from a human: check it is mergeable, green, addressed and exercised, get a fresh-context risk verdict on the head commit, write it into the PR as a ## Risk section, and report merge-ready or review-ready. Merges a low-risk PR only when the project opts in with Auto-merge: low-risk. Use after forge-guard reaches review-ready, when the user or an orchestrating agent asks for forge-land on an open PR, or when forge-ship runs with --guard."
 ---
 
 # Land a Pull Request
