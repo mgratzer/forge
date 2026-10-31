@@ -78,7 +78,7 @@ Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the rep
 | **Ship** | **`/forge-ship <input>`** | **Implement and review in one go; `--guard` continues through guard and land** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready; never merges |
 | Land | `/forge-land [pr]` | Judge a green PR's risk: merge-ready, or review-ready with where to look |
-| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently |
+| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently; `--start` starts the ready ones |
 
 Every skill takes optional trailing guidance: `/forge-ship 42 -- keep the diff minimal`.
 

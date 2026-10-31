@@ -20,11 +20,13 @@ One Issue: `/forge-ship --guard 123` in any session, or `claude -w 123 '/forge-s
 
 Ten: `/forge-batch <scope>` prints Waves. Start each Issue in a Wave with your launcher, or by hand. Re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
 
+Or let batch start them: `/forge-batch --start <scope>` starts every ready Issue as its own `forge-ship --guard` session and prints a status table (merged, in flight, ready, waiting). An Issue is ready once its prerequisites have merged and its touch set conflicts with no open PR, nor with another Issue it starts in the same run; it waits otherwise, naming what on. Each run reads the scope from GitHub, acts once, and ends. Run it again to continue: when a started session ends (the runtime wakes the session that started it), by hand, or on a schedule such as `/loop`. It comments on each Issue it starts, so a re-run before the PR exists doesn't start it twice; delete the comment to start it again. Where the runtime can't start sessions, or refuses a start, it prints launch lines instead. Batch never merges: it lists the merge-ready PRs for you, and forge-land merges only with `Auto-merge: low-risk`. See [start](../skills/forge-batch/references/start.md).
+
 ## Setup
 
 Once per user:
 
-- [ ] If you write a launcher, set `FORGE_LAUNCHER` to its command so `forge-batch` prints launch lines you can paste as is
+- [ ] If you write a launcher, set `FORGE_LAUNCHER` to its command so `forge-batch` prints launch lines you can paste as is (and `--start` falls back to them)
 - [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or the agent's skip-permissions flag for Issues you trust (the Issue text then directs the agent unchecked). Without either, each session waits at its first prompt
 
 Once per project (`/forge-setup-project` covers the `## Unattended Shipping` section, the fresh-checkout step, and the run recipe: it discovers the settings, asks only for what it can't find, and never invents a value):

@@ -48,7 +48,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
 
-**Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
+**Wave** — a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope. With `--start` it also starts each ready Issue (prerequisites merged, no conflict with an open PR or another start) and reports every Issue as merged, in flight, ready, waiting, or excluded; it never merges, and each run is stateless, so the next run continues the scope.
 
 **Launcher** — whatever starts one guarded ship per Issue in an isolated checkout, such as `claude -w` or a script for your terminal. It is the user's, never part of forge. Skills report to it through `FORGE_STATUS_CMD` (see [status-reporting](skills/_shared/status-reporting.md)).
 
@@ -73,7 +73,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
 - A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.
 - A **Land** judges one commit and ends in exactly one of **Merged** (opt-in only), **Merge-ready**, **Review-ready**, or **Needs-human**.
-- A **Batch** orders **Waves**; a **Launcher** starts one **Guard**-ed ship per Issue in a Wave.
+- A **Batch** orders **Waves**; a **Launcher**, or `forge-batch --start`, starts one **Guard**-ed ship per Issue.
 
 ## Flagged Ambiguities
 

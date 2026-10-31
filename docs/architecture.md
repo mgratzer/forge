@@ -41,7 +41,9 @@ forge/
 │   ├── forge-address-pr-feedback/SKILL.md # Step 4: Address PR review comments (--unattended for guards)
 │   ├── forge-guard/SKILL.md               # Step 5: Drive an open PR to review-ready without a human
 │   ├── forge-land/SKILL.md                # Step 6: Risk verdict on a green PR: merge-ready or review-ready
-│   ├── forge-batch/SKILL.md               # Group Issues into Waves that can ship concurrently
+│   ├── forge-batch/
+│   │   ├── SKILL.md                       # Group Issues into Waves that can ship concurrently
+│   │   └── references/start.md            # --start: start ready Issues, continue the scope on each run
 │   └── forge-ship/SKILL.md                # Composite: implement + review [+ guard + land] in one invocation
 ├── docs/                                  # Project documentation
 ├── AGENTS.md                              # Canonical agent guidance
@@ -57,7 +59,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
                                                                         ╰──── forge-ship ────╯╰────────── forge-ship --guard ───────────╯
 ```
 
-`forge-batch` sits beside the line: it groups prepared Issues into Waves, and a launcher runs the line once per Issue (see [unattended.md](unattended.md)).
+`forge-batch` sits beside the line: it groups prepared Issues into Waves, and a launcher, or `forge-batch --start`, runs the line once per Issue (see [unattended.md](unattended.md)).
 
 `forge-shape` is optional — use it when the idea is vague and needs convergent questioning to specify before issue creation.
 
@@ -72,7 +74,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 - **forge-ship** executes forge-implement's process, runs the simplification pass, then delegates review to one fresh-context reviewer by default (the session authored the diff) and triages findings with the user; with `--guard` it continues with forge-guard's process, then forge-land's when the guard reaches `review-ready`
 - **forge-guard** runs simplification and conditional security passes, waits for CI and the peer reviewer, keeps the branch mergeable, fixes only the CI failures the branch caused, addresses feedback in bounded rounds via forge-address-pr-feedback's unattended mode, and stops at `review-ready` or `needs-human` — it never merges
 - **forge-land** checks that a PR is mergeable, green, addressed and exercised, delegates a risk verdict on the head commit to fresh context using `_shared/risk-rubric.md`, writes it into the PR as `## Risk`, and reports `merge-ready` or `review-ready` with a review request and a Where to look list. It merges a low-risk PR only when the project opted in with `Auto-merge: low-risk`, and then reports `merged`
-- **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources
+- **forge-batch** estimates each Issue's touch set, excludes HITL and blocked Issues, and groups the rest into Waves with no overlapping files or serialized resources; with `--start` it starts the ready ones and continues the scope on each re-run, never merging
 
 ## Skill & Role File Format
 
