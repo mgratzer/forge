@@ -54,8 +54,9 @@ PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
 for _ in $(seq 1 30); do   # 15 minutes
   r=$(gh pr view "$PR" --json commits,reviews --jq ".commits[-1].committedDate as \$push
         | [.reviews[] | select(.submittedAt >= \$push and .author.login != \"$ME\")
-           | .author.login == \"$PEER\" and ((.body // \"\") | test(\"encountered an error|unable to review|rate.?limit\"; \"i\"))]
-        | if any(. == false) then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
+           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"encountered an error|unable to review|rate.?limit\"; \"i\"))
+             then \"failed\" else \"reviewed\" end]
+        | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
   [ -n "$r" ] && break
   sleep 30
 done
@@ -63,13 +64,13 @@ done
 
 The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
 
-**Failed review** — the loop printed `failed`. Wait 10 minutes (`sleep 600`: rate limits outlast the loop's interval), request the peer reviewer once more, and run the loop again. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads. Its findings count as unaddressed threads until Step 4 handles them, and the substitute satisfies the signal for the rest of the run.
+**Failed review** — the loop printed `failed`. Wait 10 minutes (`sleep 600`: rate limits outlast the loop's interval), request the peer reviewer once more, and run the loop again. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads. Step 4 handles its findings as it handles unaddressed threads, and the substitute satisfies the signal for the rest of the run.
 
 ### Step 4: Decide, then React
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — branch mergeable, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads, no threads needing a human decision
+- **`review-ready`** — branch mergeable, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads or substitute review findings, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a flaky or external check stays red, a conflict can't be resolved, a reviewer repeats an answered point, or only threads needing a human decision remain
 
 When neither applies, react in this order (mergeability, CI, threads) and go back to Step 3. One trip is one **round**, however many pushes it makes; a trip that only reruns a flaky check is not.
