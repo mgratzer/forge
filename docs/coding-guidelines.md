@@ -20,7 +20,7 @@ Every skill follows the same section order:
 
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
 - `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
-- `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
+- `disable-model-invocation`: set to `true` only for interviews whose whole purpose is questioning the user (`forge-setup-project`, `forge-shape`). Every other skill omits it so an orchestrating agent can run it through the Skill tool; its `description` then names explicit forge intent, so a plain "fix this bug" does not start it, and says when the skill stops to ask the user.
 - `allowed-tools`: tools pre-approved to run while the skill is active. It pre-approves; it does not restrict other tools. Forge skills write it comma-separated; the Agent Skills spec's form is space-separated, and the field is experimental there, so support varies by agent.
 - `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
@@ -68,7 +68,7 @@ The role file defines the persona, behavior rules, and output format. The skill'
 
 **Important:** role files are **not** the same thing as runtime agent definitions. Do not assume a role file's `name:` can be passed as `agent: "<name>"` to a sub-agent tool. If the runtime separates prompt content from agent selection, push the role file body via the delegated task or `systemPrompt`. If selecting an agent also selects a model/provider, prefer leaving the agent unspecified so the sub-agent inherits the parent session configuration unless the user has explicitly configured a matching agent. Runtime-specific agent files, presets, or harness config are optional tuning layers — Forge must still work correctly without them.
 
-Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit. Skills link shared files as `_shared/<file>.md` through their own `_shared` symlink — never `../_shared/`, which breaks once skills are installed individually.
+Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit. Skills link shared files as `_shared/<file>.md` through their own `_shared` symlink — never `../_shared/`, which breaks once skills are installed individually. A file in a skill's subdirectory (`references/`) reaches the same symlink as `../_shared/<file>.md`; files inside `_shared/` link each other relative to their own location.
 
 ## Role File Format
 
@@ -107,7 +107,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Open work | A prerequisite counts once landed; an unmet one, or an open PR for the Issue, asks attended and stops unattended; a shared file or serialized resource with an open PR is a conflict. Consolidated in `_shared/open-work.md` | implement, batch |
 | Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
-| PR body | One-sentence why, change outline views, `## Exercised`, and `## Plan` as approved with stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land reads it |
+| PR body | One-sentence why, deployment-step rules, change outline views, `## Exercised`, and `## Plan` as approved with stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land reads it |
 | Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
@@ -126,7 +126,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
 | Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
 | Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
-| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard (`/simplify`, `/security-review`) |
+| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard + ship (`/simplify`), guard (`/security-review`) |
 | Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard and land are always unattended |
 | Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once; the [lens](lens.md) parses the call, so a format change updates `lens/hooks/parse.ts` | implement, review-delegation, guard, land, ship |
 | Unattended configuration | Read the `## Unattended Shipping` section of `AGENTS.md` — see `_shared/unattended-config.md`; defaults when absent | guard, land, batch |

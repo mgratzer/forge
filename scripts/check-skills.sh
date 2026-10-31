@@ -10,8 +10,10 @@ problems=$(
 		[ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"
 	done
 
-	# No sibling-relative links: agents resolve .. from the install path
-	grep -rn "\.\./_shared" skills/
+	# No sibling-relative links: agents resolve .. from the install path. From a
+	# skill's subdirectory (references/), ../_shared/ is the skill's own symlink.
+	grep -rn "\.\./_shared" skills/_shared/ skills/forge-*/*.md
+	find skills/forge-* -mindepth 2 -name '*.md' -exec grep -Hn "\.\./\.\./_shared" {} +
 
 	# Frontmatter `name` matches the directory, or installers skip the skill
 	for f in skills/forge-*/SKILL.md; do

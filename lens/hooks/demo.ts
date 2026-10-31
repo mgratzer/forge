@@ -22,6 +22,7 @@ const RISK_LOW = `## Risk
 - Exercise: ok
 - Plan: ok
 - Trust: ok
+- Deployment: none
 - What the checks would miss: limits under real proxy headers are only covered by a unit test.`;
 
 const RISK_REVIEW = `## Risk
@@ -34,6 +35,7 @@ const RISK_REVIEW = `## Risk
 - Exercise: ok
 - Plan: src/auth.js changes the session cookie, which the Plan left out
 - Trust: ok
+- Deployment: none
 - What the checks would miss: the session cookie change affects every logged-in client.
 
 **Where to look** (needs review only)
