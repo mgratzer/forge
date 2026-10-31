@@ -2,7 +2,7 @@
 // the ## Risk section, forge-batch's output and the Unattended Shipping config.
 import type { Batch, Checks, Finding, Next, Pr, Risk, Run, Setting, Wave } from "../types";
 
-export const PIPELINE = [
+export const PIPELINE: readonly string[] = [
 	"setup-project",
 	"shape",
 	"create-issue",
@@ -11,7 +11,7 @@ export const PIPELINE = [
 	"address-pr-feedback",
 	"guard",
 	"land",
-] as const;
+];
 
 export const DEFAULT_ROUNDS = 3;
 
@@ -28,14 +28,15 @@ const STATE_STEP: Record<string, string> = {
 
 export const stepFor = (state: string, step: string): string => STATE_STEP[state] ?? step;
 
-// The command without its trailing `-- <additional context>`, which may run to a paragraph
-export const runLabel = (skill: string, args: string): string =>
-	`/forge-${skill} ${args.replace(/(?:^|\s)--(?=\s|$)[\s\S]*$/, "")}`.trim();
+// The arguments without their trailing `-- <additional context>`, which may run to a paragraph
+export const bareArgs = (args: string): string => args.replace(/(?:^|\s)--(?=\s|$)[\s\S]*$/, "").trim();
+
+export const runLabel = (skill: string, args: string): string => `/forge-${skill} ${bareArgs(args)}`.trim();
 
 // The pipeline step whose skill file a path or command reads: `…/forge-guard/SKILL.md` → `guard`
 export function skillStep(text: string): string | null {
 	const read = [...text.matchAll(/forge-([\w-]+)\/SKILL\.md\b/g)].map((m) => m[1] ?? "");
-	return read.filter((s) => (PIPELINE as readonly string[]).includes(s)).at(-1) ?? null;
+	return read.filter((s) => PIPELINE.includes(s)).at(-1) ?? null;
 }
 
 // `forge-ship`, also `forge:forge-ship` from a plugin install → `ship`
@@ -90,7 +91,7 @@ export const isOnHead = (risk: Risk | null, pr: Pr | null): boolean =>
 // The first bare number in a skill's arguments: an Issue or PR number
 export function argNumber(args: string): number | null {
 	// --max-rounds is the one forge flag that takes a value
-	const bare = (args.split(" -- ")[0] ?? "").replace(/--max-rounds[ =]\S+/g, " ");
+	const bare = bareArgs(args).replace(/--max-rounds[ =]\S+/g, " ");
 	const m = /(?:^|\s)#?(\d+)(?:\s|$)/.exec(bare);
 	return m ? Number(m[1]) : null;
 }
@@ -120,9 +121,9 @@ export function stepState(s: string, run: Run | null, visited: string[]): StepSt
 		if (!run.terminal) return "now";
 		if (STOPPED.includes(run.terminal)) return "stopped";
 	}
-	if (visited.includes(s) || (s === "create-issue" && issueOf(run) !== null)) return "done";
-	const at = PIPELINE.indexOf(s as (typeof PIPELINE)[number]);
-	return visited.some((v) => PIPELINE.indexOf(v as (typeof PIPELINE)[number]) > at) ? "skipped" : "todo";
+	if (visited.includes(s)) return "done";
+	const at = PIPELINE.indexOf(s);
+	return visited.some((v) => PIPELINE.indexOf(v) > at) ? "skipped" : "todo";
 }
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines
@@ -254,6 +255,7 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 		case "merged":
 			return { text: "/forge-reflect", why: "merged: capture what the session taught" };
 		case "failed":
+			// the retry keeps the context runLabel leaves out
 			return { text: `/forge-${run.skill} ${run.args}`.trim(), why: "the run failed: retry once the cause is fixed" };
 	}
 	switch (run.skill) {

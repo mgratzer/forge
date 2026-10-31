@@ -256,9 +256,16 @@ test("pipeline rows: stopped in its step, skipped before it, the Issue counts as
 	expect(parse.runLabel("ship", "-- notes")).toBe("/forge-ship");
 	expect(parse.skillStep("cat a/forge-implement/SKILL.md; cat b/forge-guard/SKILL.md")).toBe("guard");
 	expect(parse.skillStep("cat _shared/roles/forge-reviewer.md")).toBe(null);
-	// an open PR stays fresh after the run ends, a merged one does not
+	// an open run's PR refreshes every minute, an ended run's every 5 while it is open
 	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
 	const ended = { ...guarded, pr: pr && { ...pr, isDemo: false, fetchedAt: 0 } };
-	expect(model.isPrDue(ended, 61_000)).toBe(true);
-	expect(model.isPrDue({ ...ended, pr: ended.pr && { ...ended.pr, state: "MERGED" } }, 61_000)).toBe(false);
+	expect(model.isPrDue({ ...ended, run: ship.run }, 61_000)).toBe(true);
+	expect(model.isPrDue(ended, 61_000)).toBe(false);
+	expect(model.isPrDue(ended, 301_000)).toBe(true);
+	expect(model.isPrDue({ ...ended, pr: ended.pr && { ...ended.pr, state: "MERGED" } }, 301_000)).toBe(false);
+	// a land run only cites guard's file; skill.prompt after the start keeps the args
+	const land = model.startRun(model.EMPTY, "land", "178", 0);
+	expect(model.readSkill(land, "guard")).toBe(land);
+	expect(model.enterSkill(land, "land", "", 1)).toBe(land);
+	expect(parse.argNumber("-- see 12")).toBe(null);
 });

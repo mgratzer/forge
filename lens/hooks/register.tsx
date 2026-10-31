@@ -17,9 +17,6 @@ const TICK_MS = 1000;
 export const register: Register = (on) => {
 	// The last next step proposed, so each is proposed once
 	let suggested = "";
-	// `/forge-x` fires prompt.submit and the Skill tool fires tool.call, each starting the
-	// run with its args, then skill.prompt, which carries none
-	let submitted: string | null = null;
 
 	on("session.start", async ($, e, next) => {
 		await $.command.register({
@@ -69,11 +66,13 @@ export const register: Register = (on) => {
 					const asked = m.want;
 					const target = asked.pr ?? m.pr?.number;
 					// A request made while this fetch runs stays for the next tick
-					await write((x) =>
-						x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr
-							? { ...x, want: { ...x.want, pr: null, isBranchPr: false } }
-							: x,
-					);
+					if (asked.pr !== null || asked.isBranchPr) {
+						await write((x) =>
+							x.want.pr === asked.pr && x.want.isBranchPr === asked.isBranchPr
+								? { ...x, want: { ...x.want, pr: null, isBranchPr: false } }
+								: x,
+						);
+					}
 					const argv = ["gh", "pr", "view", ...(target ? [String(target)] : []), "--json", PR_FIELDS];
 					const ran = await $.process.run(argv, { cwd: await $.session.cwd(), timeoutMs: 20_000 }).catch(() => null);
 					const data = model.ghPr(ran);
@@ -166,18 +165,18 @@ export const register: Register = (on) => {
 		if (cmd) {
 			const now = await $.clock.now();
 			suggested = "";
-			submitted = cmd.skill;
 			await update($, state, (m) => model.startRun(m, cmd.skill, cmd.args, now));
 		}
 		return next(e);
 	}).catch((_, e, next) => next(e));
 
+	// `/forge-x` and the Skill tool carry the run's args; skill.prompt, which follows
+	// either, carries none and leaves the run they started as it is
 	on("tool.call", { tool: "Skill" }, async ($, e, next) => {
 		const skill = parse.skillName(e.skill);
 		if (skill) {
 			const now = await $.clock.now();
 			suggested = "";
-			submitted = skill;
 			await update($, state, (m) => model.enterSkill(m, skill, e.args ?? "", now));
 		}
 		return next(e);
@@ -185,8 +184,7 @@ export const register: Register = (on) => {
 
 	on("skill.prompt", async ($, e, next) => {
 		const skill = parse.skillName(e.skill);
-		if (skill && skill === submitted) submitted = null;
-		else if (skill) {
+		if (skill) {
 			const now = await $.clock.now();
 			await update($, state, (m) => model.enterSkill(m, skill, "", now));
 		}
