@@ -4,7 +4,7 @@ How a skill checks work that hasn't landed yet: prerequisites that are still ope
 
 ## Prerequisites
 
-An Issue's prerequisites are the numbers its body names as `depends on #N`, `blocked by #N`, or `after #N` (the `deps` filter in *List Issues by Scope* of [issue-operations](issue-operations.md)). Fetch them all in one query, one alias per number:
+An Issue's prerequisites are the listing's dependency references (native links and body text: `depends on #N`, `blocked by #N`, or `after #N`; the `deps` filter in *List Issues by Scope* of [issue-operations](issue-operations.md)). Fetch them all in one query, one alias per number:
 
 ```bash
 gh api graphql -F owner='{owner}' -F repo='{repo}' -f query='query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){

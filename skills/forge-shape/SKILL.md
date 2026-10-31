@@ -78,9 +78,15 @@ Assign each sub-agent one constraint lens (adapt to the problem):
 
 Always include a **minimal option**. Present the contrasting approaches and let the user choose, combine, or reject all of them.
 
-### Step 4: Summarize Plan
+### Step 4: Hand Off Side Effects
 
-Produce a structured summary using the output format below. This summary is the input for `forge-create-issue`.
+When shaping changed CONTEXT.md or added ADRs, never leave those edits stranded in the shaping checkout. Commit them from a temporary worktree on a new `docs/<slug>` branch cut from the fetched default branch, so the shaping checkout keeps its branch: carry over only the shaping changes (the CONTEXT.md changes, the new ADR files as written), commit with a `docs(context): <description>` message, push, and open a docs PR. Then remove the worktree and restore the shaping checkout's originals (CONTEXT.md as it was, or absent if shaping created it; no new ADR files), so a later pull there isn't blocked. The PR can merge before the Issues are implemented.
+
+### Step 5: Summarize Plan
+
+Produce a structured summary using the output format below, with the Step 4 PR under Side Effects. This summary is the input for `forge-create-issue`.
+
+Slice the Suggested Issue Breakdown **vertically** per [vertical-slicing](_shared/vertical-slicing.md): each Issue is one thin end-to-end path, never a layer ("backend for comments", "schema first"). Mark each Issue **AFK** (fully specified for autonomous execution) or **HITL** (needs human judgment during implementation), and name the Issues it is blocked by, so create-issue can link them.
 
 The summary is *evidence* of alignment, not the alignment itself. If the user reads the summary and finds nothing surprising, the shaping worked.
 
@@ -98,12 +104,13 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 - Out of scope: [what this explicitly does not cover]
 
 ## Suggested Issue Breakdown
-- [ ] Issue 1: <type>(<scope>): <description>
-- [ ] Issue 2: <type>(<scope>): <description>
+- [ ] Issue 1: <type>(<scope>): <description> (AFK)
+- [ ] Issue 2: <type>(<scope>): <description> (HITL, blocked by Issue 1)
 
 ## Side Effects
 - CONTEXT.md: <terms added or updated>
 - ADRs: <decisions recorded, if any>
+- PR: #<number>, or "none" when nothing changed
 ```
 
 ## Guidelines

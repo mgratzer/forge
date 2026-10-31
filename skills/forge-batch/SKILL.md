@@ -31,7 +31,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when the listing's dependency references for A include B: a native blocked-by link, or body text (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 
