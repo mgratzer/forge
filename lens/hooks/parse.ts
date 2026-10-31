@@ -299,10 +299,11 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 				? null
 				: { text: `/forge-guard ${n}`.trim(), why: "feedback addressed: guard checks CI and threads again" };
 		case "batch":
-			// a --start run continues the scope itself; a plan leaves the starts to the person
+			// a --start run continues the scope itself, keeping the context that may cap the Wave;
+			// a plan leaves the starts to the person
 			return /(?:^|\s)--start\b/.test(bareArgs(run.args))
 				? {
-						text: `/forge-batch ${bareArgs(run.args)}`,
+						text: `/forge-batch ${run.args}`,
 						why: "re-run when a started session ends to start what it unblocked",
 					}
 				: { text: "/forge-ship --guard ", why: "start each Issue of Wave 1 in its own session" };

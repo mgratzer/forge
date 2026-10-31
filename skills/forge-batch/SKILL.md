@@ -39,7 +39,7 @@ Place Issues greedily: order by priority label, then by number; put each into th
 
 Present the batch via AskUserQuestion: approve, move an Issue, or exclude one. **In unattended mode:** skip and print.
 
-With `--start`, the approval covers the run's starts (a re-run no person can answer is unattended); then start the ready Issues, following *Start* in [start](references/start.md). Never run `gh pr merge`.
+With `--start`, the approval covers the run's starts, and a re-run that the runtime or a scheduler triggers is unattended; then start the ready Issues, following *Start* in [start](references/start.md). Never run `gh pr merge`.
 
 ### Step 5: Print the Batch
 

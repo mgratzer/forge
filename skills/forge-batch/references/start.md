@@ -4,19 +4,19 @@ How `forge-batch --start <scope>` starts ready Issues and continues the scope ea
 
 ## Classify
 
-List the scope with closed Issues too (`--state all` in *List Issues by Scope* of [issue-operations](../_shared/issue-operations.md), and every sub-issue of an epic, not only open ones), adding `comments` to its fields for the start comments. Add `body,headRefOid` to the *Open PRs* listing in [open-work](../_shared/open-work.md) for land's verdicts. Then put each Issue in exactly one state, first match wins:
+List the scope with closed Issues too (`--state all` in *List Issues by Scope* of [issue-operations](../_shared/issue-operations.md); for an epic, drop the `OPEN` filter and read checked `- [x]` items too), adding `comments` to its fields for the start comments. Add `body,headRefOid` to the *Open PRs* listing in [open-work](../_shared/open-work.md) for land's verdicts. Then put each Issue in exactly one state, first match wins:
 
 | State | When | Detail |
 |-------|------|--------|
 | **merged** | closed and met, per *Prerequisites* in open-work | its closing PR |
 | **excluded** | closed otherwise, HITL, or labeled `blocked` | the reason, in `### Excluded` as today |
 | **in flight** | an open PR is for it, per *Open PRs* in open-work, or a start comment (below) and no PR yet | the PR and the `**Verdict:**` of its `## Risk` section, stale unless judged on the head commit (forge-land's rule); or `started <date>, no PR yet` |
-| **waiting** | a prerequisite is unmet, or its touch set conflicts (*Conflict* in open-work) with an in-flight Issue's: an open PR's `files`, or the touch set of one started without a PR | what it waits on: `#<n>`, or `PR #<n> (<shared file or resource>)` |
+| **waiting** | a prerequisite is unmet, or its touch set conflicts (*Conflict* in open-work) with any open PR's `files`, whichever Issue the PR is for, or none; or with the touch set of an Issue started without a PR | what it waits on: `#<n>`, or `PR #<n> (<shared file or resource>)` |
 | **ready** | everything else | `started` or `launch line` |
 
 Estimate touch sets (Step 2) for in-flight Issues without a PR too, so later Issues can wait on them.
 
-Walk the ready Issues in Wave order (priority label, then number). An Issue that conflicts with one already started this run waits on it. Stop starting once the Issues in flight reach the Wave cap; the rest wait on `the cap`.
+Walk the ready Issues in Wave order (priority label, then number). An Issue that conflicts with one already picked this run, started or given a launch line, waits on it. Stop starting once the Issues in flight reach the Wave cap; the rest wait on `the cap`.
 
 ## Start
 
@@ -40,7 +40,9 @@ When the runtime has no such capability, or refuses a start, print the launch li
 
 End the run after printing. The next one comes from the runtime waking this session when a started session ends, the user re-running it, or a scheduler such as `/loop`; run `--start` on the same scope again. States come from GitHub, never from what a child session says.
 
-The scope is **done** when every Issue is merged or excluded. It **waits on you** when a run has nothing to start and every in-flight PR carries land's verdict on its head; otherwise it is **continuing**.
+A started Issue with no PR whose session has ended (the runtime lists it as ended, or the start comment is a day old) stopped before its PR: its detail says `stopped before a PR, delete the start comment to retry`.
+
+The scope is **done** when every Issue is merged or excluded. It **waits on you** when a run has nothing to start and every in-flight Issue waits on a person: its PR carries land's verdict on its head, or it stopped before a PR. Otherwise it is **continuing**.
 
 ## Output
 

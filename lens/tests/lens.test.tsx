@@ -331,6 +331,6 @@ test("parsers: a --start batch's Status table, and a plan without one parses as 
 	expect(started?.waves.map((w) => w.title)).toEqual(["Wave 1 (1 Issues)"]);
 	// a --start run is continued by re-running it; a plan hands the starts to the person
 	const next = (args: string) => parse.nextStep(model.startRun(model.EMPTY, "batch", args, 0).run, null, 0, null);
-	expect(next("--start epic:5 -- cap waves at 2")?.text).toBe("/forge-batch --start epic:5");
+	expect(next("--start epic:5 -- cap waves at 2")?.text).toBe("/forge-batch --start epic:5 -- cap waves at 2");
 	expect(next("epic:5 -- --start later")?.text).toBe("/forge-ship --guard ");
 });
