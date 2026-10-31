@@ -82,7 +82,13 @@ Always include a **minimal option**. Present the contrasting approaches and let 
 
 Produce a structured summary using the output format below. This summary is the input for `forge-create-issue`.
 
+Slice the Suggested Issue Breakdown **vertically** per [vertical-slicing](_shared/vertical-slicing.md): each Issue is one thin end-to-end path, never a layer ("backend for comments", "schema first"). Mark each Issue **AFK** (fully specified for autonomous execution) or **HITL** (needs human judgment during implementation), and name the Issues it is blocked by, so create-issue can link them.
+
 The summary is *evidence* of alignment, not the alignment itself. If the user reads the summary and finds nothing surprising, the shaping worked.
+
+### Step 5: Hand Off Side Effects
+
+When shaping changed CONTEXT.md or added ADRs, never leave those edits uncommitted in the shaping checkout. Move them onto a new `docs/<slug>` branch off the fetched default branch, commit only those files with a `docs(context): <description>` message, push, and open a docs PR. Put the PR in the summary's Side Effects so it can merge before the Issues are implemented.
 
 ## Output Format
 
@@ -98,12 +104,13 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 - Out of scope: [what this explicitly does not cover]
 
 ## Suggested Issue Breakdown
-- [ ] Issue 1: <type>(<scope>): <description>
-- [ ] Issue 2: <type>(<scope>): <description>
+- [ ] Issue 1: <type>(<scope>): <description> (AFK)
+- [ ] Issue 2: <type>(<scope>): <description> (HITL, blocked by Issue 1)
 
 ## Side Effects
 - CONTEXT.md: <terms added or updated>
 - ADRs: <decisions recorded, if any>
+- PR: #<number>, or "none" when nothing changed
 ```
 
 ## Guidelines

@@ -119,7 +119,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
 | Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
 | Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
-| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | create-issue |
+| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | shape, create-issue |
 | Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
 | Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement |
 | Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
