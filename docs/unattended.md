@@ -32,6 +32,7 @@ Once per project:
 - [ ] Run `claude` in the repository once and accept the trust dialog — `claude --worktree` refuses an untrusted repository, and headless runs never show the dialog. A trusted parent directory covers every repository below it
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
+- [ ] Give agents a way to run the app: a run skill (Claude Code: `/run`) or run commands in `AGENTS.md` (see [exercise](../skills/_shared/exercise.md)). Without one, code PRs report `not exercised` and never reach `merge-ready`
 - [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
 - [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
 
