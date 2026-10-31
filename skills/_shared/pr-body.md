@@ -8,7 +8,7 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 <One sentence: the problem this solves and what becomes possible.>
 
 > [!WARNING]
-> <Manual deployment steps, only when there are any.>
+> <Manual deployment steps, only when there are any; see Deployment Steps below.>
 
 **Notes**
 - <1-3 reviewer warnings, deliberate omissions, or surprising decisions; omit the block when there are none>
@@ -59,6 +59,17 @@ Use `diff` blocks (`+` added, `-` removed, a space for unchanged context) when t
 +│   └── validate.ts     # rejects empty titles
  └── routes.ts
 ```
+
+## Deployment Steps
+
+Steps someone runs against a live system after merge (a config to apply, a key to set, a service to restart) reach production without the tests or the review that guarded the diff. Write them so they hold against what is running:
+
+- **Start from the target, not the branch.** Read what the target is running (its deployed config, its containers, its set variables) and say what you read; when you can't read it, say so and make reading it the first step. The default branch may hold changes the target never got, and steps derived from it apply those too.
+- **List every difference** between what the target runs and what the PR assumes, including ones this PR didn't cause.
+- **Give each step its rollback**, checked against the same state.
+- **No placeholders.** Name each value as `$VAR`, set by an `export VAR=...` line before the steps, so every command runs as pasted; a `<placeholder>` breaks in the shell.
+
+`forge-land` sends any PR with deployment steps to review.
 
 ## Plan
 

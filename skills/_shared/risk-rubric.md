@@ -14,6 +14,7 @@ Any hit means **needs-review**. Measure on the judged commit against the merge b
 | Exercise | the change behaved wrongly when exercised, or changes runtime behavior and was not exercised | The PR body's `## Exercised` section reports `wrong:`, or is a `not exercised:` line with any reason other than `no runtime change`, or claims `no runtime change` while the diff changes more than docs, tests, CI configuration or comments (see [exercise](exercise.md)). A partial `Not exercised:` bullet in a section that ran is left to the judgment test |
 | Plan | the PR opened with a deviation from its `## Plan` that it doesn't state | Compare the Plan with `git diff "origin/$BASE...<SHA from **Deviations** (as of …)>"`: a change outside what the Plan set out to do (judge by goal and scope, not its file list) or a planned phase missing, not named under **Deviations**. Later commits are not compared. That SHA no longer on the branch is a hit; a body without `## Plan` (a PR not opened by forge-implement) skips the check |
 | Trust | the Issue's author lacks write access to the repo | `gh api "repos/{owner}/{repo}/collaborators/<login>/permission" --jq .permission` is not `admin` or `write`. The author of each Issue the PR closes; with no linked Issue, the PR's author. Issues in the markdown `plan/` provider were committed by someone who could push, so they pass |
+| Deployment | the PR body has manual deployment steps | The `[!WARNING]` block in the body (see [pr-body](pr-body.md)). Name the step most likely to break the running system first under **Where to look** |
 
 ## Judgment Test
 
@@ -36,6 +37,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - Exercise: ok | wrong: <what the section reports> | not exercised: <why>
 - Plan: ok | no plan | <unstated deviation>
 - Trust: ok | <login> has <permission>
+- Deployment: none | <n> manual steps
 - What the checks would miss: <one or two sentences>
 
 **Where to look** (needs review only)
