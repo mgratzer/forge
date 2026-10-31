@@ -1,6 +1,6 @@
 # PR Body
 
-The body `forge-implement` writes when it opens a PR. A reviewer should learn why the change exists and what shape it has without opening the diff; `forge-land` reads its `## Exercised` and `## Plan` sections and appends `## Risk`.
+The body `forge-implement` writes when it opens a PR. A reviewer should learn why the change exists and what shape it has without opening the diff; `forge-land` reads its deployment steps and its `## Exercised` and `## Plan` sections, and appends `## Risk`.
 
 ## Format
 
@@ -64,10 +64,12 @@ Use `diff` blocks (`+` added, `-` removed, a space for unchanged context) when t
 
 Steps someone runs against a live system after merge (a config to apply, a key to set, a service to restart) reach production without the tests or the review that guarded the diff. Write them so they hold against what is running:
 
-- **Start from the target, not the branch.** Read what the target is running (its deployed config, its containers, its set variables) and say what you read; when you can't read it, say so and make reading it the first step. The default branch may hold changes the target never got, and steps derived from it apply those too.
+- **Start from the target, not the branch.** Read what the target is running (its deployed config, its containers, which variables are set) and say what you read, naming variables but never copying a value or a secret; when you can't read it, say so and make reading it the first step. The default branch may hold changes the target never got, and steps derived from it apply those too.
 - **List every difference** between what the target runs and what the PR assumes, including ones this PR didn't cause.
 - **Give each step its rollback**, checked against the same state.
-- **No placeholders.** Name each value as `$VAR`, set by an `export VAR=...` line before the steps, so every command runs as pasted; a `<placeholder>` breaks in the shell.
+- **No placeholders.** Name each value as `$VAR`, set by an `export VAR=...` line before the steps, so every command runs as pasted; a `<placeholder>` breaks in the shell. A value you can't know gets a command that fetches it from its source, or an empty `export VAR=` the operator fills in.
+
+The steps stay inside the `[!WARNING]` block: every line, fenced code included, starts with `> `.
 
 `forge-land` sends any PR with deployment steps to review.
 
