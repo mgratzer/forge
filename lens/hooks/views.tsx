@@ -1,12 +1,30 @@
 import type { EngineInterface } from "claude-code";
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from "../types";
-import { currentStep, DEFAULT_ROUNDS, isLowRisk, isOnHead, pipelineFor, runLabel, TERMINAL } from "./parse";
+import {
+	currentStep,
+	DEFAULT_ROUNDS,
+	isLowRisk,
+	isOnHead,
+	issueOf,
+	pipelineFor,
+	runLabel,
+	SHIP_STEPS,
+	type StepState,
+	stepState,
+	TERMINAL,
+} from "./parse";
 
 type Ui = ReturnType<EngineInterface["ui"]["resolve"]>;
 
-// The steps forge-ship and forge-ship --guard compose
-const SHIP = ["implement", "guard", "land"];
+// A pipeline row's mark and color by its state
+const STEP_MARK: Record<StepState, [string, string]> = {
+	now: ["●", "claude"],
+	done: ["✓", "success"],
+	stopped: ["!", "error"],
+	skipped: ["–", "inactive"],
+	todo: ["○", "inactive"],
+};
 
 const STATE_COLOR: Record<string, string> = {
 	implementing: "claude",
@@ -51,6 +69,7 @@ export function Lens(p: LensProps) {
 	const { Box, Text, Button, Link } = p.ui;
 	const step = currentStep(p.run);
 	const isShip = p.run?.skill === "ship";
+	const issue = issueOf(p.run);
 	const last = p.last;
 	const open = p.findings.filter((f) => !f.isDone);
 
@@ -97,15 +116,14 @@ export function Lens(p: LensProps) {
 			<Box flexDirection="column">
 				<Text dimColor>PIPELINE{isShip ? "   ┃ = composed by ship" : ""}</Text>
 				{pipelineFor(step, p.isSetUp).map((s) => {
-					const isNow = s === step && !p.run?.terminal;
-					const isDone = p.visited.includes(s) && !isNow;
-					const mark = isNow ? "●" : isDone ? "✓" : "○";
-					const color = isNow ? "claude" : isDone ? "success" : "inactive";
-					const bar = isShip && SHIP.includes(s) ? "┃" : " ";
-					let note = "";
-					if (s === "setup-project" && !isNow && !isDone) note = "start here";
-					if (s === "shape" && !isNow && !isDone) note = "optional";
-					if (isNow && isShip && s === "implement" && last?.state === "reviewing") note = "self-review";
+					const st = stepState(s, p.run, p.visited);
+					const [mark, color] = STEP_MARK[st];
+					const bar = isShip && SHIP_STEPS.includes(s) ? "┃" : " ";
+					let note = st === "skipped" ? "skipped" : "";
+					if (s === "setup-project" && (st === "todo" || st === "skipped")) note = "start here";
+					if (s === "shape" && st === "todo") note = "optional";
+					if (s === "create-issue" && st === "done" && issue !== null) note = `#${issue}`;
+					if (st === "now" && isShip && s === "implement" && last?.state === "reviewing") note = "self-review";
 					if (s === "guard" && p.run && p.run.round > 0)
 						note = `round ${p.run.round}/${p.run.maxRounds || DEFAULT_ROUNDS}`;
 					return (

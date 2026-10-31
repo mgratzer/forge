@@ -90,6 +90,17 @@ export function setPhase(m: Model, phase: string): Model {
 	return visit({ ...m, run }, parse.currentStep(run));
 }
 
+// A skill the model starts with the Skill tool: inside an open ship run a composed
+// step moves the run on, anything else starts a run of its own
+export function enterSkill(m: Model, skill: string, args: string, now: number): Model {
+	const r = m.run;
+	const isComposed = !!r && !r.terminal && !r.isDemo && r.skill === "ship" && parse.SHIP_STEPS.includes(skill);
+	return isComposed ? setPhase(m, skill) : startRun(m, skill, args, now);
+}
+
+// A run reading another step's skill file (Read, or `cat` in Bash) has moved into that step
+export const readSkill = (m: Model, step: string): Model => (m.run && m.run.skill !== step ? setPhase(m, step) : m);
+
 // One `[forge] <state>: <detail>` transition
 export function applyStatus(m: Model, state: string, detail: string, now: number): Model {
 	const base = m.run ? m : startRun(m, "run", "", now);
@@ -216,6 +227,11 @@ const TURN_REFRESH_MS = 15_000;
 
 export const isPrStale = (m: Model, now: number, ms: number): boolean =>
 	!!m.pr && !m.pr.isDemo && now - m.pr.fetchedAt > ms;
+
+// The loop's minute refresh: while the run goes on, and after it ends while the PR is
+// open, since the person may push or rerun CI
+export const isPrDue = (m: Model, now: number): boolean =>
+	!!m.run && (!m.run.terminal || m.pr?.state === "OPEN") && isPrStale(m, now, PR_REFRESH_MS);
 
 const isLive = (m: Model): boolean => !!m.run && !m.run.isDemo;
 
