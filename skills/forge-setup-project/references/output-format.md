@@ -38,7 +38,7 @@ Use the format matching the work performed.
 1. Fill any <!-- TODO --> markers
 2. Add failure modes as you encounter agent mistakes
 3. Re-run /forge-setup-project periodically
-4. Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to `## Unattended Shipping`
+4. <only when `## Unattended Shipping` exists> Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section
 5. Use /forge-create-issue to plan your first piece of work, or /forge-shape if the idea is still rough
 ```
 
@@ -68,5 +68,5 @@ Use the format matching the work performed.
 1. Review changes and verify accuracy
 2. Revisit recommendations not applied
 3. Re-run /forge-setup-project periodically
-4. Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to `## Unattended Shipping`
+4. <only when `## Unattended Shipping` exists> Later, once you have agreed with several of forge-land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section
 ```

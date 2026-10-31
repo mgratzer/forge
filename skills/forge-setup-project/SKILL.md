@@ -35,7 +35,7 @@ Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Clas
 
 Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks. A check that prints pages on success fills the agent's context with noise: under feedback loops, name the tool's quiet flag when it has one, or leave a `<!-- TODO -->` for a wrapper that prints one line on success and everything on failure.
 
-Also discover what unattended shipping needs: a run recipe for the app and the `## Unattended Shipping` settings, per [unattended-shipping](references/unattended-shipping.md).
+Also prepare unattended shipping: a run recipe and the `## Unattended Shipping` section, per [unattended-shipping](references/unattended-shipping.md), which says what happens in which step.
 
 ### Step 3: Audit Existing Guidance
 
@@ -53,13 +53,11 @@ Present an audit report grouped by impact and get user confirmation via AskUserQ
 
 ### Step 4: Gather Project Information
 
-Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the run recipe parts and unattended settings discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
+Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the run recipe parts and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
 
 ### Step 5: Generate or Update AGENTS.md
 
 Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and remove the old file in Step 7.
-
-Write the run recipe under Commands and the `## Unattended Shipping` section the user accepted, per [unattended-shipping](references/unattended-shipping.md). Never write an `Auto-merge` line: it is the user's opt-in, after they have agreed with land's verdicts.
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
