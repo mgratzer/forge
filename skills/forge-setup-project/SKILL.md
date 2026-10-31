@@ -35,6 +35,8 @@ Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Clas
 
 Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks. A check that prints pages on success fills the agent's context with noise: under feedback loops, name the tool's quiet flag when it has one, or leave a `<!-- TODO -->` for a wrapper that prints one line on success and everything on failure.
 
+Also prepare unattended shipping: a run recipe and the `## Unattended Shipping` section, per [unattended-shipping](references/unattended-shipping.md), which says what happens in which step.
+
 ### Step 3: Audit Existing Guidance
 
 When guidance files already exist, score each section:
@@ -51,7 +53,7 @@ Present an audit report grouped by impact and get user confirmation via AskUserQ
 
 ### Step 4: Gather Project Information
 
-Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration and gaps surfaced by the Step 3 audit. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
+Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the run recipe parts and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
 
 ### Step 5: Generate or Update AGENTS.md
 
