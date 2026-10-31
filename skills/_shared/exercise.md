@@ -20,7 +20,7 @@ With neither, report `not exercised: no way to run the app`. Never guess how to 
 3. **Drive the changed path** once: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged.
 4. **Drive one failure case** where the change has one: invalid input, an unauthorized caller, another tenant's data.
 5. **Capture** what a person looks at when the changed path renders one (a screen, a rendered email, a generated image); see [Screenshots](#screenshots).
-6. **Stop** everything you started.
+6. **Stop** everything you started, and remove any worktree you added for before screenshots (`git worktree remove --force <path>`).
 
 A run that didn't reach the changed path is not evidence, whatever it printed.
 
@@ -33,7 +33,7 @@ BRANCH=$(git branch --show-current)
 SHOTS=<directory holding the screenshots>
 TREE=$(for f in "$SHOTS"/*.png; do printf '100644 blob %s\t%s\n' "$(git hash-object -w "$f")" "$(basename "$f")"; done | git mktree) &&
   [ "$TREE" != "$(git hash-object -t tree /dev/null)" ] &&
-  COMMIT=$(git commit-tree "$TREE" -m "chore: screenshots for $BRANCH") &&
+  COMMIT=$(git commit-tree "$TREE" -m "chore: screenshots for $BRANCH [skip ci]") &&
   git push --force origin "${COMMIT}:refs/heads/pr-assets/${BRANCH}"
 ```
 
