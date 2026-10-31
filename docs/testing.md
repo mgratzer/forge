@@ -75,3 +75,37 @@ grep -rn "issue-operations" skills/*/SKILL.md
 # Structural checks (prints nothing when healthy; the script lists what it checks)
 scripts/check-skills.sh
 ```
+
+## Exercise a Skill Change
+
+Skill prompts are forge's runtime. A PR that changes `skills/` exercises the change (see [exercise](../skills/_shared/exercise.md)) and reports what the runs printed in `## Exercised`, never `not exercised: no runtime change`; that line stays for PRs that change only docs, CI, or the lens's tests. The app here is a coding agent running the skill in another repository, such as the private sandbox `mgratzer/forge-e2e-sandbox`, or any repository of yours with run commands in its `AGENTS.md`.
+
+1. **Snapshot** the branch and its base as two plugins, named apart so neither collides with an installed forge:
+
+   ```bash
+   snap() { d=$(mktemp -d); git archive "$1" skills | tar -x -C "$d"; mkdir "$d/.claude-plugin"; printf '{"name":"%s"}\n' "$2" > "$d/.claude-plugin/plugin.json"; echo "$d"; }
+   NEW=$(snap HEAD forge-new)
+   OLD=$(snap origin/main forge-old)   # the control
+   ```
+
+2. **Run the changed skill** headless in a checkout of the sandbox, once per snapshot. A free-text task needs no tracker reset; a full `forge-ship --guard` run costs about $2 and 4 minutes. Interactive skills print their questions as text, since `AskUserQuestion` is unavailable headless.
+
+   ```bash
+   claude -p "/forge-new:forge-ship --guard <free-text task>" --plugin-dir "$NEW" --permission-mode auto
+   ```
+
+3. **For a rubric or verdict change**, run only forge-land's judge, read-only, on a sandbox PR that isolates the check under test, with each variant of the PR body in a local file:
+
+   ```bash
+   gh pr view <N> -R mgratzer/forge-e2e-sandbox --json body --jq .body > body.md   # copy, then edit the copy
+   gh pr view <N> -R mgratzer/forge-e2e-sandbox --json headRefOid --jq .headRefOid   # <SHA>
+   claude -p "/forge-new:forge-land <N> -- Read-only test: skip Step 1's preconditions and run Step 2 on head commit <SHA> with the PR body read from $PWD/body.md instead of gh pr view. Print the filled ## Risk section and stop. Never edit the PR, request reviews, push, or merge." --plugin-dir "$NEW" --permission-mode auto
+   ```
+
+   Sandbox PR #11 changes only `bin/`, outside the sandbox's security-sensitive `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
+
+4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
+
+Tests judge local copies of PR bodies: never edit a sandbox PR's body to set up a case. Only the full forge-land runs in [End-to-End Manual Testing](#3-end-to-end-manual-testing) write to a PR, and only its `## Risk` section.
+
+In `## Exercised`, one line per run: the snapshot, the PR or task, the case, and what it printed, with the `$OLD` run as its own line.
