@@ -24,7 +24,9 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 ### Step 2: Review (delegate)
 
-Follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff first and commit its edits, so the review below also checks them; Step 3's push carries the commit even when the review finds nothing. Without one, the review's default checklist already covers what it would check (items 3 and 5 of [review-dimensions](_shared/review-dimensions.md)), so run no separate pass.
+
+**Fresh-context review** — follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
 
 **Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
@@ -61,6 +63,7 @@ Report implementation, review, guard, and land results together.
 - Exercised: <intended | wrong: <observed vs expected> | not exercised: <why>> (plus "not run: <parts>" when parts were skipped)
 
 ### Review Findings
+- Simplify: applied <n> edits | nothing to simplify | covered by review (no simplification skill)
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> (<title>), or "none"
 
