@@ -1,6 +1,6 @@
 ---
 name: forge-address-pr-feedback
-description: Analyze and address unresolved review feedback on a GitHub pull request. Use when the user or an orchestrating agent asks for forge-address-pr-feedback or to work through the review comments on a specific PR.
+description: Analyze and address unresolved review feedback on a GitHub pull request. Asks the user about threads that need discussion unless --unattended. Use when the user or an orchestrating agent asks for forge-address-pr-feedback or to work through the review comments on a specific PR.
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 ---
 

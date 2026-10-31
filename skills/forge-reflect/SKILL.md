@@ -1,6 +1,6 @@
 ---
 name: forge-reflect
-description: Self-review current changes (a PR, branch diff, or uncommitted work) with a fresh-context review and triage the findings. Use when the user or an orchestrating agent asks for forge-reflect or a forge self-review before committing, pushing, or requesting peer review.
+description: Self-review current changes (a PR, branch diff, or uncommitted work) with a fresh-context review and asks the user to fix or defer each finding (no unattended mode). Use when the user or an orchestrating agent asks for forge-reflect or a forge self-review before committing, pushing, or requesting peer review.
 ---
 
 # Reflect on Changes

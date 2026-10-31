@@ -1,6 +1,6 @@
 ---
 name: forge-implement
-description: Implement an Issue, plan file, or free-text description on a feature branch, following project standards, and stop at an open PR. Use when the user or an orchestrating agent asks for forge-implement or to take an Issue to a PR, not for a quick edit or fix in the current session; use forge-ship to also run review.
+description: Implement an Issue, plan file, or free-text description on a feature branch, following project standards, and stop at an open PR. Asks the user to approve the plan unless --unattended. Use when the user or an orchestrating agent asks for forge-implement or to take an Issue to a PR, not for a quick edit or fix in the current session; use forge-ship to also run review.
 ---
 
 # Implement a Change

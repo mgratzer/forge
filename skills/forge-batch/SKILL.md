@@ -1,6 +1,6 @@
 ---
 name: forge-batch
-description: "Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other: estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Use when the user or an orchestrating agent asks for forge-batch or which of several prepared Issues can run in parallel unattended."
+description: "Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other: estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Asks the user to approve the batch unless --unattended. Use when the user or an orchestrating agent asks for forge-batch or which of several prepared Issues can run in parallel unattended."
 allowed-tools: Read, Bash, Grep, Glob, AskUserQuestion
 ---
 
