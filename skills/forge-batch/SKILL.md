@@ -1,6 +1,6 @@
 ---
 name: forge-batch
-description: "Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other: estimate what each Issue touches, exclude the ones that need a human, and print launch lines. Asks the user to approve the batch unless --unattended. Use when the user or an orchestrating agent asks for forge-batch or which of several prepared Issues can run in parallel unattended."
+description: "Group a scope of Issues into Waves that can be implemented concurrently without stepping on each other: estimate what each Issue touches, exclude the ones that need a human, and print launch lines. With --start, starts each ready Issue as its own forge-ship --guard session and continues the scope on every re-run; never merges. Asks the user to approve the batch unless --unattended. Use when the user or an orchestrating agent asks for forge-batch or which of several prepared Issues can run in parallel unattended."
 allowed-tools: Read, Bash, Grep, Glob, AskUserQuestion
 ---
 
@@ -10,7 +10,7 @@ Decide which Issues can ship side by side, and in what order.
 
 ## Input
 
-A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together. `--unattended` skips the approval step.
+A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or Issue numbers. Optional: `-- <additional context>` such as a wave size cap or Issues to pin together. `--unattended` skips the approval step. `--start` also starts the ready Issues and reports the scope's status; without it, nothing starts.
 
 ## Process
 
@@ -18,7 +18,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
 
-Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues with a prerequisite outside the scope that is unmet per *Prerequisites* in open-work (one query for all of them). Everything left is AFK and free to start.
+Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues with a prerequisite outside the scope that is unmet per *Prerequisites* in open-work (one query for all of them). Everything left is AFK and free to start. With `--start`, classify every Issue instead, following *Classify* in [start](references/start.md).
 
 ### Step 2: Estimate Touch Sets (delegate)
 
@@ -39,9 +39,11 @@ Place Issues greedily: order by priority label, then by number; put each into th
 
 Present the batch via AskUserQuestion: approve, move an Issue, or exclude one. **In unattended mode:** skip and print.
 
+With `--start`, the approval covers the run's starts, and a re-run that the runtime or a scheduler triggers is unattended; then start the ready Issues, following *Start* in [start](references/start.md). Never run `gh pr merge`.
+
 ### Step 5: Print the Batch
 
-Use the output format below. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand.
+Use the output format below; with `--start`, the `### Status` section from [start](references/start.md) comes first. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand.
 
 ## Output Format
 
@@ -73,7 +75,7 @@ launch: <launcher> 123 124 ...
 ## Related Skills
 
 **Before:** `forge-create-issue` classifies Issues as AFK or HITL — only AFK Issues enter a Wave.
-**After:** start each Issue in a Wave with `forge-ship --guard`, through `$FORGE_LAUNCHER` or by hand.
+**After:** start each Issue in a Wave with `forge-ship --guard`, through `$FORGE_LAUNCHER` or by hand, or let `--start` do it.
 
 ## Example Usage
 
@@ -83,4 +85,5 @@ launch: <launcher> 123 124 ...
 /forge-batch epic:601
 /forge-batch 610 611 612 613 -- cap waves at 4
 /forge-batch --unattended label:ready
+/forge-batch --start epic:601
 ```

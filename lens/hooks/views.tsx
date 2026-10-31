@@ -279,12 +279,36 @@ export function ConfigView({ ui, config }: { ui: Ui; config: Config | null }) {
 	);
 }
 
+// The states a `forge-batch --start` run puts an Issue in
+const ISSUE_COLOR: Record<string, string> = {
+	merged: "merged",
+	"in flight": "claude",
+	ready: "suggestion",
+	waiting: "warning",
+};
+
 export function WavesView({ ui, batch }: { ui: Ui; batch: Batch | null }) {
 	const { Box, Text } = ui;
 	if (!batch) return <Text dimColor>No batch yet: run /forge-batch, or /forge demo batch</Text>;
 	return (
 		<Box flexDirection="column" gap={1}>
 			<Text bold>Batch: {batch.scope}</Text>
+			{batch.status && (
+				<Box flexDirection="column" borderStyle="round" borderColor="claude" paddingX={1}>
+					<Text bold color="claude">
+						Status{batch.status.progress !== "" && <Text dimColor> · {batch.status.progress}</Text>}
+					</Text>
+					{batch.status.rows.map((r) => (
+						<Text wrap="truncate">
+							<Text bold>{r.num.padEnd(5)}</Text>
+							<Text color={ISSUE_COLOR[r.state] ?? "text"}>{r.state.padEnd(10)}</Text>
+							<Text dimColor>{r.detail}</Text>
+						</Text>
+					))}
+					{batch.status.launch !== "" && <Text color="suggestion">launch: {batch.status.launch}</Text>}
+					{batch.status.merge !== "" && <Text color="success">merge: {batch.status.merge}</Text>}
+				</Box>
+			)}
 			{batch.waves.map((w, i) => (
 				<Box flexDirection="column" borderStyle="round" borderColor={i === 0 ? "claude" : "inactive"} paddingX={1}>
 					<Text bold color={i === 0 ? "claude" : "subtle"}>
