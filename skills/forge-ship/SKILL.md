@@ -11,7 +11,7 @@ Implement end to end — code it, review it, ship it. Implementation runs in the
 
 Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
-**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity.
+**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity. A run no person can answer is unattended too, as in forge-implement.
 
 **Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — then the [forge-land](../forge-land/SKILL.md) risk verdict, and ends at `merged` (only with the project's auto-merge opt-in), `merge-ready`, `review-ready`, or `needs-human`. Implies `--unattended`.
 
