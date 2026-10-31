@@ -24,7 +24,7 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 ### Step 2: Review (delegate)
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff first and commit its edits, so the review below also checks them; Step 3's push carries the commit even when the review finds nothing. Without one, the review's default checklist already covers what it would check (items 3 and 5 of [review-dimensions](_shared/review-dimensions.md)), so run no separate pass.
+**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff and commit its edits before the review, which then checks them; Step 3 pushes them with the triage fixes in one push. Otherwise skip it: the review's default checklist covers the same items.
 
 **Fresh-context review** — follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
 
