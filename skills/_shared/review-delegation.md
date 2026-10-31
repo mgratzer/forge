@@ -10,7 +10,8 @@ Before reviewing, collect:
 2. **Changed file list** — from the selected scope
 3. **Diff size metadata** — changed file count and approximate changed line count
 4. **Relevant project conventions** — the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters
-5. **Review materials** — read and collect (pushed, not referenced):
+5. **Acceptance criteria** — when the change closes an Issue, its acceptance criteria verbatim (see [issue-operations](issue-operations.md)); omit when no Issue is linked
+6. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
    - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
    - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
@@ -40,6 +41,7 @@ Create **one self-contained review task per planned pass**. Each task embeds:
 - The selected checklist (default combined pass or one optional deep pass)
 - Review rubric
 - Relevant project conventions from `AGENTS.md`
+- Acceptance criteria, when collected
 - Review scope metadata:
   - exact `git diff` command
   - exact `git diff --name-only` command
