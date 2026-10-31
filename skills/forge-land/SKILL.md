@@ -29,6 +29,7 @@ Read the security-sensitive paths and the auto-merge setting per [unattended-con
 - **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and block on `gh pr checks "$PR" --watch --interval 30`, capped at 60 minutes. No checks reported 3 minutes after the last push means the repository has no CI, which passes
 - **Threads addressed** — the unaddressed-thread query in [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns nothing, and no unresolved thread ends in our "Needs your decision" reply
 - **Exercised** — the body has a `## Exercised` section (see [exercise](_shared/exercise.md))
+- **Reviewed** — the latest of: a review by someone other than `$ME` that is not a failed review (as [forge-guard](../forge-guard/SKILL.md) Step 3 defines it), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
 
 ### Step 2: Judge the Risk (delegate)
 
@@ -36,7 +37,7 @@ Report `reviewing`. Delegate the verdict on `$SHA` to one fresh-context sub-agen
 
 > Judge whether PR #<PR> at commit `<SHA>` needs a human review before merging. Read the diff with `git diff "origin/<BASE>...<SHA>"`, files at that commit with `git show "<SHA>:<path>"`, and the PR body with `gh pr view <PR> --json body`. Run every check in the rubric below first; any hit means needs-review. When none hits, apply the judgment test. Read the `REVIEW.md` files the rubric names. Return the filled `## Risk` section from the rubric and nothing else.
 
-**Inputs provided to sub-agent:** the task above, [risk-rubric](_shared/risk-rubric.md) (pushed), the security-sensitive paths, the linked Issue numbers, and the PR author.
+**Inputs provided to sub-agent:** the task above, [risk-rubric](_shared/risk-rubric.md) (pushed), the security-sensitive paths, the linked Issue numbers, the PR author, and the **Peer review** line from Step 1.
 **Expected output:** The filled `## Risk` section, verdict and SHA first.
 
 ### Step 3: Write the Risk Section

@@ -21,7 +21,7 @@ The section is already in context when the runtime auto-loads `AGENTS.md`; other
 
 | Setting | Used by | Default | Meaning |
 |---------|---------|---------|---------|
-| Peer reviewer | guard | none | Login the guard re-requests after each push, as the review-request API spells it (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`) |
+| Peer reviewer | guard | none | Login the guard re-requests after each push, as the review-request API spells it (bots carry a `[bot]` suffix, e.g. `copilot-pull-request-reviewer[bot]`). With none, the guard waits for no review |
 | Security-sensitive paths | guard, land | the risky signals in [review-delegation](review-delegation.md), *Choose Review Shape* item 3 | Globs that trigger the security pass when the diff touches them, and that always need a human review |
 | Serialized resources | batch, implement | migration directories, lockfiles, generated files | Files two concurrent changes (Issues in one Wave, or an Issue and an open PR) must never both change, even when the exact paths differ |
 | Max guard rounds | guard | 3 | Feedback rounds before the guard stops with `needs-human` |

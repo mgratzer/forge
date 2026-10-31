@@ -16,6 +16,7 @@ const RISK_LOW = `## Risk
 
 **Verdict:** low risk, judged on 3f9c2a1e8b7d6c5a4f3e2d1c0b9a8f7e6d5c4b3a
 
+- Peer review: copilot-pull-request-reviewer
 - Size: 118 counted lines (64 excluded: tests) → ok
 - Always-review paths: none
 - Tests: ok
@@ -29,6 +30,7 @@ const RISK_REVIEW = `## Risk
 
 **Verdict:** needs review, judged on 3f9c2a1e8b7d6c5a4f3e2d1c0b9a8f7e6d5c4b3a
 
+- Peer review: copilot-pull-request-reviewer
 - Size: 412 counted lines (90 excluded: tests) → over 400
 - Always-review paths: src/auth.js
 - Tests: ok
