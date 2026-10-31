@@ -1,7 +1,6 @@
 ---
 name: forge-implement
-description: Implement a feature or fix from an Issue, plan file, or free-text description, following project standards. Use when the user wants to start working on an Issue, implement a feature, or fix a bug — stops after opening the PR (use forge-ship to also run review).
-disable-model-invocation: true
+description: Implement an Issue, plan file, or free-text description on a feature branch, following project standards, and stop at an open PR. Asks the user to approve the plan unless --unattended. Use when the user or an orchestrating agent asks for forge-implement or to take an Issue to a PR, not for a quick edit or fix in the current session; use forge-ship to also run review.
 ---
 
 # Implement a Change

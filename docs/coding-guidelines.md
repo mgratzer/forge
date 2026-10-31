@@ -20,7 +20,7 @@ Every skill follows the same section order:
 
 - `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
 - `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
-- `disable-model-invocation`: set to `true` for skills that should only be invoked by the user via slash command (workflow entry points). Omit or set to `false` for skills that agents may auto-activate.
+- `disable-model-invocation`: set to `true` only for interviews whose whole purpose is questioning the user (`forge-setup-project`, `forge-shape`). Every other skill omits it so an orchestrating agent can run it through the Skill tool; its `description` then names explicit forge intent, so a plain "fix this bug" does not start it, and says when the skill stops to ask the user.
 - `allowed-tools`: tools pre-approved to run while the skill is active. It pre-approves; it does not restrict other tools. Forge skills write it comma-separated; the Agent Skills spec's form is space-separated, and the field is experimental there, so support varies by agent.
 - `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
 
