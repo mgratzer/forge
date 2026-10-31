@@ -17,11 +17,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 ### Step 1: Collect Candidates
 
-List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match `#<number>` or `<type>/<number>-` locally:
-
-```bash
-gh pr list --state open --limit 100 --json number,title,headRefName,body
-```
+List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
 
 Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues that depend on an open Issue outside the scope. Everything left is AFK and free to start.
 
@@ -36,7 +32,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets share a file or both match the same serialized-resource glob from [unattended-config](_shared/unattended-config.md). Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when A's body says so (`depends on #B`, `blocked by #B`, `after #B`).
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 
