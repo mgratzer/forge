@@ -28,7 +28,7 @@ Read the project's `## Unattended Shipping` section per [unattended-config](_sha
 
 ### Step 2: Run Quality Passes
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md).
+**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md). Skip it under `forge-ship --guard`, whose Step 2 already covered it, and report `skipped (forge-ship)`.
 
 **Security pass** — run when the PR carries a `security` label or `gh pr diff "$PR" --name-only` matches a security-sensitive path. If the runtime provides a security review skill (Claude Code: `/security-review`), invoke it; otherwise follow review-delegation with the **Security & Correctness** deep pass.
 
@@ -108,7 +108,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 **Rounds:** <n> of <max>
 
 ### Passes
-- Simplify: applied <n> findings | skipped
+- Simplify: applied <n> findings | skipped | skipped (forge-ship)
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds
