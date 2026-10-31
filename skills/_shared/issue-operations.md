@@ -42,21 +42,24 @@ gh issue edit <ISSUE_NUMBER> --add-label "<LABEL>"
 
 **Other provider:** use the declared tool's label operations.
 
-## Create Epic with Sub-Issues
+## Link Issues
 
-Create the parent Issue first, then the sub-issues.
+Two links: a **parent** groups an epic's sub-issues, and **blocked by** orders Issues that depend on each other. Create blocking Issues before the Issues they block and the parent before its sub-issues, then link each one.
 
-**GitHub:** link sub-issues from the parent body with a task list — this works on every `gh` version:
+**GitHub:** use the native links. The mutations take node IDs, which `gh issue view <N> --json id --jq .id` returns:
 
-```markdown
-- [ ] #<SUB_ISSUE_NUMBER>
+```bash
+gh api graphql -f query='mutation($i:ID!,$s:ID!){addSubIssue(input:{issueId:$i,subIssueId:$s}){issue{number}}}' \
+  -f i="<PARENT_ID>" -f s="<SUB_ISSUE_ID>"
+gh api graphql -f query='mutation($i:ID!,$b:ID!){addBlockedBy(input:{issueId:$i,blockingIssueId:$b}){issue{number}}}' \
+  -f i="<BLOCKED_ID>" -f b="<BLOCKING_ID>"
 ```
 
-Newer `gh` versions also support `gh issue create --parent <PARENT_NUMBER>` for native sub-issues; verify the flag exists before relying on it.
+When a mutation fails (a GitHub host without the feature), fall back to text: a `- [ ] #<SUB_ISSUE_NUMBER>` task list in the parent body, and a `Blocked by #<NUMBER>` line in the blocked Issue's body. *List Issues by Scope* reads both forms.
 
-**Markdown:** list sub-issue IDs in the parent issue file's body.
+**Markdown:** list sub-issue IDs in the parent issue file's body, and write `Blocked by #<ID>` in the blocked issue's body.
 
-**Other provider:** use the declared tool's hierarchy mechanism, or fall back to referencing sub-issue IDs in the parent body.
+**Other provider:** use the declared tool's hierarchy and dependency mechanisms, or fall back to the same text as the markdown provider.
 
 ## Read Issue
 
@@ -70,15 +73,17 @@ Given an issue ID:
 
 ## List Issues by Scope
 
-Given a milestone, a label, or an epic — keep the listing light (number, title, labels, execution mode, dependency references) and read bodies per Issue later:
+Given a milestone, a label, or an epic — keep the listing light (number, title, labels, execution mode, dependency references) and read bodies per Issue later. Dependency references merge native blocked-by links with body text, so either form of *Link Issues* counts:
 
 **GitHub:**
 ```bash
-gh issue list --milestone "<MILESTONE>" --state open --limit 100 --json number,title,labels,body \
-  --jq '.[] | {number, title, labels: [.labels[].name], mode: ((.body | capture("(?i)execution mode:\\W*(?<m>\\w+)") | .m) // null), deps: [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0]]}'
-gh issue list --label "<LABEL>" --state open --limit 100 --json number,title,labels,body --jq '<same filter>'
-gh issue view <EPIC> --json body --jq '.body | scan("- \\[ \\] #(\\d+)") | .[0]'   # task-list sub-issues, then view each
+gh issue list --milestone "<MILESTONE>" --state open --limit 100 --json number,title,labels,body,blockedBy \
+  --jq '.[] | {number, title, labels: [.labels[].name], mode: ((.body | capture("(?i)execution mode:\\W*(?<m>\\w+)") | .m) // null), deps: ([.blockedBy.nodes[].number] + [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0] | tonumber] | unique)}'
+gh issue list --label "<LABEL>" --state open --limit 100 --json number,title,labels,body,blockedBy --jq '<same filter>'
+gh issue view <EPIC> --json subIssues,body --jq '[.subIssues.nodes[] | select(.state == "OPEN") | .number] + [.body | scan("- \\[ \\] #(\\d+)") | .[0] | tonumber] | unique'   # open native and task-list sub-issues, then view each
 ```
+
+An older `gh` without the `blockedBy` or `subIssues` JSON fields rejects them; query the same fields through `gh api graphql` instead.
 
 **Markdown:** filter `plan/INDEX.md` rows by label or parent; `mode` is frontmatter.
 
