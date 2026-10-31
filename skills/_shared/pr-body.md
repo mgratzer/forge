@@ -27,11 +27,14 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 ## Plan
 
-<details><summary>Plan as approved</summary>
+<details><summary>Plan <provenance, see Plan below></summary>
 
 <the Plan from forge-implement Step 2, verbatim>
 
 </details>
+
+**Revisions** (only when revised)
+- <what changed>: asked by <who>, <why>
 
 **Deviations** (as of <short SHA of the commit the PR opens with>): none
 <or one line per Deviation: `- <what changed from the Plan>: <why>`>
@@ -75,6 +78,12 @@ Number the steps. They stay inside the `[!WARNING]` block: every line, fenced co
 
 ## Plan
 
-Copy the Plan as approved, or in unattended mode as first made. Never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
+Copy the Plan verbatim and never rewrite it to match the code: `forge-land` compares it with the diff the PR opened with. List each Deviation (see CONTEXT.md) with its reason; an unstated one sends the PR to review.
+
+The summary names who stood behind the Plan, so the PR never claims an approval nobody gave:
+
+- `Plan approved` — a person confirmed it.
+- `Plan as first made (no approver: <why>)` — the run was unattended; say whether by `--unattended` or because no person could answer. When it implements a HITL Issue (an Issue with no recorded execution mode counts as HITL), add a **Notes** bullet `Judgment calls (HITL Issue, run unattended):` listing each decision the Issue left to a person and what you chose.
+- `Plan approved, then revised` — a person changed the Plan after approving it. List each revision under **Revisions** with who asked; `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation. Only a person revises a Plan: a change the run made on its own, attended or not, is a Deviation.
 
 No section of the body uses a `## ` heading inside it: a `## ` line ends the section for `forge-land` and the lens.

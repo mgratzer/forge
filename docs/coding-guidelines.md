@@ -107,7 +107,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
 | Open work | A prerequisite counts once landed; an unmet one, or an open PR for the Issue, asks attended and stops unattended; a shared file or serialized resource with an open PR is a conflict. Consolidated in `_shared/open-work.md` | implement, batch |
 | Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
-| PR body | One-sentence why, deployment-step rules, change outline views, `## Exercised`, and `## Plan` as approved with stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land reads it |
+| PR body | One-sentence why, deployment-step rules, change outline views, `## Exercised`, and `## Plan` with its provenance (approved, first made, or revised) and stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land reads it |
 | Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
