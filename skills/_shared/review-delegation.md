@@ -10,7 +10,7 @@ Before reviewing, collect:
 2. **Changed file list** — from the selected scope
 3. **Diff size metadata** — changed file count and approximate changed line count
 4. **Relevant project conventions** — the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters
-5. **Acceptance criteria** — when the change closes an Issue, its acceptance criteria verbatim (see [issue-operations](issue-operations.md)); omit when no Issue is linked
+5. **Acceptance criteria** — verbatim from the Issue the change closes: the one this session implemented from, else the PR's (`gh pr view --json closingIssuesReferences`), fetched per [issue-operations](issue-operations.md); omit when no Issue is linked
 6. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
    - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
