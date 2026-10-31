@@ -10,7 +10,7 @@ Use this template when creating or updating AGENTS.md. Keep it under ~200 lines.
 ## Commands
 
 ```bash
-<all verified commands — install, dev, build, test, lint, format, typecheck>
+<all verified commands — the fresh-checkout step (see unattended-shipping.md), install, dev, build, test, lint, format, typecheck>
 ```
 
 <run recipe (see unattended-shipping.md): start the app, drive it, test credentials, stop; a <!-- TODO --> for each part nobody knows>

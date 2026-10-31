@@ -27,6 +27,7 @@ Use the format matching the work performed.
 | Module structure | <status> | <action> |
 | App legibility | <status> | <action> |
 | Known risks | <risks> | <where documented> |
+| Fresh-checkout step | <named / marked TODO / not needed> | <action> |
 | Run recipe | <complete / parts marked TODO / nothing to run> | <action> |
 | Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
 
@@ -58,6 +59,7 @@ Use the format matching the work performed.
 | Module structure | <status> | <action> |
 | App legibility | <status> | <action> |
 | Known risks | <risks> | <where documented> |
+| Fresh-checkout step | <named / marked TODO / not needed> | <action> |
 | Run recipe | <complete / parts marked TODO / nothing to run> | <action> |
 | Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
 

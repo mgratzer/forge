@@ -35,7 +35,7 @@ Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Clas
 
 Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks. A check that prints pages on success fills the agent's context with noise: under feedback loops, name the tool's quiet flag when it has one, or leave a `<!-- TODO -->` for a wrapper that prints one line on success and everything on failure.
 
-Also prepare unattended shipping: a run recipe and the `## Unattended Shipping` section, per [unattended-shipping](references/unattended-shipping.md), which says what happens in which step.
+Also prepare unattended shipping: a fresh-checkout step, a run recipe, and the `## Unattended Shipping` section, per [unattended-shipping](references/unattended-shipping.md), which says what happens in which step.
 
 ### Step 3: Audit Existing Guidance
 

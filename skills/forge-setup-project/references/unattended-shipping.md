@@ -15,6 +15,8 @@ The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship -
 
 Write the parts you found under Commands in `AGENTS.md`. Ask for the rest in Step 4's round of questions, and leave a `<!-- TODO: <part> -->` for what the user doesn't know. Never guess how to start the app. A project with nothing to run (a library without an entry point, docs only) needs no recipe; say so in the summary.
 
+**Fresh-checkout step:** `forge-implement` runs the step Commands name for getting a fresh checkout ready to run the tests, so a worktree session doesn't lose its first gates to stale dependencies or a missing test database. Discover it from a `bootstrap` or `setup` script, `prepare` or `postinstall` hooks, the README's setup, and the CI steps that run before the tests. When the project needs one (dependencies to install, generated output that isn't tracked, its own test database, services or ports) and Commands name none, flag it in the Step 3 audit and ask in Step 4; leave a `<!-- TODO: fresh-checkout step -->` for what the user doesn't know. This holds for a project with nothing to run too.
+
 ## The Section
 
 Offer it only when the project ships through PRs: skip it when there is no remote or the remote has no merged PRs (`gh pr list --state merged --limit 1`), and ask when the repository is new. The format and defaults are in `_shared/unattended-config.md`.
