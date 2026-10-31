@@ -1,6 +1,6 @@
 ---
 name: forge-create-issue
-description: Plan and create well-structured Issues (GitHub, markdown plan/ folder, or other providers), researching the codebase first. Use when the user or an orchestrating agent asks for forge-create-issue or to file an Issue for work that is already understood, not when a bug merely comes up in conversation; use forge-shape first when the idea is still vague.
+description: Plan and create well-structured Issues with the user (GitHub, markdown plan/ folder, or other providers), researching the codebase first and confirming the approach and draft interactively. Use when the user or an orchestrating agent asks for forge-create-issue or to file an Issue for work that is already understood, not when a bug merely comes up in conversation; use forge-shape first when the idea is still vague.
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 
