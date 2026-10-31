@@ -84,8 +84,9 @@ Skill prompts are forge's runtime. A PR that changes `skills/` exercises the cha
 
    ```bash
    snap() { d=$(mktemp -d); git archive "$1" skills | tar -x -C "$d"; [ -d "$d/skills" ] || return 1; mkdir "$d/.claude-plugin"; printf '{"name":"%s"}\n' "$2" > "$d/.claude-plugin/plugin.json"; echo "$d"; }
+   git fetch origin
    NEW=$(snap HEAD forge-new)
-   OLD=$(snap origin/main forge-old)   # the control
+   OLD=$(snap "$(git merge-base HEAD origin/main)" forge-old)   # the control: the branch's base, not today's main
    ```
 
 2. **Run the changed skill** headless in the sandbox checkout, once per snapshot. A free-text task needs no tracker reset; a full `forge-ship --guard` run costs about $2 and 4 minutes. Interactive skills print their questions as text, since `AskUserQuestion` is unavailable headless. Close each run's PR and delete its branch before the next run, since both runs pick the same branch name.
@@ -100,8 +101,10 @@ Skill prompts are forge's runtime. A PR that changes `skills/` exercises the cha
    ```bash
    gh pr view <N> -R mgratzer/forge-e2e-sandbox --json body --jq .body > body.md   # copy, then edit the copy
    gh pr view <N> -R mgratzer/forge-e2e-sandbox --json headRefOid --jq .headRefOid   # <SHA>
-   claude -p "/forge-new:forge-land <N> -- Read-only test: in Step 1, fetch and read the settings but skip the qualifying checks. Run Step 2 on head commit <SHA> with the PR body read from $PWD/body.md instead of gh pr view. Print the filled ## Risk section and stop. Never edit the PR, request reviews, push, or merge." --plugin-dir "$NEW" --permission-mode auto
+   claude -p "/forge-new:forge-land <N> -- Read-only test: in Step 1, fetch and read the settings but skip the qualifying checks. Run Step 2 on head commit <SHA> with the PR body read from $PWD/body.md instead of gh pr view. Print the filled ## Risk section and stop. Never edit the PR, request reviews, push, or merge." --plugin-dir "$NEW" --permission-mode auto --disallowedTools "Bash(gh pr edit:*)" "Bash(gh pr merge:*)" "Bash(git push:*)"
    ```
+
+   The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
    Sandbox PR #11 adds code only in `bin/`, outside the sandbox's security-sensitive `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
 
