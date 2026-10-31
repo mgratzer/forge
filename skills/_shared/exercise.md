@@ -26,7 +26,7 @@ A run that didn't reach the changed path is not evidence, whatever it printed.
 
 ## Screenshots
 
-Capture with the runtime's browser or screenshot tool, or the project's render script, in each state the change affects: before and after, and the locales, viewports, or themes it touches. Name each file for its state and save it outside the working tree, so it never lands on the feature branch. Publish them to an orphan `pr-assets/<branch>` branch without touching the working tree or index:
+Capture with the runtime's browser or screenshot tool, or the project's render script, in each state the change affects: the locales, viewports, or themes it touches, and before and after when the base is cheap to run (from a throwaway `git worktree add` at the default branch, never a stash or a switch of this branch). Save each as a PNG named for its state, outside the working tree, so it never lands on the feature branch. Publish them to an orphan `pr-assets/<branch>` branch without touching the working tree or index:
 
 ```bash
 BRANCH=$(git branch --show-current)
