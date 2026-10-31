@@ -49,7 +49,7 @@ From the research, create a plan:
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
 
-Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed. Record later changes to the Plan as revisions (see [pr-body](_shared/pr-body.md)).
+Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed. When the user changes the Plan after approving it, record each change as a revision (see [pr-body](_shared/pr-body.md)).
 
 ### Step 3: Create Feature Branch
 

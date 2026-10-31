@@ -84,6 +84,6 @@ The summary names who stood behind the Plan, so the PR never claims an approval 
 
 - `Plan approved` — a person confirmed it.
 - `Plan as first made (no approver: <why>)` — the run was unattended; say whether by `--unattended` or because no person could answer. When it implements a HITL Issue, add a **Notes** bullet `Judgment calls (HITL Issue, run unattended):` listing each decision the Issue left to a person and what you chose.
-- `Plan approved, then revised` — the Plan changed after approval. List each revision under **Revisions** with who asked; `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation.
+- `Plan approved, then revised` — a person changed the Plan after approving it. List each revision under **Revisions** with who asked; `forge-land` compares the diff with the Plan plus its Revisions, so a recorded revision is not a Deviation. Only a person revises a Plan: a change the run made on its own, attended or not, is a Deviation.
 
 No section of the body uses a `## ` heading inside it: a `## ` line ends the section for `forge-land` and the lens.
