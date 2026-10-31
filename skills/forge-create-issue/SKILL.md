@@ -1,7 +1,6 @@
 ---
 name: forge-create-issue
-description: Collaboratively plan and create well-structured Issues through interactive discussion (GitHub, markdown plan/ folder, or other providers). Use when the user wants to create an Issue, report a bug, or scope out work that is already understood — use forge-shape first when the idea is still vague.
-disable-model-invocation: true
+description: Plan and create well-structured Issues with the user (GitHub, markdown plan/ folder, or other providers), researching the codebase first and confirming the approach and draft interactively. Use when the user or an orchestrating agent asks for forge-create-issue or to file an Issue for work that is already understood, not when a bug merely comes up in conversation; use forge-shape first when the idea is still vague.
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, WebSearch, AskUserQuestion
 ---
 
@@ -57,9 +56,9 @@ Evaluate if this should be one Issue or multiple.
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
-When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency.
+When splitting, slice **vertically** — each Issue is a thin end-to-end path (see [vertical-slicing](_shared/vertical-slicing.md)). Classify each as **AFK** or **HITL** (see [afk-vs-hitl.md](references/afk-vs-hitl.md)). Order by dependency, and note which Issues each one is blocked by. A `forge-shape` breakdown arrives sliced, classified, and ordered: check it against the same rules and re-slice only a horizontal Issue.
 
-If splitting makes sense, offer: single Issue, multiple linked Issues, or epic with sub-issues.
+If splitting makes sense, offer: an epic with sub-issues (the default for several Issues), linked Issues without a parent, or a single Issue.
 
 ### Step 5: Draft the Issue
 
@@ -95,7 +94,7 @@ If splitting makes sense, offer: single Issue, multiple linked Issues, or epic w
 
 ### Step 6: Review and Create
 
-Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics, including epics with sub-issues.
+Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics. For several Issues, create them in dependency order, then *Link Issues*: each sub-issue to its parent, and each Issue to the Issues it is blocked by.
 
 Share the Issue reference. Suggest using `forge-implement` to start implementation.
 

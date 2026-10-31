@@ -1,7 +1,6 @@
 ---
 name: forge-ship
-description: End-to-end implementation and self-review in a single invocation — implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready, or merged when the project opts in). Use when the user wants to implement and review without manual handoff between skills.
-disable-model-invocation: true
+description: "End-to-end implementation and self-review in a single invocation: implements from an Issue, plan file, or free-text description, then runs a lean fresh-context review. Asks the user to approve the plan and triage findings unless --unattended or --guard. With --guard it also waits for CI and peer review, addresses feedback until the PR is review-ready, and ends with a risk verdict (merge-ready or review-ready, or merged when the project opts in). Use when the user or an orchestrating agent asks for forge-ship or to ship an Issue as a reviewed PR, not for a quick edit in the current session."
 ---
 
 # Ship a Change
@@ -24,9 +23,11 @@ Execute the full [forge-implement](../forge-implement/SKILL.md) process with one
 
 ### Step 2: Review (delegate)
 
-Follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff and commit its edits before the review, which then checks them; Step 3 pushes them with the triage fixes in one push. Otherwise skip it: the review's default checklist covers the same items.
 
-**Inputs provided to sub-agent:** the branch diff, changed file list, and project conventions per review-delegation.
+**Fresh-context review** — follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+
+**Inputs provided to sub-agent:** the branch diff, changed file list, project conventions, and the Issue's acceptance criteria per review-delegation.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Triage Findings
@@ -35,7 +36,7 @@ Follow the [review-delegation](_shared/review-delegation.md) process: collect th
 
 **In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
 
-Fixed findings are committed and pushed; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
+Commit fixed findings and push them together with any Step 2 simplification commit, even when nothing needed fixing; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
 
 ### Step 4: Guard and Land (only with `--guard`)
 
@@ -61,6 +62,7 @@ Report implementation, review, guard, and land results together.
 - Exercised: <intended | wrong: <observed vs expected> | not exercised: <why>> (plus "not run: <parts>" when parts were skipped)
 
 ### Review Findings
+- Simplify: applied <n> edits | nothing to simplify | covered by review (no simplification skill)
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> (<title>), or "none"
 
