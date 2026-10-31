@@ -40,7 +40,7 @@ When the runtime has no such capability, or refuses a start, print the launch li
 gh issue comment <n> --body "forge-batch printed a launch line for this Issue: /forge-ship --guard <n>"
 ```
 
-The next run then counts it in flight, not ready, and never starts it a second time.
+The next run then counts it in flight, not ready, and never starts it a second time. A refused start is no longer retried on its own either: delete the comment to let the next run try again.
 
 ## Continue
 
@@ -48,7 +48,7 @@ End the run after printing. The next one comes from the runtime waking this sess
 
 A started Issue with no PR whose session has ended (the runtime lists it as ended, or the start comment is a day old) stopped before its PR: its detail says `stopped before a PR, delete the start comment to retry`. A launch-line comment a day old with no PR reads `launch line not used or stopped, delete the comment to retry`.
 
-The scope is **done** when every Issue is merged or excluded. It **waits on you** when a run has nothing to start and every in-flight Issue waits on a person: its PR carries land's verdict on its head, or it stopped before a PR. Otherwise it is **continuing**.
+The scope is **done** when every Issue is merged or excluded. It **waits on you** when a run has nothing to start and every in-flight Issue waits on a person: its PR carries land's verdict on its head, it stopped before a PR, or it has a launch-line comment and no PR. Otherwise it is **continuing**.
 
 ## Output
 
