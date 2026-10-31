@@ -26,7 +26,7 @@ Start each ready Issue as its own session in its own isolated checkout, running:
 /forge-ship --guard <n> -- Touch set: <paths>. Adjacent: #<n> (<shared directory>), or none. Serialized resources: <the ones its touch set names>, or none; touch no others.
 ```
 
-Use the runtime's start-a-session capability when it has one. After each start succeeds, comment on the Issue:
+Use the runtime's start-a-session capability when it has one: a separate session the user can open, not a sub-agent of this one, which would hold this run open until the ship ends. After each start succeeds, comment on the Issue:
 
 ```bash
 gh issue comment <n> --body "forge-batch started this Issue: /forge-ship --guard <n>"
