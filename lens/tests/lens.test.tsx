@@ -369,6 +369,22 @@ test("parsers: a --start batch's Merge Order is its test-merge, not a Wave", () 
 	});
 	expect(waiting?.waves).toEqual([]);
 	expect(waiting?.status?.progress).toBe("waits on you");
+	// as an exercise run printed it: the Merge Order before the status's last lines
+	const early = parse.batch(
+		[
+			"## Batch: 6 7",
+			"### Status",
+			"| 6 | feat: a | in flight | PR #9, low risk, judged on head |",
+			"### Merge Order",
+			"| 1 | #9 | clean |",
+			"**Gates:** pass",
+			"**Merge:** #9",
+			"**Scope:** waits on you",
+		].join("\n"),
+	);
+	expect(early?.status?.merge).toBe("#9");
+	expect(early?.status?.progress).toBe("waits on you");
+	expect(early?.order).toEqual({ rows: [{ step: "1", pr: "#9", result: "clean" }], gates: "pass" });
 });
 
 test("the Waves pane draws a batch's merge order and its gates", async ($, on) => {

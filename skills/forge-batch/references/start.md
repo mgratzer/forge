@@ -94,7 +94,7 @@ launch: <launcher> 124
 
 Omit the launch line when every ready Issue started, and **Merge:** when no PR is merge-ready.
 
-When *Merge Order* ran, print its result after the status, and list **Merge:**'s PRs in its order:
+When *Merge Order* ran, print its result after the **Scope:** line, and list **Merge:**'s PRs in its order:
 
 ```text
 ### Merge Order

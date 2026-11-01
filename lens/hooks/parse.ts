@@ -184,7 +184,8 @@ export function batch(text: string): Batch | null {
 	const head = /^## Batch: (.+)$/m.exec(text);
 	if (!head) return null;
 	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, order: null, waves: [], excluded: [] };
-	for (const chunk of text.slice(head.index).split(/^### /m).slice(1)) {
+	const all = text.slice(head.index);
+	for (const chunk of all.split(/^### /m).slice(1)) {
 		const [title = "", ...lines] = chunk.split("\n");
 		if (/^Excluded/.test(title)) {
 			out.excluded = lines.filter((l) => l.startsWith("- ")).map((l) => l.slice(2));
@@ -205,8 +206,9 @@ export function batch(text: string): Batch | null {
 			out.status = {
 				rows: tableRows(lines).map(([num = "", t = "", state = "", detail = ""]) => ({ num, title: t, state, detail })),
 				launch,
-				merge: after(body, /^\*\*Merge:\*\*\s*(.+)$/m),
-				progress: after(body, /^\*\*Scope:\*\*\s*(.+)$/m),
+				// read from the whole batch: a Merge Order printed before them still leaves them the status's
+				merge: after(all, /^\*\*Merge:\*\*\s*(.+)$/m),
+				progress: after(all, /^\*\*Scope:\*\*\s*(.+)$/m),
 			};
 		} else {
 			const rows = tableRows(lines).map(([num = "", t = "", touch = "", notes = ""]) => ({
