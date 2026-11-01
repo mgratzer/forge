@@ -25,6 +25,8 @@ ME=$(gh api user --jq .login)
 
 Read the project's `## Unattended Shipping` section per [unattended-config](_shared/unattended-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
+A push makes land's verdict stale: right after this run's first push, in whichever step, remove land's label once, per [status-reporting](_shared/status-reporting.md#outcome-label) with `STATE` empty. A refused removal goes under **Open for the human**.
+
 ### Step 2: Run Quality Passes
 
 **Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff. Otherwise follow [review-delegation](_shared/review-delegation.md) with the default checklist narrowed to items 3 and 5 of [review-dimensions](_shared/review-dimensions.md). Skip it under `forge-ship --guard`, whose Step 2 already covered it, and report `skipped (forge-ship)`.

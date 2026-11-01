@@ -29,3 +29,15 @@ Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" wait
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 
 Report a terminal state exactly once, as the last thing before the final summary.
+
+## Outcome Label
+
+The summary and the status line end with the session, and a person gets no notification about their own account's activity, so `forge-land` leaves `merge-ready` and `review-ready` on the PR as a `forge:<state>` label. Forge never adds labels to a repository: a project opts in by creating both once. Any other end of land, and a guard push, removes the label. `STATE` is the state to label, or empty to only remove:
+
+```bash
+gh pr view "$PR" --json labels --jq ".labels[].name | select(startswith(\"forge:\") and . != \"forge:$STATE\")" |
+  while read -r OLD; do gh pr edit "$PR" --remove-label "$OLD"; done
+[ -z "$STATE" ] || gh pr edit "$PR" --add-label "forge:$STATE"
+```
+
+`not found` from `--add-label` means the project didn't opt in: report `none`. Any other refused label call doesn't change the state: name it in the summary.

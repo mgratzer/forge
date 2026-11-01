@@ -69,6 +69,8 @@ gh pr edit "$PR" --body-file "$BODY"
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<LOGIN>"
 ```
 
+**Label the outcome** per [status-reporting](_shared/status-reporting.md#outcome-label) before reporting it, on every end of this skill, Steps 1 and 3 included: `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`.
+
 Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize.
 
 ## Output Format
@@ -81,11 +83,12 @@ Never merge outside the opt-in above, never push, never close the PR. Report the
 **Judged:** <short SHA>, low risk | needs review
 **Checks:** <hits, or "none">
 **Review requested from:** <login> | not requested: <why> | n/a
+**Label:** <label> | none | refused: <why>
 ```
 
 ## Guidelines
 
-- **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk`
+- **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk` or label
 - **Doubt means review** — a verdict that can't name what the checks would miss is needs-review
 - **Merging is the project's choice** — without `Auto-merge: low-risk`, low risk stops at `merge-ready`; no argument or trailing context turns merging on
 
