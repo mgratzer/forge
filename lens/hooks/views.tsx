@@ -316,8 +316,7 @@ export function WavesView({ ui, batch }: { ui: Ui; batch: Batch | null }) {
 					</Text>
 					{batch.order.rows.map((r) => (
 						<Text wrap="truncate">
-							<Text bold>{`${r.step}.`.padEnd(4)}</Text>
-							<Text bold>{r.pr.padEnd(6)}</Text>
+							<Text bold>{`${r.step}. ${r.pr}`.padEnd(10)}</Text>
 							<Text color={r.result === "clean" ? "success" : "warning"}>{r.result}</Text>
 						</Text>
 					))}

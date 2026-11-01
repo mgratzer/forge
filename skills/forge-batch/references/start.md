@@ -57,16 +57,16 @@ Each PR was judged on its own; their combination wasn't. When the scope waits on
 Order the PRs: one whose Issue depends on another's (*depends on* in Step 3 of [forge-batch](../SKILL.md)) comes after it, then smaller diffs (`additions` plus `deletions`) first, then lower numbers. Merge them in that order, each at the head commit land judged, into a scratch worktree detached at the default branch:
 
 ```bash
-git fetch origin
+git fetch origin && git fetch origin <headRefOid>...   # every judged head in one call
 DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
 SCRATCH=$(mktemp -d)
 git worktree add --detach "$SCRATCH" "origin/$DEFAULT_BRANCH"
-git -C "$SCRATCH" fetch origin <headRefOid> && git -C "$SCRATCH" merge --no-ff --no-edit <headRefOid>   # per PR
+git -C "$SCRATCH" merge --no-ff --no-edit <headRefOid>   # per PR, in order
 ```
 
 When a merge conflicts, note the files `git -C "$SCRATCH" diff --name-only --diff-filter=U` lists, run `git -C "$SCRATCH" merge --abort`, and go on with the next PR. The conflict is with the PRs merged before it whose `files` include those files: once they land, this PR merges the default branch and resolves it.
 
-Then run the project's quality gates once in `$SCRATCH`, found the way forge-implement's final quality gate finds them, after the fresh-checkout step when `AGENTS.md` names one. Remove the worktree with `git worktree remove --force "$SCRATCH"`, also when a step failed.
+Then run the project's quality gates once in `$SCRATCH`, with the fresh-checkout step and gate parts from *Pre-flight* in [phase-execution](../_shared/phase-execution.md). Remove the worktree with `git worktree remove --force "$SCRATCH"`, also when a step failed.
 
 ## Output
 
