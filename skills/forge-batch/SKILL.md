@@ -39,11 +39,11 @@ Place Issues greedily: order by priority label, then by number; put each into th
 
 Present the batch via AskUserQuestion: approve, move an Issue, or exclude one. **In unattended mode:** skip and print.
 
-With `--start`, the approval covers the run's starts, and a re-run that the runtime or a scheduler triggers is unattended; then start the ready Issues, following *Start* in [start](references/start.md). Never run `gh pr merge`.
+With `--start`, the approval covers the run's starts, and a re-run that the runtime or a scheduler triggers is unattended; then start the ready Issues, following *Start* in [start](references/start.md). When the scope waits on you, test-merge its finished PRs, following *Merge Order* there. Never run `gh pr merge`.
 
 ### Step 5: Print the Batch
 
-Use the output format below; with `--start`, the `### Status` section from [start](references/start.md) comes first. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand.
+Use the output format below; with `--start`, the `### Status` section from [start](references/start.md) comes first, then `### Merge Order` when it ran. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand.
 
 ## Output Format
 
