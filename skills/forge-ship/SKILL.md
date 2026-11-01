@@ -68,7 +68,7 @@ Report implementation, review, guard, and land results together.
 
 ### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
-### Land    (guard mode only, when guard reached review-ready — Judged, Checks, and Review requested from forge-land)
+### Land    (guard mode only, when guard reached review-ready — Judged, Checks, Review requested, and Label from forge-land)
 
 ### Quality Gates
 - Lint: ✓/✗
