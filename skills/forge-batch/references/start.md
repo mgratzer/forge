@@ -64,7 +64,7 @@ git worktree add --detach "$SCRATCH" "origin/$DEFAULT_BRANCH"
 git -C "$SCRATCH" merge --no-ff --no-edit <headRefOid>   # per PR, in order
 ```
 
-When a merge conflicts, note the files `git -C "$SCRATCH" diff --name-only --diff-filter=U` lists, run `git -C "$SCRATCH" merge --abort`, and go on with the next PR. The conflict is with the PRs merged before it whose `files` include those files: once they land, this PR merges the default branch and resolves it. A failed merge with no such files is an error, not a conflict: report it as the PR's result. Skip a PR whose Issue depends on one that conflicted or failed, as `skipped: needs #<n>`.
+When a merge conflicts, note the files `git -C "$SCRATCH" diff --name-only --diff-filter=U` lists, run `git -C "$SCRATCH" merge --abort`, and go on with the next PR. The conflict is with the PRs merged before it whose `files` include those files, or with the default branch when none do: once they land, this PR merges the default branch and resolves it. A failed merge that lists no conflicted files is an error, not a conflict: report it as the PR's result. Skip a PR whose Issue depends on one that conflicted or failed, as `skipped: needs #<n>`.
 
 Then run the project's quality gates once in `$SCRATCH`, with the fresh-checkout step and gate parts from *Pre-flight* in [phase-execution](../_shared/phase-execution.md). Last, whatever failed before, remove the worktree with `git worktree remove --force "$SCRATCH"`.
 
