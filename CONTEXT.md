@@ -42,7 +42,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Merged** — land's low-risk outcome when the project set `Auto-merge: low-risk`: the host merged the judged commit, or will once its required checks pass. A push after the verdict stops the merge.
 
-**Outcome label** — `forge:merge-ready` or `forge:review-ready`, set by land so the outcome outlives the session and a person has a queue to work through. Land's next run replaces it; any other end of land, or a guard push, removes it.
+**Outcome label** — `forge:merge-ready` or `forge:review-ready`, set by land in a repository that created them, so the outcome outlives the session and a person has a queue to work through. Land's next run replaces it; any other end of land, or a guard push, removes it.
 
 **Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
 

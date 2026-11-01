@@ -24,7 +24,13 @@ Or let batch start them: `/forge-batch --start <scope>` starts every ready Issue
 
 ## Finding out a PR waits on you
 
-GitHub tells you nothing about your own account's activity, and an agent running under your account acts as you: land's review request reaches only a linked Issue's assignee or author who didn't open the PR, and an @mention or an assignment would notify nobody. So land labels the PR with its outcome, `forge:merge-ready` or `forge:review-ready`, creating the labels on first use. Your queue is a saved filter. These work as written in a repository's pull requests tab; in global search or the GitHub mobile app, add `user:<you>` or `org:<org>`, or they match every public repository:
+GitHub tells you nothing about your own account's activity, and an agent running under your account acts as you: land's review request reaches only a linked Issue's assignee or author who didn't open the PR, and an @mention or an assignment would notify nobody. So land can label the PR with its outcome, `forge:merge-ready` or `forge:review-ready`. Forge never adds labels to your repository, so this is opt-in: create both once, and land applies them from then on.
+
+```bash
+gh label create forge:merge-ready && gh label create forge:review-ready
+```
+
+Your queue is then a saved filter. These work as written in a repository's pull requests tab; in global search or the GitHub mobile app, add `user:<you>` or `org:<org>`, or they match every public repository:
 
 ```text
 is:open is:pr label:forge:merge-ready
@@ -48,6 +54,7 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 - [ ] Add the `## Unattended Shipping` section to `AGENTS.md` — peer reviewer, security-sensitive paths, serialized resources, max rounds (see [unattended-config](../skills/_shared/unattended-config.md))
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
 - [ ] Give agents a way to run the app: a run skill (Claude Code: `/run`) or run commands in `AGENTS.md` (see [exercise](../skills/_shared/exercise.md)). Without one, code PRs report `not exercised` and never reach `merge-ready`
+- [ ] Optionally, create the `forge:merge-ready` and `forge:review-ready` labels to get a queue of PRs waiting on you (see [Finding out a PR waits on you](#finding-out-a-pr-waits-on-you))
 - [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
 - [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
 

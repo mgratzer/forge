@@ -32,13 +32,12 @@ Report a terminal state exactly once, as the last thing before the final summary
 
 ## Outcome Label
 
-The summary and the status line end with the session, and a person gets no notification about their own account's activity, so `forge-land` leaves `merge-ready` and `review-ready` on the PR as a `forge:<state>` label. Any other end of land, and a guard push, removes it. `STATE` is the state to label, or empty to only remove:
+The summary and the status line end with the session, and a person gets no notification about their own account's activity, so `forge-land` leaves `merge-ready` and `review-ready` on the PR as a `forge:<state>` label. Forge never adds labels to a repository: a project opts in by creating both once. Any other end of land, and a guard push, removes the label. `STATE` is the state to label, or empty to only remove:
 
 ```bash
 gh pr view "$PR" --json labels --jq ".labels[].name | select(startswith(\"forge:\") and . != \"forge:$STATE\")" |
   while read -r OLD; do gh pr edit "$PR" --remove-label "$OLD"; done
-[ -z "$STATE" ] || { gh label create "forge:$STATE" --force --color 1d76db --description "From forge-land; the PR's Risk section says why" &&
-  gh pr edit "$PR" --add-label "forge:$STATE"; }
+[ -z "$STATE" ] || gh pr edit "$PR" --add-label "forge:$STATE"
 ```
 
-A refused label call doesn't change the state: name it in the summary.
+`not found` from `--add-label` means the project didn't opt in: report `none`. Any other refused label call doesn't change the state: name it in the summary.
