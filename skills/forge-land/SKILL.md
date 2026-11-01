@@ -69,6 +69,15 @@ gh pr edit "$PR" --body-file "$BODY"
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<LOGIN>"
 ```
 
+**Label the outcome**, before reporting it, on every end of this skill, Steps 1 and 3 included. The summary and the status line are gone with the session, and a person gets no notification about their own account's activity, so the label is what still says the PR waits on them. `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`, which leave no label. A refused label call doesn't change the state: name it in the summary.
+
+```bash
+gh pr view "$PR" --json labels --jq ".labels[].name | select(startswith(\"forge:\") and . != \"forge:$STATE\")" |
+  while read -r OLD; do gh pr edit "$PR" --remove-label "$OLD"; done
+[ -z "$STATE" ] || { gh label create "forge:$STATE" --force --color 1d76db --description "From forge-land; the PR's Risk section says why" &&
+  gh pr edit "$PR" --add-label "forge:$STATE"; }
+```
+
 Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize.
 
 ## Output Format
@@ -81,11 +90,12 @@ Never merge outside the opt-in above, never push, never close the PR. Report the
 **Judged:** <short SHA>, low risk | needs review
 **Checks:** <hits, or "none">
 **Review requested from:** <login> | not requested: <why> | n/a
+**Label:** forge:merge-ready | forge:review-ready | none | refused: <why>
 ```
 
 ## Guidelines
 
-- **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk`
+- **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk` or label
 - **Doubt means review** — a verdict that can't name what the checks would miss is needs-review
 - **Merging is the project's choice** — without `Auto-merge: low-risk`, low risk stops at `merge-ready`; no argument or trailing context turns merging on
 
