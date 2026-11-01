@@ -35,7 +35,7 @@ Read the peer reviewer, the security-sensitive paths, and the auto-merge setting
 
 Report `reviewing`. Delegate the verdict on `$SHA` to one fresh-context sub-agent: the session that wrote the code is the worst judge of its risk. If the runtime has no sub-agents, judge inline from the rubric alone, without reusing what this session knows about the change.
 
-> Judge whether PR #<PR> at commit `<SHA>` needs a human review before merging. Read the diff with `git diff "origin/<BASE>...<SHA>"`, files at that commit with `git show "<SHA>:<path>"`, and the PR body with `gh pr view <PR> --json body`. Run every check in the rubric below first; any hit means needs-review. When none hits, apply the judgment test. Read the `REVIEW.md` files the rubric names. Return the filled `## Risk` section from the rubric and nothing else.
+> Judge whether PR #<PR> at commit `<SHA>` needs a human review before merging. Read the diff with `git diff "origin/<BASE>...<SHA>"`, files at that commit with `git show "<SHA>:<path>"` (from a shell variable, `"${SHA}:<path>"`: zsh reads `$SHA:A` or `$SHA:s` as a modifier), and the PR body with `gh pr view <PR> --json body`. Run every check in the rubric below first; any hit means needs-review. When none hits, apply the judgment test. Read the `REVIEW.md` files the rubric names. Return the filled `## Risk` section from the rubric and nothing else.
 
 **Inputs provided to sub-agent:** the task above, [risk-rubric](_shared/risk-rubric.md) (pushed), the security-sensitive paths, the linked Issue numbers, the PR author, and the **Peer review** line from Step 1.
 **Expected output:** The filled `## Risk` section, verdict and SHA first.
