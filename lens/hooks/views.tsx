@@ -315,7 +315,8 @@ export function WavesView({ ui, batch }: { ui: Ui; batch: Batch | null }) {
 						Merge order
 					</Text>
 					{batch.order.rows.map((r) => (
-						<Text wrap="truncate">
+						// wrap, not truncate: what to do about a conflict ends the line
+						<Text wrap="wrap">
 							<Text bold>{`${r.step}. ${r.pr}`.padEnd(10)}</Text>
 							<Text color={r.result === "clean" ? "success" : "warning"}>{r.result}</Text>
 						</Text>
