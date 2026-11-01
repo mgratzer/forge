@@ -22,6 +22,7 @@ const STEP_MARK: Record<StepState, [string, string]> = {
 	now: ["●", "claude"],
 	done: ["✓", "success"],
 	stopped: ["!", "error"],
+	composed: ["✓", "inactive"],
 	skipped: ["–", "inactive"],
 	todo: ["○", "inactive"],
 };
@@ -119,7 +120,9 @@ export function Lens(p: LensProps) {
 					const st = stepState(s, p.run, p.visited);
 					const [mark, color] = STEP_MARK[st];
 					const bar = isShip && SHIP_STEPS.includes(s) ? "┃" : " ";
-					let note = st === "skipped" ? "skipped" : "";
+					let note = st === "skipped" ? "skipped" : st === "composed" ? "in ship" : "";
+					if (s === "address-pr-feedback" && st === "skipped" && p.visited.includes("guard"))
+						note = "when threads come";
 					if (s === "setup-project" && (st === "todo" || st === "skipped")) note = "start here";
 					if (s === "shape" && st === "todo") note = "optional";
 					if (s === "create-issue" && st === "done" && issue !== null) note = `#${issue}`;
@@ -370,8 +373,8 @@ export const MAP = `forge pipeline
   shape              turn a rough idea into a shaped plan (optional)
   create-issue       write the Issue, AFK or HITL
   implement          code it, test it, open the PR
-  reflect            capture what the session taught
-  address-pr-feedback  answer review threads
+  reflect            self-review the changes (ship runs it for you)
+  address-pr-feedback  answer review threads (guard runs it when threads come)
   guard              CI, peer review, feedback rounds until review-ready
   land               risk verdict; merge-ready, or merged when opted in
 

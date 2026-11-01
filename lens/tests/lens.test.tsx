@@ -242,22 +242,36 @@ test("a ship run the model starts keeps its args, follows a cat'ed skill file, a
 	expect(await ui.find({ type: "Text", text: /^\/forge-ship --guard 171$/ })).toBeDefined();
 	expect(await ui.find({ type: "Text", text: /! ┃ land/ })).toBeDefined();
 	expect(await ui.find({ type: "Text", text: /✓ ┃ guard/ })).toBeDefined();
-	expect(await ui.find({ type: "Text", text: /– +reflect/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /✓ +reflect/ })).toBeDefined();
+	expect(await ui.find({ type: "Text", text: /^in ship$/ })).toBeDefined();
 	expect(await ui.find({ type: "Text", text: /#171/ })).toBeDefined();
 	await ui.unmount();
 });
 
-test("pipeline rows: stopped in its step, skipped before it, the Issue counts as created", () => {
+test("pipeline rows: stopped in its step, composed or skipped before it, the Issue counts as created", () => {
 	const ship = model.startRun(model.EMPTY, "ship", "--guard 171", 0);
 	const guarded = model.applyStatus(model.readSkill(ship, "guard"), "needs-human", "stuck", 1);
 	const at = (s: string) => parse.stepState(s, guarded.run, guarded.visited);
-	expect(["create-issue", "implement", "reflect", "guard", "land"].map(at)).toEqual([
+	expect(["create-issue", "implement", "reflect", "address-pr-feedback", "guard", "land"].map(at)).toEqual([
 		"done",
 		"done",
+		"composed",
 		"skipped",
 		"stopped",
 		"todo",
 	]);
+	// guard addressing threads runs the feedback process, so that step reads done
+	const addressed = model.applyStatus(guarded, "addressing", "round 1/3", 2);
+	expect(parse.stepState("address-pr-feedback", addressed.run, addressed.visited)).toBe("done");
+	// outside ship, a reflect nobody ran before guard is skipped
+	const alone = model.applyStatus(model.startRun(model.EMPTY, "guard", "178", 0), "waiting", "CI", 1);
+	expect(parse.stepState("reflect", alone.run, alone.visited)).toBe("skipped");
+	// a later ship still in implement hasn't run its self-review, whatever the session visited before
+	const after = model.startRun(alone, "ship", "--guard 180", 3);
+	expect(parse.stepState("reflect", after.run, after.visited)).not.toBe("composed");
+	// after a merge the next move is the next Issue, not a self-review of merged work
+	const merged = model.applyStatus(model.startRun(model.EMPTY, "land", "5", 0), "merged", "PR #5", 1);
+	expect(parse.nextStep(merged.run, null, 0, null)?.text).toBe("/forge-ship ");
 	expect(parse.runLabel("ship", "--guard 171 -- notes -- more")).toBe("/forge-ship --guard 171");
 	expect(parse.runLabel("ship", "-- notes")).toBe("/forge-ship");
 	expect(parse.skillStep("cat a/forge-implement/SKILL.md; cat b/forge-guard/SKILL.md")).toBe("guard");
