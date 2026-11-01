@@ -2,6 +2,7 @@ import type { EngineInterface } from "claude-code";
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from "../types";
 import {
+	COMPOSED_BY,
 	currentStep,
 	DEFAULT_ROUNDS,
 	isLowRisk,
@@ -22,6 +23,7 @@ const STEP_MARK: Record<StepState, [string, string]> = {
 	now: ["●", "claude"],
 	done: ["✓", "success"],
 	stopped: ["!", "error"],
+	composed: ["✓", "inactive"],
 	skipped: ["–", "inactive"],
 	todo: ["○", "inactive"],
 };
@@ -119,7 +121,7 @@ export function Lens(p: LensProps) {
 					const st = stepState(s, p.run, p.visited);
 					const [mark, color] = STEP_MARK[st];
 					const bar = isShip && SHIP_STEPS.includes(s) ? "┃" : " ";
-					let note = st === "skipped" ? "skipped" : "";
+					let note = st === "skipped" ? "skipped" : st === "composed" ? `in ${COMPOSED_BY[s]}` : "";
 					if (s === "setup-project" && (st === "todo" || st === "skipped")) note = "start here";
 					if (s === "shape" && st === "todo") note = "optional";
 					if (s === "create-issue" && st === "done" && issue !== null) note = `#${issue}`;
@@ -370,8 +372,8 @@ export const MAP = `forge pipeline
   shape              turn a rough idea into a shaped plan (optional)
   create-issue       write the Issue, AFK or HITL
   implement          code it, test it, open the PR
-  reflect            capture what the session taught
-  address-pr-feedback  answer review threads
+  reflect            self-review the changes (ship runs it for you)
+  address-pr-feedback  answer review threads (guard runs it for you)
   guard              CI, peer review, feedback rounds until review-ready
   land               risk verdict; merge-ready, or merged when opted in
 

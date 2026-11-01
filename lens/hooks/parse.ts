@@ -112,10 +112,17 @@ export const currentStep = (run: Run | null): string | null => run?.phase ?? nul
 export const issueOf = (run: Run | null): number | null =>
 	run && ["ship", "implement"].includes(run.skill) ? argNumber(run.args) : null;
 
-export type StepState = "now" | "done" | "stopped" | "skipped" | "todo";
+export type StepState = "now" | "done" | "stopped" | "composed" | "skipped" | "todo";
+
+// Steps another skill runs in their place: ship's self-review is reflect's review flow,
+// and guard answers threads with address-pr-feedback's process
+export const COMPOSED_BY: Record<string, string> = { reflect: "ship", "address-pr-feedback": "guard" };
+
+const isComposed = (s: string, run: Run | null, visited: string[]): boolean =>
+	s === "reflect" ? run?.skill === "ship" : s === "address-pr-feedback" && visited.includes("guard");
 
 // What a pipeline row shows: the step the run is in or stopped in, a step this session
-// ran or passed over, or one still ahead
+// ran, one a composite ran in its place, one it passed over, or one still ahead
 export function stepState(s: string, run: Run | null, visited: string[]): StepState {
 	if (run && s === currentStep(run)) {
 		if (!run.terminal) return "now";
@@ -123,7 +130,8 @@ export function stepState(s: string, run: Run | null, visited: string[]): StepSt
 	}
 	if (visited.includes(s)) return "done";
 	const at = PIPELINE.indexOf(s);
-	return visited.some((v) => PIPELINE.indexOf(v) > at) ? "skipped" : "todo";
+	if (!visited.some((v) => PIPELINE.indexOf(v) > at)) return "todo";
+	return isComposed(s, run, visited) ? "composed" : "skipped";
 }
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines
@@ -290,7 +298,7 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 		case "pushed":
 			return { text: `/forge-guard ${n}`.trim(), why: "the PR is open: guard drives it to review-ready" };
 		case "merged":
-			return { text: "/forge-reflect", why: "merged: capture what the session taught" };
+			return { text: "/forge-ship ", why: "merged: ship the next Issue" };
 		case "failed":
 			// the retry keeps the context runLabel leaves out
 			return { text: `/forge-${run.skill} ${run.args}`.trim(), why: "the run failed: retry once the cause is fixed" };

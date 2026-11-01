@@ -14,7 +14,7 @@ The plugin brings the skills and the lens. It carries no `version`, so an instal
 
 | View | Opens with | Shows |
 |------|------------|-------|
-| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran or skipped and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
+| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran, ran inside another skill (reflect `in ship`, address-pr-feedback `in guard`) or skipped, and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
 | Status line | always, while a run is open | skill, phase, state, guard round, CI count |
 | Next step | a band above the prompt, and the prompt suggestion (Tab) | the command that most likely comes next, and why |
 | Config pane | `/forge config` | the `## Unattended Shipping` settings with defaults filled in, the Issue tracker, `FORGE_STATUS_CMD` and `FORGE_LAUNCHER` |
