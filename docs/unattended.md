@@ -24,7 +24,7 @@ Or let batch start them: `/forge-batch --start <scope>` starts every ready Issue
 
 ## Finding out a PR waits on you
 
-GitHub tells you nothing about your own account's activity, and an agent running under your account acts as you: land's review request reaches only a linked Issue's assignee or author who didn't open the PR, and an @mention or an assignment would notify nobody. So land labels the PR with its outcome, `forge:merge-ready` or `forge:review-ready`, creating the labels on first use. Your queue is a saved filter, on the web or in the GitHub mobile app:
+GitHub tells you nothing about your own account's activity, and an agent running under your account acts as you: land's review request reaches only a linked Issue's assignee or author who didn't open the PR, and an @mention or an assignment would notify nobody. So land labels the PR with its outcome, `forge:merge-ready` or `forge:review-ready`, creating the labels on first use. Your queue is a saved filter. These work as written in a repository's pull requests tab; in global search or the GitHub mobile app, add `user:<you>` or `org:<org>`, or they match every public repository:
 
 ```text
 is:open is:pr label:forge:merge-ready
