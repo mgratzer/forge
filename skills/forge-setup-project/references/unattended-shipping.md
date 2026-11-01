@@ -4,7 +4,7 @@ The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship -
 
 ## Run Recipe
 
-`_shared/exercise.md` tries the runtime's run skill first (Claude Code: `/run`), which uses a project skill for running the app when there is one and otherwise falls back to generic patterns per project type. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has four parts:
+[exercise](../_shared/exercise.md) tries the runtime's run skill first (Claude Code: `/run`), which uses a project skill for running the app when there is one and otherwise falls back to generic patterns per project type. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has four parts:
 
 | Part | Discover from |
 |------|---------------|
@@ -21,7 +21,7 @@ Write the parts you found under Commands in `AGENTS.md`. Ask for the rest in Ste
 
 ## The Section
 
-Offer it only when the project ships through PRs: skip it when there is no remote or the remote has no merged PRs (`gh pr list --state merged --limit 1`), and ask when the repository is new. The format and defaults are in `_shared/unattended-config.md`.
+Offer it only when the project ships through PRs: skip it when there is no remote or the remote has no merged PRs (`gh pr list --state merged --limit 1`), and ask when the repository is new. The format and defaults are in [unattended-config](../_shared/unattended-config.md).
 
 | Setting | Discover from | When not discoverable |
 |---------|---------------|-----------------------|
