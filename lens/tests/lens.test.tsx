@@ -293,6 +293,7 @@ test("parsers: a --start batch's Status table, and a plan without one parses as 
 	expect(parse.batch(plan)).toEqual({
 		scope: "label:ready",
 		status: null,
+		order: null,
 		waves: [
 			{ title: "Wave 1 (1 Issues)", rows: [{ num: "7", title: "fix: x", touch: "a.ts", notes: "" }], launch: "7" },
 		],
@@ -329,8 +330,74 @@ test("parsers: a --start batch's Status table, and a plan without one parses as 
 	expect(started?.status?.merge).toBe("#9 (land judged it low risk; batch never merges)");
 	expect(started?.status?.progress).toBe("continuing: 1 in flight, 1 waiting");
 	expect(started?.waves.map((w) => w.title)).toEqual(["Wave 1 (1 Issues)"]);
+	expect(started?.order).toBe(null);
 	// a --start run is continued by re-running it; a plan hands the starts to the person
 	const next = (args: string) => parse.nextStep(model.startRun(model.EMPTY, "batch", args, 0).run, null, 0, null);
 	expect(next("--start epic:5 -- cap waves at 2")?.text).toBe("/forge-batch --start epic:5 -- cap waves at 2");
 	expect(next("epic:5 -- --start later")?.text).toBe("/forge-ship --guard ");
+});
+
+const WAITS_ON_YOU = [
+	"## Batch: epic:5",
+	"",
+	"### Status",
+	"| # | Title | State | Detail |",
+	"|---|---|---|---|",
+	"| 6 | feat: a | in flight | PR #9, merge-ready (low risk, judged on head) |",
+	"| 7 | fix: x | in flight | PR #10, review-ready (needs review, judged on head) |",
+	"",
+	"**Merge:** #9 (land judged it low risk; batch never merges)",
+	"**Scope:** waits on you",
+	"",
+	"### Merge Order",
+	"| Step | PR | Result |",
+	"|------|----|--------|",
+	"| 1 | #9 | clean |",
+	"| 2 | #10 | conflicts with #9 (a.ts): merge main into #10 after #9 lands |",
+	"",
+	"**Gates:** pass on main at 3f2c1a9 with #9",
+].join("\n");
+
+test("parsers: a --start batch's Merge Order is its test-merge, not a Wave", () => {
+	const waiting = parse.batch(WAITS_ON_YOU);
+	expect(waiting?.order).toEqual({
+		rows: [
+			{ step: "1", pr: "#9", result: "clean" },
+			{ step: "2", pr: "#10", result: "conflicts with #9 (a.ts): merge main into #10 after #9 lands" },
+		],
+		gates: "pass on main at 3f2c1a9 with #9",
+	});
+	expect(waiting?.waves).toEqual([]);
+	expect(waiting?.status?.progress).toBe("waits on you");
+	// as an exercise run printed it: the Merge Order before the status's last lines
+	const early = parse.batch(
+		[
+			"## Batch: 6 7",
+			"### Status",
+			"| 6 | feat: a | in flight | PR #9, low risk, judged on head |",
+			"### Merge Order",
+			"| 1 | #9 | clean |",
+			"**Gates:** pass",
+			"**Merge:** #9",
+			"**Scope:** waits on you",
+		].join("\n"),
+	);
+	expect(early?.status?.merge).toBe("#9");
+	expect(early?.status?.progress).toBe("waits on you");
+	expect(early?.order).toEqual({ rows: [{ step: "1", pr: "#9", result: "clean" }], gates: "pass" });
+});
+
+test("the Waves pane draws a batch's merge order and its gates", async ($, on) => {
+	const clock = mock.clock(on);
+	engine(on);
+	on("turn.complete", (_, e) => ({ ...e, text: WAITS_ON_YOU }));
+	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
+	await $.turn.complete({ answer: WAITS_ON_YOU, reason: "answer" });
+	await clock.advance(3_000);
+
+	const waves = await $.ui.mount({ ...pane("forge-waves"), surface: "terminal" });
+	expect(await waves.find({ type: "Text", text: /Merge order/ })).toBeDefined();
+	expect(await waves.find({ type: "Text", text: /conflicts with #9 \(a\.ts\)/ })).toBeDefined();
+	expect(await waves.find({ type: "Text", text: /gates: pass on main/ })).toBeDefined();
+	await waves.unmount();
 });

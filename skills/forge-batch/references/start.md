@@ -4,7 +4,7 @@ How `forge-batch --start <scope>` starts ready Issues and continues the scope ea
 
 ## Classify
 
-List the scope with closed Issues too (`--state all` in *List Issues by Scope* of [issue-operations](../_shared/issue-operations.md); for an epic, drop the `OPEN` filter and read checked `- [x]` items too), adding `comments` to its fields for the start comments. Add `body,headRefOid` to the *Open PRs* listing in [open-work](../_shared/open-work.md) for land's verdicts. Then put each Issue in exactly one state, first match wins:
+List the scope with closed Issues too (`--state all` in *List Issues by Scope* of [issue-operations](../_shared/issue-operations.md); for an epic, drop the `OPEN` filter and read checked `- [x]` items too), adding `comments` to its fields for the start comments. Add `body,headRefOid,additions,deletions` to the *Open PRs* listing in [open-work](../_shared/open-work.md) for land's verdicts and the merge order. Then put each Issue in exactly one state, first match wins:
 
 | State | When | Detail |
 |-------|------|--------|
@@ -50,6 +50,24 @@ A started Issue with no PR whose session has ended (the runtime lists it as ende
 
 The scope is **done** when every Issue is merged or excluded. It **waits on you** when a run has nothing to start and every in-flight Issue waits on a person: its PR carries land's verdict on its head, it stopped before a PR, or it has a launch-line comment and no PR. Otherwise it is **continuing**.
 
+## Merge Order
+
+Each PR was judged on its own; their combination wasn't. When the scope waits on you and two or more PRs carry land's verdict on their head, test-merge them together before printing. Never push, and never touch the user's checkout or branches.
+
+Order the PRs: one whose Issue depends on another's (*depends on* in Step 3 of [forge-batch](../SKILL.md)) comes after it, then smaller diffs (`additions` plus `deletions`) first, then lower numbers. Merge them in that order, each at the head commit land judged, into a scratch worktree detached at the default branch:
+
+```bash
+git fetch origin && git fetch origin <headRefOid> <headRefOid> ...   # every judged head, in one call
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@')
+SCRATCH=$(mktemp -d)
+git worktree add --detach "$SCRATCH" "origin/$DEFAULT_BRANCH"
+git -C "$SCRATCH" merge --no-ff --no-edit <headRefOid>   # per PR, in order
+```
+
+When a merge conflicts, note the files `git -C "$SCRATCH" diff --name-only --diff-filter=U` lists, run `git -C "$SCRATCH" merge --abort`, and go on with the next PR. The conflict is with the PRs merged before it whose `files` include those files, or with the default branch when none do: once they land, this PR merges the default branch and resolves it. A failed merge that lists no conflicted files is an error, not a conflict: report it as the PR's result. Skip a PR whose Issue depends on one that conflicted or failed, as `skipped: needs #<n>`.
+
+Then run the project's quality gates once in `$SCRATCH`, with the fresh-checkout step and gate parts from *Pre-flight* in [phase-execution](../_shared/phase-execution.md). Last, whatever failed before, remove the worktree with `git worktree remove --force "$SCRATCH"`.
+
 ## Output
 
 Print this before the Waves, which stay the plan for Issues not yet in flight and print no launch lines of their own:
@@ -75,3 +93,16 @@ launch: <launcher> 124
 ```
 
 Omit the launch line when every ready Issue started, and **Merge:** when no PR is merge-ready.
+
+When *Merge Order* ran, print its result after the **Scope:** line, and list **Merge:**'s PRs in its order:
+
+```text
+### Merge Order
+| Step | PR | Result |
+|------|----|--------|
+| 1 | #401 | clean |
+| 2 | #398 | conflicts with #401 (docs/api.md): merge main into #398 after #401 lands |
+| 3 | #405 | clean |
+
+**Gates:** pass on main at 3f2c1a9 with #401, #405 | fail: <gate>: <first error line>
+```

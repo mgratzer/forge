@@ -177,28 +177,38 @@ const tableRows = (lines: string[]): string[][] =>
 				.map((c) => c.trim()),
 		);
 
-// What follows `launch:`, `**Merge:**` or `**Scope:**` at the start of a line
+// What follows `launch:`, `**Merge:**`, `**Scope:**` or `**Gates:**` at the start of a line
 const after = (text: string, label: RegExp): string => (label.exec(text)?.[1] ?? "").trim();
 
 export function batch(text: string): Batch | null {
 	const head = /^## Batch: (.+)$/m.exec(text);
 	if (!head) return null;
-	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, waves: [], excluded: [] };
-	for (const chunk of text.slice(head.index).split(/^### /m).slice(1)) {
+	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, order: null, waves: [], excluded: [] };
+	const all = text.slice(head.index);
+	for (const chunk of all.split(/^### /m).slice(1)) {
 		const [title = "", ...lines] = chunk.split("\n");
 		if (/^Excluded/.test(title)) {
 			out.excluded = lines.filter((l) => l.startsWith("- ")).map((l) => l.slice(2));
 			continue;
 		}
 		const body = lines.join("\n");
+		if (/^Merge Order/.test(title)) {
+			// the test-merge a --start run makes once the scope waits on you; not a Wave
+			out.order = {
+				rows: tableRows(lines).map(([step = "", pr = "", result = ""]) => ({ step, pr, result })),
+				gates: after(body, /^\*\*Gates:\*\*\s*(.+)$/m),
+			};
+			continue;
+		}
 		const launch = after(body, /^launch: (.+)$/m);
 		if (/^Status/.test(title)) {
 			// `--start` prints the scope's state before the Waves
 			out.status = {
 				rows: tableRows(lines).map(([num = "", t = "", state = "", detail = ""]) => ({ num, title: t, state, detail })),
 				launch,
-				merge: after(body, /^\*\*Merge:\*\*\s*(.+)$/m),
-				progress: after(body, /^\*\*Scope:\*\*\s*(.+)$/m),
+				// read from the whole batch: a Merge Order printed before them still leaves them the status's
+				merge: after(all, /^\*\*Merge:\*\*\s*(.+)$/m),
+				progress: after(all, /^\*\*Scope:\*\*\s*(.+)$/m),
 			};
 		} else {
 			const rows = tableRows(lines).map(([num = "", t = "", touch = "", notes = ""]) => ({
