@@ -114,15 +114,13 @@ export const issueOf = (run: Run | null): number | null =>
 
 export type StepState = "now" | "done" | "stopped" | "composed" | "skipped" | "todo";
 
-// Steps another skill runs in their place: ship's self-review is reflect's review flow,
-// and guard answers threads with address-pr-feedback's process
-export const COMPOSED_BY: Record<string, string> = { reflect: "ship", "address-pr-feedback": "guard" };
-
-const isComposed = (s: string, run: Run | null, visited: string[]): boolean =>
-	s === "reflect" ? run?.skill === "ship" : s === "address-pr-feedback" && visited.includes("guard");
+// ship's self-review is reflect's review flow, so a ship run past implement ran it. Guard
+// runs address-pr-feedback's process only when it addresses threads, which visits it.
+const isComposed = (s: string, run: Run | null): boolean =>
+	s === "reflect" && run?.skill === "ship" && PIPELINE.indexOf(currentStep(run) ?? "") > PIPELINE.indexOf(s);
 
 // What a pipeline row shows: the step the run is in or stopped in, a step this session
-// ran, one a composite ran in its place, one it passed over, or one still ahead
+// ran, reflect run inside ship, one it passed over, or one still ahead
 export function stepState(s: string, run: Run | null, visited: string[]): StepState {
 	if (run && s === currentStep(run)) {
 		if (!run.terminal) return "now";
@@ -131,7 +129,7 @@ export function stepState(s: string, run: Run | null, visited: string[]): StepSt
 	if (visited.includes(s)) return "done";
 	const at = PIPELINE.indexOf(s);
 	if (!visited.some((v) => PIPELINE.indexOf(v) > at)) return "todo";
-	return isComposed(s, run, visited) ? "composed" : "skipped";
+	return isComposed(s, run) ? "composed" : "skipped";
 }
 
 // Reviewer output: `### <file>` headers over `- [P0] <finding>` lines

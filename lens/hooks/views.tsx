@@ -2,7 +2,6 @@ import type { EngineInterface } from "claude-code";
 
 import type { Batch, Config, Finding, Next, Pr, Risk, Run, Stage } from "../types";
 import {
-	COMPOSED_BY,
 	currentStep,
 	DEFAULT_ROUNDS,
 	isLowRisk,
@@ -121,7 +120,9 @@ export function Lens(p: LensProps) {
 					const st = stepState(s, p.run, p.visited);
 					const [mark, color] = STEP_MARK[st];
 					const bar = isShip && SHIP_STEPS.includes(s) ? "┃" : " ";
-					let note = st === "skipped" ? "skipped" : st === "composed" ? `in ${COMPOSED_BY[s]}` : "";
+					let note = st === "skipped" ? "skipped" : st === "composed" ? "in ship" : "";
+					if (s === "address-pr-feedback" && st === "skipped" && p.visited.includes("guard"))
+						note = "when threads come";
 					if (s === "setup-project" && (st === "todo" || st === "skipped")) note = "start here";
 					if (s === "shape" && st === "todo") note = "optional";
 					if (s === "create-issue" && st === "done" && issue !== null) note = `#${issue}`;
@@ -373,7 +374,7 @@ export const MAP = `forge pipeline
   create-issue       write the Issue, AFK or HITL
   implement          code it, test it, open the PR
   reflect            self-review the changes (ship runs it for you)
-  address-pr-feedback  answer review threads (guard runs it for you)
+  address-pr-feedback  answer review threads (guard runs it when threads come)
   guard              CI, peer review, feedback rounds until review-ready
   land               risk verdict; merge-ready, or merged when opted in
 
