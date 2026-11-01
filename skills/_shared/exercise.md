@@ -4,7 +4,7 @@ Tests prove the code does what the tests say. Running the app and using the chan
 
 ## When
 
-Exercise when the diff changes runtime behavior, not only docs, tests, CI configuration, or comments. Otherwise report `not exercised: no runtime change`.
+Exercise when the diff changes runtime behavior, not only docs, tests, CI configuration, or comments. Anything `AGENTS.md` calls runtime is runtime too, even Markdown. Otherwise report `not exercised: no runtime change`.
 
 Find the recipe, first match wins:
 
