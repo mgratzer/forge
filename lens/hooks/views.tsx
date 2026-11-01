@@ -309,6 +309,23 @@ export function WavesView({ ui, batch }: { ui: Ui; batch: Batch | null }) {
 					{batch.status.merge !== "" && <Text color="success">merge: {batch.status.merge}</Text>}
 				</Box>
 			)}
+			{batch.order && (
+				<Box flexDirection="column" borderStyle="round" borderColor="claude" paddingX={1}>
+					<Text bold color="claude">
+						Merge order
+					</Text>
+					{batch.order.rows.map((r) => (
+						<Text wrap="truncate">
+							<Text bold>{`${r.step}.`.padEnd(4)}</Text>
+							<Text bold>{r.pr.padEnd(6)}</Text>
+							<Text color={r.result === "clean" ? "success" : "warning"}>{r.result}</Text>
+						</Text>
+					))}
+					{batch.order.gates !== "" && (
+						<Text color={batch.order.gates.startsWith("pass") ? "success" : "error"}>gates: {batch.order.gates}</Text>
+					)}
+				</Box>
+			)}
 			{batch.waves.map((w, i) => (
 				<Box flexDirection="column" borderStyle="round" borderColor={i === 0 ? "claude" : "inactive"} paddingX={1}>
 					<Text bold color={i === 0 ? "claude" : "subtle"}>

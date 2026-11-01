@@ -177,13 +177,13 @@ const tableRows = (lines: string[]): string[][] =>
 				.map((c) => c.trim()),
 		);
 
-// What follows `launch:`, `**Merge:**` or `**Scope:**` at the start of a line
+// What follows `launch:`, `**Merge:**`, `**Scope:**` or `**Gates:**` at the start of a line
 const after = (text: string, label: RegExp): string => (label.exec(text)?.[1] ?? "").trim();
 
 export function batch(text: string): Batch | null {
 	const head = /^## Batch: (.+)$/m.exec(text);
 	if (!head) return null;
-	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, waves: [], excluded: [] };
+	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, order: null, waves: [], excluded: [] };
 	for (const chunk of text.slice(head.index).split(/^### /m).slice(1)) {
 		const [title = "", ...lines] = chunk.split("\n");
 		if (/^Excluded/.test(title)) {
@@ -191,6 +191,14 @@ export function batch(text: string): Batch | null {
 			continue;
 		}
 		const body = lines.join("\n");
+		if (/^Merge Order/.test(title)) {
+			// the test-merge a --start run makes once the scope waits on you; not a Wave
+			out.order = {
+				rows: tableRows(lines).map(([step = "", pr = "", result = ""]) => ({ step, pr, result })),
+				gates: after(body, /^\*\*Gates:\*\*\s*(.+)$/m),
+			};
+			continue;
+		}
 		const launch = after(body, /^launch: (.+)$/m);
 		if (/^Status/.test(title)) {
 			// `--start` prints the scope's state before the Waves
