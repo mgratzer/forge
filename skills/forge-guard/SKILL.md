@@ -25,12 +25,7 @@ ME=$(gh api user --jq .login)
 
 Read the project's `## Unattended Shipping` section per [unattended-config](_shared/unattended-config.md): peer reviewer, security-sensitive paths, max rounds. Report `reviewing` via [status-reporting](_shared/status-reporting.md).
 
-A push makes land's verdict stale, so right after this run's first push, in whichever step, take land's label off once:
-
-```bash
-gh pr view "$PR" --json labels --jq '.labels[].name | select(startswith("forge:"))' |
-  while read -r OLD; do gh pr edit "$PR" --remove-label "$OLD"; done
-```
+A push makes land's verdict stale: right after this run's first push, in whichever step, remove land's label once, per [status-reporting](_shared/status-reporting.md#outcome-label) with `STATE` empty.
 
 ### Step 2: Run Quality Passes
 

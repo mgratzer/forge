@@ -69,14 +69,7 @@ gh pr edit "$PR" --body-file "$BODY"
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<LOGIN>"
 ```
 
-**Label the outcome**, before reporting it, on every end of this skill, Steps 1 and 3 included. The summary and the status line are gone with the session, and a person gets no notification about their own account's activity, so the label is what still says the PR waits on them. `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`, which leave no label. A refused label call doesn't change the state: name it in the summary.
-
-```bash
-gh pr view "$PR" --json labels --jq ".labels[].name | select(startswith(\"forge:\") and . != \"forge:$STATE\")" |
-  while read -r OLD; do gh pr edit "$PR" --remove-label "$OLD"; done
-[ -z "$STATE" ] || { gh label create "forge:$STATE" --force --color 1d76db --description "From forge-land; the PR's Risk section says why" &&
-  gh pr edit "$PR" --add-label "forge:$STATE"; }
-```
+**Label the outcome** per [status-reporting](_shared/status-reporting.md#outcome-label) before reporting it, on every end of this skill, Steps 1 and 3 included: `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`.
 
 Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize.
 
@@ -90,7 +83,7 @@ Never merge outside the opt-in above, never push, never close the PR. Report the
 **Judged:** <short SHA>, low risk | needs review
 **Checks:** <hits, or "none">
 **Review requested from:** <login> | not requested: <why> | n/a
-**Label:** forge:merge-ready | forge:review-ready | none | refused: <why>
+**Label:** <label> | none | refused: <why>
 ```
 
 ## Guidelines

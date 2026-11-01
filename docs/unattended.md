@@ -56,7 +56,7 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 A launcher is yours, for your terminal. It does three things:
 
 1. Gives each Issue an isolated checkout, such as `claude -w <issue>` or `git worktree add`.
-2. Starts the agent with `/forge-ship --guard <issue>`, with `FORGE_STATUS_CMD` pointing at a script that accepts `<state> "<detail>"` ([status-reporting](../skills/_shared/status-reporting.md)). That script is also where a desktop notification for `merge-ready` and `review-ready` goes.
+2. Starts the agent with `/forge-ship --guard <issue>`, with `FORGE_STATUS_CMD` pointing at a script that accepts `<state> "<detail>"` ([status-reporting](../skills/_shared/status-reporting.md)).
 3. Makes the session findable: a tab name, a window title, a tmux session name.
 
 Keep it to starting sessions. Anything smarter belongs in a skill.
