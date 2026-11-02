@@ -43,9 +43,9 @@ Report `waiting`. Request the peer review first so it overlaps the CI wait — b
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-**How to wait** — each wait below is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one of each at a time: a wait still running after a push keeps watching the PR. A wait exiting, or an event from a runtime that watches the PR (Claude Code desktop's Auto-fix), sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. Such a runtime doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
+**How to wait** — each wait below is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one at a time, CI first, then the peer-review loop; a push starts them over and a terminal state ends them, so stop one still running. A wait exiting, or an event from a runtime that watches the PR (Claude Code desktop's Auto-fix), sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. Such a runtime doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
 
-**CI** — wait on the checks, 60 minutes at most in total, re-runs included. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI:
+**CI** — wait on the checks, 60 minutes at most in total, re-runs included. "No checks reported" within 3 minutes of a push means the run has not registered yet: run the wait again with `sleep 30;` in front, in the same call. After that, treat the repository as having no CI:
 
 ```bash
 gh pr checks "$PR" --watch --interval 30 >/dev/null &   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
@@ -77,7 +77,7 @@ The review signal is satisfied when a post-push review exists, when no peer revi
 
 Check the terminal conditions first, on every round:
 
-- **`review-ready`** — branch mergeable, no check pending on the head, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads or substitute review findings, no threads needing a human decision
+- **`review-ready`** — branch mergeable, no check pending on the head (none registered yet within 3 minutes of a push counts as pending), CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads or substitute review findings, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a flaky or external check stays red, a conflict can't be resolved, a reviewer repeats an answered point, or only threads needing a human decision remain
 
 When neither applies, react in this order (mergeability, CI, threads) and go back to Step 3. One trip is one **round**, however many pushes it makes, and rounds count across turns; a trip that only reruns a flaky check or finds checks still pending is not.
@@ -114,8 +114,8 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 
 A runtime that watches the PR keeps sending events after the run's terminal state, whether this skill or `forge-land` reported it. Check each one against the PR's current head:
 
-- **No-op** — the PR is merged or closed, the event is about an older head, or it is only about a failed review (Step 3). Say so in one line and change nothing: no label, no `## Risk`, no new report.
-- **Re-enter** — anything else on the current head (a CI failure, a conflict, an unaddressed thread) goes to Step 4 with the rounds so far. The re-entry's first push removes land's label again (Step 1). When `forge-land` reported the last terminal state, reaching `review-ready` continues with its process, since a push makes its verdict stale. Report only the new terminal state, once, and summarize again.
+- **No-op** — the PR is merged or closed, the event is about an older head, it is only about a failed review (Step 3), or the wake is a stopped wait exiting. Say so in one line and change nothing: no label, no `## Risk`, no new report.
+- **Re-enter** — anything else on the current head (a CI failure, a conflict, an unaddressed thread) goes to Step 4 with the rounds so far. The re-entry's first push removes land's label again (Step 1). Under `forge-ship --guard`, or when `forge-land` reported the last terminal state, reaching `review-ready` continues with its process, since a push makes its verdict stale. Ending in `needs-human`, pushed or not, removes land's label too, disables any auto-merge land armed (`gh pr merge "$PR" --disable-auto`), and says the `## Risk` no longer holds. Report only the new terminal state, once, and summarize again.
 
 ## Output Format
 
