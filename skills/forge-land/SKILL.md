@@ -26,7 +26,7 @@ git fetch origin "$BASE" "pull/$PR/head"   # the verdict reads the diff and file
 Read the peer reviewer, the security-sensitive paths, and the auto-merge setting per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
 
 - **Mergeable** — `gh pr view "$PR" --json mergeable` is `MERGEABLE` (`UNKNOWN`: ask up to 5 times, 10 seconds apart; still `UNKNOWN` fails)
-- **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and run forge-guard Step 3's CI wait, which a runtime watching the PR doesn't replace: no verdict on pending checks, so a check still pending when the cap expires fails this. No checks reported 3 minutes after the last push means the repository has no CI, which passes
+- **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and wait as forge-guard Step 3 says under *How to wait* and *CI*, then re-check this list. No verdict on pending checks: one still pending at the cap fails this. No checks reported 3 minutes after the last push means the repository has no CI, which passes
 - **Threads addressed** — the unaddressed-thread query in [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns nothing, and no unresolved thread ends in our "Needs your decision" reply
 - **Exercised** — the body has a `## Exercised` section (see [exercise](_shared/exercise.md))
 - **Reviewed** — the latest of: a review by someone other than `$ME` that is not a failed review (as [forge-guard](../forge-guard/SKILL.md) Step 3 defines it), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
@@ -71,7 +71,7 @@ gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewer
 
 **Label the outcome** per [status-reporting](_shared/status-reporting.md#outcome-label) before reporting it, on every end of this skill, Steps 1 and 3 included: `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`.
 
-Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize. An event from a runtime watching the PR after that goes through [forge-guard](../forge-guard/SKILL.md) Step 5.
+Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize. An event from a runtime watching the PR after that goes through [forge-guard](../forge-guard/SKILL.md) Step 5 when this session also ran guard. Run alone, land still never pushes: give Step 5's no-op its one line, and for anything else say in one line that it needs `/forge-guard`.
 
 ## Output Format
 

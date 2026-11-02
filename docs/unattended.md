@@ -16,9 +16,7 @@ Then [forge-land](../skills/forge-land/SKILL.md) decides what the PR needs from 
 
 ## When the runtime watches the PR
 
-A runtime can watch the PR for you: Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts and review comments. That replaces looking for those, not waiting. Nothing reports CI turning green, so a clean PR gets no event, and without a wait of its own the run would never reach land. Guard and land keep one CI wait, a single `gh pr checks --watch`: in the background when the runtime can run a command that way and wake the session when it exits, blocking otherwise. Neither reports a final state while the head's checks are pending.
-
-An event during the wait goes through guard's Step 4 and counts against the round limit. An event after a final state changes nothing when it is about an older head or only about a failed peer review (the session says so in one line). A real CI failure, a conflict or a new review thread on the current head re-enters guard and then land, and the session reports the new final state.
+A runtime can watch the PR for you: Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts and review comments. That replaces looking for those, not waiting. Nothing reports CI turning green, so a clean PR gets no event, and without a wait of its own the run would never reach land. So guard and land keep one CI wait, in the background when the runtime can wake the session, and land writes no verdict while checks are pending. An event after a terminal state either changes nothing, in one line, or re-enters guard: see [forge-guard](../skills/forge-guard/SKILL.md) Steps 3 and 5.
 
 The desktop app's own instructions say not to poll CI with `gh`. A skill can't override them, so a session may still follow the app and end its turn waiting for an event; a clean PR then sits until something wakes it.
 

@@ -37,20 +37,18 @@ Triage findings from both passes with `forge-ship`'s unattended rule, then run t
 
 ### Step 3: Wait for Signals
 
-Report `waiting`. Request the peer review first so it overlaps the CI wait — bot reviewers review a PR once and stay silent afterwards unless asked, and Step 2 just pushed past their first look. Skip the request when the latest push only merged the base, when no peer reviewer is configured, or once the run has a substitute review:
+Report `waiting`. Request the peer review first so it overlaps the CI wait — bot reviewers review a PR once and stay silent afterwards unless asked, and Step 2 just pushed past their first look. Skip the request when nothing was pushed since the last one, when the latest push only merged the base, when no peer reviewer is configured, or once the run has a substitute review:
 
 ```bash
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-**How to wait** — each wait below is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one of each at a time: a wait still running after a push keeps watching the PR. A wait exiting proves nothing by itself, so go to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again.
+**How to wait** — each wait below is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one of each at a time: a wait still running after a push keeps watching the PR. A wait exiting, or an event from a runtime that watches the PR (Claude Code desktop's Auto-fix), sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. Such a runtime doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
 
-A runtime that watches the PR (Claude Code desktop's Auto-fix) doesn't replace these waits. It reports failures, conflicts and comments but never green, so a clean PR gets no event, and only this wait carries the run on to its final state. Its event during a wait goes through Step 4 like anything else this skill finds; rounds carry across turns, so the round limit still holds.
-
-**CI** — wait on the checks, 60 minutes at most in total. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI:
+**CI** — wait on the checks, 60 minutes at most in total, re-runs included. "No checks reported" within 3 minutes of a push means the run has not registered yet; after that, treat the repository as having no CI:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30 &   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
+gh pr checks "$PR" --watch --interval 30 >/dev/null &   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
 W=$!; (sleep 3600 >/dev/null 2>&1; echo "CI wait cap reached"; kill "$W") & C=$!   # --watch never gives up on a check stuck in a queue
 wait "$W"; kill "$C" 2>/dev/null
 ```
@@ -82,7 +80,7 @@ Check the terminal conditions first, on every round:
 - **`review-ready`** — branch mergeable, no check pending on the head, CI green apart from pre-existing failures, review signal satisfied, no unaddressed threads or substitute review findings, no threads needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a flaky or external check stays red, a conflict can't be resolved, a reviewer repeats an answered point, or only threads needing a human decision remain
 
-When neither applies, react in this order (mergeability, CI, threads) and go back to Step 3. One trip is one **round**, however many pushes it makes; a trip that only reruns a flaky check or finds checks still pending is not.
+When neither applies, react in this order (mergeability, CI, threads) and go back to Step 3. One trip is one **round**, however many pushes it makes, and rounds count across turns; a trip that only reruns a flaky check or finds checks still pending is not.
 
 **Branch not mergeable** — `gh pr view "$PR" --json mergeable,mergeStateStatus` reports `CONFLICTING` or `BEHIND` (`UNKNOWN` means GitHub is still computing: ask up to 5 times, 10 seconds apart, then treat it as mergeable). React to `BEHIND` once per run; after that, a branch that is only behind counts as mergeable and the summary says so. Report `addressing`, merge the base in, run the quality gates, commit, push:
 
@@ -112,12 +110,12 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 
 Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
 
-### Step 5: After a Final State
+### Step 5: After a Terminal State
 
-A runtime that watches the PR keeps sending events after the run's final state, whether this skill or `forge-land` reported it. Check each one against the PR's current head:
+A runtime that watches the PR keeps sending events after the run's terminal state, whether this skill or `forge-land` reported it. Check each one against the PR's current head:
 
-- **No-op** — the PR is merged or closed, the event is about an older head, or it is only about a failed peer review (the reviewer's rate limit, say). Say so in one line and change nothing: no label, no `## Risk`, no new report.
-- **Re-enter** — a real CI failure, a conflict or a new review thread on the current head goes to Step 4 with the run's rounds carried over. Reaching `review-ready` continues with the [forge-land](../forge-land/SKILL.md) process, because any push makes the verdict stale, and the first push of the re-entry removes land's label again (Step 1). Report the new final state once, and summarize again.
+- **No-op** — the PR is merged or closed, the event is about an older head, or it is only about a failed review (Step 3). Say so in one line and change nothing: no label, no `## Risk`, no new report.
+- **Re-enter** — anything else on the current head (a CI failure, a conflict, an unaddressed thread) goes to Step 4 with the rounds so far. The re-entry's first push removes land's label again (Step 1). When `forge-land` reported the last terminal state, reaching `review-ready` continues with its process, since a push makes its verdict stale. Report only the new terminal state, once, and summarize again.
 
 ## Output Format
 
