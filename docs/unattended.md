@@ -14,6 +14,12 @@ The guard's steps are in [forge-guard](../skills/forge-guard/SKILL.md). It stops
 
 Then [forge-land](../skills/forge-land/SKILL.md) decides what the PR needs from you and writes it into the PR's `## Risk` section, judged on the head commit. `merge-ready`: the checks in the [risk rubric](../skills/_shared/risk-rubric.md) found nothing and the verdict is low risk, so you can merge without reading the diff. `review-ready`: read the PR, starting from its Where to look list; land requests your review when you are not the one who opened the PR. Merging is yours, unless the project set `Auto-merge: low-risk`: then land merges a low-risk PR itself and reports `merged`. It merges only the commit it judged, so a push after the verdict stops the merge. Run `/forge-land <pr>` on its own for any green PR. Unattended runs, including runs no person can answer, skip plan approval, so the PR carries the Plan as first made and says why (see [pr-body](../skills/_shared/pr-body.md)). A deviation it doesn't state sends the PR to review, and so does a HITL Issue shipped this way.
 
+## When the runtime watches the PR
+
+A runtime can watch the PR for you: Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts and review comments. That replaces looking for those, not waiting. Nothing reports CI turning green, so a clean PR gets no event, and without a wait of its own the run would never reach land. So guard and land keep one CI wait, in the background when the runtime can wake the session, and land writes no verdict while checks are pending. An event after a terminal state either changes nothing, in one line, or re-enters guard: see [forge-guard](../skills/forge-guard/SKILL.md) Steps 3 and 5.
+
+The desktop app's own instructions say not to poll CI with `gh`. A skill can't override them, so a session may still follow the app and end its turn waiting for an event; a clean PR then sits until something wakes it.
+
 ## One Issue or ten
 
 One Issue: `/forge-ship --guard 123` in any session, or `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout.
