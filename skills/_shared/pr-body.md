@@ -15,9 +15,7 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 **Change outline** (only when [visuals](visuals.md) calls for a view)
 
-<short text>
-
-<one view, in its own fenced block>
+<for each view: a line of text, then the view in its own fenced block>
 
 ## Exercised
 

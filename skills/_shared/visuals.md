@@ -4,7 +4,7 @@ How a skill shows the shape of a change so a person can take it in at a glance: 
 
 ## When
 
-Draw a view only when it explains something the text or the diff doesn't, and let it replace the prose that said the same thing. A one-file fix, a rename, or a change one sentence explains gets no view.
+Draw a view only when it explains something the text or the diff doesn't, and let it replace the prose that said the same thing. A one-file fix, a rename, or a change one sentence explains gets no view. A breakdown of three or more Issues where one blocks another gets a dependency order view.
 
 ## Where
 
@@ -19,8 +19,8 @@ Use Mermaid only in a PR or Issue body on a host that renders it (GitHub, GitLab
 | Contract | Endpoint shapes, schemas, message formats, public signatures |
 | Pseudocode | Changed logic, in plain words rather than code |
 | Matrix | One rule restated in several places; a table with a row per rule, a column per file, and the line in each cell |
-| Dependency order | Three or more Issues where one blocks another; a tree under each blocker, with `also blocked by` where an Issue has two |
-| Relationship (Mermaid) | Sequences, state, and data flow between parts, when they are too tangled for a call tree |
+| Dependency order | Which Issues come first; a tree under each blocker, with `also blocked by` where an Issue has two |
+| Relationship (Mermaid) | Sequences, state, and data flow across modules, where a call tree would hide who talks to whom |
 
 Use `diff` blocks when the shape already exists, and show the full target shape when most of it is new.
 
