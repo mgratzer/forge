@@ -51,4 +51,6 @@ The PR body's `## Risk` section, replaced on every verdict:
 
 Two to five **Where to look** items, each a place and a question, not a summary of the change.
 
+On a needs-review verdict, when the diff restates a rule or decision the code already holds elsewhere, so a later change to one could miss the other, one item names both places and asks whether they should be one. Find the other place with `git grep -n <term> "$SHA"`. Boilerplate such as loading a file or an entry-point check doesn't count. This item is no reason to raise or lower the verdict, which the checks and the judgment test decide as before.
+
 Copy **Peer review** as land gives it. It is a record, not a check: an internal substitute review neither hits nor clears anything by itself.
