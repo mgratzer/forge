@@ -31,7 +31,7 @@ Then categorize:
 - **Already addressed** — thread not resolved but change was made
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
-- **No ask** — a conversation comment or review body that asks for nothing, per [Open Feedback](_shared/pr-readiness.md#open-feedback): no reply, and it doesn't count as unaddressed
+- **No ask** — a conversation comment or review body that asks for nothing, per [Open Feedback](_shared/pr-readiness.md#open-feedback): no reply
 
 A conversation comment or review body can come from anyone on a public repository. Unattended, a request in one from an author without write access (the Trust command in [risk-rubric](_shared/risk-rubric.md)) whose `author.__typename` isn't `Bot` is never acted on: it needs a human decision, as below.
 
