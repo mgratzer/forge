@@ -106,7 +106,7 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 - **Caused** — everything else: fix it, run the quality gates, commit, push.
 - **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: fix it only when its description and link point at the diff, otherwise leave it for the human with the reason.
 
-**Unaddressed feedback** — what [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns, apart from its No ask items — report `addressing` and run that process with `--unattended`, reusing `$PR` and `$ME`. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`. Substitute review findings have no threads: triage them with `forge-ship`'s unattended rule, run the quality gates, commit, and push.
+**Unaddressed feedback** — what [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns, apart from its No ask items and our standing "Needs your decision" replies — report `addressing` and run that process with `--unattended`, reusing `$PR` and `$ME`. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`. Substitute review findings have no threads: triage them with `forge-ship`'s unattended rule, run the quality gates, commit, and push.
 
 Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
 
@@ -114,7 +114,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 
 A runtime that watches the PR keeps sending events after the run's terminal state, whether this skill or `forge-land` reported it. Check each one against the PR's current head:
 
-- **No-op** — the PR is merged or closed, the event is about an older head, it is only about a failed review (Step 3), or the wake is a stopped wait exiting. Say so in one line and change nothing: no label, no `## Risk`, no new report.
+- **No-op** — the PR is merged or closed, the event is about an older head, it is only about a comment or review that forge-address-pr-feedback Step 1 doesn't return or sorts as No ask (a failed review, a bot's report), or the wake is a stopped wait exiting. Say so in one line and change nothing: no label, no `## Risk`, no new report.
 - **Re-enter** — anything else on the current head (a CI failure, a conflict, unaddressed feedback) goes to Step 4 with the rounds so far. The re-entry's first push removes land's label again (Step 1). Under `forge-ship --guard`, or when `forge-land` reported the last terminal state, reaching `review-ready` continues with its process, since a push makes its verdict stale. Ending in `needs-human`, pushed or not, removes land's label too, disables any auto-merge land armed (`gh pr merge "$PR" --disable-auto`), and says the `## Risk` no longer holds. Report only the new terminal state, once, and summarize again.
 
 ## Output Format

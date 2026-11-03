@@ -27,7 +27,7 @@ Read the peer reviewer, the security-sensitive paths, and the auto-merge setting
 
 - **Mergeable** — `gh pr view "$PR" --json mergeable` is `MERGEABLE` (`UNKNOWN`: ask up to 5 times, 10 seconds apart; still `UNKNOWN` fails)
 - **CI green** — apart from checks that fail on the base branch too, sorted as [forge-guard](../forge-guard/SKILL.md) sorts *Pre-existing*. While checks are pending, report `waiting` and wait as forge-guard Step 3 says under *How to wait* and *CI*, then re-check this list; an event during the wait only re-checks it too. No verdict on pending checks: one still pending at the cap fails this. No checks reported 3 minutes after the last push means the repository has no CI, which passes
-- **Feedback addressed** — the query in [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns nothing but that skill's No ask items, and no "Needs your decision" reply of ours still stands: one on an unresolved thread, or one in the conversation that no later comment answers
+- **Feedback addressed** — the query in [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns nothing but that skill's No ask items; our standing "Needs your decision" replies are in its output, so they fail this
 - **Exercised** — the body has a `## Exercised` section (see [exercise](_shared/exercise.md))
 - **Reviewed** — the latest of: a review by someone other than `$ME` that is not a failed review (as [forge-guard](../forge-guard/SKILL.md) Step 3 defines it), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
 
