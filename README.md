@@ -70,7 +70,7 @@ Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the rep
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | Setup Project | `/forge-setup-project` | Set up or audit a project's context for agentic engineering |
-| Shape | `/forge-shape` | Shape a vague idea into a clear plan, one question at a time |
+| Shape | `/forge-shape` | Shape a vague idea into a clear plan, one question at a time, or one board at a time when the decision is visual |
 | Create Issue | `/forge-create-issue` | Plan and create Issues (GitHub, markdown, or another provider) |
 | Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description, and open the PR |
 | Reflect | `/forge-reflect` | Self-review changes: a PR, a branch, or uncommitted work |

@@ -61,6 +61,8 @@ Then categorize:
 - **Won't fix** — current approach is preferred
 - **Deferred** — valid but out of scope — becomes a Deferred item (new Issue)
 
+A person rejecting the design of what the PR shows is **Discussion**, and the answer is a new board before any code: see [design-rounds](_shared/design-rounds.md#a-design-rejected-on-an-open-pr).
+
 For **Discussion** threads where the decision is genuinely the user's to make, ask via AskUserQuestion instead of assuming. **In unattended mode:** decide when the code or project conventions settle it and say which evidence did. When neither does, reply "Needs your decision: <option A> vs <option B>. <what each costs>", leave the thread open, and list it under *needing a human decision* in the summary — never resolve it or hide it in an Issue.
 
 ### Step 3: Address and Reply Individually

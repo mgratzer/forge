@@ -109,6 +109,7 @@ Conventions shared across skills. When modifying any, update every skill that re
 | Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
 | PR body | One-sentence why, deployment-step rules, change outline views, `## Exercised`, and `## Plan` with its provenance (approved, first made, or revised) and stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land and the review read it |
 | Visuals | Show a change's shape only when a view explains more than the text or diff; text views in Plans and shape summaries, Mermaid only in bodies a host renders. Consolidated in `_shared/visuals.md` | implement, create-issue, shape |
+| Design rounds | Settle a visual decision with rendered boards, logging each verdict in the spec; a design rejected on an open PR is a new design round before any code. Consolidated in `_shared/design-rounds.md` | shape; implement and address-pr-feedback send rejections there |
 | Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
 | Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
 | Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |

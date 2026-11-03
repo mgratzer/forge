@@ -44,6 +44,8 @@ Stop when the user has accepted recommended answers for several consecutive ques
 
 **Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt — that defeats the methodology.
 
+**When the decision is how something looks** (a screen, an email, a character, a brand mark), a board answers it better than a question: run [design rounds](_shared/design-rounds.md). Each design round takes the place of one question.
+
 ### Step 3: Explore Approaches (delegate)
 
 **This step is optional.**
@@ -80,7 +82,7 @@ Always include a **minimal option**. Present the contrasting approaches and let 
 
 ### Step 4: Hand Off Side Effects
 
-When shaping changed CONTEXT.md or added ADRs, never leave those edits stranded in the shaping checkout. Commit them from a temporary worktree on a new `docs/<slug>` branch cut from the fetched default branch, so the shaping checkout keeps its branch: carry over only the shaping changes (the CONTEXT.md changes, the new ADR files as written), commit with a `docs(context): <description>` message, push, and open a docs PR. Then remove the worktree and restore the shaping checkout's originals (CONTEXT.md as it was, or absent if shaping created it; no new ADR files), so a later pull there isn't blocked. The PR can merge before the Issues are implemented.
+When shaping changed CONTEXT.md, added ADRs, or wrote a design spec, never leave those edits stranded in the shaping checkout. Commit them from a temporary worktree on a new `docs/<slug>` branch cut from the fetched default branch, so the shaping checkout keeps its branch: carry over only the shaping changes (the CONTEXT.md changes, the new ADR files, design spec and boards beside it as written), commit with a `docs(context): <description>` message, push, and open a docs PR. Then remove the worktree and restore the shaping checkout's originals (CONTEXT.md as it was, or absent if shaping created it; no new ADR, spec or board files), so a later pull there isn't blocked. The PR can merge before the Issues are implemented.
 
 ### Step 5: Summarize Plan
 
@@ -112,6 +114,7 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 ## Side Effects
 - CONTEXT.md: <terms added or updated>
 - ADRs: <decisions recorded, if any>
+- Design: <spec path, design rounds run, direction chosen, if any>
 - PR: #<number>, or "none" when nothing changed
 ```
 
