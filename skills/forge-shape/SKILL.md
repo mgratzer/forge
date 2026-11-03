@@ -44,7 +44,7 @@ Stop when the user has accepted recommended answers for several consecutive ques
 
 **Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt — that defeats the methodology.
 
-**When the decision is how something looks** (a screen, an email, a character, a brand mark), a board answers it better than a question: run [design rounds](_shared/design-rounds.md). Each design round takes the place of one question, and the person accepting a direction ends them.
+**When the decision is how something looks** (a screen, an email, a character, a brand mark), a board answers it better than a question: run [design rounds](_shared/design-rounds.md). Each design round takes the place of one question.
 
 ### Step 3: Explore Approaches (delegate)
 
