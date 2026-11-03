@@ -33,7 +33,7 @@ The spec and its log are the record on every canvas, since canvases differ in hi
 
 ## Close the Rounds
 
-Stop when the person accepts a direction. Then check the spec against the chosen board, in both directions: find each state, string, number, or size that only one of them has. Fix the spec when the board is right, and ask when you can't tell which one is. Do the same whenever a later round changes a chosen board.
+Stop when the person accepts a direction. Then check the spec against the chosen board, in both directions: find each state, string, or rule that only one of them has. Styling the board already shows needs no copy in the spec. Fix the spec when the board is right, and ask when you can't tell which one is. Do the same whenever a later round changes a chosen board.
 
 The spec, its log, and any `CONTEXT.md` term go into shaping's docs PR. Publish the chosen and rejected boards' PNGs the way [exercise](exercise.md#screenshots) publishes screenshots and show them in that PR's body, so a reviewer sees them without opening the canvas. Work the direction still needs in code goes into the summary's Issue breakdown; a spec with nothing to build yet has none.
 
