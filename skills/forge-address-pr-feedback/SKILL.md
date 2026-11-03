@@ -54,7 +54,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
       }
     }
   }
-}' --jq "def ours: .author.login == \"$ME\" and (.body | contains(\"<!-- forge -->\"));
+}' --jq "def ours: .author.login == \"$ME\" and (.body | test(\"<!-- forge -->\\\\s*$\"));
   .data.repository.pullRequest
   | [.comments.nodes[] | select(ours) | .body] as \$replies
   | (.reviewThreads.nodes[] | select(.isResolved == false and (.comments.nodes[-1] | ours | not))),
