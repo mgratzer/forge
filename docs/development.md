@@ -20,7 +20,7 @@ No dependency installation required.
 ## Adding a New Skill
 
 1. Create a directory under `skills/` named `forge-<skill-name>/`
-2. Create a `SKILL.md` file inside it, plus the shared-layer symlink: `ln -s ../_shared skills/forge-<skill-name>/_shared`
+2. Create a `SKILL.md` file inside it, then copy the shared layer into it with `scripts/sync-shared.sh`
 3. Add YAML frontmatter with `name` and `description` (see [Coding Guidelines — Frontmatter Conventions](coding-guidelines.md#frontmatter-conventions) for field reference)
 4. Write the structured prompt body following the section order in [Coding Guidelines — Skill Structure](coding-guidelines.md#skill-structure)
 5. Update workflow references in relevant skills' "Related Skills" sections
@@ -40,6 +40,7 @@ No dependency installation required.
 4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
 5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are self-contained (or composed from a role reference + task instructions) and the skill works correctly when executed inline
 6. If modifying a role file, verify all skills referencing that role still work correctly
+7. If modifying a file in `skills/_shared/`, run `scripts/sync-shared.sh`. Never edit a `skills/forge-*/_shared/` copy, and read past those copies when a grep repeats their hits
 
 ## Adding or Modifying Roles
 
