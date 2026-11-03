@@ -28,7 +28,7 @@ Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" wait
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 
-Report a terminal state exactly once, as the last thing before the final summary. An event from a runtime that watches the PR can arrive after it: one that changes nothing reports nothing, and one that re-enters guard ([forge-guard](../forge-guard/SKILL.md) Step 5) reports only the new terminal state, once, and summarizes again.
+Report each terminal state exactly once, as the last thing before its summary. An event from a runtime that watches the PR can arrive after it: one that changes nothing reports nothing, and one that re-enters guard ([forge-guard](../forge-guard/SKILL.md) Step 5) reports only the new terminal state, once, and summarizes again.
 
 ## Outcome Label
 
