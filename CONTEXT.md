@@ -20,6 +20,10 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Exercise** — running the app and using the changed path once, plus one failure case, before the PR opens. Reported in the PR body's `## Exercised` section; a run that didn't reach the changed path is not evidence. See [exercise](skills/_shared/exercise.md). _Avoid_: "smoke test", "manual test".
 
+**Board** — one rendered proposal for how something looks, on whatever canvas the project uses. _Avoid_: "mockup" for a proposal nobody rendered.
+
+**Design round** — one brief, the boards drawn for it, and the person's verdict on them, logged with its reason in the spec. Run by `forge-shape`; a design rejected on an open PR starts a new one. See [design-rounds](skills/_shared/design-rounds.md). Unrelated to the guard's **Round**, so always say "design round".
+
 **Reflection** — self-review of current changes before peer review: tiny diffs review inline, otherwise one fresh-context review pass by default, deepened only when risk justifies it. Produces Findings.
 
 **Tiny diff** — roughly ≤2 files and ≤100 changed lines with low risk; reviewed inline only when the session didn't author the changes. See [review-delegation](skills/_shared/review-delegation.md).
