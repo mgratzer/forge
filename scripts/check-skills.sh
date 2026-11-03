@@ -5,15 +5,21 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 problems=$(
-	# Every skill bundles the shared layer through its own symlink
+	# Every skill bundles an exact copy of the shared layer
 	for d in skills/forge-*/; do
-		[ "$(readlink "${d}_shared")" = "../_shared" ] || echo "missing: ${d}_shared"
+		diff -rq skills/_shared "${d}_shared" >/dev/null 2>&1 || echo "stale: ${d}_shared (run scripts/sync-shared.sh)"
 	done
 
+	# Installers drop a symlink that leaves the skill and still report success
+	find skills -type l | sed 's/^/symlink: /'
+
 	# No sibling-relative links: agents resolve .. from the install path. From a
-	# skill's subdirectory (references/), ../_shared/ is the skill's own symlink.
+	# skill's subdirectory (references/), ../_shared/ is the skill's own copy.
 	grep -rn "\.\./_shared" skills/_shared/ skills/forge-*/*.md
 	find skills/forge-* -mindepth 2 -name '*.md' -exec grep -Hn "\.\./\.\./_shared" {} +
+
+	# A shared file is read from <skill>/_shared/, where ../forge-*/ doesn't exist
+	grep -rn "\.\./forge-" skills/_shared/
 
 	# Frontmatter `name` matches the directory, or installers skip the skill
 	for f in skills/forge-*/SKILL.md; do
