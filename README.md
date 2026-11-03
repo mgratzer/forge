@@ -74,7 +74,7 @@ Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the rep
 | Create Issue | `/forge-create-issue` | Plan and create Issues (GitHub, markdown, or another provider) |
 | Implement | `/forge-implement <input>` | Implement from an Issue, plan file, or description, and open the PR |
 | Reflect | `/forge-reflect` | Self-review changes: a PR, a branch, or uncommitted work |
-| Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved review threads |
+| Address PR Feedback | `/forge-address-pr-feedback` | Address unresolved PR feedback |
 | **Ship** | **`/forge-ship <input>`** | **Implement and review in one go; `--guard` continues through guard and land** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready; never merges |
 | Land | `/forge-land [pr]` | Judge a green PR's risk: merge-ready, or review-ready with where to look |
