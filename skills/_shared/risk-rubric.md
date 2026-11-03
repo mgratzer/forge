@@ -51,4 +51,6 @@ The PR body's `## Risk` section, replaced on every verdict:
 
 Two to five **Where to look** items, each a place and a question, not a summary of the change.
 
+When the diff adds another place where a concept the code already has lives (a second way to do it, another copy of a rule), one item names both places and asks whether they should be one. This never changes the verdict.
+
 Copy **Peer review** as land gives it. It is a record, not a check: an internal substitute review neither hits nor clears anything by itself.
