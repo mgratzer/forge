@@ -41,4 +41,4 @@ The spec and its log reach the default branch through a PR: shaping's docs PR, o
 
 A person rejecting the design on an open PR is a new design round, not a code fix: run it from the rejected board, close the rounds, and only then rework the code. The new board changes the Plan: record it as a revision, asked by the person who rejected it (see [pr-body](pr-body.md#plan)).
 
-An unattended run can't run a design round: it leaves the thread as needing a human decision, naming the rejected board.
+An unattended run can't run a design round: it leaves the thread or comment as needing a human decision, naming the rejected board.
