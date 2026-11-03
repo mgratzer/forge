@@ -86,13 +86,13 @@ When shaping changed CONTEXT.md or added ADRs, never leave those edits stranded 
 
 Produce a structured summary using the output format below, with the Step 4 PR under Side Effects. This summary is the input for `forge-create-issue`.
 
-Slice the Suggested Issue Breakdown **vertically** per [vertical-slicing](_shared/vertical-slicing.md): each Issue is one thin end-to-end path, never a layer ("backend for comments", "schema first"). Mark each Issue **AFK** (fully specified for autonomous execution) or **HITL** (needs human judgment during implementation), and name the Issues it is blocked by, so create-issue can link them. When there are three or more Issues and one blocks another, add a dependency order view under the checklist (see [visuals](_shared/visuals.md)); the checklist stays, since create-issue reads it.
+Slice the Suggested Issue Breakdown **vertically** per [vertical-slicing](_shared/vertical-slicing.md): each Issue is one thin end-to-end path, never a layer ("backend for comments", "schema first"). Mark each Issue **AFK** (fully specified for autonomous execution) or **HITL** (needs human judgment during implementation), and name the Issues it is blocked by, so create-issue can link them. Add a dependency order view under the checklist when [visuals](_shared/visuals.md) calls for one; the checklist stays, since create-issue reads it.
 
 The summary is *evidence* of alignment, not the alignment itself. If the user reads the summary and finds nothing surprising, the shaping worked.
 
 ## Output Format
 
-````markdown
+```markdown
 ## Problem Statement
 [1-2 sentences grounded in what was discussed]
 
@@ -107,15 +107,13 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 - [ ] Issue 1: <type>(<scope>): <description> (AFK)
 - [ ] Issue 2: <type>(<scope>): <description> (HITL, blocked by Issue 1)
 
-```text
-<dependency order view, only with three or more Issues and a blocker>
-```
+[Dependency order view, if any]
 
 ## Side Effects
 - CONTEXT.md: <terms added or updated>
 - ADRs: <decisions recorded, if any>
 - PR: #<number>, or "none" when nothing changed
-````
+```
 
 ## Guidelines
 

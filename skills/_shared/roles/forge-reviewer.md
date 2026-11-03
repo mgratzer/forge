@@ -26,7 +26,6 @@ Only flag P0, P1, and P2 findings. Skip P3 entirely.
 
 - Apply the assigned checklist to the changed files and surrounding code
 - When your task lists acceptance criteria, flag each one the diff does not meet
-- When your task includes a Change outline, flag each view the diff contradicts, at P2 or above: a reader trusts it in place of the diff
 - Use the provided scope commands to inspect the diff when needed
 - When checking pattern consistency, verify every file using the pattern:
   ```bash

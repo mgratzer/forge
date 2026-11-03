@@ -1,6 +1,6 @@
 # PR Body
 
-The body `forge-implement` writes when it opens a PR. A reviewer should learn why the change exists and what shape it has without opening the diff; `forge-land` reads its deployment steps and its `## Exercised` and `## Plan` sections, and appends `## Risk`.
+The body `forge-implement` writes when it opens a PR. A reviewer should learn why the change exists and what shape it has without opening the diff; `forge-land` reads its deployment steps and its `## Exercised` and `## Plan` sections, and appends `## Risk`; the fresh-context review reads its Change outline, which ends at `## Exercised`.
 
 ## Format
 
@@ -13,7 +13,7 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 **Notes**
 - <1-3 reviewer warnings, deliberate omissions, or surprising decisions; omit the block when there are none>
 
-**Change outline** (omit the block when no view earns its place)
+**Change outline** (only when [visuals](visuals.md) calls for a view)
 
 <short text>
 
@@ -42,7 +42,7 @@ Closes #<N>
 
 ## Change Outline
 
-Show the shape of the change, not a changelog. Pick the smallest set of views from [visuals](visuals.md) that explains it, tell them in the order that makes the change easiest to follow, and put a short line of text before each. Leave out views that would only repeat the diff; a change one sentence already explains has no outline.
+Show the shape of the change, not a changelog, following [visuals](visuals.md).
 
 ## Deployment Steps
 
