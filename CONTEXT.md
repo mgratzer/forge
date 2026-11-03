@@ -32,13 +32,13 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Guard** — the stage after self-review that drives an open PR to review-ready without a human: quality passes, CI, peer review, bounded feedback rounds. Never merges. See [forge-guard](skills/forge-guard/SKILL.md).
 
-**Round** — one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check is not a round. Bounded by *max guard rounds*.
+**Round** — one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check or finds checks still pending is not a round. Rounds count across turns and carry into a re-entry. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), every thread addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. _Avoid_: "done", "green" alone.
+**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), every thread addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. An event on the current head from a runtime watching the PR re-enters the guard from either one, which reports the new terminal state once; ending in Needs-human takes back land's label, any armed auto-merge and its `## Risk` (see [forge-guard](skills/forge-guard/SKILL.md) Step 5). _Avoid_: "done", "green" alone.
 
 **Land** — the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into the PR's `## Risk` section. Ends in Merge-ready, Review-ready (with a Where to look list), or Needs-human; with the project's auto-merge opt-in, a low-risk PR ends in Merged instead of Merge-ready. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
 
-**Merge-ready** — land's low-risk outcome: every precondition met and a low-risk verdict on the head commit, so a person can merge without reading the diff. A new push makes it stale. _Avoid_: "approved", "safe to merge".
+**Merge-ready** — land's low-risk outcome: every precondition met and a low-risk verdict on the head commit, so a person can merge without reading the diff. A new push makes it stale, and so does a re-entry ending in Needs-human. _Avoid_: "approved", "safe to merge".
 
 **Merged** — land's low-risk outcome when the project set `Auto-merge: low-risk`: the host merged the judged commit, or will once its required checks pass. A push after the verdict stops the merge.
 
@@ -73,7 +73,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 - An **Exercise** runs once per implementation, before the PR; a wrong result is fixed with a test, not deferred.
 - A **Reflection** produces zero or more **Findings**; each is fixed or becomes a **Deferred item**.
 - A **Composite skill** runs its component skills' processes; `--unattended` applies across all of them.
-- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**.
+- A **Guard** runs zero or more **Rounds** and ends in exactly one of **Review-ready** or **Needs-human**; a re-entry continues its **Rounds** and ends the same way.
 - A **Land** judges one commit and ends in exactly one of **Merged** (opt-in only), **Merge-ready**, **Review-ready**, or **Needs-human**.
 - A **Batch** orders **Waves**; a **Launcher**, or `forge-batch --start`, starts one **Guard**-ed ship per Issue.
 
