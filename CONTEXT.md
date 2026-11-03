@@ -38,7 +38,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Round** — one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check or finds checks still pending is not a round. Rounds count across turns and carry into a re-entry. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), every thread addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. An event on the current head from a runtime watching the PR re-enters the guard from either one, which reports the new terminal state once; ending in Needs-human takes back land's label, any armed auto-merge and its `## Risk` (see [forge-guard](skills/forge-guard/SKILL.md) Step 5). _Avoid_: "done", "green" alone.
+**Review-ready / Needs-human** — terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), all feedback addressed; from land, also a needs-review verdict, with the `## Risk` section saying where to look. Needs-human: stopped short, with the reason in the summary. An event on the current head from a runtime watching the PR re-enters the guard from either one, which reports the new terminal state once; ending in Needs-human takes back land's label, any armed auto-merge and its `## Risk` (see [forge-guard](skills/forge-guard/SKILL.md) Step 5). _Avoid_: "done", "green" alone.
 
 **Land** — the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into the PR's `## Risk` section. Ends in Merge-ready, Review-ready (with a Where to look list), or Needs-human; with the project's auto-merge opt-in, a low-risk PR ends in Merged instead of Merge-ready. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
 
@@ -48,7 +48,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Outcome label** — `forge:merge-ready` or `forge:review-ready`, set by land in a repository that created them, so the outcome outlives the session and a person has a queue to work through. Land's next run replaces it; any other end of land, or a guard push, removes it.
 
-**Addressed thread** — an unresolved review thread whose last comment is ours, or a thread we resolved. Unaddressed threads block review-ready.
+**Addressed feedback** — a review thread we resolved or whose last comment is ours, or a PR conversation comment or review body that a comment of ours links. Ours means by the agent's login and carrying the `<!-- forge -->` marker, since a person can share that login. Unaddressed feedback that asks for something blocks review-ready. _Avoid_: "addressed thread".
 
 **Prerequisite** — an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
 
