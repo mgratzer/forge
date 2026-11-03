@@ -32,7 +32,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 
 **Verdict:** low risk | needs review, judged on <full SHA>
 
-- Peer review: <login> | internal (<peer reviewer> failed: <reason>) | none configured
+- Peer review: <login> | <login> (partial: <its message>) | internal (<peer reviewer> failed: <reason>) | none configured
 - Size: <n> counted lines (<n> excluded: docs, tests, ...) → ok | over 400
 - Always-review paths: none | <paths>
 - Tests: ok | <what was deleted or weakened>
@@ -53,4 +53,4 @@ Two to five **Where to look** items, each a place and a question, not a summary 
 
 On a needs-review verdict, when the diff restates a rule or decision the code already holds elsewhere, so a later change to one could miss the other, one item names both places and asks whether they should be one. Find the other place with `git grep -n <term> "$SHA"`. Boilerplate such as loading a file or an entry-point check doesn't count. This item is no reason to raise or lower the verdict, which the checks and the judgment test decide as before.
 
-Copy **Peer review** as land gives it. It is a record, not a check: an internal substitute review neither hits nor clears anything by itself.
+Copy **Peer review** as land gives it. It is a record, not a check: a partial or internal substitute review neither hits nor clears anything by itself.

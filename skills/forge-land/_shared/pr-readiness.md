@@ -41,14 +41,14 @@ gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   
 
 ## Review Signal
 
-A review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message (Copilot: "Copilot encountered an error", or "Copilot was unable to review" for rate limits) is a **failed review** and counts as none. Wait in one bounded shell loop; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
+A review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message and delivers nothing else (Copilot: "Copilot encountered an error", "Copilot was unable to review" for rate limits, or "Copilot was unable to complete this review", which can sit inside a `> [!NOTE]`) is a **failed review** and counts as none. The same message above an overview (Copilot: the `<!-- ccr-overview` marker) is a **partial review**: the reviewer ran at a lesser tier and its findings are real, so it counts, and since the cause is a plan or policy limit a retry would not lift, it is not retried. Wait in one bounded shell loop; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
 
 ```bash
 PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
 for _ in $(seq 1 30); do   # 15 minutes
   r=$(gh pr view "$PR" --json commits,reviews --jq "(if \"$SINCE\" == \"\" then .commits[-1].committedDate else \"$SINCE\" end) as \$since
         | [.reviews[] | select(.submittedAt >= \$since and .author.login != \"$ME\")
-           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^Copilot (encountered an error|was unable to review)\"))
+           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^(>[^\n]*\n> )?Copilot (encountered an error|was unable to (review|complete this review))\") and (test(\"ccr-overview\") | not))
              then \"failed\" else \"reviewed\" end]
         | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
   [ -n "$r" ] && break

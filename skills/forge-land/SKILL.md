@@ -29,7 +29,7 @@ Read the peer reviewer, the security-sensitive paths, and the auto-merge setting
 - **CI green** — apart from [Pre-existing](_shared/pr-readiness.md#ci) checks. While checks are pending, report `waiting` and wait per that module's *How to Wait* and *CI*, then re-check this list; an event during the wait only re-checks it too. No verdict on pending checks: one still pending at the cap fails this. No checks reported 3 minutes after the last push means the repository has no CI, which passes
 - **Feedback addressed** — [Open Feedback](_shared/pr-readiness.md#open-feedback) returns nothing but No ask items; our standing "Needs your decision" replies are in its output, so they fail this
 - **Exercised** — the body has a `## Exercised` section (see [exercise](_shared/exercise.md))
-- **Reviewed** — the latest of: a review by someone other than `$ME` that is not a [failed review](_shared/pr-readiness.md#review-signal), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
+- **Reviewed** — the latest of: a review by someone other than `$ME` that is not a [failed review](_shared/pr-readiness.md#review-signal), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `<login> (partial: <its message>)` for a [partial review](_shared/pr-readiness.md#review-signal), `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
 
 ### Step 2: Judge the Risk (delegate)
 
