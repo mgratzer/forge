@@ -43,35 +43,9 @@ Report `waiting`. Request the peer review first so it overlaps the CI wait — b
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-**How to wait** — each wait below is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one at a time, CI first, then the peer-review loop; a push starts them over and a terminal state ends them, so stop one still running. A wait exiting, or an event from a runtime that watches the PR (Claude Code desktop's Auto-fix), sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. Such a runtime doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
+Wait per [pr-readiness](_shared/pr-readiness.md): *How to Wait*, then *CI*, then *Review Signal*. A wait exiting, or an event from a runtime that watches the PR, sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. When the review signal falls back to a review from before the push, note that in the summary.
 
-**CI** — wait on the checks, 60 minutes at most in total, re-runs included. "No checks reported" within 3 minutes of a push means the run has not registered yet: run the wait again with `sleep 30;` in front, in the same call. After that, treat the repository as having no CI:
-
-```bash
-gh pr checks "$PR" --watch --interval 30 >/dev/null &   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
-W=$!; (sleep 3600 >/dev/null 2>&1; echo "CI wait cap reached"; kill "$W") & C=$!   # --watch never gives up on a check stuck in a queue
-wait "$W"; kill "$C" 2>/dev/null
-```
-
-**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message (Copilot: "Copilot encountered an error", or "Copilot was unable to review" for rate limits) is a **failed review** and counts as none. Wait in one bounded shell loop; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
-
-```bash
-PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
-for _ in $(seq 1 30); do   # 15 minutes
-  r=$(gh pr view "$PR" --json commits,reviews --jq "(if \"$SINCE\" == \"\" then .commits[-1].committedDate else \"$SINCE\" end) as \$since
-        | [.reviews[] | select(.submittedAt >= \$since and .author.login != \"$ME\")
-           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^Copilot (encountered an error|was unable to review)\"))
-             then \"failed\" else \"reviewed\" end]
-        | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
-  [ -n "$r" ] && break
-  sleep 30
-done
-echo "$r"
-```
-
-The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
-
-**Failed review** — the loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), set `SINCE=$(date -u +%FT%TZ)`, request the peer reviewer once more, and run the loop again with that `$SINCE`, so the first failure no longer counts. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads, and ending with the `<!-- forge -->` marker (see forge-address-pr-feedback Step 1). Step 4 handles its findings as it handles unaddressed feedback, and the substitute satisfies the signal for the rest of the run.
+**Failed review** — the review loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), set `SINCE=$(date -u +%FT%TZ)`, request the peer reviewer once more, and run the loop again with that `$SINCE`, so the first failure no longer counts. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the [substitute review](_shared/pr-readiness.md#review-signal), and post its findings in that comment. Step 4 handles its findings as it handles unaddressed feedback, and the substitute satisfies the signal for the rest of the run.
 
 ### Step 4: Decide, then React
 
@@ -82,7 +56,7 @@ Check the terminal conditions first, on every round:
 
 When neither applies, react in this order (mergeability, CI, feedback) and go back to Step 3. One trip is one **round**, however many pushes it makes, and rounds count across turns; a trip that only reruns a flaky check or finds checks still pending is not.
 
-**Branch not mergeable** — `gh pr view "$PR" --json mergeable,mergeStateStatus` reports `CONFLICTING` or `BEHIND` (`UNKNOWN` means GitHub is still computing: ask up to 5 times, 10 seconds apart, then treat it as mergeable). React to `BEHIND` once per run; after that, a branch that is only behind counts as mergeable and the summary says so. Report `addressing`, merge the base in, run the quality gates, commit, push:
+**Branch not mergeable** — per [pr-readiness](_shared/pr-readiness.md#mergeable). React to `BEHIND` once per run; after that, a branch that is only behind counts as mergeable and the summary says so. Report `addressing`, merge the base in, run the quality gates, commit, push:
 
 ```bash
 git fetch origin "$BASE" && git merge --no-edit "origin/$BASE"   # merge, never rebase: the guard never force-pushes
@@ -90,23 +64,14 @@ git fetch origin "$BASE" && git merge --no-edit "origin/$BASE"   # merge, never 
 
 Resolve a conflict only when both sides' intent is clear from the code and its history; otherwise `git merge --abort` and stop with `needs-human`, naming the files.
 
-**CI failed** — report `addressing`, then sort each failed check before touching anything:
+**CI failed** — report `addressing`, then sort each failed check per [pr-readiness](_shared/pr-readiness.md#ci) before touching anything:
 
-```bash
-gh pr checks "$PR" --json name,bucket,workflow,link --jq '.[] | select(.bucket == "fail")'
-BASE_RUN=$(gh run list --branch "$BASE" --workflow "<WORKFLOW>" --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty')
-[ -n "$BASE_RUN" ] && gh run view "$BASE_RUN" --json jobs --jq '.jobs[] | select(.name == "<CHECK>") | .conclusion'   # the same check on the base branch
-RUN=<run id from the check's link>
-gh run view "$RUN" --json attempt --jq .attempt
-gh run view "$RUN" --log-failed | grep -nE 'error|✗|FAIL|Error:' | head -50   # widen only if this is not enough
-```
+- **Pre-existing** — leave it and name it in the summary.
+- **Flaky** — rerun it with `gh run rerun "$RUN" --failed && gh run watch "$RUN" --exit-status` only while the run's `attempt` is 1 and nothing else in this trip pushes (a push starts a fresh run anyway); still red on a later attempt, leave it for the human.
+- **Caused** — fix it, run the quality gates, commit, push.
+- **Not an Actions job** — fix it only when its description and link point at the diff, otherwise leave it for the human with the reason.
 
-- **Pre-existing** — the same check fails on the base branch's latest completed run with the same errors (compare `gh run view "$BASE_RUN" --log-failed`); an error the base run doesn't show makes it Caused. Leave it and name it in the summary. With no completed base run (a stacked base, a workflow that runs only on pull requests), this can't be shown: sort on the log alone.
-- **Flaky** — the log shows infrastructure trouble unrelated to the diff (a timeout, a registry or network error, a lost runner), and the check doesn't fail on base. Rerun it with `gh run rerun "$RUN" --failed && gh run watch "$RUN" --exit-status` only while the run's `attempt` is 1 and nothing else in this trip pushes (a push starts a fresh run anyway); still red on a later attempt, leave it for the human.
-- **Caused** — everything else: fix it, run the quality gates, commit, push.
-- **Not an Actions job** — a failed check with no `workflow` (an external status or app) can't be compared or rerun: fix it only when its description and link point at the diff, otherwise leave it for the human with the reason.
-
-**Unaddressed feedback** — what [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) Step 1 returns, apart from its No ask items and our standing "Needs your decision" replies — report `addressing` and run that process with `--unattended`, reusing `$PR` and `$ME`. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`. Substitute review findings have no threads: triage them with `forge-ship`'s unattended rule, run the quality gates, commit, and push.
+**Unaddressed feedback** — what [Open Feedback](_shared/pr-readiness.md#open-feedback) returns, apart from its No ask items and our standing "Needs your decision" replies — report `addressing` and run the [forge-address-pr-feedback](../forge-address-pr-feedback/SKILL.md) process with `--unattended`, reusing `$PR` and `$ME`. Items it reports as needing a human decision no longer block the wait, but they turn the outcome into `needs-human`. Substitute review findings have no threads: triage them with `forge-ship`'s unattended rule, run the quality gates, commit, and push.
 
 Never merge, never force-push, never close the PR. Report the terminal state via status-reporting, then summarize.
 
@@ -114,7 +79,7 @@ Never merge, never force-push, never close the PR. Report the terminal state via
 
 A runtime that watches the PR keeps sending events after the run's terminal state, whether this skill or `forge-land` reported it. Check each one against the PR's current head:
 
-- **No-op** — the PR is merged or closed, the event is about an older head, it is only about a comment or review that forge-address-pr-feedback Step 1 doesn't return or sorts as No ask (a failed review, a bot's report), or the wake is a stopped wait exiting. Say so in one line and change nothing: no label, no `## Risk`, no new report.
+- **No-op** — the PR is merged or closed, the event is about an older head, it is only about a comment or review that Open Feedback doesn't return or counts as No ask (a failed review, a bot's report), or the wake is a stopped wait exiting. Say so in one line and change nothing: no label, no `## Risk`, no new report.
 - **Re-enter** — anything else on the current head (a CI failure, a conflict, unaddressed feedback) goes to Step 4 with the rounds so far. The re-entry's first push removes land's label again (Step 1). Under `forge-ship --guard`, or when `forge-land` reported the last terminal state, reaching `review-ready` continues with its process, since a push makes its verdict stale. Ending in `needs-human`, pushed or not, removes land's label too, disables any auto-merge land armed (`gh pr merge "$PR" --disable-auto`), and says the `## Risk` no longer holds. Report only the new terminal state, once, and summarize again.
 
 ## Output Format
