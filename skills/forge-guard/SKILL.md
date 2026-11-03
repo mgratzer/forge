@@ -53,14 +53,14 @@ W=$!; (sleep 3600 >/dev/null 2>&1; echo "CI wait cap reached"; kill "$W") & C=$!
 wait "$W"; kill "$C" 2>/dev/null
 ```
 
-**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message (Copilot: "Copilot encountered an error", or "Copilot was unable to review" for rate limits) is a **failed review** and counts as none. Wait in one bounded shell loop; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
+**Peer review** — a review by someone other than `$ME` after the latest push. A review by the peer reviewer whose body opens with its could-not-review message and delivers nothing else (Copilot: "Copilot encountered an error", "Copilot was unable to review" for rate limits, or "Copilot was unable to complete this review", which can sit inside a `> [!NOTE]`) is a **failed review** and counts as none. The same message above an overview (Copilot: the `<!-- ccr-overview` marker) is a **partial review**: the reviewer ran at a lesser tier and its findings are real, so it counts, and since the cause is a plan or policy limit a retry would not lift, it is not retried. Wait in one bounded shell loop; it prints `reviewed`, `failed`, or nothing for reviews since `$SINCE` (empty: the latest push):
 
 ```bash
 PEER=${PEER_REVIEWER%"[bot]"}   # gh pr view names bots without the suffix
 for _ in $(seq 1 30); do   # 15 minutes
   r=$(gh pr view "$PR" --json commits,reviews --jq "(if \"$SINCE\" == \"\" then .commits[-1].committedDate else \"$SINCE\" end) as \$since
         | [.reviews[] | select(.submittedAt >= \$since and .author.login != \"$ME\")
-           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^Copilot (encountered an error|was unable to review)\"))
+           | if .author.login == \"$PEER\" and ((.body // \"\") | test(\"^(>[^\n]*\n> )?Copilot (encountered an error|was unable to (review|complete this review))\") and (test(\"ccr-overview\") | not))
              then \"failed\" else \"reviewed\" end]
         | if any(. == \"reviewed\") then \"reviewed\" elif length > 0 then \"failed\" else \"\" end")
   [ -n "$r" ] && break
@@ -69,7 +69,7 @@ done
 echo "$r"
 ```
 
-The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback in the summary.
+The review signal is satisfied when a post-push review exists, when no peer reviewer is configured (the guard then waits for none), when the run has a substitute review, or when the wait expires but the PR already carries a review by someone other than `$ME` from before the push; a failed review satisfies none of these. A push that only merged the base keeps the signal it had before. Note the fallback, or a partial review, in the summary.
 
 **Failed review** — the loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), set `SINCE=$(date -u +%FT%TZ)`, request the peer reviewer once more, and run the loop again with that `$SINCE`, so the first failure no longer counts. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the **substitute review**, and post its findings as one PR comment starting `Substitute review: <PEER_REVIEWER> failed (<the failed review's reason>)`, which land reads, and ending with the `<!-- forge -->` marker (see forge-address-pr-feedback Step 1). Step 4 handles its findings as it handles unaddressed feedback, and the substitute satisfies the signal for the rest of the run.
 
@@ -131,7 +131,7 @@ A runtime that watches the PR keeps sending events after the run's terminal stat
 - Security: applied <n> findings | not triggered | skipped
 
 ### Rounds
-1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present (<login>) | fell back to earlier review | substituted (<PEER_REVIEWER> failed: <reason>) | none configured>, threads <n addressed, m deferred>
+1. Branch <mergeable | updated from base | conflicts resolved>, CI <green | failed → fixed | flaky → rerun green | pre-existing: <check>>, review <present (<login>) | partial (<login>: <the message>) | fell back to earlier review | substituted (<PEER_REVIEWER> failed: <reason>) | none configured>, threads <n addressed, m deferred>
 
 ### Open for the human
 - <thread or comment url>: <the decision, with both options>
