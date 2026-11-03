@@ -39,7 +39,7 @@ TREE=$(for f in "$SHOTS"/*.png; do printf '100644 blob %s\t%s\n' "$(git hash-obj
 
 Each step guards the next: a missing or empty screenshot directory pushes nothing, where an unguarded push of an empty ref would delete the branch.
 
-The branch holds only this PR's screenshots, so exercising again replaces them. Link each as `https://github.com/<owner>/<repo>/blob/pr-assets/<branch>/<file>?raw=true`, or the host's raw-file URL for that branch elsewhere. The branch can be deleted after the PR merges; the images in the PR body stop rendering with it.
+The branch holds only this PR's screenshots, so exercising again replaces them; keep any board PNGs from [design rounds](design-rounds.md) in the directory. Link each as `https://github.com/<owner>/<repo>/blob/pr-assets/<branch>/<file>?raw=true`, or the host's raw-file URL for that branch elsewhere. The branch can be deleted after the PR merges; the images in the PR body stop rendering with it.
 
 A visible change with no screenshots (no browser or screenshot tool, no way to render it) goes on the `Not exercised` line as `screenshots: <why>`.
 
