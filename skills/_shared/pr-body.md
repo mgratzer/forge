@@ -13,13 +13,11 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 **Notes**
 - <1-3 reviewer warnings, deliberate omissions, or surprising decisions; omit the block when there are none>
 
-**Change outline**
+**Change outline** (omit the block when no view earns its place)
 
 <short text>
 
-```diff
-<one view>
-```
+<one view, in its own fenced block>
 
 ## Exercised
 
@@ -44,24 +42,7 @@ Closes #<N>
 
 ## Change Outline
 
-Show the shape of the change, not a changelog. Pick the smallest set of views that explains it, tell them in the order that makes the change easiest to follow, and put a short line of text before each:
-
-| View | Use for |
-|------|---------|
-| File tree | Which files own what; a shallow `tree`-style listing with a note per changed file |
-| Call tree | How control flows through the changed path, important calls only |
-| Contract | Endpoint shapes, schemas, message formats, public signatures |
-| Pseudocode | Changed logic, in plain words rather than code |
-
-Use `diff` blocks (`+` added, `-` removed, a space for unchanged context) when the shape already exists, and show the full target shape when most of it is new. Leave out views that would only repeat the diff.
-
-```diff
- src/
- ├── notes/
- │   ├── store.ts        # changed: writes go through validate()
-+│   └── validate.ts     # rejects empty titles
- └── routes.ts
-```
+Show the shape of the change, not a changelog. Pick the smallest set of views from [visuals](visuals.md) that explains it, tell them in the order that makes the change easiest to follow, and put a short line of text before each. Leave out views that would only repeat the diff; a change one sentence already explains has no outline.
 
 ## Deployment Steps
 

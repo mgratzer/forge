@@ -44,7 +44,7 @@ Prefer a cheap fast model for scout work when the runtime supports per-task mode
 
 From the research, create a plan:
 - Durable decisions
-- **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time.
+- **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time. When a text view shows a phase's target shape better than words, include it (see [visuals](_shared/visuals.md)); a Plan never holds Mermaid.
 - Files to create or modify
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
