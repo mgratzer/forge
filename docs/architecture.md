@@ -31,6 +31,7 @@ forge/
 │   │   ├── visuals.md                     # When and how to show a change's shape, and where each form can be read
 │   │   ├── design-rounds.md               # Boards, verdicts, and a spec that matches for a visual decision
 │   │   ├── open-work.md                   # Unmet prerequisites, open PRs for an Issue, conflicts with them
+│   │   ├── pr-readiness.md                # What each readiness signal means and how to read it: waits, CI sort, review signal, open feedback
 │   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
 │   │   ├── barrel-imports.md              # Import structure discipline
@@ -109,7 +110,7 @@ The instruction-budget figures (~150–200 followed reliably overall, under ~35 
 |----------|--------|-----------|
 | Prompt files, not code | SKILL.md | Skills are prompt templates — no runtime needed |
 | Conventional commits | Enforced in every skill | Consistent naming across issues, branches, commits, PRs |
-| GraphQL for PR threads | Required in address-pr-feedback | REST API doesn't expose `isResolved` on review threads |
+| GraphQL for PR threads | Required in `_shared/pr-readiness.md` | REST API doesn't expose `isResolved` on review threads |
 | AskUserQuestion | Used for interactive skills | Structured user input with options, not free-form |
 | Pipeline linking | Each skill's "Related Skills" section | Skills reference the next step so users discover the workflow |
 | Sub-agent delegation | `(delegate)` step pattern; `context: fork` frontmatter available for whole-skill forking | Fresh context for unbiased review; `(delegate)` works across runtimes, `context: fork` is Claude Code's native whole-skill mechanism — unsuitable for skills with interactive steps |
