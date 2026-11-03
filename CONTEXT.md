@@ -60,7 +60,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Inline fallback** — `(delegate)` step provides both sub-agent and in-context paths for runtime portability.
 
-**Self-containment** — single-use references stay with the skill; cross-skill references live in `skills/_shared/`. Within the shared layer, files have explicit consumers (skills or other shared files); outside it, skills are self-contained.
+**Self-containment** — single-use references stay with the skill; cross-skill references live in `skills/_shared/`, copied into each skill. Within the shared layer, files have explicit consumers (skills or other shared files); outside it, skills are self-contained.
 
 **Pattern audit** — when a pattern changes, grep every file using the old pattern and update. See [pattern-audit](skills/_shared/pattern-audit.md).
 

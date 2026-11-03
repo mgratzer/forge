@@ -100,7 +100,7 @@ The Claude Code plugin adds the lens: a pane beside the session that follows a f
 ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
-Each skill reaches the shared modules through its own `_shared` symlink, so nothing else needs installing. Use one channel per machine: with both the plugin and npx, Claude Code lists every skill twice.
+Each skill carries its own copy of the shared modules in `_shared/`, so nothing else needs installing. Use one channel per machine: with both the plugin and npx, Claude Code lists every skill twice.
 
 ## Contributing
 

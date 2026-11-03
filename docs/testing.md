@@ -55,7 +55,7 @@ The most reliable test is running the skill on a real project:
 
 ### 4. Cross-Skill Consistency Check
 
-After modifying any shared convention, grep across all relevant skills to ensure consistency:
+After modifying any shared convention, grep across all relevant skills to ensure consistency. Hits under `skills/forge-*/_shared/` repeat the copies of `skills/_shared/`; fix them in the source and run `scripts/sync-shared.sh`, or skip them with `git grep <pattern> -- skills ':!skills/forge-*/_shared/*'`:
 
 ```bash
 # Check commit format references
