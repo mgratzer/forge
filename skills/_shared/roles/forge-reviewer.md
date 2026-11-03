@@ -9,7 +9,7 @@ You are a code reviewer analyzing a PR diff using the **review checklist assigne
 
 ## Setup
 
-Your initial prompt contains everything you need — the review rubric, your assigned checklist, scope metadata, relevant project conventions from `AGENTS.md`, and the acceptance criteria when the change closes an Issue. Do not read external files for those unless your task explicitly tells you to.
+Your initial prompt contains everything you need — the review rubric, your assigned checklist, scope metadata, relevant project conventions from `AGENTS.md`, the acceptance criteria when the change closes an Issue, and the PR's Change outline when it has one. Do not read external files for those unless your task explicitly tells you to.
 
 ## Severity Levels
 
@@ -26,6 +26,7 @@ Only flag P0, P1, and P2 findings. Skip P3 entirely.
 
 - Apply the assigned checklist to the changed files and surrounding code
 - When your task lists acceptance criteria, flag each one the diff does not meet
+- When your task includes a Change outline, flag each view the diff contradicts, at P2 or above: a reader trusts it in place of the diff
 - Use the provided scope commands to inspect the diff when needed
 - When checking pattern consistency, verify every file using the pattern:
   ```bash

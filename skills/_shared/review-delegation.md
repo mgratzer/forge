@@ -11,7 +11,8 @@ Before reviewing, collect:
 3. **Diff size metadata** — changed file count and approximate changed line count
 4. **Relevant project conventions** — the relevant parts of `AGENTS.md`; do not blindly paste the whole file if only a small subset matters
 5. **Acceptance criteria** — verbatim from the Issue the change closes: the one this session implemented from, else the PR's (`gh pr view --json closingIssuesReferences`), fetched per [issue-operations](issue-operations.md); omit when no Issue is linked
-6. **Review materials** — read and collect (pushed, not referenced):
+6. **Change outline** — the `**Change outline**` block from the body of the change's open PR (`gh pr view --json body`), verbatim; omit when no PR is open or the body has none
+7. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
    - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
    - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
@@ -42,6 +43,7 @@ Create **one self-contained review task per planned pass**. Each task embeds:
 - Review rubric
 - Relevant project conventions from `AGENTS.md`
 - Acceptance criteria, when collected
+- Change outline, when collected
 - Review scope metadata:
   - exact `git diff` command
   - exact `git diff --name-only` command

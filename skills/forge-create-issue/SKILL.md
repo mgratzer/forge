@@ -92,6 +92,8 @@ If splitting makes sense, offer: an epic with sub-issues (the default for severa
 - [ ] Documentation updated (if applicable)
 ```
 
+When a view explains the Proposed Solution better than prose, include one (see [visuals](_shared/visuals.md)).
+
 ### Step 6: Review and Create
 
 Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics. For several Issues, create them in dependency order, then *Link Issues*: each sub-issue to its parent, and each Issue to the Issues it is blocked by.
