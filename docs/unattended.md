@@ -64,9 +64,9 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 - [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
 - [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
 
-## What the gates don't see
+## What guard and land don't see
 
-Every gate here judges one diff, so none of them sees erosion: structure that gets worse across PRs while each step looks reasonable. `low risk` means unlikely to break anything now, not that the code stays easy to change, and `Auto-merge: low-risk` merges on that same verdict. [SlopCodeBench](https://arxiv.org/abs/2603.24755) found explicit quality guidance improves where agent code starts but not how fast it degrades, so better prompts alone won't cover this.
+Guard and land judge one PR at a time, so neither sees erosion: structure that gets worse across PRs while each step looks reasonable. `low risk` means unlikely to break anything now, not that the code stays easy to change, and `Auto-merge: low-risk` merges on that same verdict. [SlopCodeBench](https://arxiv.org/abs/2603.24755) found explicit quality guidance improves where agent code starts but not how fast it degrades, so better prompts alone won't cover this.
 
 After several feature PRs land in one area, review its structure before starting the next feature there. Forge ships no skill for this; use any architecture review, such as [improve-codebase-architecture](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture). Ask it for:
 
