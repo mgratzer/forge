@@ -28,6 +28,7 @@ forge/
 │   │   ├── phase-execution.md             # Pre-flight, per-phase loop, phase gates
 │   │   ├── exercise.md                    # Run the changed path before the PR; ## Exercised report
 │   │   ├── pr-body.md                     # PR body: why, deployment steps, change outline, ## Exercised, ## Plan with deviations
+│   │   ├── visuals.md                     # When and how to show a change's shape, and where each form can be read
 │   │   ├── open-work.md                   # Unmet prerequisites, open PRs for an Issue, conflicts with them
 │   │   ├── pattern-audit.md               # Pattern consistency audit checklist
 │   │   ├── deep-modules.md                # Module depth audit checklist
