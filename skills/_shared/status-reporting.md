@@ -28,11 +28,11 @@ Prepend the call to the command that starts the stage (`"$FORGE_STATUS_CMD" wait
 | `needs-human` | Stopped short: round limit, repeated failure, or a decision only a human can make | yes |
 | `failed` | Could not complete the stage at all (no PR, tooling broken) | yes |
 
-Report a terminal state exactly once, as the last thing before the final summary.
+Report a terminal state exactly once, as the last thing before the final summary. An event from a runtime that watches the PR can arrive after it: one that changes nothing reports nothing, and one that re-enters guard ([forge-guard](../forge-guard/SKILL.md) Step 5) reports only the new terminal state, once, and summarizes again.
 
 ## Outcome Label
 
-The summary and the status line end with the session, and a person gets no notification about their own account's activity, so `forge-land` leaves `merge-ready` and `review-ready` on the PR as a `forge:<state>` label. Forge never adds labels to a repository: a project opts in by creating both once. Any other end of land, and a guard push, removes the label. `STATE` is the state to label, or empty to only remove:
+The summary and the status line end with the session, and a person gets no notification about their own account's activity, so `forge-land` leaves `merge-ready` and `review-ready` on the PR as a `forge:<state>` label. Forge never adds labels to a repository: a project opts in by creating both once. Any other end of land, a guard push, and a guard re-entry that ends in `needs-human`, pushed or not, remove the label. `STATE` is the state to label, or empty to only remove:
 
 ```bash
 gh pr view "$PR" --json labels --jq ".labels[].name | select(startswith(\"forge:\") and . != \"forge:$STATE\")" |

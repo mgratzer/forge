@@ -43,7 +43,7 @@ is:open is:pr label:forge:merge-ready
 is:open is:pr label:forge:review-ready
 ```
 
-The label follows the head commit as far as forge can see it: land's next run replaces it, and any other end of land or a guard push removes it. A push from anywhere else leaves it until land runs again; the PR's `## Risk` section names the commit it judged.
+The label follows the head commit as far as forge can see it: land's next run replaces it, and any other end of land, a guard push, or a guard re-entry ending in `needs-human` removes it. A push from anywhere else leaves it until land runs again; the PR's `## Risk` section names the commit it judged.
 
 For a push instead of a queue, have your launcher's `FORGE_STATUS_CMD` turn `merge-ready` and `review-ready` into a desktop notification. Or give the agent a bot account of its own, so GitHub notifies you about what it does; that is setup forge can't do for you.
 
