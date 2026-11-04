@@ -4,7 +4,7 @@ What each signal that decides whether a PR is ready means and how to read it. `f
 
 ## How to Wait
 
-Each wait is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one at a time, CI first, then the review loop; a push starts them over and a terminal state ends them, so stop one still running. A runtime that watches the PR (Claude Code desktop's Auto-fix) doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
+Each wait is one shell call, never polling from the model. Run it in the background when the runtime can run a command that way and wake the session when it exits (Claude Code: `run_in_background`), and end the turn saying what it waits for; otherwise block on it with the runtime's longest timeout and re-run it when the call times out. Run one at a time, CI first, then the review loop; a push starts them over and a terminal state ends them, so stop one still running. With nothing to react to and a wait still running, end the turn again. A runtime that watches the PR (Claude Code desktop's Auto-fix) doesn't replace the waits: it reports failures, conflicts and comments but never green, so a clean PR gets no event, and only the CI wait carries the run on to its terminal state.
 
 ## Mergeable
 
@@ -18,7 +18,7 @@ Read `gh pr view "$PR" --json mergeable,mergeStateStatus`. `UNKNOWN` means GitHu
 Wait on the checks, 60 minutes at most in total, re-runs included. "No checks reported" within 3 minutes of a push means the run has not registered yet: run the wait again with `sleep 30;` in front, in the same call. After that, treat the repository as having no CI:
 
 ```bash
-gh pr checks "$PR" --watch --interval 30 >/dev/null &   # no --fail-fast: Step 4 sorts every failed check, so it needs them all
+gh pr checks "$PR" --watch --interval 30 >/dev/null &   # no --fail-fast: the sort below needs every failed check
 W=$!; (sleep 3600 >/dev/null 2>&1; echo "CI wait cap reached"; kill "$W") & C=$!   # --watch never gives up on a check stuck in a queue
 wait "$W"; kill "$C" 2>/dev/null
 ```

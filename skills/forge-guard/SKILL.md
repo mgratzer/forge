@@ -43,7 +43,7 @@ Report `waiting`. Request the peer review first so it overlaps the CI wait — b
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<PEER_REVIEWER>"
 ```
 
-Wait per [pr-readiness](_shared/pr-readiness.md): *How to Wait*, then *CI*, then *Review Signal*. A wait exiting, or an event from a runtime that watches the PR, sends you to Step 4, which reads the PR afresh; with nothing to react to and a wait still running, end the turn again. When the review signal falls back to a review from before the push, or rests on a partial review, note that in the summary.
+Wait per [pr-readiness](_shared/pr-readiness.md): *How to Wait*, then *CI*, then *Review Signal*. A wait exiting, or an event from a runtime that watches the PR, sends you to Step 4, which reads the PR afresh. When the review signal falls back to a review from before the push, or rests on a partial review, note that in the summary.
 
 **Failed review** — the review loop printed `failed`. Back off 5 minutes in the loop's 30-second steps (`for _ in $(seq 1 10); do sleep 30; done`: rate limits outlast a quick retry), set `SINCE=$(date -u +%FT%TZ)`, request the peer reviewer once more, and run the loop again with that `$SINCE`, so the first failure no longer counts. Failed again or silent: run [review-delegation](_shared/review-delegation.md)'s default pass on the branch diff as the [substitute review](_shared/pr-readiness.md#review-signal), and post its findings in that comment. Step 4 handles its findings as it handles unaddressed feedback, and the substitute satisfies the signal for the rest of the run.
 
