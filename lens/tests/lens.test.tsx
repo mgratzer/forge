@@ -274,7 +274,7 @@ test("pipeline rows: stopped in its step, composed or skipped before it, the Iss
 	expect(parse.nextStep(merged.run, null, 0, null)?.text).toBe("/forge-ship ");
 	expect(parse.runLabel("ship", "--guard 171 -- notes -- more")).toBe("/forge-ship --guard 171");
 	expect(parse.runLabel("ship", "-- notes")).toBe("/forge-ship");
-	expect(parse.skillStep("cat a/forge-implement/SKILL.md; cat b/forge-guard/SKILL.md")).toBe("guard");
+	expect(parse.skillStep("cat a/forge-guard/SKILL.md")).toBe("guard");
 	expect(parse.skillStep("cat _shared/roles/forge-reviewer.md")).toBe(null);
 	// an open run's PR refreshes every minute, an ended run's every 5 while it is open
 	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
@@ -414,4 +414,18 @@ test("the Waves pane draws a batch's merge order and its gates", async ($, on) =
 	expect(await waves.find({ type: "Text", text: /conflicts with #9 \(a\.ts\)/ })).toBeDefined();
 	expect(await waves.find({ type: "Text", text: /gates: pass on main/ })).toBeDefined();
 	await waves.unmount();
+});
+
+test("a run's step: land's own wait, a citation behind the run, and a read of several skill files", () => {
+	const land = model.startRun(model.EMPTY, "land", "88", 0);
+	expect(model.applyStatus(land, "waiting", "CI", 1).run?.phase).toBe("land");
+
+	const ship = model.setPhase(model.startRun(model.EMPTY, "ship", "--guard 88", 0), "land");
+	expect(model.readSkill(ship, "guard").run?.phase).toBe("land");
+	const early = model.startRun(model.EMPTY, "ship", "--guard 88", 0);
+	expect(model.readSkill(early, "guard").run?.phase).toBe("guard");
+
+	expect(parse.skillStep("cat ~/s/forge-guard/SKILL.md; cat ~/s/forge-land/SKILL.md")).toBe(null);
+	expect(parse.skillStep("cat ~/s/forge-guard/SKILL.md ~/s/forge-guard/SKILL.md")).toBe("guard");
+	expect(parse.skillStep("cat ~/s/forge-ship/SKILL.md ~/s/forge-guard/SKILL.md")).toBe("guard");
 });

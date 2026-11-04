@@ -35,10 +35,11 @@ The lens has no channel into the skills: it parses what they write. These format
 | The `## Risk` section and `**Result:**` line; a section ends at the next `## ` heading | `skills/_shared/risk-rubric.md`, `skills/_shared/pr-body.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
 | `## Batch:` with one table per Wave, after a `--start` run's `### Status` table and, once the scope waits on you, its `### Merge Order` table and `**Gates:**` line | `skills/forge-batch/SKILL.md`, `skills/forge-batch/references/start.md` | `batch` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
+| `round <n>/<max>` at the start of an `addressing` status detail | `skills/forge-guard/SKILL.md` | `round` |
 
-Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR.
+Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR. `scripts/check-lens-contract.ts`, run by `scripts/check-skills.sh`, parses each format from the file named here and fails when they diverge; `claude plugin test` has no file access, so this can't be a lens test.
 
-A run starts from the typed `/forge-…` command or the Skill tool call, which carry its arguments. A forge-ship run moves into a composed step when it reads that step's `SKILL.md` (with Read or `cat`) or starts it with the Skill tool.
+A run starts from the typed `/forge-…` command or the Skill tool call, which carry its arguments. A forge-ship run moves into a later composed step when it reads that step's `SKILL.md` alone (with Read or `cat`), or into any composed step when it starts one with the Skill tool.
 
 The lens reads status from the command a skill wrote, never from command output, which any file or tool can fill, and a terminal state counts only when that command succeeded. It follows PR links only into the session's repository, and it treats a `## Risk` verdict as valid only on the PR's head commit: the card says when the verdict is stale. It suggests merging only after forge-land reported `merge-ready` and the low risk verdict is on the head, and the suggested `gh pr merge` carries `--match-head-commit`, so a head that moved since cannot be merged.
 

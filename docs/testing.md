@@ -3,8 +3,8 @@
 The skills are prompt templates, not executable code: their behavior is validated by hand, below. What can be checked mechanically runs in CI (`.github/workflows/checks.yml`) on every pull request, and locally with the same commands:
 
 ```bash
-scripts/check-skills.sh                        # skill structure; the script lists its checks
-npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/ and the plugin JSON
+scripts/check-skills.sh                        # skill structure and the lens contract (Node 22.6+); the script lists its checks
+npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/, scripts/*.ts and the plugin JSON
 claude plugin validate .                       # plugin and marketplace manifests, the lens's hooks
 claude plugin test .                           # lens/tests/*.test.tsx
 ```

@@ -35,8 +35,10 @@ export const runLabel = (skill: string, args: string): string => `/forge-${skill
 
 // The pipeline step whose skill file a path or command reads: `…/forge-guard/SKILL.md` → `guard`
 export function skillStep(text: string): string | null {
-	const read = [...text.matchAll(/forge-([\w-]+)\/SKILL\.md\b/g)].map((m) => m[1] ?? "");
-	return read.filter((s) => PIPELINE.includes(s)).at(-1) ?? null;
+	const read = new Set([...text.matchAll(/forge-([\w-]+)\/SKILL\.md\b/g)].map((m) => m[1] ?? ""));
+	const steps = [...read].filter((s) => PIPELINE.includes(s));
+	// several at once is a ship run reading ahead, not moving into any of them
+	return steps.length === 1 ? (steps[0] ?? null) : null;
 }
 
 // `forge-ship`, also `forge:forge-ship` from a plugin install → `ship`

@@ -54,7 +54,7 @@ Check the terminal conditions first, on every round:
 - **`review-ready`** — branch mergeable, no check pending on the head (none registered yet within 3 minutes of a push counts as pending), CI green apart from pre-existing failures, review signal satisfied, no unaddressed feedback or substitute review findings, nothing needing a human decision
 - **`needs-human`** — anything that stops progress: a wait cap expires without its signal, the round limit is reached, a check the branch caused fails twice with the same error, a flaky or external check stays red, a conflict can't be resolved, a reviewer repeats an answered point, or only items needing a human decision remain
 
-When neither applies, react in this order (mergeability, CI, feedback) and go back to Step 3. One trip is one **round**, however many pushes it makes, and rounds count across turns; a trip that only reruns a flaky check or finds checks still pending is not.
+When neither applies, react in this order (mergeability, CI, feedback) and go back to Step 3. One trip is one **round**, however many pushes it makes, and rounds count across turns; a trip that only reruns a flaky check or finds checks still pending is not. Start each `addressing` detail with `round <n>/<max>`: this trip's number and the round limit. A trip that isn't a round repeats the last round's number, or `round 0/<max>` before the first.
 
 **Branch not mergeable** — per [pr-readiness](_shared/pr-readiness.md#mergeable). React to `BEHIND` once per run; after that, a branch that is only behind counts as mergeable and the summary says so. Report `addressing`, merge the base in, run the quality gates, commit, push:
 
