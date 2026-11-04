@@ -35,6 +35,7 @@ The lens has no channel into the skills: it parses what they write. These format
 | The `## Risk` section and `**Result:**` line; a section ends at the next `## ` heading | `skills/_shared/risk-rubric.md`, `skills/_shared/pr-body.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
 | `## Batch:` with one table per Wave, after a `--start` run's `### Status` table and, once the scope waits on you, its `### Merge Order` table and `**Gates:**` line | `skills/forge-batch/SKILL.md`, `skills/forge-batch/references/start.md` | `batch` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
+| `round <n>/<max>` at the start of an `addressing` status detail | `skills/forge-guard/SKILL.md` | `round` |
 
 Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR. `scripts/check-lens-contract.ts`, run by `scripts/check-skills.sh`, parses each format from the file named here and fails when they diverge; `claude plugin test` has no file access, so this can't be a lens test.
 

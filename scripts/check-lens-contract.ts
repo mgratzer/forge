@@ -118,3 +118,8 @@ check("the Unattended Shipping settings (unattended-config.md)", () => {
 		rows(doc, "## Settings").map(([name = "", usedBy = ""]) => ({ name, usedBy })),
 	);
 });
+
+check("a guard round in the addressing detail (forge-guard)", () => {
+	const format = /`(round <n>\/<max>)`/.exec(read("skills/forge-guard/SKILL.md"))?.[1] ?? "";
+	same(parse.round(format.replace("<n>", "2").replace("<max>", "3")), { round: 2, max: 3 });
+});
