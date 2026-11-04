@@ -98,8 +98,13 @@ const isOpen = (m: Model): boolean => !!m.run && !m.run.isDemo && !m.run.termina
 const isComposed = (m: Model, step: string): boolean =>
 	isOpen(m) && m.run?.skill === "ship" && parse.SHIP_STEPS.includes(step);
 
-// A ship run reading a composed step's skill file (Read, or `cat` in Bash) has moved into it
-export const readSkill = (m: Model, step: string): Model => (isComposed(m, step) ? setPhase(m, step) : m);
+// A step later than the one the run is in; a read of an earlier one only cites it
+const isAhead = (m: Model, step: string): boolean =>
+	parse.PIPELINE.indexOf(step) > parse.PIPELINE.indexOf(m.run?.phase ?? "");
+
+// A ship run reading a later composed step's skill file (Read, or `cat` in Bash) has moved into it
+export const readSkill = (m: Model, step: string): Model =>
+	isComposed(m, step) && isAhead(m, step) ? setPhase(m, step) : m;
 
 // A skill the model starts (the Skill tool) or the engine expands (skill.prompt, which
 // carries no args): a composed step moves the run on, the open run's own skill without
@@ -116,7 +121,8 @@ export function applyStatus(m: Model, state: string, detail: string, now: number
 	const prev = base.run;
 	if (!prev) return m;
 	const r = parse.round(detail);
-	const phase = parse.stepFor(state, prev.phase);
+	// land waits on CI too, and a land run never leaves land
+	const phase = prev.skill === "land" ? prev.phase : parse.stepFor(state, prev.phase);
 	const isTerminal = parse.TERMINAL.includes(state);
 	const run: Run = {
 		...prev,
