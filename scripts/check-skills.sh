@@ -21,6 +21,9 @@ problems=$(
 	# A shared file is read from <skill>/_shared/, where ../forge-*/ doesn't exist
 	grep -rn "\.\./forge-" skills/_shared/
 
+	# Each format the lens parses still parses from the file that defines it (needs Node 22.6+)
+	node --experimental-strip-types --no-warnings scripts/check-lens-contract.ts 2>&1
+
 	# Frontmatter `name` matches the directory, or installers skip the skill
 	for f in skills/forge-*/SKILL.md; do
 		dir=$(basename "$(dirname "$f")")

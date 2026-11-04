@@ -36,7 +36,7 @@ The lens has no channel into the skills: it parses what they write. These format
 | `## Batch:` with one table per Wave, after a `--start` run's `### Status` table and, once the scope waits on you, its `### Merge Order` table and `**Gates:**` line | `skills/forge-batch/SKILL.md`, `skills/forge-batch/references/start.md` | `batch` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
 
-Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR.
+Changing one of these formats means updating `lens/hooks/parse.ts` and `lens/tests/` in the same PR. `scripts/check-lens-contract.ts`, run by `scripts/check-skills.sh`, parses each format from the file named here and fails when they diverge; `claude plugin test` has no file access, so this can't be a lens test.
 
 A run starts from the typed `/forge-…` command or the Skill tool call, which carry its arguments. A forge-ship run moves into a composed step when it reads that step's `SKILL.md` (with Read or `cat`) or starts it with the Skill tool.
 

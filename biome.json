@@ -6,7 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["lens/**", ".claude-plugin/*.json", "biome.json"]
+		"includes": ["lens/**", "scripts/*.ts", ".claude-plugin/*.json", "biome.json"]
 	},
 	"formatter": {
 		"enabled": true,
