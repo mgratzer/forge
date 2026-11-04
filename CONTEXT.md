@@ -50,6 +50,8 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Addressed feedback** — a review thread we resolved or whose last comment is ours, or a PR conversation comment or review body that a comment of ours links. Ours means by the agent's login and carrying the `<!-- forge -->` marker, since a person can share that login. Unaddressed feedback that asks for something blocks review-ready. _Avoid_: "addressed thread".
 
+**Readiness signal** — what guard and land both read to decide whether a PR is ready: mergeable, CI, the review signal, open feedback. See [pr-readiness](skills/_shared/pr-readiness.md).
+
 **Prerequisite** — an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
 
 **Serialized resource** — a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project — see [unattended-config](skills/_shared/unattended-config.md).
