@@ -121,8 +121,8 @@ export function applyStatus(m: Model, state: string, detail: string, now: number
 	const prev = base.run;
 	if (!prev) return m;
 	const r = parse.round(detail);
-	// land waits on CI too, and a land run never leaves land
-	const phase = prev.skill === "land" ? prev.phase : parse.stepFor(state, prev.phase);
+	// A run of one pipeline skill stays in that step: land waits on CI too, and that isn't guard
+	const phase = parse.PIPELINE.includes(prev.skill) ? prev.phase : parse.stepFor(state, prev.phase);
 	const isTerminal = parse.TERMINAL.includes(state);
 	const run: Run = {
 		...prev,

@@ -107,7 +107,7 @@ Each skill carries its own copy of the shared modules in `_shared/`, so nothing 
 Forge's skills are Markdown prompts that follow the [Agent Skills](https://agentskills.io) standard; the lens is TypeScript that Claude Code runs itself. [`AGENTS.md`](AGENTS.md) holds the principles and commands, and CI checks every pull request:
 
 ```bash
-scripts/check-skills.sh                            # skill structure
+scripts/check-skills.sh                            # skill structure and the lens contract (Node 22.6+)
 npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens
 claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
 ```

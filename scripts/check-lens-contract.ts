@@ -50,7 +50,7 @@ check("the status call (status-reporting.md)", () => {
 	same(states.length > 0, true);
 	for (const [state = ""] of states) same(parse.statusCalls(`echo "[forge] ${state}: x"`), [{ state, detail: "x" }]);
 	const terminal = states.filter((s) => s[2] === "yes").map((s) => s[0] ?? "");
-	same([...terminal].sort(), [...parse.TERMINAL].sort());
+	same(terminal.sort(), [...parse.TERMINAL].sort());
 });
 
 check("a reviewer's findings (forge-reviewer.md)", () => {
@@ -67,13 +67,21 @@ check("the ## Risk section (risk-rubric.md, pr-body.md)", () => {
 		"<full SHA>",
 		"3f9c2a1e8b",
 	);
-	// a section ends at the next `## ` heading, so the PR body after it is not read into it
-	const risk = parse.riskSection(`${section}\n\n${block(read("skills/_shared/pr-body.md"), "## Format")}`);
+	const risk = parse.riskSection(section);
 	same(risk?.verdict, "low risk | needs review");
 	same(risk?.sha, "3f9c2a1e8b");
 	same(risk?.bullets[0]?.startsWith("Peer review:"), true);
 	same((risk?.lookAt.length ?? 0) > 0, true);
 	same(risk?.revert !== "", true);
+
+	// a section ends at the next `## ` heading, so the sections of the PR body after it stay out
+	const body = block(read("skills/_shared/pr-body.md"), "## Format");
+	same(body.includes("## Exercised"), true);
+	const head = section.split("**Where to look**")[0] ?? "";
+	same(
+		parse.riskSection(`${head}\n${body.slice(body.indexOf("## Exercised"))}`)?.bullets,
+		parse.riskSection(head)?.bullets,
+	);
 });
 
 check("the **Result:** line (forge-land, forge-guard, forge-ship)", () => {
