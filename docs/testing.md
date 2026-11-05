@@ -76,7 +76,7 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 
 ### forge-implement
 
-- An Issue in a project that can run its app: `## Exercised` lists real commands with their observed output and one failure case.
+- An Issue in a project that can run its app: `## Exercised` lists real commands with their observed output and one failure case, and its `Try it` line, repeated in the run's summary, says how to start the app and what to look at.
 - A project with no way to run the app: the section says `not exercised: <why>` instead of describing a run.
 - A fresh worktree of a project whose Commands name an install step: pre-flight runs it before the first phase.
 - An env var the base commit needs, unset. When `.env.example` provides it, the PR's Notes report an environment failure and the diff has no code change for it. When it doesn't, an unattended run stops at `needs-human` naming the variable.
