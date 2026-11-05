@@ -117,7 +117,7 @@ PR_EOF
 
 ### Step 10: Summarize
 
-Report: branch name, PR link, commits made, files changed, tests added, docs updated, exercise outcome, deferred items.
+Report: branch name, PR link, commits made, files changed, tests added, docs updated, exercise outcome, the `Try it` line from `## Exercised`, deferred items.
 
 ## Guidelines
 

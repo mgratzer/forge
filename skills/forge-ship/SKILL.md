@@ -60,6 +60,7 @@ Report implementation, review, guard, and land results together.
 - Tests: <added/modified/none>
 - Docs: <updated/none>
 - Exercised: <intended | wrong: <observed vs expected> | not exercised: <why>> (plus "not run: <parts>" when parts were skipped)
+- Try it: <the `Try it` line from `## Exercised`> (omit when the section has none)
 
 ### Review Findings
 - Simplify: applied <n> edits | nothing to simplify | covered by review (no simplification skill)
