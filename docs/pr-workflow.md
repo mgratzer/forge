@@ -1,62 +1,41 @@
 # PR Workflow
 
-## Commit Conventions
+## Commits
 
 Format: `<type>(<scope>): <description>`
 
 | Type | When to Use |
 |------|-------------|
-| `feat` | New skill or major new capability in an existing skill |
-| `fix` | Fix incorrect behavior in a skill |
-| `docs` | Documentation changes (docs/, README, AGENTS.md) |
-| `refactor` | Restructure a skill without changing its behavior |
-| `test` | Add or update validation guidance, test instructions, or manual test workflows |
-| `chore` | Repository maintenance, tooling changes |
-| `perf` | Improve skill efficiency, clarity, or token usage without changing behavior |
+| `feat` | New skill or major new capability |
+| `fix` | Incorrect behavior in a skill or the lens |
+| `docs` | Documentation (docs/, README, AGENTS.md) |
+| `refactor` | Restructure without changing behavior |
+| `test` | Lens tests, the contract check, manual test scenarios |
+| `chore` | Repository maintenance, tooling |
+| `perf` | Efficiency, clarity or token usage, without changing behavior |
 
-Scope is the skill name without the `forge-` prefix, or a general area:
+Scope is the skill name without `forge-`, or a general area:
 
 ```
 feat(setup-project): add monorepo detection
 fix(address-pr-feedback): correct GraphQL query for nested threads
-docs(architecture): add skill file format reference
-refactor(create-issue): simplify label selection logic
+test(lens): check the text formats against the skills that define them
 chore: update workflow references across all skills
 ```
 
-## Branch Naming
+## Branches
 
-Format: `<type>/<issue-number>-<short-kebab-description>`
-
-```
-feat/12-add-setup-project-skill
-fix/34-graphql-thread-resolution
-docs/56-update-architecture-docs
-```
-
-## Pre-Commit Checks
-
-See [testing.md — Structural Review](testing.md#1-structural-review) for the canonical checklist.
-
-## PR Checklist
-
-- [ ] Skill follows the standard section order
-- [ ] YAML frontmatter is complete and accurate
-- [ ] Bash examples are valid and runnable
-- [ ] Cross-skill conventions are consistent, including the shared `-- <additional context>` syntax where applicable
-- [ ] Workflow references updated in relevant skills (if workflow order changed)
-- [ ] AGENTS.md updated (if guidance or commands changed)
-- [ ] README.md updated (if features or docs table changed)
+Format: `<type>/<issue-number>-<short-kebab-description>`, or `<type>/<short-kebab-description>` with no Issue.
 
 ## PR Description
 
-Use the body `forge-implement` writes, described in [pr-body](../skills/_shared/pr-body.md). For skill changes, `## Exercised` reports the skill run on a test project.
+Use the body `forge-implement` writes, described in [pr-body](../skills/_shared/pr-body.md). For skill changes, `## Exercised` reports the runs in a sandbox: see [Testing](testing.md#exercise-a-skill-change).
 
-## Review Process
+## Review
 
-Skills are prompt templates — review focuses on:
+[CI](testing.md) covers structure, the lens and the plugin. A review checks what it can't:
 
-1. **Correctness**: Do the bash examples work? Are `gh` commands valid?
-2. **Consistency**: Do shared conventions match across all skills?
-3. **Completeness**: Does the skill handle edge cases mentioned in its Guidelines section?
-4. **Clarity**: Would a future-compatible agent follow the instructions unambiguously?
+- Do the `gh` and `git` commands exist and do what the skill says?
+- Does a changed convention match in every skill that states it?
+- Would an agent follow the instructions unambiguously, including in unattended mode?
+- Were `AGENTS.md` and `README.md` updated if commands, skills or the docs table changed?

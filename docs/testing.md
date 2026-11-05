@@ -1,85 +1,23 @@
 # Testing
 
-The skills are prompt templates, not executable code: their behavior is validated by hand, below. What can be checked mechanically runs in CI (`.github/workflows/checks.yml`) on every pull request, and locally with the same commands:
+What can be checked mechanically runs in CI (`.github/workflows/checks.yml`), and locally with the same commands:
 
 ```bash
-scripts/check-skills.sh                        # skill structure and the lens contract (Node 22.6+); the script lists its checks
-npx @biomejs/biome@2.6.2 ci .                  # lint and format of lens/, scripts/*.ts and the plugin JSON
-claude plugin validate .                       # plugin and marketplace manifests, the lens's hooks
-claude plugin test .                           # lens/tests/*.test.tsx
+scripts/check-skills.sh                              # skill structure and the lens contract (Node 22.6+); the script lists its checks
+npx @biomejs/biome@2.6.2 ci --error-on-warnings .    # lint and format of lens/, scripts/*.ts and the plugin JSON
+claude plugin validate .                             # plugin and marketplace manifests, the lens's hooks
+claude plugin test .                                 # lens/tests/*.test.tsx
 ```
 
-CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. `validate` exits 0 on warnings, so CI also fails on any warning except the missing `version` (left out so installs track commits) and, through `--profile directory`, on anything the plugin directory would refuse, such as a missing LICENSE. Run the lens checks when a change touches `lens/`, `.claude-plugin/`, or a text format the lens reads (see [Lens: The Text It Reads](lens.md#the-text-it-reads)).
+CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. `validate` exits 0 on warnings, so CI also fails on any warning except the missing `version` (left out so installs track commits) and, through `--profile directory`, on anything the plugin directory would refuse, such as a missing LICENSE.
 
-## How to Validate a Skill
-
-### 1. Structural Review
-
-Before committing a new or modified skill, verify:
-
-- [ ] YAML frontmatter has `name` and `description`
-- [ ] `name` matches the directory name (e.g., `forge-setup-project` in `skills/forge-setup-project/`)
-- [ ] All sections follow the standard order (see [Coding Guidelines](coding-guidelines.md))
-- [ ] "Related Skills" section references the correct next step or follow-up skill in the workflow
-- [ ] Workflow order is consistent: `forge-setup-project` → [`forge-shape` →] `forge-create-issue` → `forge-implement` → `forge-reflect` → `forge-address-pr-feedback` → `forge-guard` → `forge-land`
-
-### 2. Bash Command Validation
-
-Every `gh` and `git` command in a skill should be valid:
-
-```bash
-# Verify gh commands parse correctly (--help won't execute but validates syntax)
-gh issue create --help
-gh api graphql --help
-gh pr create --help
-```
-
-For GraphQL queries in `forge-address-pr-feedback`, verify the query structure against the [GitHub GraphQL API docs](https://docs.github.com/en/graphql).
-
-**Markdown provider path:** when modifying skills that use the `plan/` folder provider, verify that file operations match [plan-folder-spec.md](../skills/_shared/plan-folder-spec.md) — correct directory structure, frontmatter fields, and INDEX.md updates.
-
-### 3. End-to-End Manual Testing
-
-The most reliable test is running the skill on a real project:
-
-1. Open a compatible coding agent in a test repository
-2. Invoke the skill with `/forge-<skill-name>`
-3. Walk through the full process
-4. Verify all generated output (issues, branches, PRs, files) is correct
-5. If the skill delegates to sub-agents (for example `forge-reflect` or `forge-ship`), verify the delegated runs use either the parent session's model/provider or whatever compatible runtime-level model routing/configuration you intentionally set up
-6. For `forge-reflect` and `forge-ship`, verify review stays lean by default — tiny low-risk diffs stay inline, ordinary diffs use one reviewer, and a second pass appears only for clearly high-risk or broad changes
-7. For `forge-guard` (or `forge-ship --guard`), run it on a PR whose CI you can make fail once: verify it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging; when the peer reviewer fails (a Copilot error or rate-limit review), it re-requests once, then posts a `Substitute review:` comment, and land's `## Risk` names the substitution; a partial review (the could-not-review note above an overview) counts as the review, is not retried, and land's `## Risk` marks it partial; then run it with `--max-rounds 1` against a PR with two rounds of feedback and verify it ends in `needs-human`. Add a check that already fails on the base branch and one that fails only on its first attempt: the guard leaves the first alone, reruns the second once and waits for the rerun, and neither costs a round. Push a conflicting commit to the base branch: the guard merges it in, resolves the conflict, and still ends in `review-ready`. From the agent's own login, post a conversation comment, a review body, and an inline thread that each ask for a change, plus a comment that asks for nothing: the guard addresses the three and skips the fourth, its replies end in the `<!-- forge -->` marker and the first two link what they answer, and a rerun finds nothing. Leave one unanswered: land ends in `needs-human`. Hide a comment and it drops out. Have the agent leave a `Needs your decision:` reply: the query keeps returning it, land ends in `needs-human`, and it clears once a marked reply to the person's answer links it. On a public repository, a request from an account without write access ends the same way, unacted on
-8. For `forge-implement` (or `forge-ship`), run it on an Issue in a project that can run its app, such as `mgratzer/forge-e2e-sandbox`: verify the PR's `## Exercised` section lists real commands with their observed output and one failure case; then run it in a project with no way to run the app and verify the section says `not exercised: <why>` instead of describing a run. In a fresh worktree of a project whose Commands name an install step, verify pre-flight runs it before the first phase; then unset an env var the base commit already needs: when `.env.example` provides it, verify the PR's Notes report an environment failure and the diff has no code change for it; when it doesn't, verify an unattended run stops at `needs-human` naming the variable. Then run it on a UI change in `mgratzer/forge-e2e-sandbox` (the app is a JSON API, so give it a free-text task that renders something, such as an HTML report of the notes): verify `## Exercised` links screenshots, and the images are on `pr-assets/<branch>` and not on the feature branch. Run a second such task with `-- This machine has no browser or screenshot tool, and none may be installed or started` and verify the section's `Not exercised` line lists `screenshots: <why>`
-9. For `forge-land` (or `forge-ship --guard`), run it on two green PRs in `mgratzer/forge-e2e-sandbox`: a small docs-plus-code PR ends in `merge-ready`; a PR touching a CI workflow ends in `review-ready` with a Where to look list; a code PR whose `## Exercised` says `not exercised: no way to run the app` ends in `review-ready` with an `Exercise:` line naming it, while a docs-only PR with `not exercised: no runtime change` can still be `merge-ready`. Verify the PR body's `## Risk` section names the head commit, a re-run replaces the section instead of adding a second one, a PR without `## Exercised` ends in `needs-human`, a PR that opened with a deviation from its `## Plan` it doesn't list ends in `review-ready` with a `Plan:` line naming it, while guard-round commits after the open don't trip it, and the review request goes to a linked Issue's assignee or author only when they did not open the PR. Then add `Auto-merge: low-risk` to the sandbox's `## Unattended Shipping` section: the low-risk PR merges itself after CI and land reports `merged`; push a commit after the verdict and before the merge, and verify the merge is refused (`--match-head-commit`) and land reports `needs-human`. Labels are opt-in, so test both sides: with no `forge:*` labels in the sandbox, land reports `Label: none` and `gh label list` shows it created none. Create both (`gh label create forge:merge-ready && gh label create forge:review-ready`): a `merge-ready` run leaves `forge:merge-ready` on the PR, a later `review-ready` run swaps it for `forge:review-ready`, a `needs-human` run removes it, and so does a guard push. Delete both labels afterwards, so the sandbox stays not opted in
-10. For `forge-shape` on a visual decision, run it on a change to something the project renders: verify it reads the real copy and rules before the first board, marks what it made up as `proposed` or `sample`, looks at a rendered PNG before showing a board, logs a rejected direction with the person's reason, and doesn't bring that direction back. Change the chosen board and verify it finds what the spec no longer matches; accept a direction and verify the docs PR carries the spec and shows the boards. On a non-visual idea, verify it still asks questions and draws nothing. Then reject the design on a sandbox PR that already links `## Exercised` screenshots: verify an attended run draws a new board before any code, records a Plan revision, and leaves both the boards and the screenshots on `pr-assets/<branch>`, and that an unattended run leaves the thread as needing a human decision
-
-### 4. Cross-Skill Consistency Check
-
-After modifying any shared convention, grep across all relevant skills to ensure consistency. Hits under `skills/forge-*/_shared/` repeat the copies of `skills/_shared/`; fix them in the source and run `scripts/sync-shared.sh`, or skip them with `git grep <pattern> -- skills ':!skills/forge-*/_shared/*'`:
-
-```bash
-# Check commit format references
-grep -rn "type.*scope.*description" skills/
-
-# Check workflow order
-grep -rn "forge-setup-project\|forge-shape\|forge-create-issue\|forge-implement\|forge-reflect\|forge-address-pr-feedback\|forge-ship\|forge-guard\|forge-land\|forge-batch" skills/
-
-# Check guidance file references
-grep -rn "AGENTS.md\|CLAUDE.md" skills/
-
-# Check trailing context syntax (all skills support it)
-grep -rn "additional context\|-- <additional context>" skills/
-
-# Check Issue-touching skills reference _shared/issue-operations.md (not inline conditionals; setup-project has none)
-grep -rn "issue-operations" skills/*/SKILL.md
-
-# Structural checks (prints nothing when healthy; the script lists what it checks)
-scripts/check-skills.sh
-```
+No check reads a skill's meaning. By hand, verify the section order ([Coding Guidelines](coding-guidelines.md)), the Related Skills links, GraphQL queries against the [GitHub docs](https://docs.github.com/en/graphql), and that `plan/` provider paths match [plan-folder-spec](../skills/_shared/plan-folder-spec.md).
 
 ## Exercise a Skill Change
 
 Skill prompts are forge's runtime. A PR that changes `skills/` exercises the change (see [exercise](../skills/_shared/exercise.md)) and reports what the runs printed in `## Exercised`, never `not exercised: no runtime change`; that line stays for PRs that change only docs, tests, or CI. The app here is a coding agent running the skill in a sandbox repository made for it, such as the private `mgratzer/forge-e2e-sandbox`. Runs open branches and PRs there, so never point them at a real project: with no sandbox checkout at hand, report `Not exercised: needs a sandbox checkout`.
+
+The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security-sensitive paths: src/**`. Forge reads only `## Unattended Shipping`, but a run on 2026-10-20 honored that line anyway and sent code under `src/` to review, so keep test code outside `src/` when a case needs `merge-ready`.
 
 1. **Snapshot** the branch and its base as two plugins, from the forge checkout, named apart so neither collides with an installed forge:
 
@@ -90,14 +28,14 @@ Skill prompts are forge's runtime. A PR that changes `skills/` exercises the cha
    OLD=$(snap "$(git merge-base HEAD origin/main)" forge-old)   # the control: the branch's base, not today's main
    ```
 
-2. **Run the changed skill** headless in the sandbox checkout, once per snapshot. A free-text task needs no tracker reset; a full `forge-ship --guard` run costs about $2 and 4 minutes. Interactive skills print their questions as text, since `AskUserQuestion` is unavailable headless. Close each run's PR and delete its branch before the next run, since both runs pick the same branch name.
+2. **Run the changed skill** headless in the sandbox checkout, once per snapshot. A free-text task needs no tracker reset; a full `forge-ship --guard` run costs $2 to $3.50 and takes about 4 minutes. Interactive skills print their questions as text, since `AskUserQuestion` is unavailable headless. Close each run's PR and delete its branch before the next run, since both runs pick the same branch name.
 
    ```bash
    claude -p "/forge-new:forge-ship --guard <free-text task>" --plugin-dir "$NEW" --permission-mode auto
    claude -p "/forge-old:forge-ship --guard <free-text task>" --plugin-dir "$OLD" --permission-mode auto
    ```
 
-3. **For a rubric or verdict change**, run only forge-land's judge, read-only, on a sandbox PR that isolates the check under test, with each variant of the PR body in a local file. Run it once per snapshot, as in step 2:
+3. **For a rubric or verdict change**, run only forge-land's judge, read-only, on a sandbox PR that isolates the check under test, with each variant of the PR body in a local file. Run it once per snapshot:
 
    ```bash
    gh pr view <N> -R mgratzer/forge-e2e-sandbox --json body --jq .body > body.md   # copy, then edit the copy
@@ -107,10 +45,66 @@ Skill prompts are forge's runtime. A PR that changes `skills/` exercises the cha
 
    The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
-   Sandbox PR #11 adds code only in `bin/`, outside the sandbox's security-sensitive `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
+   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
 
 4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
 
 Judge tests read local copies of PR bodies: never edit a sandbox PR's body to set up a case. The PRs a full run opens are its own to write to; close them afterwards.
 
 In `## Exercised`, one line per run: the snapshot, the PR or task, the case, and what it printed, with the `$OLD` run as its own line.
+
+## Scenarios
+
+What to run per skill when a change reaches that behavior. For a sub-agent's run, also check it used the model and provider you expected.
+
+### forge-reflect, forge-ship review
+
+Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second pass appears only for clearly high-risk or broad changes.
+
+### forge-guard
+
+- A PR whose CI you can make fail once: it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging.
+- The peer reviewer fails (a Copilot error or rate-limit review): it re-requests once, then posts a `Substitute review:` comment, and land's `## Risk` names the substitution.
+- A partial review (the could-not-review note above an overview) counts as the review and isn't retried; land's `## Risk` marks it partial.
+- `--max-rounds 1` against two rounds of feedback: ends in `needs-human`.
+- A check that already fails on the base branch: left alone. A check that fails only on its first attempt: rerun once and waited for. Neither costs a round.
+- A conflicting commit pushed to the base branch: merged in and resolved, and it still ends in `review-ready`.
+- From the agent's own login, a conversation comment, a review body and an inline thread that each ask for a change, plus a comment that asks for nothing: it addresses the three and skips the fourth, its replies end in the `<!-- forge -->` marker, the first two link what they answer, and a rerun finds nothing.
+- One left unanswered: land ends in `needs-human`. A hidden comment drops out.
+- A `Needs your decision:` reply from the agent: the query keeps returning it and land ends in `needs-human`, until a marked reply to the person's answer links it.
+- On a public repository, a request from an account without write access ends in `needs-human`, unacted on.
+
+### forge-implement
+
+- An Issue in a project that can run its app: `## Exercised` lists real commands with their observed output and one failure case.
+- A project with no way to run the app: the section says `not exercised: <why>` instead of describing a run.
+- A fresh worktree of a project whose Commands name an install step: pre-flight runs it before the first phase.
+- An env var the base commit needs, unset. When `.env.example` provides it, the PR's Notes report an environment failure and the diff has no code change for it. When it doesn't, an unattended run stops at `needs-human` naming the variable.
+- A UI change (the sandbox is a JSON API, so give it a free-text task that renders something, such as an HTML report of the notes): `## Exercised` links screenshots, and the images are on `pr-assets/<branch>`, not on the feature branch.
+- The same with `-- This machine has no browser or screenshot tool, and none may be installed or started`: the `Not exercised` line lists `screenshots: <why>`.
+
+### forge-land
+
+On green sandbox PRs, with code outside `src/**` unless the case says otherwise:
+
+- A small docs-plus-code PR ends in `merge-ready`; a PR touching a CI workflow ends in `review-ready` with a Where to look list.
+- A code PR with `not exercised: no way to run the app` ends in `review-ready` with an `Exercise:` line naming it. A docs-only PR with `not exercised: no runtime change` can still be `merge-ready`.
+- The `## Risk` section names the head commit, and a re-run replaces it rather than adding a second one.
+- A PR without `## Exercised` ends in `needs-human`.
+- A PR that opened with a deviation from its `## Plan` it doesn't list ends in `review-ready` with a `Plan:` line naming it. Guard-round commits after the open don't trip this.
+- The review request goes to a linked Issue's assignee or author only when they did not open the PR.
+- With `Auto-merge: low-risk` in a `## Unattended Shipping` section: the low-risk PR merges itself after CI and land reports `merged`. A commit pushed after the verdict and before the merge is refused (`--match-head-commit`), and land reports `needs-human`.
+- Labels, off: with no `forge:*` labels, land reports `Label: none` and creates none.
+- Labels, on (`gh label create forge:merge-ready && gh label create forge:review-ready`): a `merge-ready` run leaves `forge:merge-ready`, a later `review-ready` run swaps it for `forge:review-ready`, and a `needs-human` run or a guard push removes it. Delete both afterwards, so the sandbox stays not opted in.
+
+### forge-shape
+
+On a change to something the project renders:
+
+- It reads the real copy and rules before the first board, and marks what it made up as `proposed` or `sample`.
+- It looks at a rendered PNG before showing a board.
+- It logs a rejected direction with the person's reason and doesn't bring that direction back.
+- When the chosen board changes, it finds what the spec no longer matches.
+- When a direction is accepted, the docs PR carries the spec and shows the boards.
+- A non-visual idea still gets questions and no drawing.
+- A design rejected on a sandbox PR that already links `## Exercised` screenshots: an attended run draws a new board before any code, records a Plan revision, and leaves the boards and the screenshots on `pr-assets/<branch>`. An unattended run leaves the thread as needing a human decision.

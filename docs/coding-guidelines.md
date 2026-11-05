@@ -1,54 +1,43 @@
 # Coding Guidelines
 
-These guidelines apply to writing and modifying SKILL.md files.
+These apply to writing and modifying `SKILL.md` files.
 
 ## Skill Structure
 
 Every skill follows the same section order:
 
-1. YAML frontmatter (`---` delimited)
+1. YAML frontmatter
 2. Title (`# <Action Verb> <Object>`)
-3. Description paragraph (optional — omit if the title is self-explanatory)
-4. `## Input` — document `$ARGUMENTS`, default behavior, and the shared trailing context syntax (`-- <additional context>`)
-5. `## Process` — numbered `### Step N: <Action>` sections
-6. `## Output Format` (optional) — template for structured output
-7. `## Guidelines` — brief behavioral rules as a list
-8. `## Related Skills` — link to the next relevant skill in the workflow
-9. `## Example Usage` — slash command examples
+3. Description paragraph (optional)
+4. `## Input`: `$ARGUMENTS`, default behavior, and the trailing `-- <additional context>`
+5. `## Process`: numbered `### Step N: <Action>` sections
+6. `## Output Format` (optional)
+7. `## Guidelines`: brief behavioral rules
+8. `## Related Skills`: the next step in the workflow
+9. `## Example Usage`: slash command examples
 
-## Frontmatter Conventions
+## Frontmatter
 
-- `name`: kebab-case, prefixed with `forge-` (e.g., `forge-setup-project`)
-- `description`: one or two sentences describing what the skill does and when to use it. This text is what compatible agents use for skill discovery, so it must be descriptive.
-- `disable-model-invocation`: set to `true` only for interviews whose whole purpose is questioning the user (`forge-setup-project`, `forge-shape`). Every other skill omits it so an orchestrating agent can run it through the Skill tool; its `description` then names explicit forge intent, so a plain "fix this bug" does not start it, and says when the skill stops to ask the user.
-- `allowed-tools`: tools pre-approved to run while the skill is active. It pre-approves; it does not restrict other tools. Forge skills write it comma-separated; the Agent Skills spec's form is space-separated, and the field is experimental there, so support varies by agent.
-- `context: fork`: forks the entire skill into a sub-agent on runtimes that support it. Only for skills with no interactive steps; currently no forge skill sets it.
+- `name`: kebab-case, prefixed with `forge-`, matching the directory.
+- `description`: what the skill does and when to use it. Agents discover skills by this text. Quote it when it contains `: `, since installers parse YAML strictly.
+- `disable-model-invocation`: `true` only for interviews whose whole purpose is questioning the user (`forge-setup-project`, `forge-shape`). Every other skill omits it so an orchestrating agent can run it through the Skill tool; its `description` then names explicit forge intent, so a plain "fix this bug" does not start it, and says when the skill stops to ask the user.
+- `allowed-tools`: tools pre-approved while the skill is active. It doesn't restrict other tools. Forge skills write it comma-separated; the Agent Skills spec's form is space-separated and the field is experimental there, so support varies by agent.
 
-## Writing Process Steps
+## Process Steps
 
-- Each step should be a single, focused action
-- Include bash examples for any CLI operations (especially `gh` and `git` commands)
-- Use `AskUserQuestion` for user decisions — never assume
-- Steps should be numbered sequentially and named with action verbs: "Create", "Fetch", "Analyze", "Generate"
+- One focused action per step, named with a verb.
+- Use `AskUserQuestion` for user decisions.
+- Show `gh` and `git` operations as commands. Every `gh` command must exist; check `--help` for flags rather than trusting memory.
+- Use placeholders consistently: `<ISSUE_NUMBER>`, `<OWNER>`, `<REPO>`, `<BRANCH_NAME>`.
 
-## Writing Delegate Steps
+## Delegate Steps
 
-When a step benefits from fresh context (e.g., unbiased review), mark it with the **`(delegate)` step annotation** — it works on any runtime with sub-agent support and falls back to inline execution elsewhere.
+Mark a step that benefits from fresh context with `(delegate)`: `### Step N: <Action> (delegate)`, or `#### <Action> (delegate)` for a conditional sub-step. Delegate only for a real gain: unbiased review, or parallel sub-agents for divergent exploration.
 
-**`context: fork` frontmatter** is Claude Code's mechanism for forking the *entire* skill into a sub-agent. It suits only skills with no interactive steps, so skills that triage with the user (reflect, ship) use `(delegate)` instead; the two can coexist in a skill that qualifies.
-
-**Writing `(delegate)` steps:**
-
-- Mark the step title: `### Step N: <Action> (delegate)` — or `#### <Action> (delegate)` when delegation is a conditional sub-step within a larger step
-- Open with the delegation instruction and inline fallback
-- Sub-agent instructions are either **fully self-contained in a blockquote** or **composed from a role reference plus task-specific instructions** (see [Using Roles in Delegate Steps](#using-roles-in-delegate-steps) below)
-- List **Inputs provided to sub-agent** — data the parent must pass (diff output, file contents, project conventions)
-- List **Expected output** — what the parent receives back
-- Only delegate when it provides a genuine quality improvement — fresh context for unbiased review (e.g., reflect) or parallel sub-agents for divergent exploration (e.g., the optional approach-exploration step in shape)
-
-### Using Roles in Delegate Steps
-
-When a delegation step benefits from a separated persona, extract it into a **role file** (see [Role File Format](#role-file-format) below). A role used by one skill lives in that skill's `roles/` directory; a role shared across skills lives in `skills/_shared/roles/`. The skill then references the role and provides only task-specific instructions:
+- Open with the delegation instruction and an inline fallback.
+- Give instructions that stand alone: a blockquote, or a role reference plus the task.
+- List **Inputs provided to sub-agent** and **Expected output**.
+- Where the runtime can vary models per task, prefer a cheap fast model for factual scouting and a cheaper review-capable one for routine review, and save the strongest for synthesis, planning and hard implementation decisions. Otherwise inherit the parent's.
 
 ```markdown
 #### Research (delegate)
@@ -64,94 +53,48 @@ file and answer each question following its rules.
 **Expected output:** One factual answer per question.
 ```
 
-The role file defines the persona, behavior rules, and output format. The skill's blockquote provides only the task-specific checklist or instructions. Runtimes that support role-aware delegation compose both into the sub-agent's context; runtimes that don't can read the role file inline.
+## Roles
 
-**Important:** role files are **not** the same thing as runtime agent definitions. Do not assume a role file's `name:` can be passed as `agent: "<name>"` to a sub-agent tool. If the runtime separates prompt content from agent selection, push the role file body via the delegated task or `systemPrompt`. If selecting an agent also selects a model/provider, prefer leaving the agent unspecified so the sub-agent inherits the parent session configuration unless the user has explicitly configured a matching agent. Runtime-specific agent files, presets, or harness config are optional tuning layers — Forge must still work correctly without them.
-
-Role files live inside the skill directory when only one skill uses them. When multiple skills need the same role or reference, the file lives in `skills/_shared/` (or `skills/_shared/roles/` for roles) — the shared layer avoids duplication drift while keeping dependencies explicit. Skills link shared files as `_shared/<file>.md` through their own `_shared/` copy, never `../_shared/`, which breaks once skills are installed individually. A file in a skill's subdirectory (`references/`) reaches the same copy as `../_shared/<file>.md`; files inside `_shared/` link each other relative to their own location and never link outside the shared layer. Edit `skills/_shared/` only, then run `scripts/sync-shared.sh`.
-
-## Role File Format
-
-Role files define reusable sub-agent personas. Skill-specific roles live under the skill's `roles/` directory; cross-skill roles live in `_shared/roles/`.
-
-**YAML Frontmatter:**
+A role file defines a sub-agent persona: identity, behavior rules, output format, constraints. Extract one when the persona has calibration rules worth separating, or when the skill nears its instruction budget; a persona of a sentence or two stays inline. A role one skill uses lives in that skill's `roles/`; a shared one in `skills/_shared/roles/`.
 
 ```yaml
 ---
-name: <role-name>           # Kebab-case, prefixed with `forge-`
-description: <what it does>  # One sentence
+name: <role-name>            # kebab-case, prefixed with forge- so it doesn't shadow a runtime's own "scout" or "reviewer"
+description: <what it does>  # one sentence
 ---
 ```
 
-**Body structure:** Title and identity statement → Behavior rules → Output format → Constraints (if any). The body is composed with task-specific instructions from the skill at delegation time.
+A role file is not a runtime agent definition, so don't pass its `name:` as an agent selector. Push the role body through the delegated task or `systemPrompt`. If selecting an agent also selects a model or provider, leave the agent unspecified so the sub-agent inherits the parent session's configuration.
 
-Role names are prefixed with `forge-` to avoid shadowing generic names (`scout`, `reviewer`) that bundled runtimes may use.
+**Link rules.** `skills/_shared/` is the source, copied into each skill. `SKILL.md` links `_shared/<file>.md`, never `../_shared/`. A file in `references/` links `../_shared/<file>.md`. Files in `_shared/` link only inside the shared layer, relative to themselves. Edit `skills/_shared/` only, then run `scripts/sync-shared.sh`.
 
-## Bash Examples in Skills
+## Shared Conventions
 
-- Every `gh` command must be a valid GitHub CLI command (used in GitHub provider paths)
-- Use placeholder syntax consistently: `<ISSUE_NUMBER>`, `<OWNER>`, `<REPO>`, `<BRANCH_NAME>`
-- Include comments in multi-step bash blocks explaining each command
-- Show both the command and the expected usage pattern
-- When reading repository files in examples, prefer the `Read` tool over shelling out with `cat`
+Most conventions live in one `skills/_shared/` module that skills link rather than restate. To see who uses one:
 
-## Cross-Skill Consistency
+```bash
+git grep -l <module> -- skills ':!skills/forge-*/_shared/*'
+```
 
-Conventions shared across skills. When modifying any, update every skill that references them:
+These have no module, so each skill states them itself. When changing one, update them all:
 
-| Convention | Format | Referenced In |
-|------------|--------|---------------|
-| Conventional commits | `<type>(<scope>): <description>` — titles, branches, commits, PRs | create-issue, shape, implement, address-pr-feedback |
-| Canonical guidance file | `AGENTS.md` only; no `CLAUDE.md` (an `@AGENTS.md` import only for Claude-specific content) | setup-project, implement |
-| Validate approach | Present plan and get user confirmation before implementing (skipped in unattended mode) | implement, ship |
-| Phase execution | Pre-flight, per-phase implementation/testing loop, phase gates — consolidated in `_shared/phase-execution.md` | implement |
-| Open work | A prerequisite counts once landed; an unmet one, or an open PR for the Issue, asks attended and stops unattended; a shared file or serialized resource with an open PR is a conflict. Consolidated in `_shared/open-work.md` | implement, batch |
-| Exercise | Run the app and use the changed path once, plus one failure case, before opening the PR; report it in `## Exercised`. Consolidated in `_shared/exercise.md` | implement, ship via implement |
-| PR body | One-sentence why, deployment-step rules, change outline views, `## Exercised`, and `## Plan` with its provenance (approved, first made, or revised) and stated deviations. Consolidated in `_shared/pr-body.md` | implement, ship via implement; land and the review read it |
-| Visuals | Show a change's shape only when a view explains more than the text or diff; text views in Plans and shape summaries, Mermaid only in bodies a host renders. Consolidated in `_shared/visuals.md` | implement, create-issue, shape |
-| Design rounds | Settle a visual decision with rendered boards, logging each verdict in the spec; a design rejected on an open PR is a new design round before any code. Consolidated in `_shared/design-rounds.md` | shape; implement and address-pr-feedback send rejections there |
-| Pattern audit | When changing a pattern, update every file using it — consolidated in `_shared/pattern-audit.md` | implement, reflect |
-| Mandatory deferred tracking | Create Issues (in the project's Issue tracker) for every Deferred item | reflect, ship, address-pr-feedback, guard |
-| Trailing context syntax | Append `-- <additional context>` as the final invocation segment | All skills |
-| Review severity | P0-P3 (see _shared/review-rubric.md) | reflect, ship, guard |
-| Risk verdict | Mechanical checks then one judgment test, judged on the head commit, written as `## Risk` — consolidated in `_shared/risk-rubric.md` | land |
-| Sub-agent delegation | `(delegate)` step marker with role reference or self-contained instructions and inline fallback; `context: fork` frontmatter available when an entire skill benefits from fresh context | shape, implement, reflect, ship, guard, land, batch |
-| Review delegation | Tiny low-risk diffs stay inline when the session didn't author them; otherwise use one fresh-context reviewer by default and add a second focused pass only for high-risk or broad diffs. Consolidated in `_shared/review-delegation.md`; inline fallback executes the same lean shape sequentially | reflect, ship |
-| One question at a time | Ask convergent questions one at a time with recommended answers; do not batch (see shape/references/shaping-methodology.md) | shape |
-| Challenge then converge | Push back on terminology conflicts with CONTEXT.md, code contradictions, and vague boundaries; invent concrete scenarios to stress-test fuzzy edges | shape |
-| Vocabulary discipline | Use CONTEXT.md terms when framing questions; update CONTEXT.md inline when terms are resolved during shaping; add `_Avoid_` aliases for rejected synonyms | shape |
-| Explore before asking | Check if codebase answers each question before asking the user; provide recommended answers | shape |
-| Divergent sub-agents | `(delegate)` step with parallel sub-agents, each given radically different constraints for approach contrast; inline fallback generates sequentially (see "Writing Delegate Steps") | shape (Step 3, optional) |
-| Vertical slices | Split issues as thin end-to-end paths across all layers; classify as AFK or HITL | shape, create-issue |
-| Reusable roles | Sub-agent personas under `roles/` — skill-specific roles co-locate with the skill; cross-skill roles live in `_shared/roles/` | implement (forge-scout), reflect + ship via review-delegation (forge-reviewer) — both in `_shared/roles/` |
-| Blind research delegation | `(delegate)` research step using forge-scout role — receives questions but not the Issue; inline fallback answers factually without suggesting implementations | implement |
-| Structure outline | High-level vertical phases with verification steps; each phase is a testable end-to-end slice | implement |
-| Durable decisions | Identify architectural decisions that survive implementation changes; keep as plan header | implement |
-| Skill composition | Composite skills reuse component processes and shared `_shared/` modules; orchestrators stay lean | ship |
-| Tool-layer integration | Use runtime capabilities (sub-agent tools, per-task model choice) when present, with an inline fallback; never depend on a runtime-specific agent name | implement (forge-scout), reflect + ship (via `_shared/review-delegation.md`), batch (forge-scout), guard + ship (`/simplify`), guard (`/security-review`) |
-| Unattended mode | `--unattended` flag skips user interaction; plan approval auto-proceeds, triage fixes in-scope findings by default and defers only truly larger or out-of-scope items; Discussion threads are decided on evidence or left open for the human | ship, implement, address-pr-feedback, batch; guard and land are always unattended |
-| Status reporting | Report state transitions through `FORGE_STATUS_CMD` — see `_shared/status-reporting.md`; terminal state exactly once, and a re-entry (forge-guard Step 5) reports only its new one, once; the [lens](lens.md) parses the call, so a format change updates `lens/hooks/parse.ts` | implement, review-delegation, guard, land, ship |
-| Unattended configuration | Read the `## Unattended Shipping` section of `AGENTS.md` — see `_shared/unattended-config.md`; defaults when absent | guard, land, batch |
-| PR readiness | What mergeable, CI, the review signal, and open feedback mean and how to read them; skills keep what they do about a signal. Consolidated in `_shared/pr-readiness.md` | guard, land, address-pr-feedback |
-| Issue tracker providers | Provider operations consolidated in `_shared/issue-operations.md`; skills reference it instead of inlining conditionals | create-issue, implement, reflect, ship, shape, address-pr-feedback, guard, batch |
-| Workflow order | setup → [shape →] create → implement → reflect → address → guard → land; ship composes implement + reflect [+ guard + land]; batch groups Issues for launchers | All skills |
+- Conventional commits: `<type>(<scope>): <description>`, for Issue titles, branches, commits and PRs.
+- Guidance file: `AGENTS.md` only.
+- Trailing context: `-- <additional context>` as the final segment, in every skill.
+- Workflow order, in each skill's Related Skills section.
+- `--unattended`: skips the plan approval and triages findings on its own, fixing in-scope ones and deferring only what is larger or out of scope. Feedback threads that need discussion are decided on evidence or left open for a person. Guard and land are always unattended.
+- Deferred items: every one becomes an Issue in the project's tracker.
 
 ## Instruction Budget
 
-Frontier LLMs follow ~150-200 instructions with good consistency. Beyond that, adherence degrades and steps get skipped unpredictably. Since skills share the context window with AGENTS.md, system prompts, and tool definitions, keep individual skills lean:
+Frontier models follow roughly 150 to 200 instructions consistently, and a skill shares that with `AGENTS.md`, system prompts and tool definitions.
 
-- **Target: under 35 distinct instructions per skill.** Count each directive, conditional, and behavioral rule.
-- **Delegate when growing past the budget.** Use sub-agent delegation to offload self-contained concerns (research, review, approach generation) into fresh context windows.
-- **Count composites per invocation.** A composite skill loads its component's instructions too — keep the composite's own body thin so the combined load stays reasonable.
-- **Prefer the minimum effective reviewer count.** For review, keep tiny low-risk diffs inline when the session didn't author them, otherwise start with one focused fresh-context reviewer and deepen only when risk clearly justifies another pass.
-- **Match model cost to task shape.** Factual scouting should use cheap fast models when the runtime supports per-task model choice; routine review should prefer cheaper review-capable models; save the strongest models for synthesis, planning, and hard implementation decisions. If the runtime cannot vary models per task, the skill should still work by inheriting the parent session model.
-- **Don't use prompts for control flow.** If a skill has multi-way branching (mode selection, input type routing), split into focused skills or use a lightweight routing step.
+- Aim for under 35 distinct instructions per skill, counting each directive, conditional and behavioral rule. This is a judgment call: no check counts them.
+- Past that, delegate self-contained concerns (research, review, approach generation) to fresh context.
+- Count composites per invocation: a composite also loads its components' instructions, so keep its own body thin.
+- Don't use prompts for control flow. Split multi-way branching into focused skills or one light routing step.
 
-## Style Rules
+## Style
 
-- Use `**bold**` for emphasis on key terms and warnings
-- Use `> blockquote` for example dialogue or user-facing messages
-- Use tables for structured reference data
-- Use fenced code blocks with language hints (`bash`, `markdown`, `json`)
-- Keep lines under 120 characters where practical
-- Templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence. Skill prose itself may use them
+- Use tables for structured reference data, and fenced code blocks with language hints.
+- Docs and templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence. Skill prose itself may use them.
