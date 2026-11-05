@@ -2,13 +2,7 @@
 
 The lens is an optional Claude Code view over a forge run. It lives in `lens/` and ships with the skills in the Claude Code plugin. The skills don't depend on it: it only reads text they already print, so they stay portable and every other agent keeps working without it.
 
-## Install
-
-```
-/plugin install forge --marketplace mgratzer/forge
-```
-
-The plugin brings the skills and the lens. It carries no `version`, so an install is keyed by commit and an update brings whatever `main` holds: `claude plugin update forge@forge`, or turn on auto-update for the marketplace under `/plugin`. Pick one channel per machine: the plugin for Claude Code, or `npx skills add mgratzer/forge` for other agents. With both, Claude Code lists every skill twice, once as `/forge-ship` and once as `/forge:forge-ship`.
+For installing and updating the plugin, see [Install Details](../README.md#install-details).
 
 ## What It Shows
 
@@ -52,6 +46,6 @@ tsc -p .                # type-check, once a session has loaded the plugin
 
 Biome, `claude plugin validate` and `claude plugin test` run in CI; [Testing](testing.md) has the commands.
 
-The lens is TypeScript run by Claude Code itself: no build step and no dependencies. Claude Code writes its API types to `.claude-plugin/types/` and a `tsconfig.json` when a session loads the plugin from a folder (both git-ignored), so type-checking is local only; CI runs Biome, `validate` and `test`. Hooks may only change the state model through pure functions in `lens/hooks/model.ts`, because Claude Code refuses a module that passes `$` to a helper; side effects (`gh`, notifications, the status line, the demo) run in the one-second loop in `register.tsx`.
+Claude Code runs the TypeScript itself: no build step and no dependencies. It writes its API types to `.claude-plugin/types/` and a `tsconfig.json` when a session loads the plugin from a folder (both git-ignored), so type-checking is local only. Hooks may only change the state model through pure functions in `lens/hooks/model.ts`, because Claude Code refuses a module that passes `$` to a helper; side effects (`gh`, notifications, the status line, the demo) run in the one-second loop in `register.tsx`.
 
 The mod API is early access and may change between Claude Code releases. `validate` and `test` show a break first.

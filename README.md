@@ -84,9 +84,7 @@ Every skill takes optional trailing guidance: `/forge-ship 42 -- keep the diff m
 
 ## The Lens
 
-The Claude Code plugin adds the lens: a pane beside the session that follows a forge run. It shows the current state and the command that most likely comes next, the pipeline step, the PR's CI and review state, review findings as a checklist, and the risk verdict, which it marks stale once the PR moves past the judged commit. A status line, a next-step suggestion you take with Tab, and a notification when a run ends or needs you come with it.
-
-`/forge` says where a run is and what to do next, and `/forge config` shows the project's unattended settings with their defaults filled in. The lens only reads what the skills already print, so the skills work the same without it. See [Lens](docs/lens.md).
+The Claude Code plugin adds the lens: a pane beside the session that follows a forge run, with its current state, the command that most likely comes next, the PR's CI and review state, review findings, and the risk verdict. `/forge` says where a run is and what to do next. The lens only reads what the skills already print, so the skills work the same without it. See [Lens](docs/lens.md).
 
 ## Install Details
 
@@ -100,30 +98,11 @@ The Claude Code plugin adds the lens: a pane beside the session that follows a f
 ln -s /path/to/forge/skills/forge-* <your-agent-skills-dir>/
 ```
 
-Each skill carries its own copy of the shared modules in `_shared/`, so nothing else needs installing. Use one channel per machine: with both the plugin and npx, Claude Code lists every skill twice.
+Each skill carries its own copy of the shared modules in `_shared/`, so nothing else needs installing. Use one channel per machine: with both the plugin and npx, Claude Code lists every skill twice, once as `/forge-ship` and once as `/forge:forge-ship`. `npx skills update -g` recreates the `~/.claude/skills` links when `~/.claude` exists, so removing them doesn't last while the npx install remains.
 
 ## Contributing
 
-Forge's skills are Markdown prompts that follow the [Agent Skills](https://agentskills.io) standard; the lens is TypeScript that Claude Code runs itself. [`AGENTS.md`](AGENTS.md) holds the principles and commands, and CI checks every pull request:
-
-```bash
-scripts/check-skills.sh                            # skill structure and the lens contract (Node 22.6+)
-npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens
-claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
-```
-
-Test a skill change by invoking it on a real project, and use conventional commits (`feat(skills): add a skill`).
-
-| Document | Purpose |
-|----------|---------|
-| [Context](CONTEXT.md) | Shared vocabulary used across the skills |
-| [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
-| [Development](docs/development.md) | Creating and modifying skills |
-| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions |
-| [Testing](docs/testing.md) | Automated checks and validating skills by hand |
-| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review |
-| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
-| [Lens](docs/lens.md) | The Claude Code plugin and the lens |
+[`AGENTS.md`](AGENTS.md) has the commands CI runs and an index of the docs. Exercise a skill change in a sandbox repository, not a real project ([Testing](docs/testing.md#exercise-a-skill-change)), and use conventional commits (`feat(skills): add a skill`).
 
 ## License
 

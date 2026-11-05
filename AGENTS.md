@@ -1,12 +1,10 @@
 # Forge
 
-Forge is a collection of agent skills that define a structured development workflow with pluggable issue tracking. Skills follow the [Agent Skills](https://agentskills.io) open standard.
+Forge is a collection of agent skills that define a structured development workflow with pluggable issue tracking, following the [Agent Skills](https://agentskills.io) standard. The skills are Markdown prompts with no build system. The repository root is also a Claude Code plugin that adds the lens (`lens/`), an optional TypeScript view over the text the skills print; see [Lens](docs/lens.md). The skills never depend on the lens, and launchers and worktree setup stay the user's.
 
-`AGENTS.md` is the only project guidance file in this repository; there is no `CLAUDE.md` (Claude Code reads `AGENTS.md` natively).
+This is the only project guidance file; there is no `CLAUDE.md` (Claude Code reads `AGENTS.md` natively).
 
 ## Commands
-
-The skills are Markdown: skill prompts (`SKILL.md`, shared modules, roles, references) and docs, with no build system. The repository root is also a Claude Code plugin that bundles them with the lens (`lens/`), an optional TypeScript view over the text the skills print; see [Lens](docs/lens.md). The skills never depend on the lens, and launchers and worktree setup stay the user's.
 
 ```bash
 scripts/check-skills.sh                            # skill structure and the lens contract (Node 22.6+); prints nothing when healthy
@@ -14,46 +12,35 @@ npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens (t
 claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
 ```
 
-CI (`.github/workflows/checks.yml`) runs all three on every pull request; see [Testing](docs/testing.md).
+CI runs all three on every pull request; see [Testing](docs/testing.md).
 
 Shared modules are edited only in `skills/_shared/`. `scripts/sync-shared.sh` copies them into each skill, and `scripts/check-skills.sh` fails when a copy drifts.
 
-Skill prompts are forge's runtime, so a change under `skills/` is exercised, not reported as `no runtime change`: run the changed skill (or forge-land's judge, for a rubric change) from a snapshot of the branch in a sandbox repository, with a snapshot of `origin/main` as the control. The commands are in [Testing: Exercise a Skill Change](docs/testing.md#exercise-a-skill-change).
+Skill prompts are forge's runtime, so a change under `skills/` is exercised, not reported as `no runtime change`: run the changed skill (or forge-land's judge, for a rubric change) from a snapshot of the branch in a sandbox repository, with a snapshot of the branch's base as the control. The commands are in [Testing: Exercise a Skill Change](docs/testing.md#exercise-a-skill-change).
 
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
 | [Context](CONTEXT.md) | Shared vocabulary used across forge skills |
-| [Architecture](docs/architecture.md) | Skill workflow, operating constraints, design decisions |
-| [Development](docs/development.md) | How to create and modify skills |
-| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions, style rules |
-| [Testing](docs/testing.md) | Automated checks and validating skills by hand |
-| [PR Workflow](docs/pr-workflow.md) | Commits, PRs, branch naming, review process |
+| [Architecture](docs/architecture.md) | Workflow, context limits, design decisions |
+| [Development](docs/development.md) | Adding and modifying skills |
+| [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions |
+| [Testing](docs/testing.md) | Automated checks, exercising a skill change, per-skill scenarios |
+| [PR Workflow](docs/pr-workflow.md) | Commits, branch naming, review |
 | [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
-| [Lens](docs/lens.md) | Claude Code plugin install, the lens's views, the text formats it reads |
+| [Lens](docs/lens.md) | The lens's views and the text formats it reads |
 
-**Update docs when you change skill conventions or add new skills.**
+Update docs when you change skill conventions or add new skills.
 
-## Core Principles
+## Principles
 
-1. **Skills are prompts, not code** — every SKILL.md is a reusable prompt template with YAML frontmatter and step-by-step instructions
-2. **Explore-first, ask-second** — skills should always analyze the codebase before asking the user questions
-3. **Never invent content** — use `<!-- TODO -->` markers rather than generating generic boilerplate
-4. **Conventional commits everywhere** — every skill enforces the same commit, branch, issue, and PR naming format
-5. **Standards first, compatibility second** — prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility lightweight
-6. **One invocation convention** — every skill supports optional trailing execution context via `-- <additional context>` when additional guidance is useful
-7. **Plan before code** — for complex work, research the codebase objectively and align on architecture before writing implementation; delegate research to sub-agents for unbiased answers
-8. **Mind the instruction budget** — keep skills under ~35 instructions; delegate to sub-agents when complexity grows
+- **Explore first, ask second.** Skills analyze the codebase before asking the user questions.
+- **Never invent content.** Use `<!-- TODO -->` markers rather than generic boilerplate.
+- **Standards first.** Prefer `AGENTS.md` and Agent Skills conventions; keep vendor-specific compatibility light.
+- **Plan before code.** For complex work, research the codebase objectively and align on architecture first, with research delegated to sub-agents.
+- **Mind the [instruction budget](docs/coding-guidelines.md#instruction-budget).** Keep skills under ~35 instructions.
 
 ## Commits
 
-Format: `<type>(<scope>): <description>`
-
-Types: feat, fix, docs, refactor, test, chore, perf
-
-```
-feat(skills): add forge-setup-project skill
-fix(create-issue): handle missing labels gracefully
-docs(pr-workflow): clarify branch naming convention
-```
+Format: `<type>(<scope>): <description>`. Types: feat, fix, docs, refactor, test, chore, perf. See [PR Workflow](docs/pr-workflow.md).
