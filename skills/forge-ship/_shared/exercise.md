@@ -60,7 +60,7 @@ The PR body's `## Exercised` section:
 - Failure case: `<command>` → <observed result>
 - <state>: ![<state>](<raw URL on pr-assets/<branch>>)
 - Not exercised: <what, and why> (or "nothing")
-- Try it: `<commands a reviewer can paste>`
+- Try it: `<commands that start the app>`, then <where to go and what to look at>
 ```
 
-One line per thing exercised, the command and what was observed, no logs. Use the recipe's test credentials; never put a real secret into the report. When nothing ran, the section is the single `not exercised: <why>` line.
+One line per thing exercised, the command and what was observed, no logs. `Try it` is how a person sees the change themselves: the start commands you used, the page, account, or command that reaches the changed path, and what should show there. A test command belongs there only when nothing a person can reach changed. Use the recipe's test credentials; never put a real secret into the report. When nothing ran, the section is the single `not exercised: <why>` line.
