@@ -1,76 +1,19 @@
 # Development
 
-## Prerequisites
+You need Git, a coding agent that supports Agent Skills, and [`gh`](https://cli.github.com/) where GitHub is the Issue tracker. The skills install nothing. The [lens](lens.md) needs only Claude Code (`claude --plugin-dir .`).
 
-- Git
-- [GitHub CLI](https://cli.github.com/) (`gh`) — used by skills for GitHub issue and PR operations (only required when GitHub is the issue tracker provider)
-- A compatible coding agent that supports Agent Skills slash commands
+## Adding a Skill
 
-No language runtime, package manager, or build tools are needed for the skills, which are Markdown. The [lens](lens.md) is TypeScript that Claude Code runs itself; working on it needs only Claude Code (`claude --plugin-dir .`).
+1. Create `skills/forge-<name>/SKILL.md`, following [Coding Guidelines](coding-guidelines.md), then run `scripts/sync-shared.sh` to copy the shared layer in.
+2. Link it from the Related Skills section of the skill before it in the workflow.
+3. Add it to the Skills table and the skill count in `README.md`, and to `docs/architecture.md` if it changes the workflow.
+4. If it joins the pipeline, update the lens by hand: `PIPELINE` and the next-step switch in `lens/hooks/parse.ts`, and `MAP` in `lens/hooks/views.tsx`.
 
-## Setup
+## Modifying a Skill
 
-```bash
-git clone <repo-url>
-cd forge
-```
-
-No dependency installation required.
-
-## Adding a New Skill
-
-1. Create a directory under `skills/` named `forge-<skill-name>/`
-2. Create a `SKILL.md` file inside it, then copy the shared layer into it with `scripts/sync-shared.sh`
-3. Add YAML frontmatter with `name` and `description` (see [Coding Guidelines — Frontmatter Conventions](coding-guidelines.md#frontmatter-conventions) for field reference)
-4. Write the structured prompt body following the section order in [Coding Guidelines — Skill Structure](coding-guidelines.md#skill-structure)
-5. Update workflow references in relevant skills' "Related Skills" sections
-6. Update the docs table in `AGENTS.md` and `README.md` if a new doc category is needed
-
-## Modifying an Existing Skill
-
-1. Read the full SKILL.md to understand the current flow
-2. Make targeted changes — avoid rewriting entire skills when a small edit suffices
-3. If changing conventions (commit format, branch naming, guidance filenames, structured-input syntax, etc.), grep across all relevant skills to update consistently:
-   ```bash
-   grep -r "conventional commit" skills/
-   grep -r "branch naming" skills/
-   grep -r "AGENTS.md\|CLAUDE.md" skills/
-   grep -r "additional context\|-- <additional context>" skills/
-   ```
-4. Verify cross-skill consistency: shared conventions must be identical in every skill that references them
-5. If adding or modifying a `(delegate)` step, ensure sub-agent instructions are self-contained (or composed from a role reference + task instructions) and the skill works correctly when executed inline
-6. If modifying a role file, verify all skills referencing that role still work correctly
-7. If modifying a file in `skills/_shared/`, run `scripts/sync-shared.sh`. Never edit a `skills/forge-*/_shared/` copy, and read past those copies when a grep repeats their hits
-
-## Adding or Modifying Roles
-
-Roles are sub-agent persona definitions. Skill-specific roles live under the skill's `roles/` directory; cross-skill roles live in `_shared/roles/`.
-
-### Adding a New Role
-
-1. Create a `roles/` directory inside the skill that will use it
-2. Create a `<role-name>.md` file there
-3. Add YAML frontmatter with `name` and `description`
-4. Write the prompt body: identity, behavior rules, output format, constraints
-5. Update the skill’s delegation step to reference the role
-
-### When to Extract a Role
-
-Extract a persona into a role file when:
-- The persona has calibration rules or behavior that benefits from separation (severity rubrics, research methodology)
-- The skill body is approaching the instruction budget and the persona can be loaded on demand
-
-**Don’t extract** trivial personas that are just a sentence or two — inline them in the skill’s blockquote.
-
-If multiple skills need the same role, place it in `skills/_shared/roles/` rather than duplicating across skills.
-
-### Modifying an Existing Role
-
-1. Read the role file and the skill that uses it
-2. Make targeted changes
-3. Verify the skill’s delegation step still works with the updated role
-4. For a shared role in `_shared/roles/`, repeat step 3 for every skill that delegates to it
-
-## Quality Gates
-
-See [testing.md — Structural Review](testing.md#1-structural-review) for the pre-commit checklist.
+- Read the whole `SKILL.md` first, and prefer a targeted edit.
+- When changing a convention, grep every skill that states it (see [Shared Conventions](coding-guidelines.md#shared-conventions)).
+- A `(delegate)` step has to work when run inline too.
+- When changing a role, check every skill that delegates to it.
+- After editing `skills/_shared/`, run `scripts/sync-shared.sh`. A grep also hits the copies under `skills/forge-*/_shared/`; never edit those.
+- Exercise the change in a sandbox: see [Testing](testing.md#exercise-a-skill-change).
