@@ -13,12 +13,6 @@ A Plan or an Issue that adds a module, an exported function, or another variant 
 
 An export, parameter, option or injection point that exists only so a test can reach code, or that only a test sets, is a **test seam**.
 
-## Module-shape checklist
-
-- [ ] **Interface simpler than implementation?** — a function with 5 params calling one library method is shallow; 2 params orchestrating 3 subsystems is deep
-- [ ] **Caller ignorance** — can a caller use this without reading the source?
-- [ ] **Change absorption** — if the implementation changes, do callers need to change?
-
 ## When depth doesn't apply
 
 - **Glue code and orchestrators** — top-level wiring is inherently shallow; the modules it connects should be deep
