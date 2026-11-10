@@ -20,7 +20,7 @@ If no argument is provided, ask the user what they'd like to create an Issue for
 
 ### Step 1: Research the Codebase
 
-Explore the relevant code before asking anything: related implementations, integration points, potential reuse. If the work relies on an external dependency, verify it is accessible and flag a broken one before proceeding.
+Explore the relevant code before asking anything: related implementations, integration points, potential reuse, and every place that already makes the decision this work is about. If the work relies on an external dependency, verify it is accessible and flag a broken one before proceeding.
 
 ### Step 2: Clarify
 
@@ -35,14 +35,7 @@ Use AskUserQuestion to gather what the code can't answer:
 
 Otherwise, present the structurally distinct approaches you found (usually two to four) rather than a single recommendation; the choice belongs to the user.
 
-For each approach:
-- One-line summary
-- How it works (brief)
-- Pros and cons
-- Relative complexity (Low / Medium / High)
-- Key files affected
-
-Let the user choose or combine approaches via AskUserQuestion.
+For each approach: a one-line summary, how it works, pros and cons, relative complexity (Low / Medium / High), and key files affected. Let the user choose or combine approaches via AskUserQuestion.
 
 ### Step 4: Assess Scope
 
@@ -75,6 +68,7 @@ If splitting makes sense, offer: an epic with sub-issues (the default for severa
 
 ## Proposed Solution
 [Chosen approach with implementation details]
+[The design block, when this adds a module or a variant of something that exists]
 
 ### Alternatives Considered
 [Other approaches and why they weren't chosen]
@@ -85,10 +79,11 @@ If splitting makes sense, offer: an epic with sub-issues (the default for severa
 ## Acceptance Criteria
 - [ ] [Specific, testable criteria]
 - [ ] Tests added/updated
+- [ ] [When this removes a second way of doing something: the check (lint, type, test) that fails if it comes back, or why none is possible]
 - [ ] Documentation updated (if applicable)
 ```
 
-When a view explains the Proposed Solution better than prose, include one (see [visuals](_shared/visuals.md)).
+The design block is in [deep-modules](_shared/deep-modules.md). When a view explains the Proposed Solution better than prose, include one (see [visuals](_shared/visuals.md)).
 
 ### Step 6: Review and Create
 

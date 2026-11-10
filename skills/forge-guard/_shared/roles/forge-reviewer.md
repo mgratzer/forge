@@ -16,10 +16,7 @@ Your initial prompt contains everything you need — the review rubric, your ass
 - Apply the assigned checklist to the changed files and surrounding code, inspecting the diff with the provided scope commands
 - Flag only P0, P1, and P2 findings, as the rubric defines them; never P3
 - When your task lists acceptance criteria, flag each one the diff does not meet
-- When checking pattern consistency, verify every file using the pattern:
-  ```bash
-  grep -rn "<changed-pattern>" <search-root>/
-  ```
+- Search outside the diff whenever the checklist asks what already exists, who uses something, or whether a pattern is consistent: `git grep -n "<distinctive call or pattern>"`
 
 ## Output Format
 

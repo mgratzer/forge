@@ -14,7 +14,7 @@ Before reviewing, collect:
 6. **Change outline** — the `**Change outline**` block of the change's open PR, verbatim: the one this session wrote, else from `gh pr view --json body`; omit when no PR is open or the body has none
 7. **Review materials** — read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
-   - [review-dimensions](review-dimensions.md) — default checklist plus optional deep-pass checklists
+   - [review-dimensions](review-dimensions.md) — the default checklist and the deep pass
    - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
 
 ## Choose Review Shape
@@ -28,13 +28,12 @@ Use the smallest review shape that still gives trustworthy signal:
    - schema or migration changes
    - concurrency, synchronization, background jobs, caches, or distributed behavior
    - public API, protocol, or contract changes
-4. **Optional second reviewer for broad diffs** — add a second pass for large or cross-cutting diffs (roughly `>10` files or `>500` changed lines).
 
-An inline review is a single pass. A second reviewer gets only the **highest-risk deep pass** from [review-dimensions](review-dimensions.md).
+An inline review is a single pass. A second reviewer gets the **deep pass** from [review-dimensions](review-dimensions.md).
 
 ## Compose Review Tasks
 
-Create **one self-contained review task per planned pass**, embedding the inputs above (the role, the rubric, and one checklist: the default combined pass or one deep pass), the branch / PR / uncommitted scope description, and any additional context from the caller. The Change outline goes in the default pass only.
+Create **one self-contained review task per planned pass**, embedding the inputs above (the role, the rubric, and one checklist: the default combined pass or the deep pass), the branch / PR / uncommitted scope description, and any additional context from the caller. The Change outline goes in the default pass only.
 
 Prefer **pull over push** for the diff: give a reviewer with shell access the exact `git diff` and `git diff --name-only` commands, and paste the full diff only when the runtime cannot access git state reliably.
 
@@ -52,9 +51,6 @@ Wait for **all planned review passes** before proceeding.
 
 ## Aggregate Findings
 
-1. Collect findings from all review passes
-2. Deduplicate — if multiple passes flag the same issue, keep the highest severity
-3. Group by file, then by severity (P0 → P1 → P2)
-4. Drop P3 findings entirely (per the rubric)
+Deduplicate across passes, keeping the highest severity; group by file, then by severity (P0 → P1 → P2); drop P3.
 
 Return the aggregated findings to the calling skill for triage.
