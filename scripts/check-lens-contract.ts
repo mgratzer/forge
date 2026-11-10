@@ -91,31 +91,6 @@ check("the **Result:** line (forge-land, forge-guard, forge-ship)", () => {
 	}
 });
 
-check("forge-batch's output (forge-batch, references/start.md)", () => {
-	const plan = parse.batch(block(read("skills/forge-batch/SKILL.md"), "## Output Format"));
-	same(plan?.scope, "<scope>");
-	same(
-		plan?.waves[0]?.rows.map((r) => r.num),
-		["123", "124"],
-	);
-	same(plan?.waves[0]?.launch, "<launcher> 123 124 ...");
-	same(plan?.excluded.length, 2);
-
-	const doc = read("skills/forge-batch/references/start.md");
-	const status = parse.batch(block(doc, "## Output"))?.status;
-	same((status?.rows.length ?? 0) > 0, true);
-	same(status?.launch, "<launcher> 124");
-	same(status?.merge.startsWith("#401"), true);
-	same(status?.progress.startsWith("continuing"), true);
-
-	const order = parse.batch(`## Batch: x\n\n${block(doc, "after the **Scope:** line")}`)?.order;
-	same(
-		order?.rows.map((r) => r.pr),
-		["#401", "#398", "#405"],
-	);
-	same(order?.gates.startsWith("pass on main"), true);
-});
-
 check("the Unattended Shipping settings (unattended-config.md)", () => {
 	const doc = read("skills/_shared/unattended-config.md");
 	const declared = parse.unattended(block(doc, "## Declaration"));

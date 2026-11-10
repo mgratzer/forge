@@ -28,7 +28,7 @@ Skill prompts are forge's runtime, so a change under `skills/` is exercised, not
 | [Coding Guidelines](docs/coding-guidelines.md) | Skill and role file format, authoring conventions |
 | [Testing](docs/testing.md) | Automated checks, exercising a skill change, per-skill scenarios |
 | [PR Workflow](docs/pr-workflow.md) | Commits, branch naming, review |
-| [Unattended Shipping](docs/unattended.md) | Guard loop, Waves, launchers, project setup |
+| [Unattended Shipping](docs/unattended.md) | Guard loop, launchers, project setup |
 | [Lens](docs/lens.md) | The lens's views and the text formats it reads |
 
 Update docs when you change skill conventions or add new skills.
