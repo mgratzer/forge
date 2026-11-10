@@ -16,6 +16,7 @@ export const EMPTY: Model = {
 	visited: [],
 	pr: null,
 	findings: [],
+	triage: [],
 	risk: null,
 	result: "",
 	next: null,
@@ -69,6 +70,7 @@ export function startRun(m: Model, skill: string, args: string, now: number, isD
 		run,
 		timeline: [{ state: "start", detail: parse.runLabel(skill, args), at: now }],
 		findings: [],
+		triage: [],
 		risk: null,
 		result: "",
 		next: null,
@@ -162,6 +164,13 @@ export function closeFindings(m: Model, count: number): Model {
 	});
 }
 
+// The skill said what became of the findings: none is open any more, and the pane
+// shows its Fixed and Deferred lines, since they don't say which finding went where
+export function withTriage(m: Model, lines: string[]): Model {
+	if (lines.length === 0) return m;
+	return withNext({ ...m, triage: lines, findings: m.findings.map((f) => (f.isDone ? f : { ...f, isDone: true })) });
+}
+
 export type GhPr = {
 	number: number;
 	url: string;
@@ -222,11 +231,13 @@ export function withDemoPr(m: Model, checks: Pr["checks"]): Model {
 // What a finished turn's answer says: a ## Risk section, a Result line
 export function withAnswer(m: Model, text: string): Model {
 	if (!m.run || m.run.isDemo) return withNext(m);
-	return withNext(
+	// findings first: forge-reflect's answer holds both the findings and their triage
+	return withTriage(
 		withReviewFindings(
 			{ ...m, risk: parse.riskSection(text) ?? m.risk, result: parse.resultLine(text) || m.result },
 			parse.findings(text),
 		),
+		parse.triage(text),
 	);
 }
 

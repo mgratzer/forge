@@ -59,6 +59,7 @@ type LensProps = {
 	isSetUp: boolean | null;
 	pr: Pr | null;
 	findings: Finding[];
+	triage: string[];
 	risk: Risk | null;
 	result: string;
 	next: Next | null;
@@ -168,6 +169,11 @@ export function Lens(p: LensProps) {
 					<Text dimColor>
 						REVIEW FINDINGS {open.length} open / {p.findings.length}
 					</Text>
+					{p.triage.map((line) => (
+						<Text key={`t-${line}`} dimColor wrap="wrap">
+							{line}
+						</Text>
+					))}
 					{p.findings.map((f) => (
 						<Box flexDirection="row" gap={1}>
 							<Button key={`f-${f.id}`} label={f.isDone ? "☑" : "☐"} plain onPress={() => p.onToggle(f.id)} />

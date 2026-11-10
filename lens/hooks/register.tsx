@@ -270,6 +270,8 @@ export const register: Register = (on) => {
 				isSetUp={m.config ? m.config.hasAgents : null}
 				pr={m.pr}
 				findings={m.findings}
+				// a model stored before this field existed has none
+				triage={m.triage ?? []}
 				risk={m.risk}
 				result={m.result}
 				next={m.next}

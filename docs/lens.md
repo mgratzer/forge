@@ -8,7 +8,7 @@ For installing and updating the plugin, see [Install Details](../README.md#insta
 
 | View | Opens with | Shows |
 |------|------------|-------|
-| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran, ran inside another skill (reflect `in ship`) or skipped, and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
+| Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran, ran inside another skill (reflect `in ship`) or skipped, and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist (checked off when the skill reports what it fixed and deferred, or by hand), the `## Risk` card, a timeline |
 | Status line | always, while a run is open | skill, phase, state, guard round, CI count |
 | Next step | a band above the prompt, and the prompt suggestion (Tab) | the command that most likely comes next, and why |
 | Config pane | `/forge config` | the `## Unattended Shipping` settings with defaults filled in, the Issue tracker and `FORGE_STATUS_CMD` |
@@ -25,6 +25,7 @@ The lens has no channel into the skills: it parses what they write. These format
 |--------|------------|-----------|
 | The status call in a Bash command: `"$FORGE_STATUS_CMD" <state> "<detail>"` and its `echo "[forge] <state>: <detail>"` fallback | `skills/_shared/status-reporting.md` | `statusCalls` |
 | `### <file>` over `- [P0] <finding>` | `skills/_shared/roles/forge-reviewer.md` | `findings` |
+| The `Fixed` and `Deferred` bullets under `### Review Findings` or `### Finding Triage` | `skills/forge-ship/SKILL.md`, `skills/forge-reflect/SKILL.md` | `triage` |
 | The `## Risk` section and `**Result:**` line; a section ends at the next `## ` heading | `skills/_shared/risk-rubric.md`, `skills/_shared/pr-body.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
 | `round <n>/<max>` at the start of an `addressing` status detail | `skills/forge-guard/SKILL.md` | `round` |
