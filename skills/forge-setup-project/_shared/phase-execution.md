@@ -14,7 +14,7 @@ Run all applicable checks:
 - [ ] **Config placement** — grep for where similar config is consumed before placing a new value, so it is actually read.
 - [ ] **External services** — verify dependencies are reachable and authenticated (health check or known-good request).
 - [ ] **Env vars / secrets** — confirm required variables exist (`echo "${VAR:?not set}"`).
-- [ ] **Existing patterns** — grep for similar implementations and record them in the plan.
+- [ ] **Existing implementations** — grep for code that already does something similar, by the calls it makes as well as its name: each goes in the Plan's design block, to call or extend.
 
 Skip a check only when its failure mode is impossible for this work (no new config, no external dependency).
 
@@ -28,15 +28,18 @@ Code and tests together, end to end across all affected layers.
 
 **Verify unfamiliar APIs before using them** — grep the codebase, check type definitions or docs, confirm the API exists at the project's pinned version. Skip for: stdlib, APIs already used in this codebase, type-checked interfaces.
 
-**Follow existing patterns and import style.** Add no barrel (index re-export) file unless the project already uses them, the framework requires one, or it is a published package's public API.
+**Follow existing patterns and import style**, by calling or extending the code that has the pattern, not by copying it. Add no barrel (index re-export) file unless the project already uses them, the framework requires one, or it is a published package's public API.
+
+A script, branch, flag or setting kept for a single run, an older version or an unfinished rollout states its removal condition where it stands (a date, a version, an Issue), or is not committed.
 
 ### 2. Test
 
 Test-first for business logic, state transitions, parsers, validators. Skip TDD for UI layout, spikes, migrations of well-tested code, one-shot scripts.
 
 Rules:
-- Test at module boundaries, not internal helpers
-- Mock only non-deterministic or external dependencies (clock, RNG, network, paid APIs)
+- Test at module boundaries, not internal helpers. Add no test seam (see [deep-modules](deep-modules.md)); when coverage can't be reached without one, list it in the PR's Notes
+- Mock only non-deterministic or external dependencies (clock, RNG, network, paid APIs), never the project's own modules
+- A test must be able to fail for a defect in this repository, not for a dependency's default or a literal compared with itself
 - Prefer integration tests when choosing between unit and integration
 
 ### 3. Phase Gate

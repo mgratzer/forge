@@ -48,6 +48,7 @@ When guidance files already exist, score each section:
 | **Currency** | Does this match the current codebase? Verify commands, paths, patterns. |
 | **Signal density** | Ratio of actionable information to total words? |
 | **Scope** | Does every task need this, or only some? Guidance for one area (migrations, a service's logs) goes in a conditional block, or in a doc it points to. |
+| **Enforcement** | Does a tool check this rule about structure (imports, layering)? A manual one, or one phrased as a workaround ("import the file directly to avoid cycles"), or whose check covers less than the rule says, is a candidate for a check. |
 
 Present an audit report grouped by impact and get user confirmation via AskUserQuestion before applying changes.
 

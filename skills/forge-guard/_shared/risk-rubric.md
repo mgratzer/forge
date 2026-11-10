@@ -13,6 +13,7 @@ Any hit means **needs-review**. Measure on the judged commit against the merge b
 | Tests | tests deleted or weakened | A test file or case removed, an assertion removed or loosened, a skip or only marker added, an expected value changed to match new output without a stated reason |
 | Exercise | the change behaved wrongly when exercised, or changes runtime behavior and was not exercised | The PR body's `## Exercised` section reports `wrong:`, or is a `not exercised:` line with any reason other than `no runtime change`, or claims `no runtime change` or lists only tests or other checks, with no run of the app, while the diff changes more than docs, tests, CI configuration or comments (see [exercise](exercise.md)). Anything `AGENTS.md` at the judged commit calls runtime is runtime, even Markdown. A partial `Not exercised:` bullet in a section that ran is left to the judgment test |
 | Plan | the PR opened with a deviation from its `## Plan` that it doesn't state | Compare the Plan with `git diff "origin/$BASE...<SHA from **Deviations** (as of …)>"`: a change outside what the Plan set out to do (judge by goal and scope, not its file list) or a planned phase missing, not named under **Deviations**. Later commits are not compared. That SHA no longer on the branch is a hit; a body without `## Plan` (a PR not opened by forge-implement) skips the check |
+| Design | the diff copies code that already exists, adds a test seam, or keeps what existed only for something it replaced | A new file or function that restates an existing module or sequence, stated in the Plan's **Already lives** line or not: find the other place with `git grep -n <distinctive call> "$SHA"`; boilerplate (loading a file, an entry-point check) doesn't count. Or a test seam (an export, parameter, option or injection point that exists only so a test can reach code, or that only a test sets) in the diff or the PR's `Test seams added` note. Or a leftover: an item of the Plan's **Leaves behind** line that is neither removed nor named in an open Issue. The **Where to look** item names both places, the seam and the interface the test could use, or the leftover |
 | HITL | a HITL Issue was implemented without an approved Plan | The `## Plan` summary is `Plan as first made` and an Issue the PR closes is HITL; an Issue with no recorded execution mode counts as HITL. A **Where to look** item cites the PR's `Judgment calls` Notes bullet, or its absence |
 | Trust | the Issue's author lacks write access to the repo | `gh api "repos/{owner}/{repo}/collaborators/<login>/permission" --jq .permission` is not `admin` or `write`. The author of each Issue the PR closes; with no linked Issue, the PR's author. Issues in the markdown `plan/` provider were committed by someone who could push, so they pass |
 | Deployment | the PR body has manual deployment steps | Steps someone runs by hand against a live system after merge, anywhere in the body, normally the `[!WARNING]` block (see [pr-body](pr-body.md)). The first **Where to look** item is the step most likely to break the running system, cited as `PR body, step <n>` |
@@ -36,6 +37,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - Tests: ok | <what was deleted or weakened>
 - Exercise: ok | wrong: <what the section reports> | not exercised: <why>
 - Plan: ok | no plan | <unstated deviation>
+- Design: ok | copies <place> | <n> test seams | leaves <thing>
 - HITL: ok | #<n> shipped without an approved Plan, judgment calls <listed | missing>
 - Trust: ok | <login> has <permission>
 - Deployment: none | <n> manual steps
@@ -48,7 +50,5 @@ The PR body's `## Risk` section, replaced on every verdict:
 ```
 
 Two to five **Where to look** items, each a place and a question, not a summary of the change.
-
-On a needs-review verdict, when the diff restates a rule or decision the code already holds elsewhere, so a later change to one could miss the other, one item names both places and asks whether they should be one. Find the other place with `git grep -n <term> "$SHA"`. Boilerplate such as loading a file or an entry-point check doesn't count. This item is no reason to raise or lower the verdict, which the checks and the judgment test decide as before.
 
 Copy **Peer review** as land gives it. It is a record, not a check: it neither hits nor clears anything by itself.
