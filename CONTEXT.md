@@ -12,9 +12,9 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Deviation**: a difference between a Plan and the diff its PR was opened with: a change outside what the Plan set out to do, or a planned phase that didn't happen. A change a person made to the Plan is not one, since the PR carries the changed Plan; nor is a self-review fix inside the Plan's goal and scope, even one committed before the PR opens. Later commits answer review and CI, which other checks judge. _Avoid_: "drift", "plan mismatch".
 
-**Design block**: three lines a Plan or an Issue states when it adds a module or a variant of something that exists: Interface, Hides, Already lives. See [deep-modules](skills/_shared/deep-modules.md).
+**Design block**: the lines a Plan or an Issue states when it adds a module or a variant of something that exists: Interface, Hides, Already lives, and Leaves behind for a replacement. See [deep-modules](skills/_shared/deep-modules.md).
 
-**Test seam**: an export, parameter or injection point that exists only so a test can reach code. Listed in the PR's Notes; land sends a PR that adds one to review.
+**Test seam**: an export, parameter, option or injection point that exists only so a test can reach code, or that only a test sets. Listed in the PR's Notes; land sends a PR that adds one to review.
 
 **Vertical slice**: end-to-end implementation crossing all layers for one narrow scenario, testable in isolation. See [vertical-slicing](skills/_shared/vertical-slicing.md).
 

@@ -6,7 +6,7 @@
 2. **Security** — auth/authz gaps, missing validation, secrets exposure, injection risks, unsafe external requests, verbose leakage
 3. **Design** — answer each question for the diff, searching outside it:
    - Each new file or exported function: what is its nearest existing sibling, found by the calls it makes and not only by name, and does this restate it?
-   - Each new export: who calls it besides tests?
+   - Each new export, method or option: who calls or sets it besides tests?
    - Each new parameter, field or result property: who reads it?
    - Each test: does it replace one of the project's own modules, and could it go through the interface production uses?
 

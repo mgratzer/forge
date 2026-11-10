@@ -79,7 +79,7 @@ If splitting makes sense, offer: an epic with sub-issues (the default for severa
 ## Acceptance Criteria
 - [ ] [Specific, testable criteria]
 - [ ] Tests added/updated
-- [ ] [When this removes a second way of doing something: the check (lint, type, test) that fails if it comes back, or why none is possible]
+- [ ] [When this replaces or removes something: nothing that existed only for the old one remains, and a check (lint, type, test) fails if it comes back, or why none is possible]
 - [ ] Documentation updated (if applicable)
 ```
 

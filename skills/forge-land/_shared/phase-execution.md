@@ -30,7 +30,7 @@ Code and tests together, end to end across all affected layers.
 
 **Follow existing patterns and import style**, by calling or extending the code that has the pattern, not by copying it. Add no barrel (index re-export) file unless the project already uses them, the framework requires one, or it is a published package's public API.
 
-A script written to run once (a backfill, an experiment, a benchmark) stays out of the commit, or the PR's Notes name the Issue that deletes it.
+A script, branch, flag or setting kept for a single run, an older version or an unfinished rollout states its removal condition where it stands (a date, a version, an Issue), or is not committed.
 
 ### 2. Test
 
@@ -39,6 +39,7 @@ Test-first for business logic, state transitions, parsers, validators. Skip TDD 
 Rules:
 - Test at module boundaries, not internal helpers. Add no test seam (see [deep-modules](deep-modules.md)); when coverage can't be reached without one, list it in the PR's Notes
 - Mock only non-deterministic or external dependencies (clock, RNG, network, paid APIs), never the project's own modules
+- A test must be able to fail for a defect in this repository, not for a dependency's default or a literal compared with itself
 - Prefer integration tests when choosing between unit and integration
 
 ### 3. Phase Gate
