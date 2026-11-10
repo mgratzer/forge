@@ -10,7 +10,7 @@ Any hit means **needs-review**. Measure on the judged commit against the merge b
 |-------|-------------------|-------------|
 | Size | more than 400 changed lines (added plus deleted), not counting docs, tests, generated files, lockfiles and dependency manifests | Generated: `git check-attr --source="$SHA" linguist-generated -- <paths>` reports `set` or `true`. Docs and tests by path and by what the file is |
 | Always-review paths | migrations or schema, dependency changes, CI workflows, or the project's security-sensitive paths | CI workflows: `.github/workflows/**` and any other CI configuration. Dependency changes: a manifest or lockfile changed. Security-sensitive paths per [unattended-config](unattended-config.md) |
-| Tests | tests deleted or weakened | A test file or case removed, an assertion removed or loosened, a skip or only marker added, an expected value changed to match new output without a stated reason |
+| Tests and gates | tests deleted or weakened, or a gate loosened so the diff passes | Tests: a file or case removed, an assertion removed or loosened, a skip or only marker added, an expected value changed to match new output without a stated reason. Gates: a threshold or budget raised, or an entry added to an allowlist, exemption list, ignore file or inline suppression, for code this diff adds or changes; lowering one or removing an entry is not a hit. **Where to look** names the entry and the code it excuses |
 | Exercise | the change behaved wrongly when exercised, or changes runtime behavior and was not exercised | The PR body's `## Exercised` section reports `wrong:`, or is a `not exercised:` line with any reason other than `no runtime change`, or claims `no runtime change` or lists only tests or other checks, with no run of the app, while the diff changes more than docs, tests, CI configuration or comments (see [exercise](exercise.md)). Anything `AGENTS.md` at the judged commit calls runtime is runtime, even Markdown. A partial `Not exercised:` bullet in a section that ran is left to the judgment test |
 | Plan | the PR opened with a deviation from its `## Plan` that it doesn't state | Compare the Plan with `git diff "origin/$BASE...<SHA from **Deviations** (as of …)>"`: a change outside what the Plan set out to do (judge by goal and scope, not its file list) or a planned phase missing, not named under **Deviations**. Later commits are not compared. That SHA no longer on the branch is a hit; a body without `## Plan` (a PR not opened by forge-implement) skips the check |
 | Design | the diff copies code that already exists, adds a test seam, or keeps what existed only for something it replaced | A new file or function that restates an existing module or sequence, stated in the Plan's **Already lives** line or not: find the other place with `git grep -n <distinctive call> "$SHA"`; boilerplate (loading a file, an entry-point check) doesn't count. Or a test seam (an export, parameter, option or injection point that exists only so a test can reach code, or that only a test sets) in the diff or the PR's `Test seams added` note. Or a leftover: an item of the Plan's **Leaves behind** line that is neither removed nor named in an open Issue. The **Where to look** item names both places, the seam and the interface the test could use, or the leftover |
@@ -34,7 +34,7 @@ The PR body's `## Risk` section, replaced on every verdict:
 - Peer review: <login> | none configured
 - Size: <n> counted lines (<n> excluded: docs, tests, ...) → ok | over 400
 - Always-review paths: none | <paths>
-- Tests: ok | <what was deleted or weakened>
+- Tests and gates: ok | <what was deleted, weakened or loosened>
 - Exercise: ok | wrong: <what the section reports> | not exercised: <why>
 - Plan: ok | no plan | <unstated deviation>
 - Design: ok | copies <place> | <n> test seams | leaves <thing>
@@ -51,4 +51,4 @@ The PR body's `## Risk` section, replaced on every verdict:
 
 Two to five **Where to look** items, each a place and a question, not a summary of the change.
 
-Copy **Peer review** as land gives it. It is a record, not a check: it neither hits nor clears anything by itself.
+Copy **Peer review** as land gives it: a record, not a check.

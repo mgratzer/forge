@@ -19,7 +19,7 @@ const RISK_LOW = `## Risk
 - Peer review: copilot-pull-request-reviewer
 - Size: 118 counted lines (64 excluded: tests) → ok
 - Always-review paths: none
-- Tests: ok
+- Tests and gates: ok
 - Exercise: ok
 - Plan: ok
 - HITL: ok
@@ -34,7 +34,7 @@ const RISK_REVIEW = `## Risk
 - Peer review: copilot-pull-request-reviewer
 - Size: 412 counted lines (90 excluded: tests) → over 400
 - Always-review paths: src/auth.js
-- Tests: ok
+- Tests and gates: ok
 - Exercise: ok
 - Plan: src/auth.js changes the session cookie, which the Plan left out
 - HITL: ok
