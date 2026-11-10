@@ -12,6 +12,7 @@ The body `forge-implement` writes when it opens a PR. A reviewer should learn wh
 
 **Notes**
 - <1-3 reviewer warnings, deliberate omissions, or surprising decisions; omit the block when there are none>
+- Test seams added: <export, parameter, option or injection point>: <why the test can't go through the interface> (only when there are any)
 
 **Change outline** (only when [visuals](visuals.md) calls for a view)
 

@@ -47,7 +47,7 @@ The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security
 
    The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
-   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
+   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, and exports `countByTeam` only for its test, so the Design check decides its verdict: needs review with `Design: 1 test seam`. It stays open and unmerged. No open sandbox PR isolates the Exercise check any more: that needs a PR outside `src/**` without a test seam.
 
 4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
 
@@ -61,7 +61,7 @@ What to run per skill when a change reaches that behavior. For a sub-agent's run
 
 ### forge-reflect, forge-ship review
 
-Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second pass appears only for clearly high-risk or broad changes.
+Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second pass appears only for high-risk changes. A diff that copies an existing function gets a P1 naming the original.
 
 ### forge-guard
 
@@ -79,6 +79,7 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 ### forge-implement
 
 - An Issue in a project that can run its app: `## Exercised` lists real commands with their observed output and one failure case, and its `Try it` line, repeated in the run's summary, says how to start the app and what to look at.
+- A task whose nearest existing code is one file away (a second report beside an existing one): the Plan's design block names that file under **Already lives** with `extend`, `replace` or `copy`, and the diff matches the choice.
 - A project with no way to run the app: the section says `not exercised: <why>` instead of describing a run.
 - A fresh worktree of a project whose Commands name an install step: pre-flight runs it before the first phase.
 - An env var the base commit needs, unset. When `.env.example` provides it, the PR's Notes report an environment failure and the diff has no code change for it. When it doesn't, an unattended run stops at `needs-human` naming the variable.
@@ -91,6 +92,7 @@ On green sandbox PRs, with code outside `src/**` unless the case says otherwise:
 
 - A small docs-plus-code PR ends in `merge-ready`; a PR touching a CI workflow ends in `review-ready` with a Where to look list.
 - A code PR with `not exercised: no way to run the app` ends in `review-ready` with an `Exercise:` line naming it. A docs-only PR with `not exercised: no runtime change` can still be `merge-ready`.
+- A PR that adds a file restating an existing one, or whose Notes list a test seam, ends in `review-ready` with a `Design:` line naming it.
 - The `## Risk` section names the head commit, and a re-run replaces it rather than adding a second one.
 - A PR without `## Exercised` ends in `needs-human`.
 - A PR that opened with a deviation from its `## Plan` it doesn't list ends in `review-ready` with a `Plan:` line naming it. Guard-round commits after the open don't trip this.

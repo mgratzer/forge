@@ -27,19 +27,19 @@ For an Issue, check open work before planning, following [open-work](_shared/ope
 
 ### Step 2: Plan Approach
 
-Identify **durable architectural decisions** — data model, API contracts, and module boundaries that absorb change instead of exposing internals (see [deep-modules](_shared/deep-modules.md)).
+Identify **durable architectural decisions** (data model, API contracts, module boundaries) and write the **design block** from [deep-modules](_shared/deep-modules.md): the change's interface, what it hides, and where the same decision already lives.
 
 **For complex work**, delegate codebase research to a sub-agent for unbiased answers:
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent (a cheap fast model, where the runtime lets you choose) that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. One always asks which places already do what this change is nearest to. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent (a cheap fast model, where the runtime lets you choose) that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
 
 **Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, the pointers, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
 
 From the research, create a plan:
-- Durable decisions
+- Durable decisions and the design block
 - **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time. When a text view shows a phase's target shape better than words, include it (see [visuals](_shared/visuals.md)).
 - Files to create or modify
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
@@ -69,31 +69,23 @@ Read AGENTS.md first. Execute the work in vertical phases following [phase-execu
 
 Note each deviation from the Step 2 Plan and why as it happens; the PR states each one.
 
-### Step 5: Audit Pattern Consistency
+### Step 5: Audit What the Change Leaves
 
-If you changed a pattern (error handling, component structure, API convention), update every other place using the old one, following [pattern-audit](_shared/pattern-audit.md).
+If you changed a pattern (error handling, component structure, API convention), update every other place that uses the old one. Search for the pattern's shape, not its literal text (a rename's grep misses aliased imports), at the scope the pattern lives in; re-grep after updating; and name each match you left on purpose in the PR body.
 
-### Step 6: Update Documentation
+Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed, and search docs, comments, test names and config for the words of what the change removed: text describing something that is gone is a defect of this change.
 
-Update `docs/*.md` and `AGENTS.md` if behavior or conventions changed.
+### Step 6: Run Final Quality Gate
 
-### Step 7: Run Final Quality Gate
-
-Run all project quality checks (discover from AGENTS.md, project docs, or repository scripts):
-
-- [ ] Lint — no violations
-- [ ] Format — no violations
-- [ ] Type check — no errors
-- [ ] All tests pass
-- [ ] **Test coverage ≥ 90% for new/modified code** — run the project's coverage tool. If coverage tooling is not configured, flag this to the user and offer to set it up.
+Run every part of the project's quality gate (the gate parts pre-flight listed): lint, format, type check and tests, with no violations. Reach **≥ 90% test coverage for new/modified code** through the interface production uses, measured with the project's coverage tool; when none is configured, flag this to the user and offer to set it up. A test seam the number forced goes in the PR's Notes (see [phase-execution](_shared/phase-execution.md#2-test)).
 
 Fix issues and commit fixes.
 
-### Step 8: Exercise the Change
+### Step 7: Exercise the Change
 
 Run the app and use the changed path once, plus one failure case, following [exercise](_shared/exercise.md). Fix what it finds, with a test, before opening the PR.
 
-### Step 9: Push and Create PR
+### Step 8: Push and Create PR
 
 ```bash
 git push -u origin <BRANCH_NAME>
@@ -109,7 +101,7 @@ gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'
 PR_EOF
 ```
 
-### Step 10: Summarize
+### Step 9: Summarize
 
 Report: branch name, PR link, commits made, files changed, tests added, docs updated, exercise outcome, the `Try it` line from `## Exercised`, deferred items.
 
