@@ -47,7 +47,7 @@ A class that this survey and an earlier one both found gets a **guardrail**: a c
 
 ### Step 4: Record the Survey
 
-Write `docs/surveys/<YYYY-MM-DD>.md` in the format below. Commit it on a `docs/survey-<YYYY-MM-DD>` branch cut from the fetched default branch, push, and open a PR, so the record does not stay in one checkout.
+Write `docs/surveys/<YYYY-MM-DD>.md` in the format below. Commit it from a temporary worktree on a `docs/survey-<YYYY-MM-DD>` branch cut from the fetched default branch, push, and open a PR: the record does not stay in one checkout, and this checkout keeps its branch.
 
 ### Step 5: Triage with the User
 
