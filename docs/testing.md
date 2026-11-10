@@ -47,7 +47,7 @@ The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security
 
    The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
-   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, so only the Exercise check decides its verdict: low risk with its own `## Exercised`, needs review with a copy whose section is `not exercised: no way to run the app`. It stays open and unmerged.
+   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, and exports `countByTeam` only for its test, so the Design check decides its verdict: needs review with `Design: 1 test seam`. It stays open and unmerged. No open sandbox PR isolates the Exercise check any more: that needs a PR outside `src/**` without a test seam.
 
 4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
 
