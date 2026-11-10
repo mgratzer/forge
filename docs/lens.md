@@ -11,10 +11,9 @@ For installing and updating the plugin, see [Install Details](../README.md#insta
 | Pipeline pane | a forge skill starting, `/forge pane` (toggles) | the pipeline with the current step, the steps the session ran, ran inside another skill (reflect `in ship`) or skipped, and the one a run stopped in (setup-project only until the repo has `AGENTS.md`), the latest status, the PR's CI and review state, review findings as a checklist, the `## Risk` card, a timeline |
 | Status line | always, while a run is open | skill, phase, state, guard round, CI count |
 | Next step | a band above the prompt, and the prompt suggestion (Tab) | the command that most likely comes next, and why |
-| Config pane | `/forge config` | the `## Unattended Shipping` settings with defaults filled in, the Issue tracker, `FORGE_STATUS_CMD` and `FORGE_LAUNCHER` |
-| Waves pane | `forge-batch` output, `/forge waves` | a `--start` run's status (each Issue's state, launch line, merge-ready PRs) and merge order (each PR clean or conflicting, the gate result), each Wave's Issues, touch sets, adjacency and serialized notes, excluded Issues |
+| Config pane | `/forge config` | the `## Unattended Shipping` settings with defaults filled in, the Issue tracker and `FORGE_STATUS_CMD` |
 
-`/forge` says where the run is and what to run next, `/forge map` explains the pipeline, and `/forge demo` replays a guarded ship run (`demo stuck` ends at `needs-human`, `demo batch` fills the Waves pane) without touching GitHub. A terminal state also sends a notification, and a repository without `AGENTS.md`, or with the old `## Shipping` heading, gets one toast.
+`/forge` says where the run is and what to run next, `/forge map` explains the pipeline, and `/forge demo` replays a guarded ship run (`demo stuck` ends at `needs-human`) without touching GitHub. A terminal state also sends a notification, and a repository without `AGENTS.md`, or with the old `## Shipping` heading, gets one toast.
 
 A pane the person closes stays closed for later runs until they open it again.
 
@@ -27,7 +26,6 @@ The lens has no channel into the skills: it parses what they write. These format
 | The status call in a Bash command: `"$FORGE_STATUS_CMD" <state> "<detail>"` and its `echo "[forge] <state>: <detail>"` fallback | `skills/_shared/status-reporting.md` | `statusCalls` |
 | `### <file>` over `- [P0] <finding>` | `skills/_shared/roles/forge-reviewer.md` | `findings` |
 | The `## Risk` section and `**Result:**` line; a section ends at the next `## ` heading | `skills/_shared/risk-rubric.md`, `skills/_shared/pr-body.md`, `skills/forge-land/SKILL.md` | `riskSection`, `resultLine` |
-| `## Batch:` with one table per Wave, after a `--start` run's `### Status` table and, once the scope waits on you, its `### Merge Order` table and `**Gates:**` line | `skills/forge-batch/SKILL.md`, `skills/forge-batch/references/start.md` | `batch` |
 | `## Unattended Shipping` settings | `skills/_shared/unattended-config.md` | `unattended` |
 | `round <n>/<max>` at the start of an `addressing` status detail | `skills/forge-guard/SKILL.md` | `round` |
 

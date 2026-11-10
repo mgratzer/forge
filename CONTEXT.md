@@ -54,9 +54,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Prerequisite**: an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
 
-**Serialized resource**: a file two Issues must never change in the same Wave (migrations, lockfiles, generated files). Declared per project: see [unattended-config](skills/_shared/unattended-config.md).
-
-**Wave**: a set of AFK Issues whose expected changes and serialized resources do not overlap, so they can ship concurrently. A **Batch** is the ordered list of Waves for a scope.
+**Serialized resource**: a file an Issue and an open PR must never both change (migrations, lockfiles, generated files). Declared per project: see [unattended-config](skills/_shared/unattended-config.md).
 
 **Launcher**: whatever starts one guarded ship per Issue in an isolated checkout, such as `claude -w` or a script for your terminal. It is the user's, never part of forge. Skills report to it through `FORGE_STATUS_CMD` (see [status-reporting](skills/_shared/status-reporting.md)).
 

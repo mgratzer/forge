@@ -1,14 +1,13 @@
 # Unattended Shipping
 
-How a prepared Issue becomes a merged or review-ready PR while you do something else, and how ten of them run at once.
+How a prepared Issue becomes a merged or review-ready PR while you do something else.
 
 ```
-forge-batch  →  launcher  →  forge-ship --guard  →  merged | merge-ready | review-ready | needs-human
- (which Issues     (one session       (implement → review → guard → land)
-  in parallel)      per Issue)
+forge-ship --guard  →  merged | merge-ready | review-ready | needs-human
+(implement → review → guard → land)
 ```
 
-Forge ships no launcher, since only yours knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+Forge ships no [launcher](#writing-a-launcher), since only yours knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
 
 [forge-guard](../skills/forge-guard/SKILL.md) stops at `review-ready`, and its summary lists what it left open. What it posts ends in a hidden `<!-- forge -->` marker, so a comment you post from the agent's `gh` account counts as yours.
 
@@ -26,13 +25,9 @@ Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts
 
 The desktop app's own instructions say not to poll CI with `gh`, and a skill can't override them. A session may still follow the app and end its turn waiting for an event; a clean PR then sits until something wakes it.
 
-## One Issue or ten
+## Running an Issue
 
-One Issue: `/forge-ship --guard 123` in any session, or `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout.
-
-Ten: `/forge-batch <scope>` prints Waves. Start each Issue in a Wave with your launcher or by hand, and re-run `forge-batch` after a Wave merges, since later Waves shift as code lands.
-
-Or `/forge-batch --start <scope>` starts every ready Issue as its own `forge-ship --guard` session and prints a status table. Each run reads the scope from GitHub, acts once and ends. Run it again to continue: when a started session ends (the runtime wakes the session that started it), by hand, or on a schedule such as `/loop`. It comments on each Issue it starts, so a re-run doesn't start it twice; delete the comment to start it again. It never merges. Once every PR waits on you, it test-merges them in a scratch worktree and reports a merge order. See [start](../skills/forge-batch/references/start.md).
+`/forge-ship --guard 123` in any session, or `claude -w 123 '/forge-ship --guard 123'` for a fresh checkout. Several Issues are several sessions, each in its own checkout.
 
 ## Finding out a PR waits on you
 
@@ -57,7 +52,6 @@ For a push instead of a queue, have your launcher's `FORGE_STATUS_CMD` turn `mer
 
 Once per user:
 
-- [ ] If you write a launcher, set `FORGE_LAUNCHER` to its command so `forge-batch` prints launch lines you can paste as is (and `--start` falls back to them)
 - [ ] Choose how sessions get past permission prompts: `"defaultMode": "auto"` in `~/.claude/settings.json`, or the agent's skip-permissions flag for Issues you trust (the Issue text then directs the agent unchecked). Without either, each session waits at its first prompt
 
 Once per project (`/forge-setup-project` covers the `## Unattended Shipping` section, the fresh-checkout step, and the run recipe):

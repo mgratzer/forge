@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Ten skills. From idea to merged code.
+  One workflow. Nine skills. From idea to merged code.
 </p>
 
 <p align="center">
@@ -63,7 +63,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
 
 **Land** judges a green PR's risk on its head commit and writes the verdict into the PR. Low risk means you can merge without reading the diff; anything else comes with a list of where to look. It merges by itself only when the project opts in.
 
-Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the repo, or a tracker you declare in `AGENTS.md`. For many Issues at once, `forge-batch` groups them into Waves that can ship in parallel; see [Unattended Shipping](docs/unattended.md).
+Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the repo, or a tracker you declare in `AGENTS.md`.
 
 ## Skills
 
@@ -78,7 +78,6 @@ Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the rep
 | **Ship** | **`/forge-ship <input>`** | **Implement and review in one go; `--guard` continues through guard and land** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready; never merges |
 | Land | `/forge-land [pr]` | Judge a green PR's risk: merge-ready, or review-ready with where to look |
-| Batch | `/forge-batch <scope>` | Group Issues into Waves that can ship concurrently; `--start` starts the ready ones |
 
 Every skill takes optional trailing guidance: `/forge-ship 42 -- keep the diff minimal`.
 

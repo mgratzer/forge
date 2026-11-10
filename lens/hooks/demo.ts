@@ -46,53 +46,9 @@ const RISK_REVIEW = `## Risk
 - \`src/auth.js:31\`: does the new SameSite value break the OAuth callback?
 - \`src/limiter.js:12\`: is eviction safe while a request holds the bucket?`;
 
-const BATCH = `## Batch: milestone v0.4 (demo)
-
-### Status
-| # | Title | State | Detail |
-|---|-------|-------|--------|
-| 40 | feat(api): store notes by owner | merged | PR #88 |
-| 41 | fix(api): reject empty titles | in flight | PR #90, merge-ready (low risk, judged on head) |
-| 42 | feat(api): rate-limit the notes API | ready | started |
-| 43 | fix(ui): keep the draft on reload | ready | started |
-| 44 | docs: document the export format | ready | launch line |
-| 45 | feat(ui): tag filter in the sidebar | waiting | #43 (web/editor.js) |
-| 46 | chore(db): add the tags index | waiting | #42 |
-
-launch: forge-launch 44
-
-**Merge:** #90 (land judged it low risk; batch never merges)
-**Scope:** continuing: 4 in flight, 2 waiting
-
-### Wave 1 (3 Issues)
-| # | Title | Touch set | Notes |
-|---|-------|-----------|-------|
-| 42 | feat(api): rate-limit the notes API | src/limiter.js, src/routes/notes.js | |
-| 43 | fix(ui): keep the draft on reload | web/editor.js | adjacent to #45 |
-| 44 | docs: document the export format | docs/export.md | |
-
-launch: forge-launch 42 43 44
-
-### Wave 2 (2 Issues, after Wave 1 merges)
-| # | Title | Touch set | Notes |
-|---|-------|-----------|-------|
-| 45 | feat(ui): tag filter in the sidebar | web/sidebar.js, web/editor.js | |
-| 46 | chore(db): add the tags index | db/migrations/0007_tags.sql | serialized: migrations |
-
-launch: forge-launch 45 46
-
-### Excluded
-- #47: HITL (needs a pricing decision)
-- #48: open PR #91 already`;
-
 type Step = (m: Model, now: number) => Model;
 
 export function start(m: Model, variant: string, now: number): Model {
-	if (variant === "batch") {
-		const run = model.startRun(model.fresh(m), "batch", "--start milestone v0.4", now, true);
-		const out = model.applyStatus(run, "reviewing", "touch sets for 7 Issues", now);
-		return { ...out, batch: parse.batch(BATCH), panes: [...out.panes, model.PANES.waves.id] };
-	}
 	const run = model.startRun(model.fresh(m), "ship", "--guard 42", now, true);
 	return { ...run, demo: { variant, step: 0, nextAt: now + 1000 } };
 }

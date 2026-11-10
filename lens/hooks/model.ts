@@ -6,7 +6,6 @@ import * as parse from "./parse";
 export const PANES = {
 	lens: { id: "forge-lens", title: "forge" },
 	config: { id: "forge-config", title: "forge config" },
-	waves: { id: "forge-waves", title: "forge waves" },
 } as const;
 
 export const paneTitle = (id: string): string => Object.values(PANES).find((p) => p.id === id)?.title ?? id;
@@ -19,7 +18,6 @@ export const EMPTY: Model = {
 	findings: [],
 	risk: null,
 	result: "",
-	batch: null,
 	next: null,
 	isBandHidden: false,
 	isLensClosed: false,
@@ -221,18 +219,15 @@ export function withDemoPr(m: Model, checks: Pr["checks"]): Model {
 	return withNext({ ...m, pr });
 }
 
-// What a finished turn's answer says: a batch, a ## Risk section, a Result line
+// What a finished turn's answer says: a ## Risk section, a Result line
 export function withAnswer(m: Model, text: string): Model {
-	let out = m;
-	const found = parse.batch(text);
-	if (found) out = { ...out, batch: found, panes: [...out.panes, PANES.waves.id] };
-	if (out.run && !out.run.isDemo) {
-		out = withReviewFindings(
-			{ ...out, risk: parse.riskSection(text) ?? out.risk, result: parse.resultLine(text) || out.result },
+	if (!m.run || m.run.isDemo) return withNext(m);
+	return withNext(
+		withReviewFindings(
+			{ ...m, risk: parse.riskSection(text) ?? m.risk, result: parse.resultLine(text) || m.result },
 			parse.findings(text),
-		);
-	}
-	return withNext(out);
+		),
+	);
 }
 
 // How stale the PR may get: the loop refreshes an open run's PR every minute and an
@@ -248,13 +243,11 @@ export const isPrDue = (m: Model, now: number): boolean =>
 	!!m.run &&
 	(m.run.terminal ? m.pr?.state === "OPEN" && isPrStale(m, now, ENDED_REFRESH_MS) : isPrStale(m, now, PR_REFRESH_MS));
 
-const isLive = (m: Model): boolean => !!m.run && !m.run.isDemo;
-
-// Whether a finished turn can change the model: a live run, or a batch in the answer
-export const turnMatters = (m: Model, text: string): boolean => isLive(m) || /^## Batch: /m.test(text);
+// Whether a finished turn can change the model: only a live run's can
+export const isLive = (m: Model): boolean => !!m.run && !m.run.isDemo;
 
 export function afterTurn(m: Model, text: string, now: number): Model {
-	if (!turnMatters(m, text)) return m;
+	if (!isLive(m)) return m;
 	const out = withAnswer(m, text);
 	return isLive(out) && isPrStale(out, now, TURN_REFRESH_MS) ? askPr(out) : out;
 }

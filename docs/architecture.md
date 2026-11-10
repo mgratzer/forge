@@ -16,7 +16,7 @@ forge-setup-project → [forge-shape →] forge-create-issue → forge-implement
                                                                         ╰──── forge-ship ────╯╰────────── forge-ship --guard ───────────╯
 ```
 
-`forge-shape` is optional, for ideas too vague to file. `forge-ship` is a composite: it runs implement's process and the review flow it shares with reflect in one invocation. `forge-batch` sits beside the line: it groups prepared Issues into Waves, and a launcher or `forge-batch --start` runs the line once per Issue (see [unattended.md](unattended.md)).
+`forge-shape` is optional, for ideas too vague to file. `forge-ship` is a composite: it runs implement's process and the review flow it shares with reflect in one invocation.
 
 ## Context limits
 

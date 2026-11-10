@@ -1,6 +1,6 @@
 # Open Work
 
-How a skill checks work that hasn't landed yet: prerequisites that are still open, and open PRs that already do, or collide with, the same change. `forge-implement` runs it before planning; `forge-batch` runs the open-PR half for a whole scope. One `gh` call each, no polling. On another tracker, check the same facts with its equivalent calls.
+How a skill checks work that hasn't landed yet: prerequisites that are still open, and open PRs that already do, or collide with, the same change. `forge-implement` runs it before planning. One `gh` call each, no polling. On another tracker, check the same facts with its equivalent calls.
 
 ## Prerequisites
 
@@ -27,4 +27,4 @@ An open PR **is for** Issue N when N is in its `closingIssuesReferences`, or its
 
 ## Conflict
 
-Two change sets **conflict** when they share a file, or both match the same serialized-resource glob from [unattended-config](unattended-config.md), even when the exact paths differ. For an open PR, its change set is its `files`; for planned work, the files the Plan or touch set names.
+Two change sets **conflict** when they share a file, or both match the same serialized-resource glob from [unattended-config](unattended-config.md), even when the exact paths differ. For an open PR, its change set is its `files`; for planned work, the files the Plan names.
