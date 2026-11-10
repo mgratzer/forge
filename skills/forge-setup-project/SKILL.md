@@ -82,6 +82,7 @@ Report what was created/changed — see [output-format.md](references/output-for
 ## Related Skills
 
 **Next step:** Use `forge-create-issue` to plan your first piece of work — or `forge-shape` if the idea is still rough and needs convergent questioning first.
+**From time to time:** Use `forge-survey` to review the codebase's design and find the rules that need a check.
 
 ## Example Usage
 

@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Agent skills for structured development with pluggable issue tracking.</strong><br>
-  One workflow. Nine skills. From idea to merged code.
+  One workflow. Ten skills. From idea to merged code.
 </p>
 
 <p align="center">
@@ -78,6 +78,7 @@ Issues live wherever you keep them: GitHub, a markdown `plan/` folder in the rep
 | **Ship** | **`/forge-ship <input>`** | **Implement and review in one go; `--guard` continues through guard and land** |
 | Guard | `/forge-guard [pr]` | Drive an open PR to review-ready; never merges |
 | Land | `/forge-land [pr]` | Judge a green PR's risk: merge-ready, or review-ready with where to look |
+| Survey | `/forge-survey [paths]` | Review the codebase's design, record findings in `docs/surveys/`, and name the check that let each through |
 
 Every skill takes optional trailing guidance: `/forge-ship 42 -- keep the diff minimal`.
 

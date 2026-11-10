@@ -99,6 +99,15 @@ On green sandbox PRs, with code outside `src/**` unless the case says otherwise:
 - Labels, off: with no `forge:*` labels, land reports `Label: none` and creates none.
 - Labels, on (`gh label create forge:merge-ready && gh label create forge:review-ready`): a `merge-ready` run leaves `forge:merge-ready`, a later `review-ready` run swaps it for `forge:review-ready`, and a `needs-human` run or a guard push removes it. Delete both afterwards, so the sandbox stays not opted in.
 
+### forge-survey
+
+On a repository with one function copied into two files and an export only a test imports:
+
+- Both are recorded with their class, both places as `file:line`, and a `Let through by` cell.
+- The survey file is on a `docs/survey-<date>` branch with a PR, and the checkout it ran in keeps its branch.
+- A second run finds the first survey, marks the same findings as recurring, and proposes a guardrail for the class.
+- Headless, it prints its triage questions and files no Issue.
+
 ### forge-shape
 
 On a change to something the project renders:
