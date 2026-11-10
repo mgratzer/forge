@@ -1,13 +1,13 @@
 # Forge
 
-Forge is a collection of agent skills that define a structured development workflow with pluggable issue tracking, following the [Agent Skills](https://agentskills.io) standard. The skills are Markdown prompts with no build system. The repository root is also a Claude Code plugin that adds the lens (`lens/`), an optional TypeScript view over the text the skills print; see [Lens](docs/lens.md). The skills never depend on the lens, and launchers and worktree setup stay the user's.
+Forge is a collection of agent skills that define a structured development workflow with pluggable issue tracking, following the [Agent Skills](https://agentskills.io) standard. The skills are Markdown prompts, plus one bash script they share for reading PR state, with no build system. The repository root is also a Claude Code plugin that adds the lens (`lens/`), an optional TypeScript view over the text the skills print; see [Lens](docs/lens.md). The skills never depend on the lens, and launchers and worktree setup stay the user's.
 
 This is the only project guidance file; there is no `CLAUDE.md` (Claude Code reads `AGENTS.md` natively).
 
 ## Commands
 
 ```bash
-scripts/check-skills.sh                            # skill structure and the lens contract (Node 22.6+); prints nothing when healthy
+scripts/check-skills.sh                            # skill structure, the lens contract (Node 22.6+), the PR-state script's tests (jq); prints nothing when healthy
 npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens (the version in biome.json)
 claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
 ```

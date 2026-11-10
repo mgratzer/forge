@@ -3,13 +3,15 @@
 What can be checked mechanically runs in CI (`.github/workflows/checks.yml`), and locally with the same commands:
 
 ```bash
-scripts/check-skills.sh                              # skill structure and the lens contract (Node 22.6+); the script lists its checks
+scripts/check-skills.sh                              # skill structure, the lens contract (Node 22.6+), the PR-state script's tests (jq); the script lists its checks
 npx @biomejs/biome@2.6.2 ci --error-on-warnings .    # lint and format of lens/, scripts/*.ts and the plugin JSON
 claude plugin validate .                             # plugin and marketplace manifests, the lens's hooks
 claude plugin test .                                 # lens/tests/*.test.tsx
 ```
 
 CI pins Biome (matching the `$schema` in `biome.json`) and Claude Code; bump both on purpose. `validate` exits 0 on warnings, so CI also fails on any warning except the missing `version` (left out so installs track commits) and, through `--profile directory`, on anything the plugin directory would refuse, such as a missing LICENSE.
+
+`scripts/test-pr-state.sh` runs `skills/_shared/scripts/pr-state.sh` against the cases in `scripts/fixtures/pr-state/`, with stand-ins for `gh`, `sleep` and `date`, so it needs no network and never waits; its header says how a case is laid out. A change to a filter, a wait or the `REVIEWERS` table comes with a case.
 
 No check reads a skill's meaning. By hand, verify the section order ([Coding Guidelines](coding-guidelines.md)), the Related Skills links, GraphQL queries against the [GitHub docs](https://docs.github.com/en/graphql), and that `plan/` provider paths match [plan-folder-spec](../skills/_shared/plan-folder-spec.md).
 
@@ -64,8 +66,8 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 ### forge-guard
 
 - A PR whose CI you can make fail once: it fixes the failure, re-requests the peer review, replies on every thread, and ends in `review-ready` without merging.
-- The peer reviewer fails (a Copilot error or rate-limit review): it re-requests once, then posts a `Substitute review:` comment, and land's `## Risk` names the substitution.
-- A partial review (the could-not-review note above an overview) counts as the review and isn't retried; land's `## Risk` marks it partial.
+- The peer reviewer fails (a Copilot error or rate-limit review): it ends in `needs-human`, naming the reviewer and its message, without re-requesting.
+- The could-not-review note above an overview counts as the review.
 - `--max-rounds 1` against two rounds of feedback: ends in `needs-human`.
 - A check that already fails on the base branch: left alone. A check that fails only on its first attempt: rerun once and waited for. Neither costs a round.
 - A conflicting commit pushed to the base branch: merged in and resolved, and it still ends in `review-ready`.
@@ -107,4 +109,4 @@ On a change to something the project renders:
 - When the chosen board changes, it finds what the spec no longer matches.
 - When a direction is accepted, the docs PR carries the spec and shows the boards.
 - A non-visual idea still gets questions and no drawing.
-- A design rejected on a sandbox PR that already links `## Exercised` screenshots: an attended run draws a new board before any code, records a Plan revision, and leaves the boards and the screenshots on `pr-assets/<branch>`. An unattended run leaves the thread as needing a human decision.
+- A design rejected on a sandbox PR that already links `## Exercised` screenshots: an attended run draws a new board before any code, updates the PR body's Plan, and leaves the boards and the screenshots on `pr-assets/<branch>`. An unattended run leaves the thread as needing a human decision.

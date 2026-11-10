@@ -55,7 +55,7 @@ git diff --name-only HEAD
 
 ### Step 2: Review Changes (delegate)
 
-Follow the [review-delegation](_shared/review-delegation.md) process: collect materials, prefer one inline review pass for tiny low-risk diffs, otherwise run one fresh-context review pass by default, add a second pass only when risk justifies it, and aggregate findings.
+Follow the [review-delegation](_shared/review-delegation.md) process: it picks the review shape and aggregates the findings.
 
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
@@ -65,19 +65,17 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 
 ### Step 4: Triage Findings
 
-Present each Finding to the user via AskUserQuestion and ask whether to **fix now** or **defer**.
-
-For each Finding, recommend one of (bias toward fix now):
+Present each Finding to the user via AskUserQuestion with your recommendation, and let them decide whether to **fix now** or **defer**. Bias toward fix now:
 - **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
 - **Defer** — only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
-State your recommendation and let the user decide. Then:
+Then:
 - **Fix now:** apply the fix and commit it
 - **Deferred items:** create an Issue in the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)) with context and proposed solution
 
 ### Step 5: Report
 
-Aggregate findings from all review passes (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) into the summary format below. Deduplicate any findings flagged by multiple passes — keep the highest severity.
+Report the findings (Step 2), quality gate results (Step 3), and triage outcomes (Step 4) in the summary format below.
 
 ## Output Format
 
@@ -100,19 +98,11 @@ Aggregate findings from all review passes (Step 2), quality gate results (Step 3
 - Format: ✓/✗
 - Types: ✓/✗
 - Tests: ✓/✗
-
-(Use severity tags: P0, P1, P2. Omit P3 — see [review rubric](_shared/review-rubric.md).)
 ```
-
-## Guidelines
-
-- **Pattern consistency is the highest-value check**
-- **Bias toward fixing in the same PR** — only create Issues for confirmed deferrals that are truly larger or out of scope
 
 ## Related Skills
 
 **After review:** Use `forge-address-pr-feedback` to address reviewer feedback.
-**Single invocation:** Use `forge-ship` to implement and review in one step.
 
 ## Example Usage
 

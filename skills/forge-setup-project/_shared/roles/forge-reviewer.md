@@ -11,29 +11,15 @@ You are a code reviewer analyzing a PR diff using the **review checklist assigne
 
 Your initial prompt contains everything you need — the review rubric, your assigned checklist, scope metadata, relevant project conventions from `AGENTS.md`, the acceptance criteria when the change closes an Issue, and the PR's Change outline when it has one. Do not read external files for those unless your task explicitly tells you to.
 
-## Severity Levels
-
-| Level | Definition | Action |
-|-------|-----------|--------|
-| **P0** | Production-breaking, data loss, security vulnerability | Must fix before merge |
-| **P1** | Real foot guns — will cause bugs or confusion | Should fix before merge |
-| **P2** | Real improvements — non-urgent but worth doing | Usually fix now; create issue only if truly out of scope or materially larger |
-| **P3** | Marginal value — technically imperfect but harmless | **Do not flag** |
-
-Only flag P0, P1, and P2 findings. Skip P3 entirely.
-
 ## Behavior
 
-- Apply the assigned checklist to the changed files and surrounding code
+- Apply the assigned checklist to the changed files and surrounding code, inspecting the diff with the provided scope commands
+- Flag only P0, P1, and P2 findings, as the rubric defines them; never P3
 - When your task lists acceptance criteria, flag each one the diff does not meet
-- Use the provided scope commands to inspect the diff when needed
 - When checking pattern consistency, verify every file using the pattern:
   ```bash
   grep -rn "<changed-pattern>" <search-root>/
   ```
-- If a finding is a false positive or not worth addressing, note it and move on
-- A short review with few findings is the **right answer** for well-written code — do not manufacture findings
-- Do not pad the review with minor follow-up fodder; small in-scope problems should usually be fix-now findings, not issue-farm material
 
 ## Output Format
 

@@ -22,7 +22,7 @@ Run `/forge-land <pr>` on its own for any green PR. Unattended runs skip plan ap
 
 ## When the runtime watches the PR
 
-Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts and review comments. Nothing reports CI turning green, so without a wait of its own a clean PR would never reach land. Guard and land therefore keep one CI wait, in the background when the runtime can wake the session, and land writes no verdict while checks are pending. For events after a terminal state, see [forge-guard](../skills/forge-guard/SKILL.md) Steps 3 and 5.
+Claude Code desktop's Auto-fix wakes the session on CI failures, merge conflicts and review comments, but nothing reports CI turning green, so guard and land keep a CI wait of their own ([How to Wait](../skills/_shared/pr-readiness.md#how-to-wait)), and land writes no verdict while checks are pending. An event after the run's terminal state changes nothing: the session says in one line whether to run `/forge-guard` again ([status-reporting](../skills/_shared/status-reporting.md#states)).
 
 The desktop app's own instructions say not to poll CI with `gh`, and a skill can't override them. A session may still follow the app and end its turn waiting for an event; a clean PR then sits until something wakes it.
 
@@ -49,7 +49,7 @@ is:open is:pr label:forge:merge-ready
 is:open is:pr label:forge:review-ready
 ```
 
-Land's next run replaces the label. Any other end of land, a guard push, or a guard re-entry ending in `needs-human` removes it. A push from anywhere else leaves it until land runs again; the PR's `## Risk` section names the commit it judged.
+The label stands for land's verdict on the head commit, so land's next run replaces it, and a guard run that makes the verdict stale removes it ([Outcome Label](../skills/_shared/status-reporting.md#outcome-label)). A push from anywhere else leaves it until land runs again; the PR's `## Risk` section names the commit it judged.
 
 For a push instead of a queue, have your launcher's `FORGE_STATUS_CMD` turn `merge-ready` and `review-ready` into a desktop notification, or give the agent a bot account of its own so GitHub notifies you.
 
@@ -67,7 +67,6 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
 - [ ] Give agents a way to run the app: a run skill (Claude Code: `/run`) or run commands in `AGENTS.md` ([exercise](../skills/_shared/exercise.md)). Without one, code PRs report `not exercised` and never reach `merge-ready`
 - [ ] Optionally, create the labels above to get a queue of PRs waiting on you
-- [ ] Optionally, add `REVIEW.md` files (at the root or in a directory) saying what there always needs a person; land's verdict reads them
 - [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
 
 ## What guard and land don't see

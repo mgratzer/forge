@@ -1,6 +1,6 @@
 # Exercise the Change
 
-Tests prove the code does what the tests say. Running the app and using the changed path once, the way a user or client would, finds what the tests don't cover yet, and the evidence in the PR is what lets a reviewer skip checking out a small PR.
+Running the app and using the changed path once, the way a user or client would, finds what the tests don't cover yet, and the evidence in the PR is what lets a reviewer skip checking out a small PR.
 
 ## When
 

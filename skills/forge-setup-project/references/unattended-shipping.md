@@ -1,10 +1,10 @@
 # Prepare for Unattended Shipping
 
-The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe, and a worktree session loses its first gates to an unprepared checkout when Commands don't say how to prepare one. All three are quiet failures: nothing says what was missing. This step closes those gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
+The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe, and a worktree session loses its first gates to an unprepared checkout when Commands don't say how to prepare one. This step closes those gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
 
 ## Run Recipe
 
-[exercise](../_shared/exercise.md) tries the runtime's run skill first (Claude Code: `/run`), which uses a project skill for running the app when there is one and otherwise falls back to generic patterns per project type. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has four parts:
+[exercise](../_shared/exercise.md) tries the runtime's run skill first (Claude Code: `/run`), which falls back to generic patterns per project type when the project has no skill of its own. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has four parts:
 
 | Part | Discover from |
 |------|---------------|

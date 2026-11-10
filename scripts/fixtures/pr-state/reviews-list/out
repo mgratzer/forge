@@ -1,0 +1,3 @@
+{"at":"2026-11-05T14:40:00Z","kind":"failed","login":"copilot-pull-request-reviewer","message":"Copilot was unable to review this pull request due to rate limiting. Please try again later.","state":"COMMENTED"}
+{"at":"2026-11-05T14:50:00Z","kind":"reviewed","login":"copilot-pull-request-reviewer","message":null,"state":"COMMENTED"}
+{"at":"2026-11-05T14:55:00Z","kind":"reviewed","login":"octo","message":null,"state":"APPROVED"}

@@ -1,0 +1,17 @@
+{"data":{"repository":{"pullRequest":{
+ "reviewThreads":{"nodes":[]},
+ "comments":{"nodes":[
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-101","isMinimized":false,"author":{"login":"octo","__typename":"User"},"body":"Please rename the flag."},
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-102","isMinimized":false,"author":{"login":"octo","__typename":"User"},"body":"Also update the docs."},
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-103","isMinimized":false,"author":{"login":"forge-bot","__typename":"User"},"body":"https://github.com/acme/app/pull/7#issuecomment-101\n\nFixed in `abc`.\n\n<!-- forge -->"},
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-104","isMinimized":true,"author":{"login":"spammer","__typename":"User"},"body":"Buy now."},
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-105","isMinimized":false,"author":{"login":"forge-bot","__typename":"User"},"body":"https://github.com/acme/app/pull/7#pullrequestreview-201\n\nNeeds your decision: split vs keep. Splitting costs a second PR.\n\n<!-- forge -->"},
+  {"url":"https://github.com/acme/app/pull/7#issuecomment-106","isMinimized":false,"author":{"login":"forge-bot","__typename":"User"},"body":"Thanks, this is the person on the shared account."}
+ ]},
+ "reviews":{"nodes":[
+  {"url":"https://github.com/acme/app/pull/7#pullrequestreview-201","state":"CHANGES_REQUESTED","isMinimized":false,"author":{"login":"octo","__typename":"User"},"body":"Split this function."},
+  {"url":"https://github.com/acme/app/pull/7#pullrequestreview-202","state":"DISMISSED","isMinimized":false,"author":{"login":"octo","__typename":"User"},"body":"Old objection."},
+  {"url":"https://github.com/acme/app/pull/7#pullrequestreview-203","state":"COMMENTED","isMinimized":false,"author":{"login":"copilot-pull-request-reviewer","__typename":"Bot"},"body":"> [!NOTE]\n> Copilot was unable to complete this review at the selected tier due to model policy or plan restrictions.\n\n<!-- ccr-overview-v2 -->\n\n### Changes recommended\n\nThe loop can miss a review."},
+  {"url":"https://github.com/acme/app/pull/7#pullrequestreview-204","state":"APPROVED","isMinimized":false,"author":{"login":"octo","__typename":"User"},"body":""}
+ ]}
+}}}}

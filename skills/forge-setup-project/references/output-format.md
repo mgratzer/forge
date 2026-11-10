@@ -53,15 +53,7 @@ Use the format matching the work performed.
 
 ### Agent Readiness
 
-| Dimension | Status | Action |
-|-----------|--------|--------|
-| Feedback loops | <status> | <action> |
-| Module structure | <status> | <action> |
-| App legibility | <status> | <action> |
-| Known risks | <risks> | <where documented> |
-| Fresh-checkout step | <named / marked TODO / not needed> | <action> |
-| Run recipe | <complete / parts marked TODO / nothing to run> | <action> |
-| Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
+<the same table as in Fresh Setup>
 
 ### Recommendations Not Applied
 <items the user chose not to apply>

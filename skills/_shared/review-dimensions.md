@@ -14,12 +14,6 @@ Run this checklist in the **single default reviewer**.
 
 When your task includes a Change outline, flag each view the diff contradicts.
 
-When checking pattern consistency, verify every file using the pattern:
-
-```bash
-grep -rn "<changed-pattern>" <search-root>/
-```
-
 ## Optional Deep Pass — Security & Correctness
 
 Use this as the **second reviewer** only for high-risk changes.
@@ -35,7 +29,7 @@ Use this as the **second reviewer** only for high-risk changes.
 Use this as the **second reviewer** for broad but non-security-sensitive diffs.
 
 1. **Module depth** — avoid pass-through layers and weak abstractions; use [deep-modules.md](deep-modules.md) when module shape changed
-2. **Unnecessary indirection** — barrel files or wrappers that do not earn their cost; see [barrel-imports.md](barrel-imports.md)
+2. **Unnecessary indirection** — barrel (index re-export) files or wrappers that do not earn their cost
 3. **Performance hotspots** — hot-path sync work, duplicate I/O, N+1 patterns, resource leaks, wasteful updates
 4. **Test coverage** — changed public behavior, error paths, and edge cases have verification
 5. **Documentation & cleanup** — README / docs / AGENTS updates, stale terminology, debug leftovers, unused imports, commented-out code

@@ -16,7 +16,7 @@ A scope (`$ARGUMENTS`): `milestone:<name>`, `label:<name>`, `epic:<number>`, or 
 
 ### Step 1: Collect Candidates
 
-List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md), keeping only number, title, labels, execution mode, and dependency references — bodies are read later, per Issue. Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
+List the scope's Issues with *List Issues by Scope* in [issue-operations](_shared/issue-operations.md). Then fetch open PRs once and match each Issue locally, following *Open PRs* in [open-work](_shared/open-work.md).
 
 Exclude, with a stated reason each: HITL Issues, Issues labeled `blocked`, Issues with an open PR, and Issues with a prerequisite outside the scope that is unmet per *Prerequisites* in open-work (one query for all of them). Everything left is AFK and free to start. With `--start`, classify every Issue instead, following *Classify* in [start](references/start.md).
 
@@ -31,7 +31,7 @@ For each candidate, produce its **touch set** — the files and directories the 
 
 ### Step 3: Build Waves
 
-Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when the listing's dependency references for A include B: a native blocked-by link, or body text (`depends on #B`, `blocked by #B`, `after #B`).
+Two Issues **conflict** when their touch sets do, as *Conflict* in [open-work](_shared/open-work.md) defines it. Issue A **depends on** B when the listing's dependency references for A (native links and body text) include B.
 
 Place Issues greedily: order by priority label, then by number; put each into the earliest Wave where it conflicts with nothing already there and every dependency sits in an earlier Wave. Cap a Wave at 10 Issues unless the trailing context says otherwise. Issues sharing a directory but no file are allowed together and marked *adjacent* so the human can veto.
 
@@ -43,7 +43,7 @@ With `--start`, the approval covers the run's starts, and a re-run that the runt
 
 ### Step 5: Print the Batch
 
-Use the output format below; with `--start`, the `### Status` section from [start](references/start.md) comes first, then `### Merge Order` when it ran. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand.
+Use the output format below; with `--start`, the `### Status` section from [start](references/start.md) comes first, then `### Merge Order` when it ran. The launch line names `$FORGE_LAUNCHER` when that variable is set, otherwise just the numbers for whatever the user starts by hand. Say that touch sets are estimates and later Waves provisional: re-run after a Wave merges.
 
 ## Output Format
 
@@ -66,15 +66,8 @@ launch: <launcher> 123 124 ...
 - #131: open PR #400 already
 ```
 
-## Guidelines
-
-- **Touch sets are estimates** — say so; a Wave is a bet the human approves, not a proof
-- **Serialized resources trump everything** — two migrations in one Wave is a merge conflict by construction
-- **Later Waves are provisional** — re-run after a Wave merges; touch sets shift as code lands
-
 ## Related Skills
 
-**Before:** `forge-create-issue` classifies Issues as AFK or HITL — only AFK Issues enter a Wave.
 **After:** start each Issue in a Wave with `forge-ship --guard`, through `$FORGE_LAUNCHER` or by hand, or let `--start` do it.
 
 ## Example Usage

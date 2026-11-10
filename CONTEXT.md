@@ -10,7 +10,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Plan**: structured proposal for implementing an Issue: durable decisions, vertical phases, verification steps. The PR carries it in `## Plan` (see [pr-body](skills/_shared/pr-body.md)). A "plan file" is a markdown artifact containing a Plan.
 
-**Deviation**: a difference between a Plan and the diff its PR was opened with: a change outside what the Plan set out to do, or a planned phase that didn't happen. A revision a person asked for and the PR records is not one; nor is a self-review fix inside the Plan's goal and scope, even one committed before the PR opens. Later commits answer review and CI, which other checks judge. _Avoid_: "drift", "plan mismatch".
+**Deviation**: a difference between a Plan and the diff its PR was opened with: a change outside what the Plan set out to do, or a planned phase that didn't happen. A change a person made to the Plan is not one, since the PR carries the changed Plan; nor is a self-review fix inside the Plan's goal and scope, even one committed before the PR opens. Later commits answer review and CI, which other checks judge. _Avoid_: "drift", "plan mismatch".
 
 **Vertical slice**: end-to-end implementation crossing all layers for one narrow scenario, testable in isolation. See [vertical-slicing](skills/_shared/vertical-slicing.md).
 
@@ -36,13 +36,13 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Guard**: the stage after self-review that drives an open PR to review-ready without a human. Never merges. See [forge-guard](skills/forge-guard/SKILL.md).
 
-**Round**: one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check or finds checks still pending is not a round. Rounds count across turns and carry into a re-entry. Bounded by *max guard rounds*.
+**Round**: one trip through the guard's react step: a fix for a CI failure the branch caused, an update from the base branch, or a feedback pass, followed by a fresh wait. A trip that only reruns a flaky check or finds checks still pending is not a round. Rounds count across turns. Bounded by *max guard rounds*.
 
-**Review-ready / Needs-human**: terminal states of the guard and of land. Review-ready: branch mergeable, CI green apart from failures the base branch shares, peer review present (or substituted by an internal review after the peer reviewer failed, or none configured), all feedback addressed; from land, also a needs-review verdict, with `## Risk` saying where to look. Needs-human: stopped short, with the reason in the summary. A later event can re-enter the guard from either: see [forge-guard](skills/forge-guard/SKILL.md) Step 5. _Avoid_: "done", "green" alone.
+**Review-ready / Needs-human**: terminal states of the guard and of land. Review-ready: a person can look now, since the guard's conditions hold ([forge-guard](skills/forge-guard/SKILL.md) Step 4); from land, also a needs-review verdict, with `## Risk` saying where to look. Needs-human: stopped short, with the reason in the summary. A run ends at its terminal state: a later event changes nothing (see [status-reporting](skills/_shared/status-reporting.md#states)). _Avoid_: "done", "green" alone.
 
 **Land**: the stage after the guard: checks that a PR is mergeable, green, addressed and exercised, gets a fresh-context risk verdict on its head commit, and writes it into `## Risk`. Ends in exactly one of Merged, Merge-ready, Review-ready or Needs-human. See [forge-land](skills/forge-land/SKILL.md) and [risk-rubric](skills/_shared/risk-rubric.md).
 
-**Merge-ready**: land's low-risk outcome: a person can merge without reading the diff. A new push makes it stale, and so does a re-entry ending in Needs-human. _Avoid_: "approved", "safe to merge".
+**Merge-ready**: land's low-risk outcome: a person can merge without reading the diff. A new push makes it stale, and so does a guard run on the PR ending in Needs-human. _Avoid_: "approved", "safe to merge".
 
 **Merged**: land's low-risk outcome when the project set `Auto-merge: low-risk`: the host merged the judged commit, or will once its required checks pass.
 
