@@ -12,7 +12,7 @@ Every skill follows the same section order:
 4. `## Input`: `$ARGUMENTS`, default behavior, and the trailing `-- <additional context>`
 5. `## Process`: numbered `### Step N: <Action>` sections
 6. `## Output Format` (optional)
-7. `## Guidelines`: brief behavioral rules
+7. `## Guidelines` (optional): constraints that fit no single step; omit it rather than restate the steps
 8. `## Related Skills`: the next step in the workflow
 9. `## Example Usage`: slash command examples
 
@@ -82,7 +82,7 @@ These have no module, so each skill states them itself. When changing one, updat
 - Guidance file: `AGENTS.md` only.
 - Trailing context: `-- <additional context>` as the final segment, in every skill.
 - Workflow order, in each skill's Related Skills section.
-- `--unattended`: skips the plan approval and triages findings on its own, fixing in-scope ones and deferring only what is larger or out of scope. Feedback threads that need discussion are decided on evidence or left open for a person. Guard and land are always unattended.
+- `--unattended`: skips the plan approval and triages findings on its own, per the review rubric's [Unattended Triage](../skills/_shared/review-rubric.md#unattended-triage). Feedback threads that need discussion are decided on evidence or left open for a person. Guard and land are always unattended.
 - Deferred items: every one becomes an Issue in the project's tracker.
 
 ## Instruction Budget

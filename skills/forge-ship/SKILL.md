@@ -5,42 +5,44 @@ description: "End-to-end implementation and self-review in a single invocation: 
 
 # Ship a Change
 
-Implement end to end — code it, review it, ship it. Implementation runs in the current session; review always delegates to fresh context and deepens only when risk justifies it.
+Implement a change, review it in fresh context, and push it. With `--guard`, carry the PR on to a terminal state.
 
 ## Input
 
 Same as `forge-implement` (`$ARGUMENTS`): Issue number/URL, plan file path, or free-text. Optional: `-- <additional context>`.
 
-**Unattended mode:** `--unattended` skips plan approval and auto-triages findings by severity. A run no person can answer is unattended too, as in forge-implement.
+**Unattended mode:** `--unattended` skips plan approval and triages findings without asking. A run no person can answer is unattended too, as in forge-implement.
 
-**Guard mode:** `--guard` continues after the PR is open with the [forge-guard](../forge-guard/SKILL.md) process — quality passes, CI, peer review, feedback rounds — then the [forge-land](../forge-land/SKILL.md) risk verdict, and ends at `merged` (only with the project's auto-merge opt-in), `merge-ready`, `review-ready`, or `needs-human`. Implies `--unattended`.
+**Guard mode:** `--guard` continues after the PR is open with forge-guard, then forge-land (Step 4). Implies `--unattended`.
 
 ## Process
 
 ### Step 1: Implement
 
-Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary** — the review below informs the single final report.
+Execute the full [forge-implement](../forge-implement/SKILL.md) process with one modification: **do not produce implement's summary**. Step 5 reports everything once.
 
 ### Step 2: Review (delegate)
 
-**Simplification pass** — if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff and commit its edits before the review, which then checks them; Step 3 pushes them with the triage fixes in one push. Otherwise skip it: the review's default checklist covers the same items.
+**Simplification pass**: if the runtime provides a simplification skill (Claude Code: `/simplify`), invoke it on the branch diff and commit its edits before the review, so the review checks them. Otherwise skip it: the review's default checklist covers the same items.
 
-**Fresh-context review** — follow the [review-delegation](_shared/review-delegation.md) process: collect the diff from the implementation, use one fresh-context review pass by default (this session authored the diff, so the inline tiny-diff path never applies), add a second pass only when risk justifies it, and aggregate findings.
+**Fresh-context review**: run it however clean the change looks, following [review-delegation](_shared/review-delegation.md). This session wrote the diff, so even a tiny one goes to a fresh-context reviewer.
 
-**Inputs provided to sub-agent:** the branch diff, changed file list, project conventions, and the Issue's acceptance criteria, and the PR's Change outline per review-delegation.
+**Inputs provided to sub-agent:** what review-delegation's *Inputs Required* lists.
 **Expected output:** Deduplicated findings grouped by file with severity tags (P0/P1/P2).
 
 ### Step 3: Triage Findings
 
-**In attended mode (default):** present each finding to the user with a recommendation, biased hard toward **fix now** — defer only changes that materially expand PR scope or are truly out of scope.
+**Attended (default):** present each finding to the user with a recommendation, biased hard toward **fix now**: defer only what materially expands the PR's scope or is truly out of scope.
 
-**In unattended mode:** auto-triage by severity plus scope from the [review rubric](_shared/review-rubric.md): fix P0–P2 in-scope findings now; defer P1–P2 items that are truly out of scope or materially larger; ignore P3.
+**Unattended:** triage per [Unattended Triage](_shared/review-rubric.md#unattended-triage).
 
-Commit fixed findings and push them together with any Step 2 simplification commit, even when nothing needed fixing; deferred items become Issues — see [issue-operations](_shared/issue-operations.md).
+Commit the fixes and push once, together with any Step 2 simplification commit, even when nothing needed fixing. Deferred items become Issues, per [issue-operations](_shared/issue-operations.md).
 
 ### Step 4: Guard and Land (only with `--guard`)
 
-Run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. When it ends at `needs-human`, that is this skill's terminal state. When it reaches `review-ready`, don't report that state: run the full [forge-land](../forge-land/SKILL.md) process on the same PR, and its terminal state is this skill's. Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md) — the PR is open and self-reviewed, and the human takes it from there.
+Without `--guard`, report `pushed` via [status-reporting](_shared/status-reporting.md): the PR is open and self-reviewed, and the human takes it from there.
+
+With `--guard`, run the full [forge-guard](../forge-guard/SKILL.md) process on the PR from Step 1. When it ends at `needs-human`, that is this skill's terminal state. When it reaches `review-ready`, don't report that state: run the full [forge-land](../forge-land/SKILL.md) process on the same PR, and its terminal state (`merged` only with the project's auto-merge opt-in, `merge-ready`, `review-ready` or `needs-human`) is this skill's.
 
 ### Step 5: Summarize
 
@@ -67,9 +69,9 @@ Report implementation, review, guard, and land results together.
 - Fixed in PR: <list or "none">
 - Deferred: #<issue> (<title>), or "none"
 
-### Guard   (guard mode only — the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
+### Guard   (guard mode only: the Passes, Rounds, and Open sections from forge-guard; Result above is authoritative)
 
-### Land    (guard mode only, when guard reached review-ready — Judged, Checks, Review requested, and Label from forge-land)
+### Land    (guard mode only, when guard reached review-ready: Judged, Checks, Review requested, and Label from forge-land)
 
 ### Quality Gates
 - Lint: ✓/✗
@@ -78,12 +80,6 @@ Report implementation, review, guard, and land results together.
 - Tests: ✓/✗
 - Coverage: ✓/✗/not configured
 ```
-
-## Guidelines
-
-- **Even tiny diffs delegate here** — this session authored the changes, so inline review would be self-review
-- **Don't skip the review** — even if implementation felt clean
-- **Bias toward fixing in the same PR** — unless a finding is truly larger or out of scope
 
 ## Related Skills
 

@@ -1,0 +1,4 @@
+[{"name":"Lint","bucket":"fail","workflow":"Checks","link":"https://github.com/acme/app/actions/runs/111/job/1"},
+ {"name":"Build","bucket":"pass","workflow":"Checks","link":"https://github.com/acme/app/actions/runs/111/job/3"},
+ {"name":"Tests (node 24)","bucket":"fail","workflow":"Checks","link":"https://github.com/acme/app/actions/runs/111/job/2"},
+ {"name":"codecov/patch","bucket":"fail","workflow":"","link":"https://app.codecov.io/gh/acme/app/pull/7"}]

@@ -21,38 +21,25 @@ If no argument is provided, ask the user what they'd like to shape.
 
 ### Step 1: Investigate Context
 
-Before asking any questions, explore the codebase for related context:
-- Find existing implementations, patterns, and constraints relevant to the idea
-- Identify integration points, dependencies, and architectural boundaries
-- Look for prior attempts or related work (git log, closed issues)
-
-Check for related Issues in the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for search mechanics per provider.
+Before asking any questions, explore the codebase for related implementations, constraints, and integration points, and look for prior attempts: git log, and related Issues searched per [issue-operations](_shared/issue-operations.md).
 
 ### Step 2: Shape the Problem
 
-Converge on a shared design concept through one-at-a-time structured questioning. See [shaping-methodology.md](references/shaping-methodology.md) for why one-at-a-time beats batching, how to provide recommended answers without over-anchoring, walking the dependency tree of decisions, when to challenge, and when to stop.
+Converge on a shared design concept through one-at-a-time questioning, grounded in Step 1 facts, following [shaping-methodology.md](references/shaping-methodology.md): a recommended answer with each question, the dependency order, when to challenge, and when to stop. Ask each question with its own AskUserQuestion; never bundle several into one prompt.
 
 If CONTEXT.md exists, read it — use its vocabulary when framing questions and challenging the user's language.
-
-Ground each question in Step 1 facts, so you never ask what the codebase already answers, and give your recommended answer as "I'd suggest X because Y", not as a decision. **Challenge when warranted:** if an answer conflicts with CONTEXT.md vocabulary, call it out; if it contradicts what the code does, surface it; if it uses vague or overloaded terms, propose a precise canonical term; invent concrete scenarios to stress-test fuzzy boundaries.
 
 **Side effects during shaping** — as terms and decisions crystallize:
 - **Resolved term?** Update CONTEXT.md inline — don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
 - **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off — offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
 
-Stop when the user has accepted recommended answers for several consecutive questions, the remaining questions are taste-level (not decision-level), or the shared design concept is clear enough to summarize.
-
-**Use AskUserQuestion** for each individual question. Do not bundle multiple questions into one prompt — that defeats the methodology.
-
 **When the decision is how something looks** (a screen, an email, a character, a brand mark), a board answers it better than a question: run [design rounds](_shared/design-rounds.md). Each design round takes the place of one question.
 
 ### Step 3: Explore Approaches (delegate)
 
-**This step is optional.**
+Skip this step when Step 2 surfaced a clear approach.
 
-If shaping in Step 2 surfaced a clear approach, skip this step and go to Step 4.
-
-If multiple plausible approaches remain after shaping (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
+If multiple plausible approaches remain (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
 
 Assign each sub-agent one constraint lens (adapt to the problem):
 - **Minimal** — smallest change that addresses the core problem
@@ -90,8 +77,6 @@ Produce a structured summary using the output format below, with the Step 4 PR u
 
 Slice the Suggested Issue Breakdown **vertically** per [vertical-slicing](_shared/vertical-slicing.md): each Issue is one thin end-to-end path, never a layer ("backend for comments", "schema first"). Mark each Issue **AFK** (fully specified for autonomous execution) or **HITL** (needs human judgment during implementation), and name the Issues it is blocked by, so create-issue can link them. Add a dependency order view under the checklist when [visuals](_shared/visuals.md) calls for one; the checklist stays, since create-issue reads it.
 
-The summary is *evidence* of alignment, not the alignment itself. If the user reads the summary and finds nothing surprising, the shaping worked.
-
 ## Output Format
 
 ```markdown
@@ -118,11 +103,6 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 - PR: #<number>, or "none" when nothing changed
 ```
 
-## Guidelines
-
-- **Problem over solution** — clarify what's wrong before proposing how to fix it
-- **Stay grounded** — reference specific code, files, and patterns, not abstractions
-
 ## Related Skills
 
 **Next step:** Use `forge-create-issue` to turn the plan into Issues.
@@ -131,6 +111,5 @@ The summary is *evidence* of alignment, not the alignment itself. If the user re
 
 ```
 /forge-shape the app is slow on mobile
-/forge-shape we need better error handling
 /forge-shape the authentication flow -- we've had security concerns, focus there
 ```

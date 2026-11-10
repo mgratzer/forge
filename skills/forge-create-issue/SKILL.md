@@ -20,11 +20,7 @@ If no argument is provided, ask the user what they'd like to create an Issue for
 
 ### Step 1: Research the Codebase
 
-Parse the user's input, then explore the relevant code before asking anything:
-- Find related existing implementations and patterns
-- Identify integration points and potential reuse
-
-Verify external dependencies are accessible if relevant — flag broken ones before proceeding.
+Explore the relevant code before asking anything: related implementations, integration points, potential reuse. If the work relies on an external dependency, verify it is accessible and flag a broken one before proceeding.
 
 ### Step 2: Clarify
 
@@ -35,9 +31,9 @@ Use AskUserQuestion to gather what the code can't answer:
 
 ### Step 3: Present Alternative Approaches
 
-**Skip this step** if the input already contains a chosen approach with rationale — the decision was already made through deliberate analysis. Proceed directly to Step 4.
+**Skip this step** if the input already contains a chosen approach with rationale.
 
-Otherwise, present the structurally distinct approaches you found — usually two to four — rather than a single recommendation; the choice belongs to the user.
+Otherwise, present the structurally distinct approaches you found (usually two to four) rather than a single recommendation; the choice belongs to the user.
 
 For each approach:
 - One-line summary
@@ -52,7 +48,7 @@ Let the user choose or combine approaches via AskUserQuestion.
 
 Evaluate if this should be one Issue or multiple.
 
-**Split when:** distinct deliverables, different codebase areas, parallelizable work, or effort exceeds 1-2 days.
+**Split when:** distinct deliverables, different codebase areas, parallelizable work, or effort exceeds 1-2 days (an estimate for this decision only: the Issue carries no time estimate).
 
 **Keep together when:** tightly coupled changes or splitting adds coordination overhead.
 
@@ -99,12 +95,6 @@ When a view explains the Proposed Solution better than prose, include one (see [
 Present the draft to the user and iterate until satisfied (use AskUserQuestion for approve/revise decisions). Then create the Issue using the project's Issue tracker — see [issue-operations](_shared/issue-operations.md) for provider-specific mechanics. For several Issues, create them in dependency order, then *Link Issues*: each sub-issue to its parent, and each Issue to the Issues it is blocked by.
 
 Share the Issue reference. Suggest using `forge-implement` to start implementation.
-
-## Guidelines
-
-- **Be curious** — challenge assumptions, ask "why" and "what if"
-- **Don't over-specify** — leave room for implementer judgment
-- **No time estimates in the Issue** — the Step 4 effort heuristic is for deciding splits, not for the Issue body
 
 ## Related Skills
 

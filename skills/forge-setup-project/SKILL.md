@@ -17,7 +17,7 @@ Context is organized in three tiers:
 
 **Central principle: context must earn its token cost.** Only include knowledge that agents cannot discover by exploring the codebase with Grep, Glob, and Read.
 
-`AGENTS.md` is the only guidance file. Don't create a `CLAUDE.md`: Claude Code reads `AGENTS.md` natively when no `CLAUDE.md` or `CLAUDE.local.md` is present, so a symlink or copy only adds a second name. A `CLAUDE.md` is justified only for Claude-specific content the user wants kept — then it is `@AGENTS.md` followed by that content, never a copy.
+`AGENTS.md` is the only guidance file. Don't create a `CLAUDE.md`: Claude Code reads `AGENTS.md` natively when no `CLAUDE.md` or `CLAUDE.local.md` is present, so a symlink or copy only adds a second name. Step 7 handles an existing one.
 
 ## Input
 
@@ -57,7 +57,7 @@ Use AskUserQuestion for what code cannot reveal: core principles, repeated failu
 
 ### Step 5: Generate or Update AGENTS.md
 
-Create or update `AGENTS.md`. Keep it **under ~200 lines** — length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. When migrating, fold accepted legacy content in and remove the old file in Step 7.
+Create or update `AGENTS.md`. Keep it **under ~200 lines**, moving the rest to Tier 2; length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. In a monorepo, suggest a per-package `AGENTS.md`. When migrating, fold accepted legacy content in and remove the old file in Step 7.
 
 ### Step 6: Generate or Update Tier 2 — docs/
 
@@ -77,14 +77,7 @@ Stage and commit the new/modified files: `docs: set up agentic context infrastru
 
 ### Step 10: Summarize
 
-Report what was created/changed — see [output-format.md](references/output-format.md). Include tier status with line counts, agent readiness assessment, and next steps.
-
-## Guidelines
-
-- **Undiscoverability test** — "Would an agent find this by exploring?" If yes, don't write it.
-- **Signal over volume** — tables beat paragraphs; omit empty sections.
-- **Tier discipline** — AGENTS.md stays under ~200 lines. Past 200, move to Tier 2.
-- **Edge cases** — monorepos: suggest per-package AGENTS.md. No tests/CI: mention as next steps.
+Report what was created/changed — see [output-format.md](references/output-format.md). Missing tests or CI go under next steps.
 
 ## Related Skills
 

@@ -1,13 +1,13 @@
 # Architecture
 
-Forge's skills are Agent Skills prompts (`SKILL.md`) with no runtime or dependencies. The repository root is also a Claude Code plugin that adds the [lens](lens.md), an optional view over what the skills print.
+Forge's skills are Agent Skills prompts (`SKILL.md`) and one shared bash script, with no build step and no dependencies beyond `gh`. The repository root is also a Claude Code plugin that adds the [lens](lens.md), an optional view over what the skills print.
 
 ## Layout
 
 - `skills/forge-*/`: one skill each. `references/` holds what only that skill loads on demand.
-- `skills/_shared/`: the source of modules and roles (`roles/`) several skills use. `scripts/sync-shared.sh` copies it into each skill as `<skill>/_shared/`; never edit a copy.
+- `skills/_shared/`: the source of modules, roles (`roles/`), the PR-state script (`scripts/`) and runtime notes (`runtimes/`) several skills use. `scripts/sync-shared.sh` copies it into each skill as `<skill>/_shared/`; never edit a copy.
 - `lens/`, `.claude-plugin/`: the plugin.
-- `scripts/`: the checks and the sync.
+- `scripts/`: the checks, the sync, and the PR-state script's tests.
 
 ## Workflow
 
@@ -33,7 +33,9 @@ How many instructions a skill may hold is a separate limit: see [Instruction Bud
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| GraphQL for PR threads | Required in `_shared/pr-readiness.md` | The REST API doesn't expose `isResolved` on review threads |
+| GraphQL for PR threads | Required in `_shared/scripts/pr-state.sh` | The REST API doesn't expose `isResolved` on review threads |
+| PR state in a script | `_shared/scripts/pr-state.sh` reads mergeability, CI, reviews and open feedback; `pr-readiness.md` says what each result means, and the skills what to do | Waiting, retrying and filtering are mechanical: re-derived from prose on every run they drift, while a script runs the same way each time and is tested on fixtures. Bash 3.2 and `gh` only, since a skill installs by copying its folder |
+| Vendor quirks as data | A bot reviewer's could-not-review messages are entries in the script's `REVIEWERS` table; a runtime's PR watcher is described in `_shared/runtimes/<runtime>.md` | The core reads the same on any runtime and with any reviewer, and a quirk is one entry or file to add or drop |
 | Sub-agent delegation | `(delegate)` step pattern | Works across runtimes and in skills with interactive steps, which `context: fork` (whole-skill forking in Claude Code) can't do |
 | Runtime capabilities | Use sub-agent tools and per-task model choice when present, with an inline fallback; never a runtime-specific agent name | Agent files and presets are optional local tuning. Where agent names select a model or provider, push role content and inherit the parent session's configuration |
 | Blind research | The scout researches the codebase without seeing the Issue | Knowing the goal leaks opinions into research |

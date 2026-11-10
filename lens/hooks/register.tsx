@@ -195,13 +195,13 @@ export const register: Register = (on) => {
 		const ran = await next(e);
 		if (ran.deny !== undefined) return ran;
 		// A failed command's terminal state didn't happen; a stage start counts either way,
-		// since skills prepend it to the stage's own command (`… waiting "CI"; gh pr checks`)
+		// since skills prepend it to the stage's own command (`… waiting "CI"; bash …/pr-state.sh ci-wait`)
 		const lines = parse.statusCalls(e.command).filter((l) => !ran.isError || !parse.TERMINAL.includes(l.state));
 		const isPrCreate = /(?:^|[;&|(]\s*)gh pr create\b/.test(e.command);
 		const url = isPrCreate
 			? parse.prUrl(parse.resultText(ran.result), parse.repoSlug((await $.session.repo())?.remote ?? null))
 			: null;
-		const isPrCommand = /\bgh pr (create|checks|ready|edit|merge)\b/.test(e.command);
+		const isPrCommand = parse.isPrCommand(e.command);
 		// forge-ship may `cat` a composed skill's file instead of using Read
 		const step = parse.skillStep(e.command);
 		if (lines.length || url || isPrCommand || step) {

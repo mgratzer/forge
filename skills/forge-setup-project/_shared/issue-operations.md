@@ -1,6 +1,6 @@
 # Issue Operations
 
-Provider-agnostic operations for working with Issues. Skills reference this module instead of inlining provider-conditional blocks.
+Provider-agnostic operations for working with Issues.
 
 ## Provider Detection
 
@@ -25,7 +25,7 @@ ISSUE_EOF
   --label "<labels>"
 ```
 
-**Markdown:** create a new issue file per the [plan-folder-spec](plan-folder-spec.md) — determine the next ID, write `plan/issues/<ID>-<slug>.md` with frontmatter and body, append a row to `plan/INDEX.md`, and commit the new files.
+**Markdown:** follow *Creating an issue* in the [plan-folder-spec](plan-folder-spec.md), then commit the new files.
 
 **Other provider:** use the tool or CLI declared in AGENTS.md with the same title, body, and labels.
 

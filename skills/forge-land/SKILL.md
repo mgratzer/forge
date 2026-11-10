@@ -5,13 +5,11 @@ description: "Decide what a green pull request needs from a human: check it is m
 
 # Land a Pull Request
 
-Decide whether a green PR needs a person, and when it does, tell them where to look.
+Decide whether a green PR needs a person, and when it does, tell them where to look. Land never pushes, never closes the PR, and merges only through the project's opt-in in Step 4. Nothing here asks the user.
 
 ## Input
 
-PR number or URL (`$ARGUMENTS`; auto-detects from the current branch if omitted). Optional: `-- <additional context>`.
-
-The skill is unattended by nature, like `forge-guard`: nothing here asks the user.
+PR number or URL (`$ARGUMENTS`; auto-detects from the current branch if omitted). Optional: `-- <additional context>`. No argument or context turns merging on.
 
 ## Process
 
@@ -23,28 +21,32 @@ ME=$(gh api user --jq .login)
 git fetch origin "$BASE" "pull/$PR/head"   # the verdict reads the diff and files at $SHA, whatever is checked out
 ```
 
-Read the peer reviewer, the security-sensitive paths, and the auto-merge setting per [unattended-config](_shared/unattended-config.md). The PR qualifies only when all of these hold; otherwise report `needs-human` via [status-reporting](_shared/status-reporting.md), naming each one that failed:
+Read the peer reviewer, the security-sensitive paths and the auto-merge setting per [unattended-config](_shared/unattended-config.md). Read the signals with `pr-state.sh`, called as [pr-readiness](_shared/pr-readiness.md#reading-the-signals) says. The PR qualifies only when every row holds; otherwise end with `needs-human` (Step 5), naming each row that failed.
 
-- **Mergeable** — `mergeable` is `MERGEABLE` per [pr-readiness](_shared/pr-readiness.md#mergeable)
-- **CI green** — apart from [Pre-existing](_shared/pr-readiness.md#ci) checks. While checks are pending, report `waiting` and wait per that module's *How to Wait* and *CI*, then re-check this list; an event during the wait only re-checks it too. No verdict on pending checks: one still pending at the cap fails this. A repository with no CI, as *CI* there tells it, passes
-- **Feedback addressed** — [Open Feedback](_shared/pr-readiness.md#open-feedback) returns nothing but No ask items; our standing "Needs your decision" replies are in its output, so they fail this
-- **Exercised** — the body has a `## Exercised` section (see [exercise](_shared/exercise.md))
-- **Reviewed** — the latest of: a review by someone other than `$ME` that is not a [failed review](_shared/pr-readiness.md#review-signal), or `$ME`'s `Substitute review:` comment. No peer reviewer configured passes without either. This sets the `## Risk` section's **Peer review** line: that reviewer's login, `<login> (partial: <its message>)` for a [partial review](_shared/pr-readiness.md#review-signal), `internal (<PEER_REVIEWER> failed: <reason from the comment>)`, or `none configured`
+| Precondition | Holds when |
+|--------------|------------|
+| Mergeable | `mergeable` prints `MERGEABLE` first; still `UNKNOWN` fails |
+| CI green | `ci-wait` printed `pass` or `none` (no CI), or `fail` with only [Pre-existing](_shared/pr-readiness.md#ci) checks. While it runs, report `waiting` via [status-reporting](_shared/status-reporting.md) and wait per [How to Wait](_shared/pr-readiness.md#how-to-wait); an event meanwhile only re-checks this table. No verdict on pending checks: `pending` at the cap fails |
+| Feedback addressed | `feedback` returns nothing but [No ask](_shared/pr-readiness.md#open-feedback) items, so a standing "Needs your decision" reply fails this |
+| Exercised | the body has a `## Exercised` section (see [exercise](_shared/exercise.md)) |
+| Reviewed | `reviews` has an entry that is not `failed`. With no peer reviewer configured, this holds without one |
+
+The `## Risk` section's **Peer review** line is the login of the latest such review, or `none configured` without a peer reviewer.
 
 ### Step 2: Judge the Risk (delegate)
 
 Report `reviewing`. Delegate the verdict on `$SHA` to one fresh-context sub-agent: the session that wrote the code is the worst judge of its risk. If the runtime has no sub-agents, judge inline from the rubric alone, without reusing what this session knows about the change.
 
-> Judge whether PR #<PR> at commit `<SHA>` needs a human review before merging. Read the diff with `git diff "origin/<BASE>...<SHA>"`, files at that commit with `git show "<SHA>:<path>"` (from a shell variable, `"${SHA}:<path>"`: zsh reads `$SHA:A` or `$SHA:s` as a modifier), and the PR body with `gh pr view <PR> --json body`. Run every check in the rubric below first; any hit means needs-review. When none hits, apply the judgment test. Read the `REVIEW.md` files the rubric names. Return the filled `## Risk` section from the rubric and nothing else.
+> Judge whether PR #<PR> at commit `<SHA>` needs a human review before merging. Read the diff with `git diff "origin/<BASE>...<SHA>"`, files at that commit with `git show "<SHA>:<path>"` (from a shell variable, `"${SHA}:<path>"`: zsh reads `$SHA:A` or `$SHA:s` as a modifier), and the PR body with `gh pr view <PR> --json body`. Run every check in the rubric below first; any hit means needs-review. When none hits, apply the judgment test. Return the filled `## Risk` section from the rubric and nothing else.
 
 **Inputs provided to sub-agent:** the task above, [risk-rubric](_shared/risk-rubric.md) (pushed), the security-sensitive paths, the linked Issue numbers, the PR author, and the **Peer review** line from Step 1.
 **Expected output:** The filled `## Risk` section, verdict and SHA first.
 
 ### Step 3: Write the Risk Section
 
-The verdict holds only for `$SHA`. If `headRefOid` has moved by now, start over from Step 1 once; moved again, stop with `needs-human`.
+The verdict holds only for `$SHA`. If `headRefOid` has moved by now, start over from Step 1 once; moved again, end with `needs-human`.
 
-Replace an existing `## Risk` section (up to the next `## ` heading) or append one, and pass the body as a file, never inline:
+Replace the existing `## Risk` section (up to the next `## ` heading) or append one, and pass the body as a file, never inline:
 
 ```bash
 BODY=$(mktemp)
@@ -54,24 +56,33 @@ gh pr edit "$PR" --body-file "$BODY"
 
 ### Step 4: Act
 
-- **Low risk** — report `merge-ready`. A person can merge without reading the diff.
-- **Low risk, project set `Auto-merge: low-risk`** — merge the judged commit and nothing newer. The host merges at once when the PR is mergeable, or waits for its required checks:
+| Verdict | Act | State |
+|---------|-----|-------|
+| Needs review | Request a review (below) | `review-ready` |
+| Low risk | Nothing more: a person can merge without reading the diff | `merge-ready` |
+| Low risk, and the project set `Auto-merge: low-risk` | Merge the judged commit and nothing newer (below) | `merged`, or as below |
 
-  ```bash
-  gh pr merge "$PR" --squash --auto --match-head-commit "$SHA"
-  gh pr view "$PR" --json state,autoMergeRequest   # MERGED, or auto-merge enabled
-  ```
+**Merge.** The host merges at once when the PR is mergeable, or waits for its required checks:
 
-  Merged or enabled: report `merged`. The host refused because the head moved: the verdict is stale, report `needs-human`. Any other refusal: report `merge-ready` with the host's reason.
-- **Needs review** — request a review from the person the PR waits on: the assignee, else the author, of a linked Issue, when they have write access (the rubric's Trust command) and did not open the PR. The host's notification is the poke. With no such person, skip the request and say so in the summary. Report `review-ready`.
+```bash
+gh pr merge "$PR" --squash --auto --match-head-commit "$SHA"
+gh pr view "$PR" --json state,autoMergeRequest   # MERGED, or auto-merge enabled
+```
+
+Merged or enabled: `merged`. Refused because the head moved: the verdict is stale, `needs-human`. Any other refusal: `merge-ready`, with the host's reason.
+
+**Review request.** Ask the person the PR waits on: the assignee, else the author, of a linked Issue, when they have write access (the rubric's Trust command) and did not open the PR. The host's notification is the poke. With no such person, skip the request and say so in the summary.
 
 ```bash
 gh api -X POST "repos/{owner}/{repo}/pulls/$PR/requested_reviewers" -f "reviewers[]=<LOGIN>"
 ```
 
-**Label the outcome** per [status-reporting](_shared/status-reporting.md#outcome-label) before reporting it, on every end of this skill, Steps 1 and 3 included: `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`.
+### Step 5: Label and Report
 
-Never merge outside the opt-in above, never push, never close the PR. Report the terminal state exactly once, then summarize. An event from a runtime watching the PR after that goes through [forge-guard](../forge-guard/SKILL.md) Step 5 when this session also ran guard. Run alone, land still never pushes: give Step 5's no-op its one line, and for anything else say in one line that it needs `/forge-guard`.
+Every end of this skill comes here, from Steps 1 and 3 too:
+
+1. Label the outcome per [Outcome Label](_shared/status-reporting.md#outcome-label): `STATE` is `merge-ready` or `review-ready`, and empty for `merged` and `needs-human`.
+2. Report the state via status-reporting, then summarize.
 
 ## Output Format
 
@@ -85,12 +96,6 @@ Never merge outside the opt-in above, never push, never close the PR. Report the
 **Review requested from:** <login> | not requested: <why> | n/a
 **Label:** <label> | none | refused: <why>
 ```
-
-## Guidelines
-
-- **The verdict is tied to a commit** — a new push makes it stale; re-run land instead of trusting an old `## Risk` or label
-- **Doubt means review** — a verdict that can't name what the checks would miss is needs-review
-- **Merging is the project's choice** — without `Auto-merge: low-risk`, low risk stops at `merge-ready`; no argument or trailing context turns merging on
 
 ## Related Skills
 

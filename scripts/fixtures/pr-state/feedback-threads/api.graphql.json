@@ -1,0 +1,23 @@
+{"data":{"repository":{"pullRequest":{
+ "reviewThreads":{"nodes":[
+  {"id":"T_ours_last","isResolved":false,"isOutdated":false,"path":"a.ts","line":1,"comments":{"nodes":[
+    {"id":"c1","author":{"login":"octo"},"url":"https://github.com/acme/app/pull/7#discussion_r1","body":"Rename this."},
+    {"id":"c2","author":{"login":"forge-bot"},"url":"https://github.com/acme/app/pull/7#discussion_r2","body":"Fixed in `abc`.\n\n<!-- forge -->\n"}]}},
+  {"id":"T_reviewer_last","isResolved":false,"isOutdated":true,"path":"b.ts","line":null,"comments":{"nodes":[
+    {"id":"c3","author":{"login":"forge-bot"},"url":"https://github.com/acme/app/pull/7#discussion_r3","body":"Keeping it because X.\n\n<!-- forge -->"},
+    {"id":"c4","author":{"login":"octo"},"url":"https://github.com/acme/app/pull/7#discussion_r4","body":"X doesn't hold."}]}},
+  {"id":"T_resolved","isResolved":true,"isOutdated":false,"path":"c.ts","line":3,"comments":{"nodes":[
+    {"id":"c5","author":{"login":"octo"},"url":"https://github.com/acme/app/pull/7#discussion_r5","body":"Typo."}]}},
+  {"id":"T_decision","isResolved":false,"isOutdated":false,"path":"d.ts","line":4,"comments":{"nodes":[
+    {"id":"c6","author":{"login":"octo"},"url":"https://github.com/acme/app/pull/7#discussion_r6","body":"Should this be async?"},
+    {"id":"c7","author":{"login":"forge-bot"},"url":"https://github.com/acme/app/pull/7#discussion_r7","body":"Needs your decision: async vs sync. Async costs a migration.\n\n<!-- forge -->"}]}},
+  {"id":"T_person_on_shared_login","isResolved":false,"isOutdated":false,"path":"e.ts","line":5,"comments":{"nodes":[
+    {"id":"c8","author":{"login":"forge-bot"},"url":"https://github.com/acme/app/pull/7#discussion_r8","body":"Please also cover the error path."}]}},
+  {"id":"T_marker_mid_body","isResolved":false,"isOutdated":false,"path":"f.ts","line":6,"comments":{"nodes":[
+    {"id":"c9","author":{"login":"forge-bot"},"url":"https://github.com/acme/app/pull/7#discussion_r9","body":"Quoting <!-- forge --> is not the marker.\nStill the person."}]}},
+  {"id":"T_deleted_author","isResolved":false,"isOutdated":false,"path":"g.ts","line":7,"comments":{"nodes":[
+    {"id":"c10","author":null,"url":"https://github.com/acme/app/pull/7#discussion_r10","body":"From a deleted account."}]}}
+ ]},
+ "comments":{"nodes":[]},
+ "reviews":{"nodes":[]}
+}}}}

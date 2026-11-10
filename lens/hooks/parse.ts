@@ -60,6 +60,11 @@ export function statusCalls(command: string): { state: string; detail: string }[
 		.filter((c) => STATES.includes(c.state));
 }
 
+// A command that may change the PR or its checks, so the lens refreshes the PR after it:
+// a `gh pr` write or check, or the CI wait in pr-state.sh
+export const isPrCommand = (command: string): boolean =>
+	/\bgh pr (create|checks|ready|edit|merge)\b|\bpr-state\.sh ci-wait\b/.test(command);
+
 // `/forge-ship --guard 42`, also `/forge:forge-ship …` from a plugin install
 export function forgeCommand(text: string): { skill: string; args: string } | null {
 	const m = /^\/(\S+)\s*([\s\S]*)$/.exec(text.trim());

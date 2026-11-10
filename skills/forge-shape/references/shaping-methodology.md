@@ -27,7 +27,7 @@ Convergence without challenge produces polite alignment on bad plans. Push back 
 
 - User accepted recommended answers for several consecutive questions
 - Remaining questions are taste-level, not decision-level
-- User volunteers a summary
+- User volunteers a summary, or the shared design concept is clear enough to summarize
 
 **Not done** when: a specific request hasn't been addressed, "fine" signals disengagement not agreement, or you can't summarize without filling in details.
 
@@ -35,5 +35,4 @@ Convergence without challenge produces polite alignment on bad plans. Push back 
 
 - **Eager plan-writing** — composing before alignment; "enough to write" ≠ "enough to write *right*"
 - **Not checking consistency** — new answer contradicts old one; surface the conflict
-- **Anchoring too hard** — "we'll go with X" is a decision, not a recommendation
 - **Asking what the codebase already answers** — if Postgres is in use, don't ask about the database

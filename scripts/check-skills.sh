@@ -21,6 +21,12 @@ problems=$(
 	# A shared file is read from <skill>/_shared/, where ../forge-*/ doesn't exist
 	grep -rn "\.\./forge-" skills/_shared/
 
+	# The PR-state script parses, passes shellcheck where installed,
+	# and reads its fixtures as expected (the test needs jq)
+	for f in skills/_shared/scripts/*.sh; do bash -n "$f" 2>&1; done
+	command -v shellcheck >/dev/null && shellcheck -S warning skills/_shared/scripts/*.sh scripts/test-pr-state.sh
+	bash scripts/test-pr-state.sh
+
 	# Each format the lens parses still parses from the file that defines it (needs Node 22.6+)
 	node --experimental-strip-types --no-warnings scripts/check-lens-contract.ts 2>&1
 

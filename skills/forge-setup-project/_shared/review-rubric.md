@@ -9,6 +9,10 @@
 | **P2** | Real improvements — non-urgent but worth doing | Usually fix now; create issue only if truly out of scope or materially larger | Duplicated logic across files, a Change outline view the diff contradicts, missing test for error branch, unclear naming that hides intent |
 | **P3** | Marginal value — technically imperfect but harmless | Skip — do not flag | Minor naming preference, slightly verbose code, hypothetical future concern |
 
+## Unattended Triage
+
+With no one to ask, apply the Action column as written: fix every in-scope P0–P2 finding now, defer a P1 or P2 that is truly out of scope or materially larger to an Issue, and drop P3.
+
 ## What to Flag
 
 - Logic errors, off-by-one, wrong operator
@@ -18,7 +22,6 @@
 - Missing tests for code paths that have failed before
 - Pattern inconsistency that will cause bugs when the next developer follows the old pattern
 - Performance issues with measurable user impact
-- A Change outline view the diff contradicts: a reader trusts it in place of the diff
 
 ## What NOT to Flag
 
@@ -33,6 +36,6 @@
 
 ## Calibration
 
-A short review with few findings is the **right** answer for a well-written PR. The goal is to catch real problems, not to demonstrate thoroughness.
+A short review with few findings is the **right** answer for a well-written PR: do not manufacture findings.
 
 Before flagging, ask: **"Will this actually cause a real problem?"** If the answer is "probably not" or "only in theory," skip it.

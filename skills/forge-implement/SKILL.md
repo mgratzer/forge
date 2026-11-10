@@ -5,8 +5,6 @@ description: Implement an Issue, plan file, or free-text description on a featur
 
 # Implement a Change
 
-Implement a feature or fix following project standards.
-
 ## Input
 
 Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-text description. Optional: `-- <additional context>` for execution guidance.
@@ -17,9 +15,9 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 ### Step 1: Understand the Work
 
-Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements. Detect the Issue tracker provider (see [issue-operations](_shared/issue-operations.md)).
+Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements.
 
-- **Issue** — fetch using the project's Issue tracker (see [issue-operations](_shared/issue-operations.md)). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
+- **Issue** — detect the provider and fetch it per [issue-operations](_shared/issue-operations.md). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
 - **Plan file** — extract goals, requirements, constraints, acceptance criteria.
 - **Free-text** — parse scope and constraints.
 
@@ -35,12 +33,10 @@ Identify **durable architectural decisions** — data model, API contracts, and 
 
 #### Research (delegate)
 
-Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
+Write 3–7 factual questions about existing systems, patterns, and integration points. Each asks how something works today; if a reader could guess the goal from it, rewrite it. Pass the Issue's pointers to what already exists (file paths, packages, library docs) verbatim, never links to the Issue, a PR, or a spec of the change. Delegate to a [forge-scout](_shared/roles/forge-scout.md) sub-agent (a cheap fast model, where the runtime lets you choose) that receives only the questions and pointers. If no sub-agent support, read the role file and answer each question following its rules.
 
 **Inputs provided to sub-agent:** Role: [forge-scout](_shared/roles/forge-scout.md), the research questions, the pointers, codebase access.
 **Expected output:** One factual answer per question, with file paths and code references.
-
-Prefer a cheap fast model for scout work when the runtime supports per-task model choice.
 
 From the research, create a plan:
 - Durable decisions
@@ -49,7 +45,7 @@ From the research, create a plan:
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
 
-Present the plan via AskUserQuestion. Get user confirmation before coding. **In unattended mode**: skip AskUserQuestion and proceed. When the user changes the Plan after approving it, record each change as a revision (see [pr-body](_shared/pr-body.md)); a design they reject goes through [design-rounds](_shared/design-rounds.md#a-design-rejected-on-an-open-pr) first.
+Present the plan via AskUserQuestion and get confirmation before coding. **In unattended mode**: skip this and proceed. A design the user rejects on the open PR goes through [design-rounds](_shared/design-rounds.md#a-design-rejected-on-an-open-pr).
 
 ### Step 3: Create Feature Branch
 
@@ -69,15 +65,13 @@ When working from a plan file or free-text (no Issue number), use a descriptive 
 
 ### Step 4: Implement
 
-Read AGENTS.md first. Follow project conventions strictly.
-
-Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight validation before the first phase, code and tests together within each phase, and a phase gate — tests pass, no new lint/type failures, one committed logical change — before the next.
+Read AGENTS.md first. Execute the work in vertical phases following [phase-execution](_shared/phase-execution.md): pre-flight first, then each phase through its gate.
 
 Note each deviation from the Step 2 Plan and why as it happens; the PR states each one.
 
 ### Step 5: Audit Pattern Consistency
 
-If you changed a pattern (error handling, component structure, API convention), grep for every other file using the old pattern and update them too — audit the pattern *shape*, not just a literal string. See [pattern-audit](_shared/pattern-audit.md).
+If you changed a pattern (error handling, component structure, API convention), update every other place using the old one, following [pattern-audit](_shared/pattern-audit.md).
 
 ### Step 6: Update Documentation
 
@@ -105,7 +99,7 @@ Run the app and use the changed path once, plus one failure case, following [exe
 git push -u origin <BRANCH_NAME>
 ```
 
-Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. An unattended run on a HITL Issue, or one with no recorded execution mode, lists its judgment calls there too. Close the Issue when one exists.
+Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. Close the Issue when one exists.
 
 Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
 
@@ -119,16 +113,9 @@ PR_EOF
 
 Report: branch name, PR link, commits made, files changed, tests added, docs updated, exercise outcome, the `Try it` line from `## Exercised`, deferred items.
 
-## Guidelines
-
-- **Explore before coding** — research the codebase before committing to an approach
-- **Ask when unsure** — better to clarify than implement wrong; unattended runs state their assumptions and proceed
-- **Don't scope creep** — implement what was asked, nothing more
-
 ## Related Skills
 
 **After implementing:** Use `forge-reflect` to self-review before requesting review.
-**Single invocation:** Use `forge-ship` to implement and review in one step.
 
 ## Example Usage
 

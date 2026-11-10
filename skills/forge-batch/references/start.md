@@ -40,7 +40,7 @@ When the runtime has no such capability, or refuses a start, print the launch li
 gh issue comment <n> --body "forge-batch printed a launch line for this Issue: /forge-ship --guard <n>"
 ```
 
-The next run then counts it in flight, not ready, and never starts it a second time. A refused start is no longer retried on its own either: delete the comment to let the next run try again.
+The next run then counts it in flight, so a refused start is not retried until the comment is deleted.
 
 ## Continue
 
