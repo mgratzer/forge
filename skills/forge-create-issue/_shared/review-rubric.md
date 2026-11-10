@@ -5,7 +5,7 @@
 | Severity | Definition | Action | Examples |
 |----------|-----------|--------|----------|
 | **P0** | Production-breaking, data loss, security vulnerability | Must fix before merge | SQL/command/XSS injection, unhandled null on critical path, data corruption, auth bypass, secrets in code, SSRF, insecure deserialization |
-| **P1** | Real foot guns — will cause bugs or confusion in practice | Should fix before merge | Race condition, missing error handling on external call, wrong enum value persisted, a module or sequence copied from one that exists |
+| **P1** | Real foot guns — will cause bugs or confusion in practice | Should fix before merge | Race condition, missing error handling on external call, wrong enum value persisted, a module or sequence copied from one that exists, a constant, bound or rule restated elsewhere with nothing holding the copies together |
 | **P2** | Real improvements — non-urgent but worth doing | Usually fix now; create issue only if truly out of scope or materially larger | A few duplicated lines, a field or export nothing reads, a test seam, a Change outline view the diff contradicts, missing test for error branch, unclear naming that hides intent |
 | **P3** | Marginal value — technically imperfect but harmless | Skip — do not flag | Minor naming preference, slightly verbose code, hypothetical future concern |
 

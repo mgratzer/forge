@@ -6,13 +6,14 @@
 2. **Security** — auth/authz gaps, missing validation, secrets exposure, injection risks, unsafe external requests, verbose leakage
 3. **Design** — answer each question for the diff, searching outside it:
    - Each new file or exported function: what is its nearest existing sibling, found by the calls it makes and not only by name, and does this restate it?
+   - Each constant, bound, vocabulary or rule the diff writes down: where else is it written, in any language or tier, and what holds the copies together (a generated type, a shared fixture, a test that compares them)?
    - Each new export, method or option: who calls or sets it besides tests?
    - Each new parameter, field or result property: who reads it?
    - Each test: does it replace one of the project's own modules, and could it go through the interface production uses?
 
    Also flag unnecessary wrappers, dead weight, misleading names and comment noise.
 4. **Efficiency & runtime behavior** — wasted work, unnecessary sequential bottlenecks, hot-path regressions, phantom updates, leaks, over-fetching
-5. **Tests, docs & cleanup** — missing regression coverage, stale docs, debug leftovers, commented-out code, stray TODOs, hardcoded values that should be constants
+5. **Tests, docs & cleanup** — missing regression coverage, stale docs, debug leftovers, commented-out code, stray TODOs
 
 When your task includes a Change outline, flag each view the diff contradicts.
 
