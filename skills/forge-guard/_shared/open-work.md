@@ -1,10 +1,16 @@
 # Open Work
 
-How a skill checks work that hasn't landed yet: prerequisites that are still open, and open PRs that already do, or collide with, the same change. `forge-implement` runs it before planning; `forge-batch` runs the open-PR half for a whole scope. One `gh` call each, no polling. On another tracker, check the same facts with its equivalent calls.
+How a skill checks work that hasn't landed yet: prerequisites that are still open, and open PRs that already do, or collide with, the same change. `forge-implement` runs it before planning. One `gh` call each, no polling. On another tracker, check the same facts with its equivalent calls.
 
 ## Prerequisites
 
-An Issue's prerequisites are the listing's dependency references (native links and body text: `depends on #N`, `blocked by #N`, or `after #N`; the `deps` filter in *List Issues by Scope* of [issue-operations](issue-operations.md)). Fetch them all in one query, one alias per number:
+An Issue's prerequisites are its dependency references: native blocked-by links plus body text (`depends on #N`, `blocked by #N`, or `after #N`), so either form of *Link Issues* in [issue-operations](issue-operations.md) counts:
+
+```bash
+gh issue view <N> --json body,blockedBy --jq '[.blockedBy.nodes[].number] + [.body | scan("(?i)(?:depends on|blocked by|after) #(\\d+)") | .[0] | tonumber] | unique'
+```
+
+Fetch their state in one query, one alias per number:
 
 ```bash
 gh api graphql -F owner='{owner}' -F repo='{repo}' -f query='query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){
@@ -27,4 +33,4 @@ An open PR **is for** Issue N when N is in its `closingIssuesReferences`, or its
 
 ## Conflict
 
-Two change sets **conflict** when they share a file, or both match the same serialized-resource glob from [unattended-config](unattended-config.md), even when the exact paths differ. For an open PR, its change set is its `files`; for planned work, the files the Plan or touch set names.
+Two change sets **conflict** when they share a file, or both match the same serialized-resource glob from [unattended-config](unattended-config.md), even when the exact paths differ. For an open PR, its change set is its `files`; for planned work, the files the Plan names.

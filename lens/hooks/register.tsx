@@ -5,12 +5,12 @@ import type { Model } from "../types";
 import * as demo from "./demo";
 import * as model from "./model";
 import * as parse from "./parse";
-import { ConfigView, Lens, MAP, WavesView } from "./views";
+import { ConfigView, Lens, MAP } from "./views";
 
 const state = atom({ plugin: "forge", key: "model" } as const, model.EMPTY);
 const nudged = atom({ plugin: "forge", key: "nudged" } as const, []);
 
-const { lens: LENS, config: CONFIG, waves: WAVES } = model.PANES;
+const { lens: LENS, config: CONFIG } = model.PANES;
 const PR_FIELDS = "number,url,title,headRefName,headRefOid,state,mergeable,reviewDecision,statusCheckRollup,body";
 const TICK_MS = 1000;
 
@@ -22,7 +22,7 @@ export const register: Register = (on) => {
 		await $.command.register({
 			name: "forge",
 			description: "forge lens: where the run is and what to run next",
-			argumentHint: "[status|map|pane|config|waves|demo [stuck|batch]|reset]",
+			argumentHint: "[status|map|pane|config|demo [stuck]|reset]",
 		});
 		await update($, state, (m) => ({ ...m, demo: null, want: { ...m.want, isConfig: true } }));
 
@@ -91,10 +91,7 @@ export const register: Register = (on) => {
 					const tracker = (await $.fs.exists(`${root}/plan/INDEX.md`))
 						? "plan/ folder (markdown)"
 						: "GitHub Issues (gh)";
-					const env = [
-						{ name: "FORGE_STATUS_CMD", value: (await $.env.get("FORGE_STATUS_CMD")) ?? "" },
-						{ name: "FORGE_LAUNCHER", value: (await $.env.get("FORGE_LAUNCHER")) ?? "" },
-					];
+					const env = [{ name: "FORGE_STATUS_CMD", value: (await $.env.get("FORGE_STATUS_CMD")) ?? "" }];
 					const config = { root, hasAgents, ...parse.unattended(agents), tracker, env };
 					await write((x) => model.withConfig(x, config));
 
@@ -137,9 +134,6 @@ export const register: Register = (on) => {
 				await update($, state, (m) => ({ ...m, want: { ...m.want, isConfig: true } }));
 				await $.ui.open(CONFIG);
 				return { text: "forge config opened: the Unattended Shipping settings this repo resolves to." };
-			case "waves":
-				await $.ui.open(WAVES);
-				return { text: "forge waves opened." };
 			case "demo":
 				await update($, state, (m) => demo.start(m, variant, now));
 				return { text: `forge demo${variant ? ` (${variant})` : ""} playing: a replay, nothing touches GitHub.` };
@@ -245,7 +239,7 @@ export const register: Register = (on) => {
 		const text = done.text ?? "";
 		const now = await $.clock.now();
 		// Skip the write, and the redraws it starts, when the turn can't change anything
-		if (model.turnMatters(await read($, state), text)) {
+		if (model.isLive(await read($, state))) {
 			await update($, state, (m) => model.afterTurn(m, text, now));
 		}
 		const step = (await read($, state)).next;
@@ -276,6 +270,8 @@ export const register: Register = (on) => {
 				isSetUp={m.config ? m.config.hasAgents : null}
 				pr={m.pr}
 				findings={m.findings}
+				// a model stored before this field existed has none
+				triage={m.triage ?? []}
 				risk={m.risk}
 				result={m.result}
 				next={m.next}
@@ -287,10 +283,6 @@ export const register: Register = (on) => {
 
 	on("ui.render", { component: "Pane", requestId: "forge-config" }, async ($, e) => (
 		<ConfigView ui={$.ui.resolve(e)} config={(await read($, state)).config} />
-	));
-
-	on("ui.render", { component: "Pane", requestId: "forge-waves" }, async ($, e) => (
-		<WavesView ui={$.ui.resolve(e)} batch={(await read($, state)).batch} />
 	));
 
 	// The next step, one line above the prompt

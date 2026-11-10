@@ -1,6 +1,6 @@
 // Pure readers of forge's text contracts: the status line, reviewer findings,
-// the ## Risk section, forge-batch's output and the Unattended Shipping config.
-import type { Batch, Checks, Finding, Next, Pr, Risk, Run, Setting } from "../types";
+// the ## Risk section and the Unattended Shipping config.
+import type { Checks, Finding, Next, Pr, Risk, Run, Setting } from "../types";
 
 export const PIPELINE: readonly string[] = [
 	"setup-project",
@@ -156,6 +156,19 @@ export function findings(text: string): Finding[] {
 	return out;
 }
 
+// What became of the findings: the Fixed and Deferred bullets under forge-ship's
+// `### Review Findings` or forge-reflect's `### Finding Triage`. They name no single
+// finding, so they account for all of them at once
+export function triage(text: string): string[] {
+	const start = text.search(/^#{2,4} (?:Review Findings|Finding Triage)\s*$/m);
+	if (start < 0) return [];
+	const rest = text.slice(start).split("\n").slice(1);
+	const end = rest.findIndex((l) => /^#{1,4} /.test(l));
+	return (end < 0 ? rest : rest.slice(0, end))
+		.map((l) => (/^\s*[-*] (.+)$/.exec(l)?.[1] ?? "").trim())
+		.filter((l) => /^(?:Fixed|Deferred|None)\b/i.test(l));
+}
+
 export function riskSection(text: string): Risk | null {
 	const start = text.search(/^## Risk\s*$/m);
 	if (start < 0) return null;
@@ -177,63 +190,6 @@ export function riskSection(text: string): Risk | null {
 // forge-land and forge-ship end with `**Result:** <state> …`
 export function resultLine(text: string): string {
 	return (/\*\*Result:\*\*\s*(.+)$/m.exec(text)?.[1] ?? "").trim();
-}
-
-// A table's Issue rows, cell by cell
-const tableRows = (lines: string[]): string[][] =>
-	lines
-		.filter((l) => /^\|\s*#?\d+/.test(l))
-		.map((l) =>
-			l
-				.split("|")
-				.slice(1, -1)
-				.map((c) => c.trim()),
-		);
-
-// What follows `launch:`, `**Merge:**`, `**Scope:**` or `**Gates:**` at the start of a line
-const after = (text: string, label: RegExp): string => (label.exec(text)?.[1] ?? "").trim();
-
-export function batch(text: string): Batch | null {
-	const head = /^## Batch: (.+)$/m.exec(text);
-	if (!head) return null;
-	const out: Batch = { scope: (head[1] ?? "").trim(), status: null, order: null, waves: [], excluded: [] };
-	const all = text.slice(head.index);
-	for (const chunk of all.split(/^### /m).slice(1)) {
-		const [title = "", ...lines] = chunk.split("\n");
-		if (/^Excluded/.test(title)) {
-			out.excluded = lines.filter((l) => l.startsWith("- ")).map((l) => l.slice(2));
-			continue;
-		}
-		const body = lines.join("\n");
-		if (/^Merge Order/.test(title)) {
-			// the test-merge a --start run makes once the scope waits on you; not a Wave
-			out.order = {
-				rows: tableRows(lines).map(([step = "", pr = "", result = ""]) => ({ step, pr, result })),
-				gates: after(body, /^\*\*Gates:\*\*\s*(.+)$/m),
-			};
-			continue;
-		}
-		const launch = after(body, /^launch: (.+)$/m);
-		if (/^Status/.test(title)) {
-			// `--start` prints the scope's state before the Waves
-			out.status = {
-				rows: tableRows(lines).map(([num = "", t = "", state = "", detail = ""]) => ({ num, title: t, state, detail })),
-				launch,
-				// read from the whole batch: a Merge Order printed before them still leaves them the status's
-				merge: after(all, /^\*\*Merge:\*\*\s*(.+)$/m),
-				progress: after(all, /^\*\*Scope:\*\*\s*(.+)$/m),
-			};
-		} else {
-			const rows = tableRows(lines).map(([num = "", t = "", touch = "", notes = ""]) => ({
-				num,
-				title: t,
-				touch,
-				notes,
-			}));
-			out.waves.push({ title: title.trim(), rows, launch });
-		}
-	}
-	return out;
 }
 
 type Rollup = {
@@ -262,7 +218,7 @@ export function checks(rollup: Rollup[]): Checks {
 const SETTINGS: Omit<Setting, "value" | "isSet">[] = [
 	{ name: "Peer reviewer", fallback: "none", usedBy: "guard, land" },
 	{ name: "Security-sensitive paths", fallback: "forge's risky-signal heuristics", usedBy: "guard, land" },
-	{ name: "Serialized resources", fallback: "migrations, lockfiles, generated files", usedBy: "batch, implement" },
+	{ name: "Serialized resources", fallback: "migrations, lockfiles, generated files", usedBy: "implement" },
 	{ name: "Max guard rounds", fallback: String(DEFAULT_ROUNDS), usedBy: "guard" },
 	{ name: "Auto-merge", fallback: "off", usedBy: "land" },
 ];
@@ -321,15 +277,6 @@ export function nextStep(run: Run | null, pr: Pr | null, openFindings: number, r
 			return openFindings > 0
 				? null
 				: { text: `/forge-guard ${n}`.trim(), why: "feedback addressed: guard checks CI and threads again" };
-		case "batch":
-			// a --start run continues the scope itself, keeping the context that may cap the Wave;
-			// a plan leaves the starts to the person
-			return /(?:^|\s)--start\b/.test(bareArgs(run.args))
-				? {
-						text: `/forge-batch ${run.args}`,
-						why: "re-run when a started session ends to start what it unblocked",
-					}
-				: { text: "/forge-ship --guard ", why: "start each Issue of Wave 1 in its own session" };
 	}
 	return null;
 }

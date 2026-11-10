@@ -1,6 +1,6 @@
 # Prepare for Unattended Shipping
 
-The unattended skills (`forge-guard`, `forge-land`, `forge-batch`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe, and a worktree session loses its first gates to an unprepared checkout when Commands don't say how to prepare one. This step closes those gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
+The unattended skills (`forge-guard`, `forge-land`, `forge-ship --guard`) run on defaults when `AGENTS.md` has no `## Unattended Shipping` section, `forge-implement` reports `not exercised: no way to run the app` when the project has no run recipe, and a worktree session loses its first gates to an unprepared checkout when Commands don't say how to prepare one. This step closes those gaps without inventing a value: discover in Step 2, audit an existing section in Step 3, ask and show the draft in Step 4, write in Step 5.
 
 ## Run Recipe
 

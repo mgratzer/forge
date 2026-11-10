@@ -62,6 +62,17 @@ check("a reviewer's findings (forge-reviewer.md)", () => {
 	same(found[0]?.file, "<filename>");
 });
 
+check("the finding triage (forge-ship, forge-reflect)", () => {
+	for (const skill of ["ship", "reflect"]) {
+		const lines = parse.triage(block(read(`skills/forge-${skill}/SKILL.md`), "## Output Format"));
+		same(
+			lines.map((l) => /^\w+/.exec(l)?.[0]),
+			["Fixed", "Deferred"],
+			skill,
+		);
+	}
+});
+
 check("the ## Risk section (risk-rubric.md, pr-body.md)", () => {
 	const section = block(read("skills/_shared/risk-rubric.md"), "section, replaced on every verdict").replace(
 		"<full SHA>",
@@ -89,31 +100,6 @@ check("the **Result:** line (forge-land, forge-guard, forge-ship)", () => {
 		const line = parse.resultLine(block(read(`skills/forge-${skill}/SKILL.md`), "## Output Format"));
 		same(parse.TERMINAL.includes(line.split(" ")[0] ?? ""), true, skill);
 	}
-});
-
-check("forge-batch's output (forge-batch, references/start.md)", () => {
-	const plan = parse.batch(block(read("skills/forge-batch/SKILL.md"), "## Output Format"));
-	same(plan?.scope, "<scope>");
-	same(
-		plan?.waves[0]?.rows.map((r) => r.num),
-		["123", "124"],
-	);
-	same(plan?.waves[0]?.launch, "<launcher> 123 124 ...");
-	same(plan?.excluded.length, 2);
-
-	const doc = read("skills/forge-batch/references/start.md");
-	const status = parse.batch(block(doc, "## Output"))?.status;
-	same((status?.rows.length ?? 0) > 0, true);
-	same(status?.launch, "<launcher> 124");
-	same(status?.merge.startsWith("#401"), true);
-	same(status?.progress.startsWith("continuing"), true);
-
-	const order = parse.batch(`## Batch: x\n\n${block(doc, "after the **Scope:** line")}`)?.order;
-	same(
-		order?.rows.map((r) => r.pr),
-		["#401", "#398", "#405"],
-	);
-	same(order?.gates.startsWith("pass on main"), true);
 });
 
 check("the Unattended Shipping settings (unattended-config.md)", () => {

@@ -81,19 +81,14 @@ test("the stuck demo ends at needs-human with a reviewer guide", async ($, on) =
 	await ui.unmount();
 });
 
-test("the batch demo draws its Waves and the config pane draws defaults", async ($, on) => {
+test("the config pane draws defaults", async ($, on) => {
 	const clock = mock.clock(on);
 	engine(on);
 	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
-	await $.command.run(forge("demo batch"));
 	await $.command.run(forge("config"));
 	await clock.advance(3_000);
 
 	for (const surface of SURFACES) {
-		const waves = await $.ui.mount({ ...pane("forge-waves"), surface });
-		expect(await waves.find({ type: "Text", text: /Wave 2/ })).toBeDefined();
-		expect(await waves.find({ type: "Text", text: /launch: forge-launch 44/ })).toBeDefined();
-		await waves.unmount();
 		const config = await $.ui.mount({ ...pane("forge-config"), surface });
 		expect(await config.find({ type: "Text", text: /default: 3/ })).toBeDefined();
 		await config.unmount();
@@ -162,6 +157,27 @@ test("parsers: flag values, anchored verdicts, one finding per text", () => {
 	expect(parse.prUrl("https://github.com/x/y/pull/1", "me/repo")).toBe(null);
 });
 
+test("a skill's triage closes the findings and keeps its Fixed and Deferred lines", () => {
+	const run = model.startRun(model.EMPTY, "ship", "12", 0);
+	const found = model.withReviewFindings(run, parse.findings("### a.ts\n- [P1] leaks\n- [P2] naming"));
+	expect(model.afterTurn(found, "still working", 0).findings.filter((f) => !f.isDone).length).toBe(2);
+
+	const summary =
+		"### Review Findings\n- Simplify: nothing to simplify\n- Fixed in PR: the leak\n- Deferred: #14 (naming)\n\n### Quality Gates\n- Lint: ✓";
+	const done = model.afterTurn(found, summary, 0);
+	expect(done.findings.every((f) => f.isDone)).toBe(true);
+	expect(done.triage).toEqual(["Fixed in PR: the leak", "Deferred: #14 (naming)"]);
+
+	// forge-reflect's answer holds the findings and their triage together
+	const reflect = model.afterTurn(
+		model.startRun(model.EMPTY, "reflect", "", 0),
+		"### Findings\n#### a.ts\n- [P1] leaks\n\n### Finding Triage\n- Fixed: the leak",
+		0,
+	);
+	expect(reflect.findings.map((f) => f.isDone)).toEqual([true]);
+	expect(model.startRun(done, "ship", "13", 0).triage).toEqual([]);
+});
+
 test("parsers: the CI wait and gh pr writes refresh the PR, other commands don't", () => {
 	expect(
 		parse.isPrCommand('bash ~/.claude/skills/forge-guard/_shared/scripts/pr-state.sh ci-wait "$PR" --after-push'),
@@ -210,7 +226,7 @@ test("a failed command reports no terminal state, and a new run forgets the old 
 	expect(next.want.pr).toBe(null);
 });
 
-test("a turn without a run or a batch changes nothing, and a live run refreshes its PR at most every 15s", () => {
+test("a turn without a run changes nothing, and a live run refreshes its PR at most every 15s", () => {
 	expect(model.afterTurn(model.EMPTY, "just chatting", 0)).toBe(model.EMPTY);
 	const pr = model.withDemoPr(model.EMPTY, { pass: 1, fail: 0, pending: 0, failing: [] }).pr;
 	const started = model.startRun(model.EMPTY, "guard", "7", 0);
@@ -241,7 +257,7 @@ test("a ship run the model starts keeps its args, follows a cat'ed skill file, a
 		value: { exitCode: 1, stdout: "", stderr: "", isStdoutTruncated: false, isStderrTruncated: false },
 	}));
 	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
-	await $.tool.call({ tool: "Skill", skill: "forge-ship", args: "--guard 171 -- Wave notes: a long paragraph" });
+	await $.tool.call({ tool: "Skill", skill: "forge-ship", args: "--guard 171 -- notes: a long paragraph" });
 	await $.tool.call({ tool: "Bash", command: "cat ~/.claude/skills/forge-guard/SKILL.md" });
 	// a composed step the model starts moves the ship run on instead of replacing it
 	await $.tool.call({ tool: "Skill", skill: "forge-land", args: "178" });
@@ -309,121 +325,6 @@ test("pipeline rows: stopped in its step, composed or skipped before it, the Iss
 		text: "/forge-implement --unattended 87",
 		why: "stopped before a PR: retry once what it named has landed",
 	});
-});
-
-test("parsers: a --start batch's Status table, and a plan without one parses as before", () => {
-	const plan =
-		"## Batch: label:ready\n\n### Wave 1 (1 Issues)\n| # | Title | Touch set | Notes |\n|---|---|---|---|\n| 7 | fix: x | a.ts | |\n\nlaunch: 7";
-	expect(parse.batch(plan)).toEqual({
-		scope: "label:ready",
-		status: null,
-		order: null,
-		waves: [
-			{ title: "Wave 1 (1 Issues)", rows: [{ num: "7", title: "fix: x", touch: "a.ts", notes: "" }], launch: "7" },
-		],
-		excluded: [],
-	});
-	const started = parse.batch(
-		[
-			"## Batch: epic:5",
-			"",
-			"### Status",
-			"| # | Title | State | Detail |",
-			"|---|---|---|---|",
-			"| 6 | feat: a | in flight | PR #9, merge-ready (low risk, judged on head) |",
-			"| 7 | fix: x | waiting | PR #9 (a.ts) |",
-			"| 8 | docs: y | ready | launch line |",
-			"",
-			"launch: forge-launch 8",
-			"",
-			"**Merge:** #9 (land judged it low risk; batch never merges)",
-			"**Scope:** continuing: 1 in flight, 1 waiting",
-			"",
-			"### Wave 1 (1 Issues)",
-			"| # | Title | Touch set | Notes |",
-			"|---|---|---|---|",
-			"| 8 | docs: y | d.md | |",
-		].join("\n"),
-	);
-	expect(started?.status?.rows.map((r) => `${r.num} ${r.state}: ${r.detail}`)).toEqual([
-		"6 in flight: PR #9, merge-ready (low risk, judged on head)",
-		"7 waiting: PR #9 (a.ts)",
-		"8 ready: launch line",
-	]);
-	expect(started?.status?.launch).toBe("forge-launch 8");
-	expect(started?.status?.merge).toBe("#9 (land judged it low risk; batch never merges)");
-	expect(started?.status?.progress).toBe("continuing: 1 in flight, 1 waiting");
-	expect(started?.waves.map((w) => w.title)).toEqual(["Wave 1 (1 Issues)"]);
-	expect(started?.order).toBe(null);
-	// a --start run is continued by re-running it; a plan hands the starts to the person
-	const next = (args: string) => parse.nextStep(model.startRun(model.EMPTY, "batch", args, 0).run, null, 0, null);
-	expect(next("--start epic:5 -- cap waves at 2")?.text).toBe("/forge-batch --start epic:5 -- cap waves at 2");
-	expect(next("epic:5 -- --start later")?.text).toBe("/forge-ship --guard ");
-});
-
-const WAITS_ON_YOU = [
-	"## Batch: epic:5",
-	"",
-	"### Status",
-	"| # | Title | State | Detail |",
-	"|---|---|---|---|",
-	"| 6 | feat: a | in flight | PR #9, merge-ready (low risk, judged on head) |",
-	"| 7 | fix: x | in flight | PR #10, review-ready (needs review, judged on head) |",
-	"",
-	"**Merge:** #9 (land judged it low risk; batch never merges)",
-	"**Scope:** waits on you",
-	"",
-	"### Merge Order",
-	"| Step | PR | Result |",
-	"|------|----|--------|",
-	"| 1 | #9 | clean |",
-	"| 2 | #10 | conflicts with #9 (a.ts): merge main into #10 after #9 lands |",
-	"",
-	"**Gates:** pass on main at 3f2c1a9 with #9",
-].join("\n");
-
-test("parsers: a --start batch's Merge Order is its test-merge, not a Wave", () => {
-	const waiting = parse.batch(WAITS_ON_YOU);
-	expect(waiting?.order).toEqual({
-		rows: [
-			{ step: "1", pr: "#9", result: "clean" },
-			{ step: "2", pr: "#10", result: "conflicts with #9 (a.ts): merge main into #10 after #9 lands" },
-		],
-		gates: "pass on main at 3f2c1a9 with #9",
-	});
-	expect(waiting?.waves).toEqual([]);
-	expect(waiting?.status?.progress).toBe("waits on you");
-	// as an exercise run printed it: the Merge Order before the status's last lines
-	const early = parse.batch(
-		[
-			"## Batch: 6 7",
-			"### Status",
-			"| 6 | feat: a | in flight | PR #9, low risk, judged on head |",
-			"### Merge Order",
-			"| 1 | #9 | clean |",
-			"**Gates:** pass",
-			"**Merge:** #9",
-			"**Scope:** waits on you",
-		].join("\n"),
-	);
-	expect(early?.status?.merge).toBe("#9");
-	expect(early?.status?.progress).toBe("waits on you");
-	expect(early?.order).toEqual({ rows: [{ step: "1", pr: "#9", result: "clean" }], gates: "pass" });
-});
-
-test("the Waves pane draws a batch's merge order and its gates", async ($, on) => {
-	const clock = mock.clock(on);
-	engine(on);
-	on("turn.complete", (_, e) => ({ ...e, text: WAITS_ON_YOU }));
-	await $.session.start({ cwd: "/repo", surface: "terminal", isInteractive: true });
-	await $.turn.complete({ answer: WAITS_ON_YOU, reason: "answer" });
-	await clock.advance(3_000);
-
-	const waves = await $.ui.mount({ ...pane("forge-waves"), surface: "terminal" });
-	expect(await waves.find({ type: "Text", text: /Merge order/ })).toBeDefined();
-	expect(await waves.find({ type: "Text", text: /conflicts with #9 \(a\.ts\)/ })).toBeDefined();
-	expect(await waves.find({ type: "Text", text: /gates: pass on main/ })).toBeDefined();
-	await waves.unmount();
 });
 
 test("a run's step: land's own wait, a citation behind the run, and a read of several skill files", () => {
