@@ -15,7 +15,7 @@
 # A key missing from the case is read from _default/. The gh stand-in applies
 # --jq with jq -rcS, since gh's own jq prints sorted keys.
 set -uo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 
 command -v jq >/dev/null || {
 	echo "pr-state tests: jq not found (the gh stand-in needs it)"
