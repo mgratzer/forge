@@ -69,6 +69,8 @@ export type Model = {
 	visited: string[];
 	pr: Pr | null;
 	findings: Finding[];
+	// the skill's Fixed and Deferred lines, once it has said what became of the findings
+	triage: string[];
 	risk: Risk | null;
 	result: string;
 	next: Next | null;

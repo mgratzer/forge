@@ -157,6 +157,27 @@ test("parsers: flag values, anchored verdicts, one finding per text", () => {
 	expect(parse.prUrl("https://github.com/x/y/pull/1", "me/repo")).toBe(null);
 });
 
+test("a skill's triage closes the findings and keeps its Fixed and Deferred lines", () => {
+	const run = model.startRun(model.EMPTY, "ship", "12", 0);
+	const found = model.withReviewFindings(run, parse.findings("### a.ts\n- [P1] leaks\n- [P2] naming"));
+	expect(model.afterTurn(found, "still working", 0).findings.filter((f) => !f.isDone).length).toBe(2);
+
+	const summary =
+		"### Review Findings\n- Simplify: nothing to simplify\n- Fixed in PR: the leak\n- Deferred: #14 (naming)\n\n### Quality Gates\n- Lint: ✓";
+	const done = model.afterTurn(found, summary, 0);
+	expect(done.findings.every((f) => f.isDone)).toBe(true);
+	expect(done.triage).toEqual(["Fixed in PR: the leak", "Deferred: #14 (naming)"]);
+
+	// forge-reflect's answer holds the findings and their triage together
+	const reflect = model.afterTurn(
+		model.startRun(model.EMPTY, "reflect", "", 0),
+		"### Findings\n#### a.ts\n- [P1] leaks\n\n### Finding Triage\n- Fixed: the leak",
+		0,
+	);
+	expect(reflect.findings.map((f) => f.isDone)).toEqual([true]);
+	expect(model.startRun(done, "ship", "13", 0).triage).toEqual([]);
+});
+
 test("parsers: the CI wait and gh pr writes refresh the PR, other commands don't", () => {
 	expect(
 		parse.isPrCommand('bash ~/.claude/skills/forge-guard/_shared/scripts/pr-state.sh ci-wait "$PR" --after-push'),

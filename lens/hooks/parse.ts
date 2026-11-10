@@ -156,6 +156,19 @@ export function findings(text: string): Finding[] {
 	return out;
 }
 
+// What became of the findings: the Fixed and Deferred bullets under forge-ship's
+// `### Review Findings` or forge-reflect's `### Finding Triage`. They name no single
+// finding, so they account for all of them at once
+export function triage(text: string): string[] {
+	const start = text.search(/^#{2,4} (?:Review Findings|Finding Triage)\s*$/m);
+	if (start < 0) return [];
+	const rest = text.slice(start).split("\n").slice(1);
+	const end = rest.findIndex((l) => /^#{1,4} /.test(l));
+	return (end < 0 ? rest : rest.slice(0, end))
+		.map((l) => (/^\s*[-*] (.+)$/.exec(l)?.[1] ?? "").trim())
+		.filter((l) => /^(?:Fixed|Deferred|None)\b/i.test(l));
+}
+
 export function riskSection(text: string): Risk | null {
 	const start = text.search(/^## Risk\s*$/m);
 	if (start < 0) return null;

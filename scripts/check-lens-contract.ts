@@ -62,6 +62,17 @@ check("a reviewer's findings (forge-reviewer.md)", () => {
 	same(found[0]?.file, "<filename>");
 });
 
+check("the finding triage (forge-ship, forge-reflect)", () => {
+	for (const skill of ["ship", "reflect"]) {
+		const lines = parse.triage(block(read(`skills/forge-${skill}/SKILL.md`), "## Output Format"));
+		same(
+			lines.map((l) => /^\w+/.exec(l)?.[0]),
+			["Fixed", "Deferred"],
+			skill,
+		);
+	}
+});
+
 check("the ## Risk section (risk-rubric.md, pr-body.md)", () => {
 	const section = block(read("skills/_shared/risk-rubric.md"), "section, replaced on every verdict").replace(
 		"<full SHA>",
