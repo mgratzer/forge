@@ -4,13 +4,14 @@ The unattended skills (`forge-guard`, `forge-land`, `forge-ship --guard`) run on
 
 ## Run Recipe
 
-[exercise](../_shared/exercise.md) tries the runtime's run skill first (Claude Code: `/run`), which falls back to generic patterns per project type when the project has no skill of its own. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has four parts:
+[exercise](../_shared/exercise.md) tries the runtime's run skill first (Claude Code: `/run`), which falls back to generic patterns per project type when the project has no skill of its own. So a recipe counts here only when the project has its own: a skill for running the app, or run commands in `AGENTS.md` or the docs it points to. A complete recipe has five parts:
 
 | Part | Discover from |
 |------|---------------|
 | Start | `dev`/`start`/`serve` scripts, `Makefile`, `Procfile`, `docker-compose.yml`, the README's quick start |
 | Drive | the port or URL in config, a CLI entry point, a health or readiness endpoint |
 | Test credentials | seed and fixture files, `.env.example`; never a real secret |
+| State | how the app gets into the states its features need: seed, fixture and factory scripts, the test suite's setup, a stand-in for a paid or external service. `none needed` when a fresh start shows every feature |
 | Stop | how the start command ends (foreground process, `docker compose down`) |
 
 Write the parts you found under Commands in `AGENTS.md`. Ask for the rest in Step 4's round of questions, and leave a `<!-- TODO: <part> -->` for what the user doesn't know. Never guess how to start the app. A project with nothing to run (a library without an entry point, docs only) needs no recipe; say so in the summary.
