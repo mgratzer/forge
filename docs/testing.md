@@ -81,7 +81,7 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 - An Issue in a project that can run its app: `## Exercised` lists real commands with their observed output and one failure case, and its `Try it` line, repeated in the run's summary, says how to start the app and what to look at.
 - A task whose nearest existing code is one file away (a second report beside an existing one): the Plan's design block names that file under **Already lives** with `extend`, `replace` or `copy`, and the diff matches the choice.
 - A project with no way to run the app: the section says `not exercised: <why>` instead of describing a run.
-- A change whose path needs state the recipe can't produce (a route that reads what only a production job writes): the `Not exercised` line says `needs state: <what>`, and the parts that ran are still listed.
+- A change whose path needs state the recipe can't produce (a route that reads what only a production job writes): the run makes the state it can by hand, drives the path with it and says so, and the `Not exercised` line names what it couldn't make as `needs state: <what>`.
 - A fresh worktree of a project whose Commands name an install step: pre-flight runs it before the first phase.
 - An env var the base commit needs, unset. When `.env.example` provides it, the PR's Notes report an environment failure and the diff has no code change for it. When it doesn't, an unattended run stops at `needs-human` naming the variable.
 - A UI change (the sandbox is a JSON API, so give it a free-text task that renders something, such as an HTML report of the notes): `## Exercised` links screenshots, and the images are on `pr-assets/<branch>`, not on the feature branch.
