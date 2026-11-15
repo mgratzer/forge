@@ -5,7 +5,7 @@ Forge's skills are Agent Skills prompts (`SKILL.md`) and one shared bash script,
 ## Layout
 
 - `skills/forge-*/`: one skill each. `references/` holds what only that skill loads on demand.
-- `skills/_shared/`: the source of modules, roles (`roles/`), the PR-state script (`scripts/`) and runtime notes (`runtimes/`) several skills use. `scripts/sync-shared.sh` copies it into each skill as `<skill>/_shared/`; never edit a copy.
+- `skills/_shared/`: the source of modules, roles (`roles/`), the PR-state script (`scripts/`) and runtime notes (`runtimes/`) several skills use. `scripts/sync-shared.sh` copies into each skill, as `<skill>/_shared/`, the files that skill refers to, directly or through another shared file; never edit a copy.
 - `lens/`, `.claude-plugin/`: the plugin.
 - `scripts/`: the checks, the sync, and the PR-state script's tests.
 
@@ -42,7 +42,7 @@ How many instructions a skill may hold is a separate limit: see [Instruction Bud
 | Three-tier context | Hot (`AGENTS.md`), warm (`docs/`), cold (specs) | Each doc has to earn its token cost |
 | Single guidance file | `AGENTS.md` only; no `CLAUDE.md` | Claude Code and other agents read `AGENTS.md` natively, so a symlink or copy adds a second name for one file. A `CLAUDE.md` exists only for Claude-specific content or for sessions that read only `CLAUDE.md` ([which ones](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)), as `@AGENTS.md` plus that content |
 | Push vs pull context | Push: embed in the delegation prompt. Pull: read on demand | Push what must not be skipped (review rubric, role definitions); pull optional philosophy and templates |
-| Bundled shared layer | `skills/_shared/` is the source; `scripts/sync-shared.sh` copies it into each skill, and `scripts/check-skills.sh` fails on drift. See [link rules](coding-guidelines.md#roles) | Installers such as `npx skills add` copy only directories with a `SKILL.md`, and since skills CLI 1.7.5 drop any symlink that leaves the skill. `skills update` compares each skill folder's git tree, so a shared change reaches installs only when it changes that tree, which a symlink never does. Agents also resolve `..` lexically from the install path |
+| Bundled shared layer | `skills/_shared/` is the source; `scripts/sync-shared.sh` copies into each skill the files it refers to, and `scripts/check-skills.sh` fails on drift, on a reference to a missing file, and on a shared file no skill uses. See [link rules](coding-guidelines.md#roles) | Installers such as `npx skills add` copy only directories with a `SKILL.md`, and since skills CLI 1.7.5 drop any symlink that leaves the skill. `skills update` compares each skill folder's git tree, so a shared change reaches installs only when it changes that tree, which a symlink never does. Agents also resolve `..` lexically from the install path |
 | Issue tracker abstraction | Provider operations in `_shared/issue-operations.md` | Skills say "create an Issue" without re-deriving the three-way conditional |
 | Undiscoverability test | Only document what agents can't find by exploring | Docs hold decisions, conventions and failure modes |
 | Agent readiness assessment | `forge-setup-project` evaluates feedback loops, module structure and risks | They affect agent output more than context files do, so surface gaps early |

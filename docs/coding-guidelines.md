@@ -66,7 +66,7 @@ description: <what it does>  # one sentence
 
 A role file is not a runtime agent definition, so don't pass its `name:` as an agent selector. Push the role body through the delegated task or `systemPrompt`. If selecting an agent also selects a model or provider, leave the agent unspecified so the sub-agent inherits the parent session's configuration.
 
-**Link rules.** `skills/_shared/` is the source, copied into each skill. `SKILL.md` links `_shared/<file>.md`, never `../_shared/`. A file in `references/` links `../_shared/<file>.md`. Files in `_shared/` link only inside the shared layer, relative to themselves. Edit `skills/_shared/` only, then run `scripts/sync-shared.sh`.
+**Link rules.** `skills/_shared/` is the source. Each skill gets a copy of the files it refers to, found by the `_shared/<path>` it writes and the links between shared files, so name a shared file by its path, never by title alone. `SKILL.md` links `_shared/<file>.md`, never `../_shared/`. A file in `references/` links `../_shared/<file>.md`. Files in `_shared/` link only inside the shared layer, relative to themselves. Edit `skills/_shared/` only, then run `scripts/sync-shared.sh`.
 
 ## Shared Conventions
 

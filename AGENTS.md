@@ -14,7 +14,7 @@ claude plugin validate . && claude plugin test .   # plugin manifests and lens t
 
 CI runs all three on every pull request; see [Testing](docs/testing.md).
 
-Shared modules are edited only in `skills/_shared/`. `scripts/sync-shared.sh` copies them into each skill, and `scripts/check-skills.sh` fails when a copy drifts.
+Shared modules are edited only in `skills/_shared/`. `scripts/sync-shared.sh` copies into each skill the ones it refers to, and `scripts/check-skills.sh` fails when a copy drifts.
 
 Skill prompts are forge's runtime, so a change under `skills/` is exercised, not reported as `no runtime change`: run the changed skill (or forge-land's judge, for a rubric change) from a snapshot of the branch in a sandbox repository, with a snapshot of the branch's base as the control. The commands are in [Testing: Exercise a Skill Change](docs/testing.md#exercise-a-skill-change).
 
