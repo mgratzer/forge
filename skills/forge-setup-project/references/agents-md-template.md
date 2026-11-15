@@ -13,7 +13,7 @@ Use this template when creating or updating AGENTS.md. Prefer tables to paragrap
 <all verified commands — the fresh-checkout step (see unattended-shipping.md), install, dev, build, test, lint, format, typecheck>
 ```
 
-<run recipe (see unattended-shipping.md): start the app, drive it, test credentials, stop; a <!-- TODO --> for each part nobody knows>
+<run recipe (see unattended-shipping.md): start the app, drive it, test credentials, state, stop; a <!-- TODO --> for each part nobody knows>
 
 ## Documentation
 
