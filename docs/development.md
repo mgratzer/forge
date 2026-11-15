@@ -15,5 +15,5 @@ You need Git, a coding agent that supports Agent Skills, and [`gh`](https://cli.
 - When changing a convention, grep every skill that states it (see [Shared Conventions](coding-guidelines.md#shared-conventions)).
 - A `(delegate)` step has to work when run inline too.
 - When changing a role, check every skill that delegates to it.
-- After editing `skills/_shared/`, run `scripts/sync-shared.sh`. A grep also hits the copies under `skills/forge-*/_shared/`; never edit those.
+- After editing `skills/_shared/`, or adding or removing a skill's reference to it, run `scripts/sync-shared.sh`. A grep also hits the copies under `skills/forge-*/_shared/`; never edit those.
 - Exercise the change in a sandbox: see [Testing](testing.md#exercise-a-skill-change).

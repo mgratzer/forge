@@ -5,10 +5,9 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 problems=$(
-	# Every skill bundles an exact copy of the shared layer
-	for d in skills/forge-*/; do
-		diff -rq skills/_shared "${d}_shared" >/dev/null 2>&1 || echo "stale: ${d}_shared (run scripts/sync-shared.sh)"
-	done
+	# Every skill bundles an exact copy of the shared files it refers to,
+	# every reference names a file, and every shared file is used
+	scripts/sync-shared.sh --check
 
 	# Installers drop a symlink that leaves the skill and still report success
 	find skills -type l | sed 's/^/symlink: /'
