@@ -9,7 +9,7 @@ Exercise when the diff changes runtime behavior, not only docs, tests, CI config
 Find the recipe, first match wins:
 
 1. The runtime's skill for running the app (Claude Code: `/run`)
-2. Run commands in `AGENTS.md` or the docs it points to (start, a way to drive it, test credentials, stop)
+2. Run commands in `AGENTS.md` or the docs it points to (start, a way to drive it, test credentials, the state its features need, stop)
 
 With neither, report `not exercised: no way to run the app`. Never guess how to start the app.
 
@@ -17,10 +17,10 @@ With neither, report `not exercised: no way to run the app`. Never guess how to 
 
 1. **Human actions first.** When the recipe needs something only a human can do (a login, a running service, a key in `.env`), ask for it in attended mode. In unattended mode, skip that part and list it on the report's `Not exercised` line as `needs <action>`; the parts that ran still decide the outcome.
 2. **Start** the app per the recipe, in the background, and wait for readiness in one bounded shell loop.
-3. **Drive the changed path** once: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged.
+3. **Drive the changed path** once: the request, command, or screen the change is about. Check one thing the tests can't easily show, such as what is actually stored, what the client receives, or what stayed unchanged. When the path needs state the app doesn't start with, produce it by the recipe, through the app's own interface, or by hand the way its tests do, and say which in the report. Only state you can't produce here (what a finished job leaves behind across several stores, records only an import or a release creates) goes on the `Not exercised` line as `needs state: <what>`; the parts that ran still decide the outcome.
 4. **Drive one failure case** where the change has one: invalid input, an unauthorized caller, another tenant's data.
 5. **Capture** what a person looks at when the changed path renders one (a screen, a rendered email, a generated image); see [Screenshots](#screenshots).
-6. **Stop** everything you started, and remove any worktree you added for before screenshots (`git worktree remove --force <path>`).
+6. **Stop** everything you started, and remove the state you made by hand and any worktree you added for before screenshots (`git worktree remove --force <path>`).
 
 A run that didn't reach the changed path is not evidence, whatever it printed.
 
