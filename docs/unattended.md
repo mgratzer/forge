@@ -7,7 +7,7 @@ forge-ship --guard  →  merged | merge-ready | review-ready | needs-human
 (implement → review → guard → land)
 ```
 
-Forge ships no [launcher](#writing-a-launcher), since only yours knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)).
+Forge ships no [launcher](#writing-a-launcher), since only yours knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)). Guard and land read it from the PR's base branch, so a setting applies once the PR that changes it is merged, and land sends that PR to review.
 
 [forge-guard](../skills/forge-guard/SKILL.md) stops at `review-ready`, and its summary lists what it left open. What it posts ends in a hidden `<!-- forge -->` marker, so a comment you post from the agent's `gh` account counts as yours.
 
@@ -61,7 +61,7 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 - [ ] Say in `AGENTS.md` how a fresh checkout gets ready to run the tests (dependencies, its own test database and ports)
 - [ ] Give agents a way to run the app: a run skill (Claude Code: `/run`) or run commands in `AGENTS.md` ([exercise](../skills/_shared/exercise.md)). Without one, code PRs report `not exercised` and never reach `merge-ready`
 - [ ] Optionally, create the labels above to get a queue of PRs waiting on you
-- [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section. Try it in a sandbox repository first
+- [ ] Later, once you have agreed with several of land's `merge-ready` verdicts on real PRs, optionally add `Auto-merge: low-risk` to the section, in a PR you merge yourself. Try it in a sandbox repository first
 
 ## What guard and land don't see
 

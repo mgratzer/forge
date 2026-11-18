@@ -98,7 +98,8 @@ On green sandbox PRs, with code outside `src/**` unless the case says otherwise:
 - A PR without `## Exercised` ends in `needs-human`.
 - A PR that opened with a deviation from its `## Plan` it doesn't list ends in `review-ready` with a `Plan:` line naming it. Guard-round commits after the open don't trip this.
 - The review request goes to a linked Issue's assignee or author only when they did not open the PR.
-- With `Auto-merge: low-risk` in a `## Unattended Shipping` section: the low-risk PR merges itself after CI and land reports `merged`. A commit pushed after the verdict and before the merge is refused (`--match-head-commit`), and land reports `needs-human`.
+- A PR that adds, changes or removes a line of `## Unattended Shipping` ends in `review-ready` with `Always-review paths: settings: <setting>`, and is judged by the base branch's settings: one that adds `Auto-merge: low-risk` is never merged by land, and one that drops a security-sensitive glob while changing a file under it still names that path. A PR that edits `AGENTS.md` outside the section can still be `merge-ready`.
+- With `Auto-merge: low-risk` in a `## Unattended Shipping` section on the base branch: the low-risk PR merges itself after CI and land reports `merged`. A commit pushed after the verdict and before the merge is refused (`--match-head-commit`), and land reports `needs-human`.
 - Labels, off: with no `forge:*` labels, land reports `Label: none` and creates none.
 - Labels, on (`gh label create forge:merge-ready && gh label create forge:review-ready`): a `merge-ready` run leaves `forge:merge-ready`, a later `review-ready` run swaps it for `forge:review-ready`, and a `needs-human` run or a guard push removes it. Delete both afterwards, so the sandbox stays not opted in.
 
