@@ -21,7 +21,7 @@ ME=$(gh api user --jq .login)
 git fetch origin "$BASE" "pull/$PR/head"   # the verdict reads the diff and files at $SHA, whatever is checked out
 ```
 
-Read the peer reviewer, the security-sensitive paths and the auto-merge setting per [unattended-config](_shared/unattended-config.md). Read the signals with `pr-state.sh`, called as [pr-readiness](_shared/pr-readiness.md#reading-the-signals) says. The PR qualifies only when every row holds; otherwise end with `needs-human` (Step 5), naming each row that failed.
+Read the peer reviewer, the security-sensitive paths and the auto-merge setting from the PR's base branch, per [unattended-config](_shared/unattended-config.md#which-copy). Read the signals with `pr-state.sh`, called as [pr-readiness](_shared/pr-readiness.md#reading-the-signals) says. The PR qualifies only when every row holds; otherwise end with `needs-human` (Step 5), naming each row that failed.
 
 | Precondition | Holds when |
 |--------------|------------|

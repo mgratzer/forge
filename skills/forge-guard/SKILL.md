@@ -23,7 +23,7 @@ ME=$(gh api user --jq .login)
 [ "$(git branch --show-current)" = "$BRANCH" ] || gh pr checkout "$PR"   # every git command below assumes the PR branch
 ```
 
-Read the peer reviewer, the security-sensitive paths and the max rounds per [unattended-config](_shared/unattended-config.md). Report `reviewing` via [status-reporting](_shared/status-reporting.md). The signals below come from `pr-state.sh`, called as [pr-readiness](_shared/pr-readiness.md#reading-the-signals) says.
+Read the peer reviewer, the security-sensitive paths and the max rounds from the PR's base branch, per [unattended-config](_shared/unattended-config.md#which-copy). Report `reviewing` via [status-reporting](_shared/status-reporting.md). The signals below come from `pr-state.sh`, called as [pr-readiness](_shared/pr-readiness.md#reading-the-signals) says.
 
 **Every push** in this run: run the project's quality gates, commit, then push. Merge, never rebase, never force-push. The first push of the run makes land's verdict stale: right after it, clear land's [outcome label](_shared/status-reporting.md#outcome-label) with `STATE` empty. A refused removal goes under **Open for the human**.
 
