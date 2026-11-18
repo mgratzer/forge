@@ -27,11 +27,11 @@ Before asking any questions, explore the codebase for related implementations, c
 
 Converge on a shared design concept through one-at-a-time questioning, grounded in Step 1 facts, following [shaping-methodology.md](references/shaping-methodology.md): a recommended answer with each question, the dependency order, when to challenge, and when to stop. Ask each question with its own AskUserQuestion; never bundle several into one prompt.
 
-If CONTEXT.md exists, read it — use its vocabulary when framing questions and challenging the user's language.
+If CONTEXT.md exists, read it. Use its vocabulary when framing questions and challenging the user's language.
 
-**Side effects during shaping** — as terms and decisions crystallize:
-- **Resolved term?** Update CONTEXT.md inline — don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
-- **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off — offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
+**Side effects during shaping**, as terms and decisions crystallize:
+- **Resolved term?** Update CONTEXT.md inline; don't batch. Add the term with a tight definition and `_Avoid_` aliases if the user was using multiple words for the same concept.
+- **Load-bearing decision?** If it's hard to reverse, surprising without context, and the result of a real trade-off, offer to record it as a short ADR in `docs/adr/`. Most decisions don't qualify. Create the directory lazily.
 
 **When the decision is how something looks** (a screen, an email, a character, a brand mark), a board answers it better than a question: run [design rounds](_shared/design-rounds.md). Each design round takes the place of one question.
 
@@ -39,17 +39,17 @@ If CONTEXT.md exists, read it — use its vocabulary when framing questions and 
 
 Skip this step when Step 2 surfaced a clear approach.
 
-If multiple plausible approaches remain (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast** — approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
+If multiple plausible approaches remain (e.g., the design concept allows for several architectural shapes), delegate approach generation to 2-3 parallel sub-agents, each given a radically different design constraint. The value is in **contrast**: approaches must be structurally different, not variations on the same idea. If the runtime does not support sub-agents, generate the approaches sequentially yourself, deliberately adopting a different constraint lens for each.
 
 Assign each sub-agent one constraint lens (adapt to the problem):
-- **Minimal** — smallest change that addresses the core problem
-- **Reuse-first** — maximize use of existing patterns and code
-- **Extensibility-first** — optimize for future flexibility
-- **Performance-first** — optimize for speed or resource efficiency
+- **Minimal**: smallest change that addresses the core problem
+- **Reuse-first**: maximize use of existing patterns and code
+- **Extensibility-first**: optimize for future flexibility
+- **Performance-first**: optimize for speed or resource efficiency
 
 **Sub-agent instructions:**
 
-> You are designing one approach to a problem, constrained by a specific design lens. Follow your assigned constraint strictly — do not hedge toward a balanced middle ground.
+> You are designing one approach to a problem, constrained by a specific design lens. Follow your assigned constraint strictly. Do not hedge toward a balanced middle ground.
 >
 > Given the codebase findings and shaped design concept provided as input, propose one approach:
 > - One-line summary

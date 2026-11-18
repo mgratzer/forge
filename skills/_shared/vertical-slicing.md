@@ -12,19 +12,19 @@ Ask: *what is the smallest scenario that touches every layer?*
 
 ## Sequencing phases within a slice
 
-Phase 1: **happy path with no edge cases** — simplest scenario touching every layer.
+Phase 1: **happy path with no edge cases** (simplest scenario touching every layer).
 Phase 2+: add **one axis of complexity** each (more cases, personas, error paths, edge cases).
 
 Each phase must:
 - [ ] Touch **all layers** the phase needs (no "just the backend for now")
-- [ ] Include a **verification step** — test passing, curl returning expected response, UI flow completing. If you can't write one, you don't know what "done" means.
-- [ ] Be **one PR-sized increment** — more than ~5 acceptance items = probably two phases
-- [ ] **Dependencies between slices are explicit and ordered** — don't discover ordering during implementation
+- [ ] Include a **verification step**: test passing, curl returning expected response, UI flow completing. If you can't write one, you don't know what "done" means.
+- [ ] Be **one PR-sized increment**: more than ~5 acceptance items = probably two phases
+- [ ] **Dependencies between slices are explicit and ordered**: don't discover ordering during implementation
 
 ## Common failure modes
 
-- **Horizontal sequencing** — "Phase 1: schema. Phase 2: service. Phase 3: UI.", or the same layers renamed. Nothing user-visible until the last phase; integration bugs surface at once.
-- **Shared infrastructure** — if two slices both need "add auth middleware", extract it as a pre-slice.
+- **Horizontal sequencing**: "Phase 1: schema. Phase 2: service. Phase 3: UI.", or the same layers renamed. Nothing user-visible until the last phase; integration bugs surface at once.
+- **Shared infrastructure**: if two slices both need "add auth middleware", extract it as a pre-slice.
 
 ## Example
 

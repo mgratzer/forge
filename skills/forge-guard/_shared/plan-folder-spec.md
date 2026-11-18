@@ -13,7 +13,7 @@ plan/
     └── ...
 ```
 
-**INDEX.md** is the entry point — a table that lists every issue with its current status. Skills scan it first to discover issues, and write to it when creating or closing them.
+**INDEX.md** is the entry point: a table that lists every issue with its current status. Skills scan it first to discover issues, and write to it when creating or closing them.
 
 **issues/*.md** files are individual issues. The filename is `<ID>-<slug>.md` where `<ID>` is a zero-padded numeric identifier and `<slug>` is a kebab-case summary. Skills find an issue by its `<ID>-` prefix and cite it as `#<ID>`, so the ID is never omitted or non-numeric.
 

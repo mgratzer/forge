@@ -4,11 +4,11 @@ Provider-agnostic operations for working with Issues.
 
 ## Provider Detection
 
-Detect the Issue tracker provider once at the start of work. Check in order — first match wins:
+Detect the Issue tracker provider once at the start of work. Check in order (first match wins):
 
-1. **AGENTS.md declaration** — project declares a specific tool or CLI for issue tracking
-2. **`plan/` directory** — markdown provider (see [plan-folder-spec](plan-folder-spec.md))
-3. **GitHub fallback** — use `gh` CLI
+1. **AGENTS.md declaration**: project declares a specific tool or CLI for issue tracking
+2. **`plan/` directory**: markdown provider (see [plan-folder-spec](plan-folder-spec.md))
+3. **GitHub fallback**: use `gh` CLI
 
 ## Create Issue
 
@@ -34,11 +34,11 @@ ISSUE_EOF
 **GitHub:** discover available labels before applying any, and add missing ones to an existing Issue:
 
 ```bash
-gh label list --limit 100   # defaults to 30 — raise it so discovery is exhaustive
+gh label list --limit 100   # defaults to 30; raise it so discovery is exhaustive
 gh issue edit <ISSUE_NUMBER> --add-label "<LABEL>"
 ```
 
-**Markdown:** choose labels freely — there is no predefined set; edit the issue file's `labels` frontmatter.
+**Markdown:** choose labels freely: there is no predefined set; edit the issue file's `labels` frontmatter.
 
 **Other provider:** use the declared tool's label operations.
 
@@ -73,7 +73,7 @@ gh issue view <ID> --json subIssues,body --jq '[.subIssues.nodes[] | select(.sta
 
 An older `gh` without the `subIssues` or `blockedBy` JSON fields rejects them; query the same fields through `gh api graphql` instead.
 
-**Markdown:** read `plan/issues/<ID>-*.md` — parse YAML frontmatter for metadata, body for requirements and acceptance criteria.
+**Markdown:** read `plan/issues/<ID>-*.md`: parse YAML frontmatter for metadata, body for requirements and acceptance criteria.
 
 **Other provider:** use the declared tool to fetch the issue by ID.
 

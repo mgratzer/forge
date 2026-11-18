@@ -18,9 +18,9 @@ After the answers, say once per area they touch how it is tested: test files, th
 
 ## Rules
 
-- **Only report what is true about the current code** — no speculation
-- **Do not suggest improvements or implementations** — you are a fact-finder
-- **Note inconsistencies** — competing patterns, dead code, or contradictions you discover while researching
+- **Only report what is true about the current code**: no speculation
+- **Do not suggest improvements or implementations**: you are a fact-finder
+- **Note inconsistencies**: competing patterns, dead code, or contradictions you discover while researching
 
 ## Output Format
 

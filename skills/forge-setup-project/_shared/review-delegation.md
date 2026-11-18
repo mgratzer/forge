@@ -6,24 +6,24 @@ How to set up, delegate, and aggregate a **lean fresh-context review**. Used by 
 
 Before reviewing, collect:
 
-1. **Review scope** — exact commands the reviewer can run to regenerate the diff and changed file list
-2. **Changed file list** — from the selected scope
-3. **Diff size metadata** — changed file count and approximate changed line count
-4. **Relevant project conventions** — the parts of `AGENTS.md` that bear on the change, not the whole file
-5. **Acceptance criteria** — verbatim from the Issue the change closes: the one this session implemented from, else the PR's (`gh pr view --json closingIssuesReferences`), fetched per [issue-operations](issue-operations.md); omit when no Issue is linked
-6. **Change outline** — the `**Change outline**` block of the change's open PR, verbatim: the one this session wrote, else from `gh pr view --json body`; omit when no PR is open or the body has none
-7. **Review materials** — read and collect (pushed, not referenced):
+1. **Review scope**: exact commands the reviewer can run to regenerate the diff and changed file list
+2. **Changed file list**: from the selected scope
+3. **Diff size metadata**: changed file count and approximate changed line count
+4. **Relevant project conventions**: the parts of `AGENTS.md` that bear on the change, not the whole file
+5. **Acceptance criteria**: verbatim from the Issue the change closes: the one this session implemented from, else the PR's (`gh pr view --json closingIssuesReferences`), fetched per [issue-operations](issue-operations.md); omit when no Issue is linked
+6. **Change outline**: the `**Change outline**` block of the change's open PR, verbatim: the one this session wrote, else from `gh pr view --json body`; omit when no PR is open or the body has none
+7. **Review materials**: read and collect (pushed, not referenced):
    - [forge-reviewer](roles/forge-reviewer.md) role
-   - [review-dimensions](review-dimensions.md) — the default checklist and the deep pass
-   - [review-rubric](review-rubric.md) — P0–P3 severity taxonomy
+   - [review-dimensions](review-dimensions.md): the default checklist and the deep pass
+   - [review-rubric](review-rubric.md): P0–P3 severity taxonomy
 
 ## Choose Review Shape
 
 Use the smallest review shape that still gives trustworthy signal:
 
-1. **Tiny diff: inline review** — only if the change is small (roughly `<=2` files and `<=100` changed lines), touches none of the risky areas in item 3 nor infrastructure/config, **and the current session did not implement the changes** (a session reviewing its own diff has self-review bias, so it delegates even a tiny one). Review inline in the current context using the default combined checklist.
-2. **Default: one reviewer** — for everything else, use one fresh-context reviewer running the combined checklist.
-3. **Mandatory second reviewer for risky changes** — add a second focused pass whenever the diff touches:
+1. **Tiny diff: inline review**: only if the change is small (roughly `<=2` files and `<=100` changed lines), touches none of the risky areas in item 3 nor infrastructure/config, **and the current session did not implement the changes** (a session reviewing its own diff has self-review bias, so it delegates even a tiny one). Review inline in the current context using the default combined checklist.
+2. **Default: one reviewer**: for everything else, use one fresh-context reviewer running the combined checklist.
+3. **Mandatory second reviewer for risky changes**: add a second focused pass whenever the diff touches:
    - auth, authorization, secrets, payments, or other security-sensitive code
    - schema or migration changes
    - concurrency, synchronization, background jobs, caches, or distributed behavior
@@ -43,9 +43,9 @@ Do not make a task depend on a runtime-specific agent name, preset, or config fi
 
 Report `reviewing` via [status-reporting](status-reporting.md), then use the chosen review shape:
 
-1. **Inline tiny-diff path** — run one combined checklist pass in the current context
+1. **Inline tiny-diff path**: run one combined checklist pass in the current context
 2. **Sub-agent tool or task runtime**: spawn **one** reviewer by default, and a second when the rules above require it, with the role in the delegated prompt or `systemPrompt`. Inherit the parent session's model and provider where the runtime allows; where it offers per-task model choice, prefer a cheaper review-capable model over the strongest implementation model.
-3. **Inline fallback** — if no sub-agent mechanism is available, execute the same number of passes sequentially in the current context.
+3. **Inline fallback**: if no sub-agent mechanism is available, execute the same number of passes sequentially in the current context.
 
 Wait for **all planned review passes** before proceeding.
 
