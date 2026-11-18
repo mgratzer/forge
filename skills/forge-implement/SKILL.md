@@ -17,9 +17,9 @@ Primary input (`$ARGUMENTS`): an Issue number/URL, a plan file path, or free-tex
 
 Report `implementing` via [status-reporting](_shared/status-reporting.md). Determine the input type and extract requirements.
 
-- **Issue** — detect the provider and fetch it per [issue-operations](_shared/issue-operations.md). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
-- **Plan file** — extract goals, requirements, constraints, acceptance criteria.
-- **Free-text** — parse scope and constraints.
+- **Issue**: detect the provider and fetch it per [issue-operations](_shared/issue-operations.md). Parse title, requirements, acceptance criteria, labels, sub-issues, comments. Add labels if missing. When the Issue has sub-issues, treat each as a separate task and close them as you complete them.
+- **Plan file**: extract goals, requirements, constraints, acceptance criteria.
+- **Free-text**: parse scope and constraints.
 
 Ask for clarification when requirements are too vague or dependencies too incomplete to plan confidently; in unattended mode, proceed on explicitly stated assumptions instead.
 
@@ -40,7 +40,7 @@ Write 3–7 factual questions about existing systems, patterns, and integration 
 
 From the research, create a plan:
 - Durable decisions and the design block
-- **Structure outline** — vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time. When a text view shows a phase's target shape better than words, include it (see [visuals](_shared/visuals.md)).
+- **Structure outline**: vertical phases, each spanning all affected layers they need and ending with a verification step. Phase 1 proves the happy path end to end; later phases add one axis of complexity at a time. When a text view shows a phase's target shape better than words, include it (see [visuals](_shared/visuals.md)).
 - Files to create or modify
 - Open PRs these files **conflict** with (see [open-work](_shared/open-work.md)), each with what it shares; the PR's **Notes** repeat them
 - Scope boundaries (what will NOT change)
@@ -55,7 +55,7 @@ DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remote
 git rev-list --count origin/$DEFAULT_BRANCH..HEAD   # 0 on a non-default branch → a worktree tool prepared it; stay on it
 ```
 
-Otherwise branch off the fetched default branch without switching to it — this also works inside a worktree, where the default branch is checked out elsewhere:
+Otherwise branch off the fetched default branch without switching to it (this also works inside a worktree, where the default branch is checked out elsewhere):
 
 ```bash
 git checkout --no-track -b <TYPE>/<ISSUE_NUMBER>-<BRIEF_DESCRIPTION> origin/$DEFAULT_BRANCH
@@ -93,7 +93,7 @@ git push -u origin <BRANCH_NAME>
 
 Create the PR with a conventional commit title and the body from [pr-body](_shared/pr-body.md). The why comes from the linked Issue's problem statement, or the commit history when none is linked; in unattended mode, the assumptions you proceeded on go under Notes. Close the Issue when one exists.
 
-Pass the body on stdin via a quoted heredoc — an inline `--body "..."` mangles multi-line text, backticks, and quotes:
+Pass the body on stdin via a quoted heredoc (an inline `--body "..."` mangles multi-line text, backticks, and quotes):
 
 ```bash
 gh pr create --title "<TYPE>(<SCOPE>): <DESCRIPTION>" --body-file - <<'PR_EOF'

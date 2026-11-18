@@ -9,7 +9,7 @@ Self-review current changes before committing, pushing, or requesting peer revie
 
 ## Input
 
-No primary argument required — automatically detects what to review. Optional: `-- <additional context>` for review focus guidance.
+No primary argument required: automatically detects what to review. Optional: `-- <additional context>` for review focus guidance.
 
 ## Process
 
@@ -66,8 +66,8 @@ Run the project's lint, format, type check, and test commands (and coverage wher
 ### Step 4: Triage Findings
 
 Present each Finding to the user via AskUserQuestion with your recommendation, and let them decide whether to **fix now** or **defer**. Bias toward fix now:
-- **Fix now** — default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
-- **Defer** — only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
+- **Fix now**: default for in-scope findings and small follow-up work (e.g., missing tests, stale docs, duplicated lines, modest refactors that fit the current change)
+- **Defer**: only when the Finding is truly out of scope, materially expands the PR, or needs separate design/review (e.g., a cross-cutting refactor, a new feature, a separate migration strategy)
 
 Then:
 - **Fix now:** apply the fix and commit it

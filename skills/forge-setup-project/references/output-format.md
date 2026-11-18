@@ -17,7 +17,7 @@ Use the format matching the work performed.
 <list only docs that were created>
 
 **Tier 3, Cold Memory (recommended for later):**
-<suggest for complex projects — API docs, DB schemas, deployment runbooks>
+<suggest for complex projects: API docs, DB schemas, deployment runbooks>
 
 ### Agent Readiness
 
@@ -32,7 +32,7 @@ Use the format matching the work performed.
 | Unattended shipping | <section added / audited / declined / skipped: no PRs>; CI <present / none> | <action> |
 
 ### Supporting Files
-<CLAUDE.md removed, or reduced to an @AGENTS.md import — only when one existed>
+<CLAUDE.md removed, or reduced to an @AGENTS.md import (only when one existed)>
 - .gitignore
 
 ### Next Steps

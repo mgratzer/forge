@@ -35,6 +35,9 @@ problems=$(
 		grep -q "^name: ${dir}\$" "$f" || echo "$f: name is not ${dir}"
 	done
 
+	# Markdown written by hand uses no em dashes (docs/coding-guidelines.md, Style)
+	git grep -n '—' -- ':(glob)*.md' ':(glob)skills/**/*.md' ':(glob)docs/**/*.md' | sed 's/^/em dash: /'
+
 	# A description with ": " must be quoted; installers parse YAML strictly
 	grep -nE '^description: [^"'"'"'].*: ' skills/*/SKILL.md skills/_shared/roles/*.md
 )

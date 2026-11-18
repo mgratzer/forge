@@ -97,4 +97,5 @@ Frontier models follow roughly 150 to 200 instructions consistently, and a skill
 ## Style
 
 - Use tables for structured reference data, and fenced code blocks with language hints.
-- Docs and templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence. Skill prose itself may use them.
+- Docs and templates for text forge writes for people (commit messages, PR bodies and replies, Issues, summaries) use no em dashes: a comma, a colon, parentheses, or a new sentence.
+- Markdown under `skills/`, `docs/` and the root uses no em dashes either, skill prose included: `scripts/check-skills.sh` fails on one, naming the file and line.

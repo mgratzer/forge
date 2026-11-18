@@ -82,8 +82,8 @@ Present the findings and guardrails via AskUserQuestion: file, decline, or leave
 
 ## Guidelines
 
-- **Evidence or nothing** — a finding without places is not recorded
-- **A short survey is a fine result** — do not manufacture findings
+- **Evidence or nothing**: a finding without places is not recorded
+- **A short survey is a fine result**: do not manufacture findings
 
 ## Related Skills
 

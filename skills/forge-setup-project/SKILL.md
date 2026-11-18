@@ -1,6 +1,6 @@
 ---
 name: forge-setup-project
-description: Set up or update a project's context infrastructure for agentic engineering — AGENTS.md as lean hot memory, docs/ as earned warm memory, with signal-to-noise scoring for existing guidance. Use when starting a new project, retrofitting an existing codebase, or auditing current guidance quality.
+description: Set up or update a project's context infrastructure for agentic engineering (AGENTS.md as lean hot memory, docs/ as earned warm memory), with signal-to-noise scoring for existing guidance. Use when starting a new project, retrofitting an existing codebase, or auditing current guidance quality.
 disable-model-invocation: true
 allowed-tools: Read, Edit, Write, Bash, Grep, Glob, AskUserQuestion
 ---
@@ -11,9 +11,9 @@ Context is organized in three tiers:
 
 | Tier | File(s) | Role |
 |------|---------|------|
-| **1 — Hot memory** | AGENTS.md | Always loaded. Lean, convention-dense. Only what agents need constantly. |
-| **2 — Warm memory** | docs/*.md | Loaded on-demand by topic. Created only when content earns its token cost. |
-| **3 — Cold memory** | Specs, schemas, runbooks | On-demand references for complex projects. Not created by this skill. |
+| **1: Hot memory** | AGENTS.md | Always loaded. Lean, convention-dense. Only what agents need constantly. |
+| **2: Warm memory** | docs/*.md | Loaded on-demand by topic. Created only when content earns its token cost. |
+| **3: Cold memory** | Specs, schemas, runbooks | On-demand references for complex projects. Not created by this skill. |
 
 **Central principle: context must earn its token cost.** Only include knowledge that agents cannot discover by exploring the codebase with Grep, Glob, and Read.
 
@@ -31,7 +31,7 @@ Scan the project root for `AGENTS.md`, `CLAUDE.md`, `README.md`, and `docs/`. Th
 
 ### Step 2: Explore the Codebase
 
-Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Classify each finding as **discoverable** (agents can find it themselves) or **requires documentation** (decisions, conventions, failure modes) — only the second category belongs in context files.
+Explore structure, tooling, CI/CD, and docs (skip for greenfield projects). Classify each finding as **discoverable** (agents can find it themselves) or **requires documentation** (decisions, conventions, failure modes). Only the second category belongs in context files.
 
 Assess **agent readiness**: feedback loops (tests, linter, build cycle speed), module structure, app legibility, known risks. A check that prints pages on success fills the agent's context with noise: under feedback loops, name the tool's quiet flag when it has one, or leave a `<!-- TODO -->` for a wrapper that prints one line on success and everything on failure.
 
@@ -54,23 +54,23 @@ Present an audit report grouped by impact and get user confirmation via AskUserQ
 
 ### Step 4: Gather Project Information
 
-Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants — plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the fresh-checkout step, run recipe parts, and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
+Use AskUserQuestion for what code cannot reveal: core principles, repeated failure modes, and domain invariants, plus anything ambiguous from exploration, gaps surfaced by the Step 3 audit, and the fresh-checkout step, run recipe parts, and peer reviewer that discovery left open. Never ask what's discoverable from code. Incorporate any trailing context when deciding what to ask.
 
 ### Step 5: Generate or Update AGENTS.md
 
 Create or update `AGENTS.md`. Keep it **under ~200 lines**, moving the rest to Tier 2; length comes from content that passes the undiscoverability test, so a small project's file is short. See [agents-md-template.md](references/agents-md-template.md) for the structure. In a monorepo, suggest a per-package `AGENTS.md`. When migrating, fold accepted legacy content in and remove the old file in Step 7.
 
-### Step 6: Generate or Update Tier 2 — docs/
+### Step 6: Generate or Update Tier 2 (docs/)
 
-Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process); offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test — an empty doc wastes context.
+Create `docs/architecture.md` (design decisions, data flow, module responsibilities) and `docs/pr-workflow.md` (branch naming, PR checklist, review process); offer further docs (development, coding-guidelines, testing, domain-specific) via AskUserQuestion only when exploration surfaced content that warrants them. Every doc must pass the undiscoverability test: an empty doc wastes context.
 
 ### Step 7: Remove Redundant CLAUDE.md and Update .gitignore
 
-Delete a `CLAUDE.md` that is a symlink to `AGENTS.md`, a copy of it, or legacy content now migrated into it (`git rm` when tracked). If it still holds content that isn't in `AGENTS.md`, ask the user via AskUserQuestion before deleting it. If it holds Claude-specific content the user wants to keep, reduce it to `@AGENTS.md` plus that content instead. If a `CLAUDE.local.md` exists, tell the user: Claude Code skips `AGENTS.md` while one is present. When you remove a `CLAUDE.md`, mention that some Claude Code versions and setups read only `CLAUDE.md` ([which ones](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)); for those, the fix is a `CLAUDE.md` containing `@AGENTS.md`. Append missing stack-appropriate entries to `.gitignore` — never overwrite an existing one.
+Delete a `CLAUDE.md` that is a symlink to `AGENTS.md`, a copy of it, or legacy content now migrated into it (`git rm` when tracked). If it still holds content that isn't in `AGENTS.md`, ask the user via AskUserQuestion before deleting it. If it holds Claude-specific content the user wants to keep, reduce it to `@AGENTS.md` plus that content instead. If a `CLAUDE.local.md` exists, tell the user: Claude Code skips `AGENTS.md` while one is present. When you remove a `CLAUDE.md`, mention that some Claude Code versions and setups read only `CLAUDE.md` ([which ones](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)); for those, the fix is a `CLAUDE.md` containing `@AGENTS.md`. Append missing stack-appropriate entries to `.gitignore`. Never overwrite an existing one.
 
 ### Step 8: Create Human-Facing Files
 
-Create `README.md` if it doesn't exist (project description, quick start, docs links — for humans, not agent context). If one exists, ask via AskUserQuestion: replace, merge, or keep?
+Create `README.md` if it doesn't exist (project description, quick start, docs links; for humans, not agent context). If one exists, ask via AskUserQuestion: replace, merge, or keep?
 
 ### Step 9: Commit
 
@@ -78,11 +78,11 @@ Stage and commit the new/modified files: `docs: set up agentic context infrastru
 
 ### Step 10: Summarize
 
-Report what was created/changed — see [output-format.md](references/output-format.md). Missing tests or CI go under next steps.
+Report what was created/changed (see [output-format.md](references/output-format.md)). Missing tests or CI go under next steps.
 
 ## Related Skills
 
-**Next step:** Use `forge-create-issue` to plan your first piece of work — or `forge-shape` if the idea is still rough and needs convergent questioning first.
+**Next step:** Use `forge-create-issue` to plan your first piece of work, or `forge-shape` if the idea is still rough and needs convergent questioning first.
 **From time to time:** Use `forge-survey` to review the codebase's design and find the rules that need a check.
 
 ## Example Usage
