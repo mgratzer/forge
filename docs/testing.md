@@ -19,8 +19,6 @@ No check reads a skill's meaning. By hand, verify the section order ([Coding Gui
 
 Skill prompts are forge's runtime. A PR that changes `skills/` exercises the change (see [exercise](../skills/_shared/exercise.md)) and reports what the runs printed in `## Exercised`, never `not exercised: no runtime change`; that line stays for PRs that change only docs, tests, or CI. The app here is a coding agent running the skill in a sandbox repository made for it, such as the private `mgratzer/forge-e2e-sandbox`. Runs open branches and PRs there, so never point them at a real project: with no sandbox checkout at hand, report `Not exercised: needs a sandbox checkout`.
 
-The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security-sensitive paths: src/**`. Forge reads only `## Unattended Shipping`, but a run on 2026-10-20 honored that line anyway and sent code under `src/` to review, so keep test code outside `src/` when a case needs `merge-ready`.
-
 1. **Snapshot** the branch and its base as two plugins, from the forge checkout, named apart so neither collides with an installed forge:
 
    ```bash
@@ -47,7 +45,7 @@ The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security
 
    The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
-   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, and exports `countByTeam` only for its test, so the Design check decides its verdict: needs review with `Design: 1 test seam`. It stays open and unmerged. Sandbox PRs #67 to #70 isolate the settings check: #67 adds `Auto-merge: low-risk`, #68 drops `vault/**` from the security-sensitive paths and changes a file under it, #69 edits `AGENTS.md` outside the section, all three on `fixture/settings-base`, which has a `## Unattended Shipping` section, and #70 adds the section to `main`. For a case about which copy is read, run from a checkout of the PR's own branch, where the two copies differ. No open sandbox PR isolates the Exercise check any more: that needs a PR outside `src/**` without a test seam.
+   For a case about which copy is read, run from a checkout of the PR's own branch, where the two copies differ.
 
 4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
 
