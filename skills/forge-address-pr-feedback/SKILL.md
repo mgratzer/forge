@@ -104,7 +104,7 @@ Report: items addressed, commits created, Deferred items created, items needing 
 ## Related Skills
 
 **If the feedback required substantial changes:** Use `forge-reflect` for one more self-review before re-requesting review.
-**Composed by:** `forge-guard` runs this process in unattended mode for each feedback round.
+**Composed by:** `forge-guard` runs this process in unattended mode in each round that has feedback to address.
 
 ## Example Usage
 
