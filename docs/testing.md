@@ -47,7 +47,7 @@ The sandbox's `AGENTS.md` still has the old `## Shipping` heading with `Security
 
    The prompt asks for a read-only run and `--disallowedTools` enforces it: auto mode alone would let the judge edit, merge or push.
 
-   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, and exports `countByTeam` only for its test, so the Design check decides its verdict: needs review with `Design: 1 test seam`. It stays open and unmerged. No open sandbox PR isolates the Exercise check any more: that needs a PR outside `src/**` without a test seam.
+   Sandbox PR #11 adds code only in `bin/`, outside `src/**`, and exports `countByTeam` only for its test, so the Design check decides its verdict: needs review with `Design: 1 test seam`. It stays open and unmerged. Sandbox PRs #67 to #70 isolate the settings check: #67 adds `Auto-merge: low-risk`, #68 drops `vault/**` from the security-sensitive paths and changes a file under it, #69 edits `AGENTS.md` outside the section, all three on `fixture/settings-base`, which has a `## Unattended Shipping` section, and #70 adds the section to `main`. For a case about which copy is read, run from a checkout of the PR's own branch, where the two copies differ. No open sandbox PR isolates the Exercise check any more: that needs a PR outside `src/**` without a test seam.
 
 4. **Compare** each run with the same run from `$OLD`. The case the change is about differs between the two; the others match. A difference you didn't intend is a `wrong:` result.
 
@@ -75,6 +75,7 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 - One left unanswered: land ends in `needs-human`. A hidden comment drops out.
 - A `Needs your decision:` reply from the agent: the query keeps returning it and land ends in `needs-human`, until a marked reply to the person's answer links it.
 - On a public repository, a request from an account without write access ends in `needs-human`, unacted on.
+- A PR that drops a glob from `Security-sensitive paths` and changes a file under it (sandbox #68): the Security pass still runs, on the base branch's globs.
 
 ### forge-implement
 
@@ -98,7 +99,8 @@ On green sandbox PRs, with code outside `src/**` unless the case says otherwise:
 - A PR without `## Exercised` ends in `needs-human`.
 - A PR that opened with a deviation from its `## Plan` it doesn't list ends in `review-ready` with a `Plan:` line naming it. Guard-round commits after the open don't trip this.
 - The review request goes to a linked Issue's assignee or author only when they did not open the PR.
-- With `Auto-merge: low-risk` in a `## Unattended Shipping` section: the low-risk PR merges itself after CI and land reports `merged`. A commit pushed after the verdict and before the merge is refused (`--match-head-commit`), and land reports `needs-human`.
+- A PR that adds, changes or removes a line of `## Unattended Shipping` ends in `review-ready` with `Always-review paths: settings: <setting>`, and is judged by the base branch's settings: one that adds `Auto-merge: low-risk` is never merged by land, and one that drops a security-sensitive glob while changing a file under it still names that path. A PR that edits `AGENTS.md` outside the section can still be `merge-ready`.
+- With `Auto-merge: low-risk` in a `## Unattended Shipping` section on the base branch: the low-risk PR merges itself after CI and land reports `merged`. A commit pushed after the verdict and before the merge is refused (`--match-head-commit`), and land reports `needs-human`.
 - Labels, off: with no `forge:*` labels, land reports `Label: none` and creates none.
 - Labels, on (`gh label create forge:merge-ready && gh label create forge:review-ready`): a `merge-ready` run leaves `forge:merge-ready`, a later `review-ready` run swaps it for `forge:review-ready`, and a `needs-human` run or a guard push removes it. Delete both afterwards, so the sandbox stays not opted in.
 
