@@ -17,13 +17,13 @@ Projects declare the section verbatim:
 
 ## Which Copy
 
-A skill working on a PR (`forge-guard`, `forge-land`) reads the section from the PR's base branch, so a PR can't change the settings that judge it:
+A skill working on a PR (`forge-guard`, `forge-land`) reads the section from the PR's base branch, never from the `AGENTS.md` in context or in the checkout, which on the PR's branch is the PR's own copy:
 
 ```bash
 git fetch origin "$BASE" && git show "origin/$BASE:AGENTS.md" | grep -A7 "^## Unattended Shipping"
 ```
 
-Never from the `AGENTS.md` in context or in the checkout: on the PR's branch that copy is the PR's own. A base without the section means defaults, also for a PR that adds it; a changed setting applies once its PR is merged.
+A base without the section means defaults, also for a PR that adds it.
 
 With no PR yet (`forge-implement`'s open-work check), read the checkout's: already in context when the runtime auto-loads `AGENTS.md`, otherwise the same `grep` on the file.
 
