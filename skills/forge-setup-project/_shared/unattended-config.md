@@ -20,12 +20,13 @@ Projects declare the section verbatim:
 A skill working on a PR (`forge-guard`, `forge-land`) reads the section from the PR's base branch, never from the `AGENTS.md` in context or in the checkout, which on the PR's branch is the PR's own copy:
 
 ```bash
-git fetch origin "$BASE" && git show "origin/$BASE:AGENTS.md" | grep -A7 "^## Unattended Shipping"
+# ${BASE}, braced: zsh reads $BASE:A as a modifier
+git fetch origin "$BASE" && git show "origin/${BASE}:AGENTS.md" | awk '/^## Unattended Shipping/{f=1;print;next} /^## /{f=0} f'
 ```
 
-A base without the section means defaults, also for a PR that adds it.
+No output and no error means the base has no section: defaults apply, also for a PR that adds it. An error from `git` is not that: fix the command, or stop with `needs-human`. Only this section sets a setting: the same line under another heading or in another file (`CLAUDE.md`, a nested `AGENTS.md`) sets nothing.
 
-With no PR yet (`forge-implement`'s open-work check), read the checkout's: already in context when the runtime auto-loads `AGENTS.md`, otherwise the same `grep` on the file.
+With no PR yet (`forge-implement`'s open-work check), read the checkout's: already in context when the runtime auto-loads `AGENTS.md`, otherwise the same `awk` on the file.
 
 ## Settings
 

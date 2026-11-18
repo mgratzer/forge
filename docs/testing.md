@@ -75,6 +75,7 @@ Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second p
 - One left unanswered: land ends in `needs-human`. A hidden comment drops out.
 - A `Needs your decision:` reply from the agent: the query keeps returning it and land ends in `needs-human`, until a marked reply to the person's answer links it.
 - On a public repository, a request from an account without write access ends in `needs-human`, unacted on.
+- A PR that drops a glob from `Security-sensitive paths` and changes a file under it (sandbox #68): the Security pass still runs, on the base branch's globs.
 
 ### forge-implement
 

@@ -31,7 +31,7 @@ Offer it only when the project ships through PRs: skip it when there is no remot
 | Serialized resources | migration directories, lockfiles, generated files (`linguist-generated` in `.gitattributes`, codegen output, message catalogs) | leave the line out |
 | Max guard rounds | nothing to discover | leave the line out unless the user names a number other than the default 3 |
 
-Write globs that match tracked files today (`git ls-files ':(glob)<glob>'`). Show the user the drafted section with the discovered values filled in, so they confirm rather than type. A value the user wants but can't give yet is a `<!-- TODO -->`, never a placeholder that looks real.
+Write globs that match tracked files today (`git ls-files ':(glob)<glob>'`). Show the user the drafted section with the discovered values filled in, so they confirm rather than type, and say that guard and land read it from a PR's base branch: it applies once merged, and the PR that adds or changes it needs a person. A value the user wants but can't give yet is a `<!-- TODO -->`, never a placeholder that looks real.
 
 **Existing section:** audit it, don't overwrite it. Propose additions discovery found and flag globs that match no tracked file; keep every value the user wrote. A section under the old `## Shipping` heading is ignored by the unattended skills; offer to rename it to `## Unattended Shipping` and carry its lines over: `Peer reviewers` becomes the single `Peer reviewer` (ask which one when it lists several), `Exercise` moves into the run recipe under Commands, and lines the current format doesn't define (such as `Issue tracker`, `Publish`, `Extra passes`) are named to the user and dropped only on their yes.
 
