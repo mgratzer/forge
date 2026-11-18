@@ -1,9 +1,9 @@
 # Testing
 
-What can be checked mechanically runs in CI (`.github/workflows/checks.yml`), and locally with the same commands:
+What can be checked mechanically runs in CI (`.github/workflows/checks.yml`), and locally with these commands (CI's `validate` step is stricter, as described below):
 
 ```bash
-scripts/check-skills.sh                              # skill structure, the lens contract (Node 22.6+), the PR-state script's tests (jq); the script lists its checks
+scripts/check-skills.sh                              # skill structure, the lens contract (Node 22.6+), the PR-state script's tests (jq); prints nothing when healthy, and its comments list the checks
 npx @biomejs/biome@2.6.2 ci --error-on-warnings .    # lint and format of lens/, scripts/*.ts and the plugin JSON
 claude plugin validate .                             # plugin and marketplace manifests, the lens's hooks
 claude plugin test .                                 # lens/tests/*.test.tsx
@@ -59,7 +59,7 @@ What to run per skill when a change reaches that behavior. For a sub-agent's run
 
 ### forge-reflect, forge-ship review
 
-Tiny low-risk diffs stay inline, ordinary diffs get one reviewer, and a second pass appears only for high-risk changes. A diff that copies an existing function gets a P1 naming the original.
+A tiny low-risk diff the session didn't write stays inline (`forge-reflect` on someone else's change; `forge-ship` wrote its diff, so it always delegates), ordinary diffs get one reviewer, and a second pass appears only for high-risk changes. A diff that copies an existing function gets a P1 naming the original.
 
 ### forge-guard
 

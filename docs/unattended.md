@@ -9,6 +9,8 @@ forge-ship --guard  →  merged | merge-ready | review-ready | needs-human
 
 Forge ships no [launcher](#writing-a-launcher), since only yours knows your terminal. Skills report progress through `FORGE_STATUS_CMD` ([status-reporting](../skills/_shared/status-reporting.md)) and read project settings from the `## Unattended Shipping` section of `AGENTS.md` ([unattended-config](../skills/_shared/unattended-config.md)). Guard and land read it from the PR's base branch, so a setting applies once the PR that changes it is merged, and land sends that PR to review.
 
+Commands on this page are written as `/forge-ship`. Installed as the Claude Code plugin, they are namespaced: `/forge:forge-ship`.
+
 [forge-guard](../skills/forge-guard/SKILL.md) stops at `review-ready`, and its summary lists what it left open. What it posts ends in a hidden `<!-- forge -->` marker, so a comment you post from the agent's `gh` account counts as yours.
 
 [forge-land](../skills/forge-land/SKILL.md) then writes what the PR needs from you into its `## Risk` section, judged on the head commit:
@@ -67,16 +69,9 @@ Once per project (`/forge-setup-project` covers the `## Unattended Shipping` sec
 
 Guard and land judge one PR at a time, so neither sees erosion: structure that gets worse across PRs while each step looks reasonable. `low risk` means unlikely to break anything now, not that the code stays easy to change, and `Auto-merge: low-risk` merges on that same verdict. [SlopCodeBench](https://arxiv.org/abs/2603.24755) found explicit quality guidance improves where agent code starts but not how fast it degrades.
 
-After several feature PRs land in one area, review its structure before starting the next feature there. Forge ships no skill for this; use any architecture review, such as [improve-codebase-architecture](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture). Ask it for:
+After several feature PRs land in one area, review its structure before starting the next feature there. [forge-survey](../skills/forge-survey/SKILL.md) does this: `/forge-survey <paths>` reads the code as it stands rather than a diff, one fresh-context reviewer per area, and records each finding in `docs/surveys/` with its places, its remedy, and the rule or check that let it through. It skips what an open Issue already covers, names the modules to leave alone, and lists suspected bugs separately.
 
-- One reviewer per hot area, judging the code as it stands rather than a diff
-- Git evidence for each finding: the PRs that built it up, and the next change it makes harder
-- The modules it looked at and cleared, since the number of findings says little on its own
-- A check against open Issues, so it doesn't report what is already filed
-- A challenge to any documented decision that doesn't record a real trade-off
-- A separate list of any bugs it noticed
-
-A review lists more than is worth doing, so a person picks what gets filed, through `/forge-create-issue`.
+A survey lists more than is worth doing, so it asks you which findings to file as Issues.
 
 ## Writing a launcher
 

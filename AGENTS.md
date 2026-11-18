@@ -12,7 +12,7 @@ npx @biomejs/biome@2.6.2 check --write .           # lint and format the lens (t
 claude plugin validate . && claude plugin test .   # plugin manifests and lens tests
 ```
 
-CI runs all three on every pull request; see [Testing](docs/testing.md).
+CI runs all three on every pull request, stricter in two places: Biome as `ci --error-on-warnings`, which writes nothing and fails on a warning, and `validate` failing on warnings too. See [Testing](docs/testing.md).
 
 Shared modules are edited only in `skills/_shared/`. `scripts/sync-shared.sh` copies into each skill the ones it refers to, and `scripts/check-skills.sh` fails when a copy drifts.
 

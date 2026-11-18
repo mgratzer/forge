@@ -115,7 +115,7 @@ On a terminal state, report it via status-reporting, then summarize.
 ## Related Skills
 
 **Composed by:** `forge-ship --guard` runs this process after its own review.
-**Uses:** `forge-address-pr-feedback --unattended` for each feedback round.
+**Uses:** `forge-address-pr-feedback --unattended` in each round that has feedback to address.
 **After review-ready:** Use `forge-land` to judge the PR's risk and write it into the PR.
 
 ## Example Usage
