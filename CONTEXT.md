@@ -28,7 +28,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Design round**: one brief, the boards drawn for it, and the person's verdict on them, logged with its reason in the spec. See [design-rounds](skills/_shared/design-rounds.md). Unrelated to the guard's **Round**, so always say "design round".
 
-**Reflection**: self-review of current changes before peer review, which is external. Tiny diffs review inline, otherwise one fresh-context pass by default. Produces Findings.
+**Reflection**: self-review of current changes before peer review, which is external. A tiny diff the session didn't write is reviewed inline; everything else gets one fresh-context pass by default. Produces Findings.
 
 **Tiny diff**: roughly ≤2 files and ≤100 changed lines with low risk; reviewed inline only when the session didn't author the changes. See [review-delegation](skills/_shared/review-delegation.md).
 
@@ -56,7 +56,7 @@ Shared vocabulary used across multiple skills. Terms used in only one skill stay
 
 **Readiness signal**: what guard and land both read to decide whether a PR is ready: mergeable, CI, the review signal, open feedback. See [pr-readiness](skills/_shared/pr-readiness.md).
 
-**Prerequisite**: an Issue or PR another Issue's body names with `depends on`, `blocked by`, or `after #N`. Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
+**Prerequisite**: an Issue or PR another Issue depends on, through a native blocked-by link or body text (`depends on`, `blocked by`, or `after #N`). Met only once merged: a PR counts once merged, an Issue once closed as completed with no closing PR still open. See [open-work](skills/_shared/open-work.md).
 
 **Serialized resource**: a file an Issue and an open PR must never both change (migrations, lockfiles, generated files). Declared per project: see [unattended-config](skills/_shared/unattended-config.md).
 

@@ -302,5 +302,8 @@ export const MAP = `forge pipeline
   ship               = implement + self-review
   ship --guard       = implement + review + guard + land, unattended
 
-Every skill prints [forge] <state>: <detail> at each stage change.
-The forge lens reads those lines: /forge pane, /forge config, /forge demo`;
+  survey             beside the pipeline: review the codebase's design from time to time
+
+Every skill reports <state> and <detail> at each stage change: to
+FORGE_STATUS_CMD when it is set, otherwise as a [forge] <state>: <detail> line.
+The forge lens reads those reports: /forge pane, /forge config, /forge demo`;

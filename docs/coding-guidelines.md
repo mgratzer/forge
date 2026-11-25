@@ -78,7 +78,7 @@ git grep -l <module> -- skills ':!skills/forge-*/_shared/*'
 
 These have no module, so each skill states them itself. When changing one, update them all:
 
-- Conventional commits: `<type>(<scope>): <description>`, for Issue titles, branches, commits and PRs.
+- Conventional commits: `<type>(<scope>): <description>`, for Issue titles, commits and PRs. Branches take the type as a prefix ([PR Workflow](pr-workflow.md#branches)).
 - Guidance file: `AGENTS.md` only.
 - Trailing context: `-- <additional context>` as the final segment, in every skill.
 - Workflow order, in each skill's Related Skills section.
